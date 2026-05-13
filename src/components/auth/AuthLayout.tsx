@@ -44,7 +44,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
           <button
             onClick={() => router.back()}
             aria-label="Go back"
-            className={`text-link-hover-text flex w-fit cursor-pointer items-center gap-1.5 text-sm font-medium text-[#087583] transition-colors hover:text-[#065E69] ${pathname !== "/login" ? "hidden" : "block"}`}
+            className={`text-link-hover-text flex w-fit cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors hover:text-[#065E69] ${pathname !== "/login" ? "hidden" : "block"}`}
           >
             <svg
               width="16"
