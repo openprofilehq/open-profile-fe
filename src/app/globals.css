@@ -113,8 +113,113 @@
   --color-warning-b: var(--warning-b);
   --color-positive-b: var(--positive-b);
   --color-input-b: var(--input-b);
-  --button-b: var(--button-b);
-  --selected-b: var(--selected-b);
+  --color-button-b: var(--button-b);
+  --color-selected-b: var(--selected-b);
+
+  /* typography */
+  /* heading */
+  --text-heading-4xl: 64px;
+  --text-heading-4xl--line-height: 72px;
+  --text-heading-4xl--font-weight: 600;
+  --text-heading-4xl--letter-spacing: -1px;
+
+  --text-heading-3xl: 56px;
+  --text-heading-3xl--line-height: 64px;
+  --text-heading-3xl--font-weight: 600;
+  --text-heading-3xl--letter-spacing: -1px;
+
+  --text-heading-2xl: 48px;
+  --text-heading-2xl--line-height: 48px;
+  --text-heading-2xl--font-weight: 600;
+  --text-heading-2xl--letter-spacing: -1px;
+
+  --text-heading-xl: 40px;
+  --text-heading-xl--line-height: 48px;
+  --text-heading-xl--font-weight: 600;
+  --text-heading-xl--letter-spacing: -1px;
+
+  --text-heading-l: 32px;
+  --text-heading-l--line-height: 40px;
+  --text-heading-l--font-weight: 600;
+  --text-heading-l--letter-spacing: -1px;
+
+  --text-heading-m: 24px;
+  --text-heading-m--line-height: 32px;
+  --text-heading-m--font-weight: 600;
+  --text-heading-m--letter-spacing: -0.5px;
+
+  --text-heading-s: 20px;
+  --text-heading-s--line-height: 28px;
+  --text-heading-s--font-weight: 600;
+  --text-heading-s--letter-spacing: -0.5px;
+
+  --text-heading-xs: 16px;
+  --text-heading-xs--line-height: 24px;
+  --text-heading-xs--font-weight: 600;
+  --text-heading-xs--letter-spacing: -0.5px;
+
+  /* text */
+  --text-2xl-regular: 20px;
+  --text-2xl-regular--line-height: 28px;
+
+  --text-2xl-semibold: 20px;
+  --text-2xl-semibold--line-height: 28px;
+  --text-2xl-semibold--font-weight: 600;
+
+  --text-xl-regular: 18px;
+  --text-xl-regular--line-height: 26px;
+
+  --text-xl-semibold: 18px;
+  --text-xl-semibold--line-height: 26px;
+  --text-xl-semibold--font-weight: 500;
+
+  --text-l-regular: 16px;
+  --text-l-regular--line-height: 24px;
+
+  --text-l-medium: 16px;
+  --text-l-medium--line-height: 24px;
+  --text-l-medium--font-weight: 500;
+
+  --text-m-regular: 14px;
+  --text-m-regular--line-height: 20px;
+
+  --text-m-medium: 14px;
+  --text-m-medium--line-height: 20px;
+  --text-m-medium--font-weight: 500;
+
+  /* label */
+  --text-label-xl-semibold: 18px;
+  --text-label-xl-semibold--line-height: 26px;
+  --text-label-xl-semibold--font-weight: 600;
+
+  --text-label-l-regular: 16px;
+  --text-label-l-regular--line-height: 24px;
+
+  --text-label-l-medium: 16px;
+  --text-label-l-medium--line-height: 24px;
+  --text-label-l-medium--font-weight: 500;
+
+  --text-label-m-regular: 14px;
+  --text-label-m-regular--line-height: 20px;
+
+  --text-label-m-medium: 14px;
+  --text-label-m-medium--line-height: 20px;
+  --text-label-m-medium--font-weight: 500;
+
+  --text-label-s-regular: 12px;
+  --text-label-s-regular--line-height: 16px;
+
+  --text-label-s-medium: 12px;
+  --text-label-s-medium--line-height: 16px;
+  --text-label-s-medium--font-weight: 500;
+
+  /* caption */
+  --text-caption-s-regular: 12px;
+  --text-caption-s-regular--line-height: 16px;
+
+  --text-caption-s-medium: 12px;
+  --text-caption-s-medium--line-height: 16px;
+  --text-caption-s-medium--font-weight: 500;
 }
 
 :root {
@@ -263,90 +368,5 @@
   }
   html {
     @apply font-afacad;
-  }
-}
-
-@layer components {
-  /* heading */
-  .heading-4xl {
-    @apply text-[64px] leading-18 font-semibold tracking-[-1px];
-  }
-  .heading-3xl {
-    @apply text-[56px] leading-16 font-semibold tracking-[-1px];
-  }
-  .heading-2xl {
-    @apply text-[48px] leading-12 font-semibold tracking-[-1px];
-  }
-  .heading-xl {
-    @apply text-[40px] leading-12 font-semibold tracking-[-1px];
-  }
-  .heading-l {
-    @apply text-[32px] leading-10 font-semibold tracking-[-1px];
-  }
-  .heading-m {
-    @apply text-[24px] leading-8 font-semibold tracking-[-0.5px];
-  }
-  .heading-s {
-    @apply text-[20px] leading-7 font-semibold tracking-[-0.5px];
-  }
-  .heading-xs {
-    @apply text-[16px] leading-6 font-semibold tracking-[-0.5px];
-  }
-
-  /* text */
-  .text-2xl-regular {
-    @apply text-[20px] leading-7;
-  }
-  .text-2xl-semibold {
-    @apply text-[20px] leading-7 font-semibold;
-  }
-  .text-xl-regular {
-    @apply text-[18px] leading-6.5;
-  }
-  .text-xl-semibold {
-    @apply text-[18px] leading-6.5 font-medium;
-  }
-  .text-l-regular {
-    @apply text-[16px] leading-6;
-  }
-  .text-l-medium {
-    @apply text-[16px] leading-6 font-medium;
-  }
-  .text-m-regular {
-    @apply text-[14px] leading-5;
-  }
-  .text-m-medium {
-    @apply text-[14px] leading-5 font-medium;
-  }
-
-  /* label */
-  .label-xl-semibold {
-    @apply text-[18px] leading-6.5 font-semibold;
-  }
-  .label-l-regular {
-    @apply text-[16px] leading-6;
-  }
-  .label-l-medium {
-    @apply text-[16px] leading-6 font-medium;
-  }
-  .label-m-regular {
-    @apply text-[14px] leading-5;
-  }
-  .label-m-medium {
-    @apply text-[14px] leading-5 font-medium;
-  }
-  .label-s-regular {
-    @apply text-[12px] leading-4;
-  }
-  .label-s-medium {
-    @apply text-[12px] leading-4 font-medium;
-  }
-
-  /* caption */
-  .caption-s-regular {
-    @apply text-[12px] leading-4;
-  }
-  .caption-s-medium {
-    @apply text-[12px] leading-4 font-medium;
   }
 }
