@@ -20,7 +20,6 @@ export type AuthAction = {
 };
 
 export async function deleteSessionAction() {
-  // Logic to clear local state if needed
   redirect("/login");
 }
 
@@ -126,7 +125,7 @@ export async function logout() {
 
 export async function refreshToken() {
   try {
-    await authService.refreshTokenApi({ refreshToken: "" }); // Backend handles this via cookie
+    await authService.refreshTokenApi({ refreshToken: "" });
     return { success: true };
   } catch (_err) {
     return { error: "Session expired." };
