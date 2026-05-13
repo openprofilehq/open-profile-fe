@@ -1,0 +1,41 @@
+import { Providers } from "@/components/shared/providers";
+import { env } from "@/env/client";
+import { cn } from "@/lib/utils";
+import type { Metadata } from "next";
+import { Afacad, Dancing_Script } from "next/font/google";
+import "./globals.css";
+
+const afacad = Afacad({ subsets: ["latin"], variable: "--font-afacad" });
+const dancing = Dancing_Script({
+  subsets: ["latin"],
+  variable: "--font-dancing",
+});
+
+export const metadata: Metadata = {
+  metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
+  title: {
+    default: env.NEXT_PUBLIC_APP_NAME,
+    template: `%s · ${env.NEXT_PUBLIC_APP_NAME}`,
+  },
+  description:
+    "OpenProfile — build a verified profile that tells the world exactly who you are.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={cn("font-afacad h-full antialiased", afacad.variable)}
+    >
+      <body
+        className={`flex min-h-full flex-col ${afacad.variable} ${dancing.variable}`}
+      >
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}

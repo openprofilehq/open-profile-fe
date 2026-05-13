@@ -1,0 +1,21 @@
+# Dependencies
+node_modules
+
+# Next.js build output
+.next
+out
+build
+dist
+
+# Lock files
+*.lock
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Env files
+.env*
+
+# Coverage
+coverage
+.nyc_output
