@@ -53,7 +53,7 @@ export default function CreateProfileLink({
 
         <Button
           type="button"
-          className={`mt-4 h-13 w-full rounded-[10px] bg-[#ff00ff] text-[16px] font-medium shadow-none transition-colors ${profileLink.length === 0 || available === "Not available" ? "cursor-not-allowed" : "cursor-pointer"}`}
+          className={`mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-medium shadow-none transition-colors ${profileLink.length === 0 || available === "Not available" ? "cursor-not-allowed" : "cursor-pointer"}`}
           onClick={onUpdateStep}
           disabled={profileLink.length === 0 || available === "Not available"}
         >

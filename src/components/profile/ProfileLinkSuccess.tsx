@@ -50,7 +50,7 @@ export default function ProfileLinkSuccess({
         <div className="flex flex-col items-center justify-center md:flex-row md:gap-3">
           <Button
             type="button"
-            className="mt-4 h-13 w-62 rounded-[10px] bg-[#ff00ff] text-[16px] font-normal shadow-none transition-colors"
+            className="mt-4 h-13 w-62 rounded-[10px] bg-[#087583] text-[16px] font-normal shadow-none transition-colors"
           >
             Go To Dashboard
           </Button>
