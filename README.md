@@ -91,11 +91,11 @@ Add auth gating, rewrites, or redirects there as needed. Note: `runtime` config 
 
 All outbound HTTP calls to the backend, their TypeScript types, and **TanStack React Query option objects** belong under [`src/api`](./src/api). Prefer one folder per feature (for example [`src/api/auth/`](./src/api/auth)), with naming like:
 
-| File               | Responsibility                                      |
-| ------------------ | --------------------------------------------------- |
-| `*.service.ts`      | Thin functions that call `callApi` (or similar)     |
-| `*.type.ts`        | Request/response DTO types                          |
-| `*.options.ts`      | `mutationOptions` / `queryOptions` for React Query |
+| File           | Responsibility                                     |
+| -------------- | -------------------------------------------------- |
+| `*.service.ts` | Thin functions that call `callApi` (or similar)    |
+| `*.type.ts`    | Request/response DTO types                         |
+| `*.options.ts` | `mutationOptions` / `queryOptions` for React Query |
 
 Shared helpers (`callApi`, errors, staleness presets) live in [`src/api/base`](./src/api/base). For queries that depend on route params or other inputs, set `enabled` with [`isQueryEnabled`](./src/api/base/base.util.ts) **inside** the corresponding `*.options.ts` factory so components stay dumb.
 

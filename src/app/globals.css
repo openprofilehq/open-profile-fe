@@ -6,8 +6,8 @@
 
 @theme inline {
   --font-afacad: var(--font-afacad);
-  --font-dancing: var(--font-dancing);;
-  
+  --font-dancing: var(--font-dancing);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
