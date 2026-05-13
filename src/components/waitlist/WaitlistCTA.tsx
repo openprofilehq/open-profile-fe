@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { toast } from "sonner";
 import { joinWaitlistAction } from "@/app/actions/waitlist";
 
@@ -52,8 +52,8 @@ export function WaitlistCTA() {
   };
 
   return (
-    <section className="relative w-full bg-[#FAFAFA] py-16 px-6 overflow-hidden">
-      <div className="absolute left-0 bottom-0 h-auto w-auto select-none pointer-events-none hidden lg:block">
+    <section className="relative w-full overflow-hidden bg-[#FAFAFA] px-6 py-16">
+      <div className="pointer-events-none absolute bottom-0 left-0 hidden h-auto w-auto select-none lg:block">
         <Image
           src="/waitlist/cta-left.svg"
           alt=""
@@ -63,7 +63,7 @@ export function WaitlistCTA() {
           style={{ width: "auto" }}
         />
       </div>
-      <div className="absolute right-0 top-0 h-auto w-auto select-none pointer-events-none hidden lg:block">
+      <div className="pointer-events-none absolute top-0 right-0 hidden h-auto w-auto select-none lg:block">
         <Image
           src="/waitlist/cta-right.svg"
           alt=""
@@ -74,11 +74,11 @@ export function WaitlistCTA() {
         />
       </div>
 
-      <div className="max-w-[1280px] mx-auto relative overflow-hidden bg-[#171717] rounded-[24px] py-16 px-6 md:px-12 flex flex-col items-center text-center">
-        <div className="relative z-10 max-w-[700px] w-full flex flex-col items-center">
+      <div className="relative mx-auto flex max-w-[1280px] flex-col items-center overflow-hidden rounded-[24px] bg-[#171717] px-6 py-16 text-center md:px-12">
+        <div className="relative z-10 flex w-full max-w-[700px] flex-col items-center">
           <motion.h2
             {...fadeUp(0)}
-            className="text-[32px] md:text-[48px] font-semibold text-white mb-4 leading-[1.2]"
+            className="mb-4 text-[32px] leading-[1.2] font-semibold text-white md:text-[48px]"
             style={{ fontFamily: "'Afacad', sans-serif" }}
           >
             Ready to own your online identity?
@@ -86,7 +86,7 @@ export function WaitlistCTA() {
 
           <motion.p
             {...fadeUp(0.1)}
-            className="text-[16px] md:text-[18px] text-[#E5E5E5] mb-10 max-w-[540px]"
+            className="mb-10 max-w-[540px] text-[16px] text-[#E5E5E5] md:text-[18px]"
             style={{ fontFamily: "'Afacad', sans-serif" }}
           >
             Join the waitlist and be among the first to access the new way to
@@ -96,7 +96,7 @@ export function WaitlistCTA() {
           <motion.form
             {...fadeUp(0.2)}
             onSubmit={handleSubmit}
-            className="w-full max-w-[500px] flex flex-col md:flex-row gap-3 mb-2"
+            className="mb-2 flex w-full max-w-[500px] flex-col gap-3 md:flex-row"
           >
             <div className="flex-1">
               <input
@@ -109,7 +109,7 @@ export function WaitlistCTA() {
                 }}
                 onBlur={handleBlur}
                 disabled={isPending}
-                className={`w-full h-[54px] px-5 rounded-[10px] border bg-white text-[#050505] placeholder:text-[#999] outline-none transition-colors ${
+                className={`h-[54px] w-full rounded-[10px] border bg-white px-5 text-[#050505] transition-colors outline-none placeholder:text-[#999] ${
                   emailError
                     ? "border-red-400"
                     : "border-transparent focus:border-[#087583]"
@@ -120,7 +120,7 @@ export function WaitlistCTA() {
             <button
               type="submit"
               disabled={isPending}
-              className="h-[54px] px-8 bg-[#087583] text-white rounded-[10px] font-medium hover:bg-[#065E69] transition-colors whitespace-nowrap disabled:opacity-50"
+              className="h-[54px] rounded-[10px] bg-[#087583] px-8 font-medium whitespace-nowrap text-white transition-colors hover:bg-[#065E69] disabled:opacity-50"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               {isPending ? "Joining..." : "Get Early Access"}
@@ -131,7 +131,7 @@ export function WaitlistCTA() {
           <div className="h-6 w-full text-center">
             {emailError && (
               <p
-                className="text-xs text-red-400 font-medium"
+                className="text-xs font-medium text-red-400"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               >
                 {emailError}

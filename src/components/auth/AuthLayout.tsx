@@ -1,14 +1,14 @@
 "use client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import Link from "next/link";
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] flex flex-col">
+    <div className="flex min-h-screen flex-col bg-[#FAFAFA]">
       <div className="flex justify-center pt-6">
         <Link href="/">
           <Image
@@ -21,8 +21,8 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         </Link>
       </div>
 
-      <div className="flex-1 flex items-center justify-center relative px-4 py-10">
-        <div className="hidden lg:block absolute left-0 bottom-15 z-0">
+      <div className="relative flex flex-1 items-center justify-center px-4 py-10">
+        <div className="absolute bottom-15 left-0 z-0 hidden lg:block">
           <Image
             src="/auth/left-img.png"
             alt=""
@@ -36,12 +36,12 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="relative z-10 bg-[#FEFEFE] rounded-2xl shadow-none border border-[#EDEDED] w-full max-w-2xl px-6 py-8 sm:px-20 sm:py-14 flex flex-col gap-5"
+          className="relative z-10 flex w-full max-w-2xl flex-col gap-5 rounded-2xl border border-[#EDEDED] bg-[#FEFEFE] px-6 py-8 shadow-none sm:px-20 sm:py-14"
         >
           <button
             onClick={() => router.back()}
             aria-label="Go back"
-            className="flex items-center gap-1.5 text-sm font-medium text-[#087583] hover:text-[#065E69] transition-colors cursor-pointer w-fit"
+            className="flex w-fit cursor-pointer items-center gap-1.5 text-sm font-medium text-[#087583] transition-colors hover:text-[#065E69]"
           >
             <svg
               width="16"
@@ -60,7 +60,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
           {children}
         </motion.div>
 
-        <div className="hidden lg:block absolute right-0 top-15 z-0">
+        <div className="absolute top-15 right-0 z-0 hidden lg:block">
           <Image
             src="/auth/right-img.png"
             alt=""
