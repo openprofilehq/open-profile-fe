@@ -1,6 +1,7 @@
 "use server";
 
-import { callApi, isApiError } from "@/api/base";
+import { joinWaitlistApi } from "@/api/waitlist/waitlist.service";
+import { isApiError } from "@/api/base";
 
 function extractError(err: unknown, fallback: string): string {
   if (isApiError(err)) {
@@ -22,11 +23,7 @@ export async function joinWaitlistAction(
   if (!email) return { error: "Email is required." };
 
   try {
-    await callApi({
-      url: "/waitlist",
-      method: "POST",
-      data: { email },
-    });
+    await joinWaitlistApi({ email });
     return { success: true };
   } catch (err) {
     return { error: extractError(err, "Failed to join waitlist.") };

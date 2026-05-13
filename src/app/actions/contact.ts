@@ -1,6 +1,7 @@
 "use server";
 
-import { callApi, isApiError } from "@/api/base";
+import { contactApi } from "@/api/contact/contact.service";
+import { isApiError } from "@/api/base";
 
 function extractError(err: unknown, fallback: string): string {
   if (isApiError(err)) {
@@ -26,11 +27,7 @@ export async function contactAction(
     return { error: "Please fill in all required fields." };
 
   try {
-    await callApi({
-      url: "/contact",
-      method: "POST",
-      data: { name, email, industry: industry || undefined, message },
-    });
+    await contactApi({ name, email, industry: industry || undefined, message });
     return { success: true };
   } catch (err) {
     return {
