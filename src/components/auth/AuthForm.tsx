@@ -13,7 +13,6 @@ import {
   allPasswordRulesMet,
 } from "@/components/auth/PasswordField";
 import { loginOption, signupOption } from "@/api/auth/auth.options";
-import { createSessionAction } from "@/app/actions/auth";
 import { isApiError } from "@/api/base";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -44,16 +43,7 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
 
   const loginMutation = useMutation({
     ...loginOption,
-    onSuccess: async (data) => {
-      const accessToken = data?.accessToken ?? data?.data?.accessToken;
-      const refreshToken = data?.refreshToken ?? data?.data?.refreshToken;
-      if (!accessToken || !refreshToken) {
-        toast.error(
-          "Login succeeded but no session was returned. Please try again."
-        );
-        return;
-      }
-      await createSessionAction({ accessToken, refreshToken });
+    onSuccess: async () => {
       router.replace(returnTo?.startsWith("/") ? returnTo : "/dashboard");
     },
     onError: (err) =>

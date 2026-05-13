@@ -1,6 +1,4 @@
 "use server";
-import { createSession, deleteSession } from "@/lib/session";
-import { extractTokensFromResponse } from "@/lib/api";
 import { redirect } from "next/navigation";
 import * as authService from "@/api/auth/auth.service";
 import { isApiError } from "@/api/base";
@@ -21,16 +19,8 @@ export type AuthAction = {
   success?: boolean;
 };
 
-/** Called by AuthForm after a successful client-side login/signup mutation */
-export async function createSessionAction(tokens: {
-  accessToken: string;
-  refreshToken: string;
-}) {
-  await createSession(tokens);
-}
-
 export async function deleteSessionAction() {
-  await deleteSession();
+  // Logic to clear local state if needed
   redirect("/login");
 }
 
@@ -131,27 +121,14 @@ export async function logout() {
   } catch (_err) {
     // Ignored
   }
-  await deleteSession();
   redirect("/login");
 }
 
 export async function refreshToken() {
-  const { getSession } = await import("@/lib/session");
-  const session = await getSession();
-
-  if (!session?.refreshToken) return { error: "No refresh token available." };
-
   try {
-    const { accessToken, refreshToken: newRefreshToken } =
-      await authService.refreshTokenApi({
-        refreshToken: session.refreshToken,
-      });
-    await createSession({ accessToken, refreshToken: newRefreshToken });
+    await authService.refreshTokenApi({ refreshToken: "" }); // Backend handles this via cookie
     return { success: true };
   } catch (_err) {
     return { error: "Session expired." };
   }
 }
-
-// Keep for Google OAuth callback
-export { extractTokensFromResponse };

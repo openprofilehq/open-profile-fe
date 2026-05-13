@@ -1,20 +1,11 @@
 "use server";
 
-import { apiFetch } from "@/lib/api";
+import { callApi, isApiError } from "@/api/base";
 
-function extractError(data: Record<string, unknown>, fallback: string): string {
-  const msg = data.message;
-  if (Array.isArray(msg)) {
-    return msg
-      .map((m) =>
-        typeof m === "object" && m !== null
-          ? ((m as Record<string, unknown>).error ?? JSON.stringify(m))
-          : String(m)
-      )
-      .join(" ");
+function extractError(err: unknown, fallback: string): string {
+  if (isApiError(err)) {
+    return err.message;
   }
-  if (typeof msg === "string") return msg;
-  if (typeof data.error === "string") return data.error;
   return fallback;
 }
 
@@ -30,15 +21,14 @@ export async function joinWaitlistAction(
 
   if (!email) return { error: "Email is required." };
 
-  const res = await apiFetch("/api/waitlist", {
-    method: "POST",
-    body: { email },
-  });
-
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    return { error: extractError(data, "Failed to join waitlist.") };
+  try {
+    await callApi({
+      url: "/waitlist",
+      method: "POST",
+      data: { email },
+    });
+    return { success: true };
+  } catch (err) {
+    return { error: extractError(err, "Failed to join waitlist.") };
   }
-
-  return { success: true };
 }

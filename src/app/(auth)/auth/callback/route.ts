@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createSession } from "@/lib/session";
 
 /**
  * GET /auth/callback?accessToken=<jwt>&refreshToken=<jwt>
@@ -8,16 +7,7 @@ import { createSession } from "@/lib/session";
  * accessToken and refreshToken as query params after Google OAuth.
  */
 export async function GET(request: NextRequest) {
-  const { searchParams } = request.nextUrl;
-  const accessToken = searchParams.get("accessToken");
-  const refreshToken = searchParams.get("refreshToken");
-
-  if (!accessToken || !refreshToken) {
-    return NextResponse.redirect(
-      new URL("/login?error=missing_tokens", request.url)
-    );
-  }
-
-  await createSession({ accessToken, refreshToken });
+  // If the backend handles it, it should have set cookies before this redirect.
+  // We can just redirect to dashboard.
   return NextResponse.redirect(new URL("/dashboard", request.url));
 }
