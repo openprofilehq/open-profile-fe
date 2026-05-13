@@ -132,8 +132,9 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           password: ${{ secrets.EC2_PASSWORD }}
           script: |
-            cd /var/www/openprofile-fe/production
-            pnpm install --config.ignore-scripts=true
+            cd /var/www/openprofile-fe/staging
+            rm -rf .next || true
+            pnpm install
             pnpm build
       - name: Start app with PM2
         uses: appleboy/ssh-action@v1.0.3
