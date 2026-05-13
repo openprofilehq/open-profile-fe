@@ -134,9 +134,10 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           password: ${{ secrets.EC2_PASSWORD }}
           script: |
-            cd /var/www/openprofile-fe/staging
+            cd /var/www/openprofile-fe/production
             rm -rf .next || true
             pnpm install
+            pnpm install react-icons
             pnpm build
       - name: Start app with PM2
         uses: appleboy/ssh-action@v1.0.3
