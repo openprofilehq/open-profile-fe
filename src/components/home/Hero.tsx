@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { CircleCheck } from "lucide-react";
+import { Button } from "../ui/button";
 
 const profiles = [
   {
@@ -82,7 +83,7 @@ export function Hero() {
           {/* Subtext */}
           <motion.p
             {...fadeUp(0.12)}
-            className="max-w-[538px] text-[16px] leading-[26px] font-normal text-[#050505] md:text-[18px]"
+            className="max-w-134.5 text-[16px] leading-6.5 font-normal text-[#050505] md:text-[18px]"
             style={{ fontFamily: "'Afacad', sans-serif" }}
           >
             Turn your scattered online presence into one searchable profile that
@@ -92,22 +93,19 @@ export function Hero() {
           {/* Search */}
           <motion.div
             {...fadeUp(0.2)}
-            className="flex w-full max-w-[512px] flex-col items-stretch gap-[6.73px] sm:flex-row"
+            className="flex w-full max-w-lg flex-col items-stretch gap-[6.73px] sm:flex-row"
           >
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="open.profile/"
-              className="text-label-text placeholder:text-label-text h-[50px] flex-1 rounded-[5.57px] border border-[#C9C9C9] bg-[#FAFAFA] px-[12px] py-4 text-[16px] leading-[24px] transition outline-none focus:ring-2 focus:ring-[#087583]/40 sm:py-0"
+              className="text-label-text placeholder:text-label-text h-12.5 flex-1 rounded-[5.57px] border border-[#C9C9C9] bg-[#FAFAFA] px-3 py-4 text-[16px] leading-6 transition outline-none focus:ring-2 focus:ring-[#087583]/40 sm:py-0"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             />
-            <button
-              className="bg-brand-hover-bg h-[56px] w-full rounded-[8px] px-[16px] text-[16px] leading-[24px] whitespace-nowrap text-white transition-colors hover:bg-[#065E69] sm:h-[50px] sm:w-auto"
-              style={{ fontFamily: "'Afacad', sans-serif" }}
-            >
+            <Button className="h-14 w-full rounded-[8px] px-4 text-[16px] leading-6 whitespace-nowrap sm:h-12.5 sm:w-auto">
               Search a Profile
-            </button>
+            </Button>
           </motion.div>
 
           {/* Social proof */}
