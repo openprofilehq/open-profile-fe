@@ -80,3 +80,11 @@ export function logoutApi() {
     method: "POST",
   });
 }
+
+export function refreshTokenApi(data: { refreshToken: string }) {
+  return callApi<{ accessToken: string; refreshToken: string }>({
+    url: "/auth/refresh",
+    method: "POST",
+    data,
+  });
+}

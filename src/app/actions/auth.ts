@@ -1,21 +1,14 @@
 "use server";
 import { createSession, deleteSession } from "@/lib/session";
-import { apiFetch, extractTokensFromResponse } from "@/lib/api";
+import { extractTokensFromResponse } from "@/lib/api";
 import { redirect } from "next/navigation";
+import * as authService from "@/api/auth/auth.service";
+import { isApiError } from "@/api/base";
 
-function extractError(data: Record<string, unknown>, fallback: string): string {
-  const msg = data.message;
-  if (Array.isArray(msg)) {
-    return msg
-      .map((m) =>
-        typeof m === "object" && m !== null
-          ? ((m as Record<string, unknown>).error ?? JSON.stringify(m))
-          : String(m)
-      )
-      .join(" ");
+function extractError(err: unknown, fallback: string): string {
+  if (isApiError(err)) {
+    return err.message;
   }
-  if (typeof msg === "string") return msg;
-  if (typeof data.error === "string") return data.error;
   return fallback;
 }
 
@@ -48,19 +41,14 @@ export async function forgotPassword(
   const email = formData.get("email") as string;
   if (!email) return { error: "Email is required." };
 
-  const res = await apiFetch("/api/auth/forgot-password", {
-    method: "POST",
-    body: { email },
-  });
-
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    return { error: extractError(data, "Failed to send reset email.") };
+  try {
+    await authService.forgotPassword({ email });
+    return {
+      redirectTo: `/forgot-password/verify?email=${encodeURIComponent(email)}`,
+    };
+  } catch (err) {
+    return { error: extractError(err, "Failed to send reset email.") };
   }
-
-  return {
-    redirectTo: `/forgot-password/verify?email=${encodeURIComponent(email)}`,
-  };
 }
 
 export async function verifyResetOtp(
@@ -73,25 +61,19 @@ export async function verifyResetOtp(
   if (!email || !otp)
     return { status: "error", error: "Missing email or code." };
 
-  const res = await apiFetch("/api/auth/verify-reset-otp", {
-    method: "POST",
-    body: { email, otp },
-  });
-
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
+  try {
+    const data = await authService.verifyResetOtp({ email, otp });
+    return {
+      status: "success",
+      resetToken: data.resetToken,
+      redirectTo: `/forgot-password/reset?token=${encodeURIComponent(data.resetToken)}&email=${encodeURIComponent(email)}`,
+    };
+  } catch (err) {
     return {
       status: "error",
-      error: extractError(data, "Verification failed."),
+      error: extractError(err, "Verification failed."),
     };
   }
-  const data = await res.json();
-
-  return {
-    status: "success",
-    resetToken: data.resetToken,
-    redirectTo: `/forgot-password/reset?token=${encodeURIComponent(data.resetToken)}&email=${encodeURIComponent(email)}`,
-  };
 }
 
 export async function resetPassword(
@@ -103,17 +85,12 @@ export async function resetPassword(
 
   if (!resetToken || !newPassword) return { error: "Missing required fields." };
 
-  const res = await apiFetch("/api/auth/reset-password", {
-    method: "POST",
-    body: { resetToken, newPassword },
-  });
-
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    return { error: extractError(data, "Password reset failed.") };
+  try {
+    await authService.resetPassword({ resetToken, newPassword });
+    return { redirectTo: "/forgot-password/success" };
+  } catch (err) {
+    return { error: extractError(err, "Password reset failed.") };
   }
-
-  return { redirectTo: "/forgot-password/success" };
 }
 
 export async function resendOtp(
@@ -123,17 +100,12 @@ export async function resendOtp(
   const email = formData.get("email") as string;
   if (!email) return { error: "Email is required." };
 
-  const res = await apiFetch("/api/auth/resend-otp", {
-    method: "POST",
-    body: { email },
-  });
-
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    return { error: extractError(data, "Failed to resend OTP.") };
+  try {
+    const data = await authService.resendOtp({ email });
+    return { success: true, ...data };
+  } catch (err) {
+    return { error: extractError(err, "Failed to resend OTP.") };
   }
-
-  return res.json();
 }
 
 export async function verifyEmailOtp(
@@ -145,21 +117,20 @@ export async function verifyEmailOtp(
 
   if (!email || !otp) return { error: "Missing email or code." };
 
-  const res = await apiFetch("/api/auth/verify-otp", {
-    method: "POST",
-    body: { email, otp },
-  });
-
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    return { error: extractError(data, "Verification failed.") };
+  try {
+    await authService.verifyEmailOtp({ email, otp });
+    return { redirectTo: "/verify-email/success" };
+  } catch (err) {
+    return { error: extractError(err, "Verification failed.") };
   }
-
-  return { redirectTo: "/verify-email/success" };
 }
 
 export async function logout() {
-  await apiFetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+  try {
+    await authService.logoutApi();
+  } catch (_err) {
+    // Ignored
+  }
   await deleteSession();
   redirect("/login");
 }
@@ -170,16 +141,16 @@ export async function refreshToken() {
 
   if (!session?.refreshToken) return { error: "No refresh token available." };
 
-  const res = await apiFetch("/api/auth/refresh", {
-    method: "POST",
-    body: { refreshToken: session.refreshToken },
-  });
-
-  if (!res.ok) return { error: "Session expired." };
-
-  const { accessToken, refreshToken: newRefreshToken } = await res.json();
-  await createSession({ accessToken, refreshToken: newRefreshToken });
-  return { success: true };
+  try {
+    const { accessToken, refreshToken: newRefreshToken } =
+      await authService.refreshTokenApi({
+        refreshToken: session.refreshToken,
+      });
+    await createSession({ accessToken, refreshToken: newRefreshToken });
+    return { success: true };
+  } catch (_err) {
+    return { error: "Session expired." };
+  }
 }
 
 // Keep for Google OAuth callback
