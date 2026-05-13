@@ -37,7 +37,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Typecheck
-        run: pnpm type-check
+        run: pnpm typecheck
 
       - name: Lint
         run: pnpm lint
@@ -54,6 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
     environment: staging
+    
 
     steps:
       - name: Checkout code
