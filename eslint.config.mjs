@@ -4,14 +4,14 @@ import nextTs from "eslint-config-next/typescript";
 import prettier from "eslint-plugin-prettier/recommended";
 
 const eslintConfig = defineConfig([
+  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
   ...nextVitals,
   ...nextTs,
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
   prettier,
   // Custom rules
   {
     rules: {
-      "prettier/prettier": "error",
+      "prettier/prettier": "off",
       "no-console": ["error", { allow: ["warn", "error"] }],
       "no-debugger": "error",
       "@typescript-eslint/no-unused-vars": [

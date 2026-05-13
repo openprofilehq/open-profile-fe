@@ -9,7 +9,7 @@ for protected in $protected_branches; do
     echo " Please create a feature/fix/chore branch."
     exit 1
   fi
-fi
+done
 
 echo '��� Checking code formatting...'
 pnpm format:check ||

@@ -1,4 +1,6 @@
-export function isQueryEnabled(id: string | undefined | Record<string, any>) {
+export function isQueryEnabled(
+  id: string | undefined | Record<string, unknown>
+) {
   if (typeof id !== "object") {
     return id == "undefined" ? false : (id?.length ?? 0) > 0 || !!id;
   }
