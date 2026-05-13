@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 const audiences = [
   {
@@ -64,25 +64,25 @@ export default function Target() {
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
-        <div className="rounded-[24px] bg-[#F2FDFE] pl-3.5 pr-5.5 w-fit flex items-center gap-1 mx-auto h-7.5">
+        <div className="mx-auto flex h-7.5 w-fit items-center gap-1 rounded-[24px] bg-[#F2FDFE] pr-5.5 pl-3.5">
           <Image
             src="/target_assets/icon-flash.svg"
             alt="target"
             width={16}
             height={16}
           />
-          <p className="font-medium text-[12px] leading-4 text-brand font-sfpror">
+          <p className="text-brand font-sfpror text-[12px] leading-4 font-medium">
             Target Audience
           </p>
         </div>
 
-        <p className="font-afacad font-semibold text-[28px] md:text-[40px] lg:text-[48px] leading-9 md:leading-12 lg:leading-14 mt-2 text-center max-w-[450px] md:max-w-full mx-auto">
+        <p className="font-afacad mx-auto mt-2 max-w-[450px] text-center text-[28px] leading-9 font-semibold md:max-w-full md:text-[40px] md:leading-12 lg:text-[48px] lg:leading-14">
           Built for people who need to be discovered early
         </p>
       </motion.div>
 
       {/* cards grid */}
-      <div className="mt-10 grid gap-6 grid-cols-1 lg:grid-cols-3 items-center justify-center">
+      <div className="mt-10 grid grid-cols-1 items-center justify-center gap-6 lg:grid-cols-3">
         {audiences.map(
           ({ bg, right, icon, checkIcon, title, description, items }, i) => (
             <motion.div
@@ -93,7 +93,7 @@ export default function Target() {
               whileInView="show"
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.15 }}
-              className="px-6 pt-20 pb-6 space-y-4 rounded-[16px] relative h-full flex flex-col overflow-hidden max-w-[450px] w-full mx-auto"
+              className="relative mx-auto flex h-full w-full max-w-[450px] flex-col space-y-4 overflow-hidden rounded-[16px] px-6 pt-20 pb-6"
             >
               {/* top icon */}
               <div className={`absolute top-0 ${right}`}>
@@ -102,12 +102,12 @@ export default function Target() {
                   alt={title}
                   width={100}
                   height={75}
-                  className="w-25 h-[75px]"
+                  className="h-[75px] w-25"
                 />
               </div>
 
               {/* title */}
-              <p className="font-afacad font-semibold text-[24px] leading-8 tracking-[-0.5px]">
+              <p className="font-afacad text-[24px] leading-8 font-semibold tracking-[-0.5px]">
                 {title}
               </p>
 
@@ -115,7 +115,7 @@ export default function Target() {
               <p className="font-afacad text-[#454545]">{description}</p>
 
               {/* checklist — pushed to bottom */}
-              <div className="space-y-2 mt-auto">
+              <div className="mt-auto space-y-2">
                 {items.map((item, j) => (
                   <motion.div
                     key={item}

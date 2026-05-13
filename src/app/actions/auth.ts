@@ -1,6 +1,7 @@
 "use server";
 import { createSession, deleteSession } from "@/lib/session";
 import { apiFetch, extractTokensFromResponse } from "@/lib/api";
+import { redirect } from "next/navigation";
 
 function extractError(data: Record<string, unknown>, fallback: string): string {
   const msg = data.message;
@@ -27,80 +28,17 @@ export type AuthAction = {
   success?: boolean;
 };
 
-export async function emailSignup(
-  _prev: AuthState,
-  formData: FormData
-): Promise<AuthState> {
-  const fullName = formData.get("name") as string;
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  if (!fullName || !email || !password)
-    return { error: "All fields are required." };
-
-  const res = await apiFetch("/api/auth/register", {
-    method: "POST",
-    body: { fullName, email, password },
-  });
-
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    console.error(
-      "[signup] status:",
-      res.status,
-      "body:",
-      JSON.stringify(data)
-    );
-    return { error: extractError(data, "Signup failed.") };
-  }
-
-  return { redirectTo: `/verify-email?email=${encodeURIComponent(email)}` };
+/** Called by AuthForm after a successful client-side login/signup mutation */
+export async function createSessionAction(tokens: {
+  accessToken: string;
+  refreshToken: string;
+}) {
+  await createSession(tokens);
 }
 
-export async function emailLogin(
-  _prev: AuthState,
-  formData: FormData
-): Promise<AuthState> {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  if (!email || !password) return { error: "Email and password are required." };
-
-  const res = await apiFetch("/api/auth/login", {
-    method: "POST",
-    body: { email, password },
-  });
-
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    return { error: extractError(data, "Invalid credentials.") };
-  }
-
-  const data = await res.json().catch(() => ({}));
-
-  // tokens may be in the body or in Set-Cookie headers
-  let { accessToken, refreshToken } = extractTokensFromResponse(res.headers);
-  if (!accessToken)
-    accessToken =
-      data.accessToken ?? data.access_token ?? data.data?.accessToken;
-  if (!refreshToken)
-    refreshToken =
-      data.refreshToken ?? data.refresh_token ?? data.data?.refreshToken;
-
-  if (!accessToken || !refreshToken) {
-    return {
-      error: "Login succeeded but no session was returned. Please try again.",
-    };
-  }
-  await createSession({ accessToken, refreshToken });
-
-  return { redirectTo: "/dashboard" };
-}
-
-export async function logout() {
-  await apiFetch("/api/auth/logout", { method: "POST" });
+export async function deleteSessionAction() {
   await deleteSession();
-  return { redirectTo: "/login" };
+  redirect("/login");
 }
 
 export async function forgotPassword(
@@ -177,12 +115,12 @@ export async function resetPassword(
 
   return { redirectTo: "/forgot-password/success" };
 }
+
 export async function resendOtp(
   _prev: AuthState,
   formData: FormData
 ): Promise<AuthAction> {
   const email = formData.get("email") as string;
-
   if (!email) return { error: "Email is required." };
 
   const res = await apiFetch("/api/auth/resend-otp", {
@@ -220,14 +158,14 @@ export async function verifyEmailOtp(
   return { redirectTo: "/verify-email/success" };
 }
 
-export async function getCurrentUser() {
-  const res = await apiFetch("/api/auth/me");
-  if (!res.ok) return null;
-  return await res.json();
+export async function logout() {
+  await apiFetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+  await deleteSession();
+  redirect("/login");
 }
 
 export async function refreshToken() {
-  const { getSession, createSession } = await import("@/lib/session");
+  const { getSession } = await import("@/lib/session");
   const session = await getSession();
 
   if (!session?.refreshToken) return { error: "No refresh token available." };
@@ -243,3 +181,6 @@ export async function refreshToken() {
   await createSession({ accessToken, refreshToken: newRefreshToken });
   return { success: true };
 }
+
+// Keep for Google OAuth callback
+export { extractTokensFromResponse };
