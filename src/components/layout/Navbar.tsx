@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
+import { Button } from "../ui/button";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -78,7 +79,8 @@ export function Navbar() {
           </div>
 
           {/* Mobile hamburger */}
-          <button
+          <Button
+            variant="hamburger"
             className="z-50 flex flex-col gap-1.5 p-2 md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
@@ -92,7 +94,7 @@ export function Navbar() {
             <span
               className={`block h-0.5 w-5 bg-[#050505] transition-transform duration-200 ${mobileOpen ? "-translate-y-2 -rotate-45" : ""}`}
             />
-          </button>
+          </Button>
         </nav>
       </header>
 
@@ -113,13 +115,14 @@ export function Navbar() {
               >
                 Menu
               </span>
-              <button
+              <Button
+                variant="hamburger"
                 onClick={() => setMobileOpen(false)}
                 className="p-2 text-[#050505]"
                 aria-label="Close menu"
               >
                 <X className="h-5 w-5" />
-              </button>
+              </Button>
             </div>
 
             <div className="flex flex-1 flex-col gap-8 px-6 pt-8">

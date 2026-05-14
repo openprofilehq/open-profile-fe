@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { motion } from "motion/react";
 import Link from "next/link";
+import { Button } from "../ui/button";
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -41,7 +42,8 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
           transition={{ duration: 0.3, ease: "easeOut" }}
           className="border-input-b relative z-10 flex w-full max-w-2xl flex-col gap-5 rounded-2xl border bg-[#FEFEFE] px-6 py-8 shadow-none sm:px-20 sm:py-14"
         >
-          <button
+          <Button
+            variant="links"
             onClick={() => router.back()}
             aria-label="Go back"
             className={`text-link-hover-text flex w-fit cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors hover:text-[#065E69] ${pathname !== "/login" ? "hidden" : "block"}`}
@@ -59,7 +61,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
             Back
-          </button>
+          </Button>
           {children}
         </motion.div>
 
