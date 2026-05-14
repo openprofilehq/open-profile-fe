@@ -4,7 +4,7 @@ import { env } from "@/env/client";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
 export const api = axios.create({
-  baseURL: `${env.NEXT_PUBLIC_API_URL}/api`,
+  baseURL: `${env.NEXT_PUBLIC_API_URL}/api/v1`,
   timeout: 60 * 1000, // 1 minute
   withCredentials: true,
 });

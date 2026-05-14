@@ -7,12 +7,14 @@ type CreateProfileInfoProps = {
   bio: string;
   onUpdateBio: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   onUpdateStep: () => void;
+  isPending?: boolean;
 };
 
 export default function CreateProfileInfo({
   bio,
   onUpdateBio,
   onUpdateStep,
+  isPending,
 }: CreateProfileInfoProps) {
   return (
     <>
@@ -63,8 +65,9 @@ export default function CreateProfileInfo({
             type="button"
             className="mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-medium shadow-none transition-colors"
             onClick={onUpdateStep}
+            disabled={isPending}
           >
-            Continue
+            {isPending ? "Saving..." : "Continue"}
           </Button>
         </div>
       </motion.div>
