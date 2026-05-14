@@ -74,7 +74,7 @@ export function WaitlistCTA() {
         />
       </div>
 
-      <div className="bg-selected-bg relative mx-auto flex max-w-[1280px] flex-col items-center overflow-hidden rounded-[24px] px-6 py-16 text-center md:px-12">
+      <div className="bg-inverse-bg relative mx-auto flex max-w-[1280px] flex-col items-center overflow-hidden rounded-[24px] px-6 py-16 text-center md:px-12">
         <div className="relative z-10 flex w-full max-w-[700px] flex-col items-center">
           <motion.h2
             {...fadeUp(0)}
