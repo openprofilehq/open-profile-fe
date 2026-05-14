@@ -16,7 +16,11 @@ export default function CreateProfileLink({
   onUpdateUsername,
   onUpdateStep,
 }: createProfileLinkProps) {
-  const availableCheck = available.includes("not available");
+  const availableCheck =
+    available.includes("not available") ||
+    available.includes("Invalid") ||
+    available.includes("Checking") ||
+    available.includes("Could not");
 
   return (
     <motion.div
@@ -37,7 +41,7 @@ export default function CreateProfileLink({
         <div className="flex flex-col gap-2 md:flex-row">
           <label
             htmlFor="username"
-            className="bg-inverse-bg flex basis-1/4 rounded-md py-3 pl-3 text-lg font-normal md:items-center md:justify-center"
+            className="bg-neutral-bg flex basis-1/4 rounded-md py-3 pl-3 text-lg font-normal md:items-center md:justify-center"
           >
             open.profile/
           </label>
