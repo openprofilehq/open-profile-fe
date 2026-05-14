@@ -1,12 +1,13 @@
 "use client";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <div className="flex min-h-screen flex-col bg-[#FAFAFA]">
@@ -22,7 +23,9 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         </Link>
       </div>
 
-      <div className="relative flex flex-1 items-center justify-center px-4 py-10">
+      <div
+        className={`relative flex flex-1 items-center justify-center px-4 ${pathname !== "/create-profile" ? "py-10" : "md:mt-0"}`}
+      >
         <div className="absolute bottom-15 left-0 z-0 hidden lg:block">
           <Image
             src="/auth/left-img.png"
@@ -43,7 +46,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             variant="links"
             onClick={() => router.back()}
             aria-label="Go back"
-            className="text-link-hover-text flex w-fit cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors hover:text-[#065E69]"
+            className={`text-link-hover-text flex w-fit cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors hover:text-[#065E69] ${pathname !== "/login" ? "hidden" : "block"}`}
           >
             <svg
               width="16"
