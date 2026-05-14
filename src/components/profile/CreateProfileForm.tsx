@@ -1,12 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { useDebounce } from "@/hooks/useDebounce";
 import ProgressBar from "../profile/ProgressBar";
 import CreateProfileLink from "./CreateProfileLink";
 import CreateProfileInfo from "./CreateProfileInfo";
 import ProfileLinkSuccess from "./ProfileLinkSuccess";
+import { createProfile } from "@/api/profile/profile.service";
+import { isApiError } from "@/api/base";
 
 export default function CreateProfileForm() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -14,17 +18,32 @@ export default function CreateProfileForm() {
   const [bio, setBio] = useState("");
   const debouncedInput = useDebounce(username, 500);
 
-  const validLinks = ["oyinkan", "delbie", "solari"];
-  const available =
-    debouncedInput === ""
-      ? ""
-      : validLinks.includes(debouncedInput)
-        ? "This username is available"
-        : "This username is not available";
+  const createProfileMutation = useMutation({
+    mutationFn: createProfile,
+    onSuccess: () => {
+      setCurrentStep(3);
+    },
+    onError: (err) => {
+      toast.error(isApiError(err) ? err.message : "Failed to create profile.");
+    },
+  });
 
-  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+  // TODO: Replace this mock check with a real API check
+  const available = debouncedInput === "" ? "" : "This username is available";
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
   }
+
+  const handleCreateProfile = () => {
+    createProfileMutation.mutate({
+      username,
+      bio,
+      // Provide fallback mock values for required fields not yet collected by the UI
+      fullName: "User",
+      photoUrl: "https://example.com/photo.jpg",
+    });
+  };
 
   return (
     <>
@@ -45,7 +64,8 @@ export default function CreateProfileForm() {
             <CreateProfileInfo
               bio={bio}
               onUpdateBio={(e) => setBio(e.target.value)}
-              onUpdateStep={() => setCurrentStep(3)}
+              onUpdateStep={handleCreateProfile}
+              isPending={createProfileMutation.isPending}
             />
           )}
 
