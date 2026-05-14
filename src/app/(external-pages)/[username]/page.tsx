@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getUserProfile } from "@/api/users/users.service";
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -9,18 +11,24 @@ type Props = {
 export default async function UserProfilePage({ params }: Props) {
   const { username } = await params;
 
-  // TODO: fetch real user data
-  const user = {
-    name: "Lucy Udoh",
-    username,
-    avatar: "/user-placeholder.jpg",
-    bio: "Passionate about designing products that are simple, useful, and beautiful. I love transforming ideas into intuitive digital experiences. Always designing with users at the heart of every decision.",
-  };
+  let userProfile;
+  try {
+    userProfile = await getUserProfile(username);
+  } catch (_error) {
+    notFound();
+  }
 
-  const initials = user.name
+  const name = userProfile?.fullName || "User";
+  const userHandle = userProfile?.username || username;
+  const avatar = userProfile?.photoUrl || "/user-placeholder.jpg";
+  const bio = userProfile?.bio || "No bio yet.";
+
+  const initials = name
     .split(" ")
     .map((n) => n[0])
-    .join("");
+    .join("")
+    .substring(0, 2)
+    .toUpperCase();
 
   return (
     <div className="flex min-h-screen flex-col bg-[#FAFAFA]">
@@ -50,17 +58,17 @@ export default async function UserProfilePage({ params }: Props) {
         {/* Profile empty state */}
         <div className="relative z-10 flex w-full max-w-lg flex-col items-center gap-4 text-center">
           <Avatar className="h-20 w-20">
-            <AvatarImage src={user.avatar} alt={user.name} />
+            <AvatarImage src={avatar} alt={name} />
             <AvatarFallback className="text-xl">{initials}</AvatarFallback>
           </Avatar>
 
           <div>
-            <h1 className="text-xl font-bold text-[#050505]">{user.name}</h1>
-            <p className="text-sm text-gray-500">{user.username}</p>
+            <h1 className="text-xl font-bold text-[#050505]">{name}</h1>
+            <p className="text-sm text-gray-500">@{userHandle}</p>
           </div>
 
           <p className="text-justify text-sm leading-relaxed text-[#050505]">
-            {user.bio}
+            {bio}
           </p>
         </div>
 
