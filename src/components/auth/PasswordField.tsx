@@ -135,7 +135,7 @@ export function PasswordField({
                             >
                               <path
                                 d="M1.5 5l2.5 2.5 4.5-4.5"
-                                stroke="var(--selected-bg)"
+                                stroke="var(--inverse-bg)"
                                 strokeWidth="1.5"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
