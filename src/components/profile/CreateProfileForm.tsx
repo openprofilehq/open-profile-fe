@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -10,17 +10,13 @@ import ProgressBar from "../profile/ProgressBar";
 import CreateProfileLink from "./CreateProfileLink";
 import CreateProfileInfo from "./CreateProfileInfo";
 import ProfileLinkSuccess from "./ProfileLinkSuccess";
-import { checkUsername } from "@/api/profile/profile.service";
-import { createProfileOption } from "@/api/profile/profile.options";
+import {
+  createProfileOption,
+  checkUsernameOption,
+} from "@/api/profile/profile.options";
 import { isApiError } from "@/api/base";
 
-type UsernameStatus =
-  | ""
-  | "available"
-  | "taken"
-  | "invalid"
-  | "checking"
-  | "error";
+type UsernameStatus = "available" | "taken" | "invalid" | "error" | "";
 
 export default function CreateProfileForm() {
   const router = useRouter();
@@ -29,43 +25,32 @@ export default function CreateProfileForm() {
   const [bio, setBio] = useState("");
   const [fullName, setFullName] = useState("");
   const [photoUrl, setPhotoUrl] = useState("");
-  const [usernameStatus, setUsernameStatus] = useState<UsernameStatus>("");
   const debouncedUsername = useDebounce(username, 500);
-  const abortRef = useRef<AbortController | null>(null);
 
-  useEffect(() => {
-    if (!debouncedUsername) {
-      Promise.resolve().then(() => setUsernameStatus(""));
-      return;
-    }
+  const usernameQuery = useQuery(checkUsernameOption(debouncedUsername));
 
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-
-    Promise.resolve().then(() => setUsernameStatus("checking"));
-
-    checkUsername(debouncedUsername, controller.signal)
-      .then((res) => setUsernameStatus(res.available ? "available" : "taken"))
-      .catch((err) => {
-        if (err?.name === "CanceledError" || err?.name === "AbortError") return;
-        if (isApiError(err) && err.message?.toLowerCase().includes("format")) {
-          setUsernameStatus("invalid");
-        } else {
-          setUsernameStatus("error");
-        }
-      });
-  }, [debouncedUsername]);
+  const usernameStatus: UsernameStatus = usernameQuery.isLoading
+    ? ""
+    : usernameQuery.isError
+      ? isApiError(usernameQuery.error) &&
+        usernameQuery.error.message?.toLowerCase().includes("format")
+        ? "invalid"
+        : "error"
+      : usernameQuery.data?.available === true
+        ? "available"
+        : usernameQuery.data?.available === false
+          ? "taken"
+          : "";
 
   const availableLabel =
-    usernameStatus === "available"
-      ? "This username is available"
-      : usernameStatus === "taken"
-        ? "This username is not available"
-        : usernameStatus === "invalid"
-          ? "Invalid username format"
-          : usernameStatus === "checking"
-            ? "Checking…"
+    usernameQuery.isLoading && debouncedUsername
+      ? "Checking…"
+      : usernameStatus === "available"
+        ? "This username is available"
+        : usernameStatus === "taken"
+          ? "This username is not available"
+          : usernameStatus === "invalid"
+            ? "Invalid username format"
             : usernameStatus === "error"
               ? "Could not check availability"
               : "";

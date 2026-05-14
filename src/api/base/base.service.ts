@@ -9,6 +9,8 @@ export const api = axios.create({
 
 function getApiErrorMessage(message?: unknown): string {
   if (typeof message === "string") return message;
+
+  // IF THIS ERROR HAPPENS, IT IS MOST LIKELY DUE TO VALIDATION ERRORS. THE MESSAGE CAN BE REFINED TILL IT IS RIGHT FOR THE USER.
   return "An error occurred. Please check your input and try again.";
 }
 

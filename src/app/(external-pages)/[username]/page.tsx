@@ -1,34 +1,25 @@
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { env } from "@/env/server";
 import { type ProfileResponse } from "@/api/profile/profile.type";
+import { getProfileByUsername } from "@/api/profile/profile.service";
 
 type Props = {
   params: Promise<{ username: string }>;
 };
 
-async function fetchProfile(username: string): Promise<ProfileResponse | null> {
-  try {
-    const res = await fetch(
-      `${env.API_BASE_URL}/api/search?q=${encodeURIComponent(username)}`,
-      { next: { revalidate: 60 } }
-    );
-    const json = await res.json();
-    if (!res.ok) return null;
-    const results: ProfileResponse[] = json.data ?? json;
-    return results.find((p) => p.username === username) ?? results[0] ?? null;
-  } catch (e) {
-    console.error("[profile fetch error]", e);
-    return null;
-  }
-}
-
 export default async function UserProfilePage({ params }: Props) {
   const { username } = await params;
-  const profile = await fetchProfile(username);
 
-  const name = profile?.fullName ?? username;
+  let profile: ProfileResponse;
+  try {
+    profile = await getProfileByUsername(username);
+  } catch {
+    notFound();
+  }
+
+  const name = profile.fullName ?? username;
   const initials = name
     .split(" ")
     .map((n: string) => n[0])
@@ -61,27 +52,21 @@ export default async function UserProfilePage({ params }: Props) {
           />
         </div>
 
-        {profile ? (
-          <div className="relative z-10 flex w-full max-w-lg flex-col items-center gap-4 text-center">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src={profile.photoUrl ?? ""} alt={name} />
-              <AvatarFallback className="text-xl">{initials}</AvatarFallback>
-            </Avatar>
-            <div>
-              <h1 className="text-xl font-bold text-[#050505]">{name}</h1>
-              <p className="text-sm text-gray-500">@{profile.username}</p>
-            </div>
-            {profile.bio && (
-              <p className="text-justify text-sm leading-relaxed text-[#050505]">
-                {profile.bio}
-              </p>
-            )}
+        <div className="relative z-10 flex w-full max-w-lg flex-col items-center gap-4 text-center">
+          <Avatar className="h-20 w-20">
+            <AvatarImage src={profile.photoUrl ?? ""} alt={name} />
+            <AvatarFallback className="text-xl">{initials}</AvatarFallback>
+          </Avatar>
+          <div>
+            <h1 className="text-xl font-bold text-[#050505]">{name}</h1>
+            <p className="text-sm text-gray-500">@{profile.username}</p>
           </div>
-        ) : (
-          <div className="relative z-10 flex w-full max-w-lg flex-col items-center gap-4 text-center">
-            <p className="text-gray-500">Profile not found.</p>
-          </div>
-        )}
+          {profile.bio && (
+            <p className="text-justify text-sm leading-relaxed text-[#050505]">
+              {profile.bio}
+            </p>
+          )}
+        </div>
 
         <div className="absolute top-15 right-0 z-0 hidden lg:block">
           <Image
