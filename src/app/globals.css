@@ -98,6 +98,8 @@
   --color-positive-bg: var(--positive-bg);
   --color-positive-subtle-bg: var(--positive-subtle-bg);
   --color-positive-hover-bg: var(--positive-hover-bg);
+  --color-button-bg: var(--button-bg);
+  --color-button-bg-waitlist: var(--button-bg-waitlist);
 
   /* border colors */
   --color-primary-b: var(--primary-b);
@@ -279,6 +281,7 @@
   --input-text: #747474;
   --label-text: #454545;
   --selected-text: #171717;
+  --button-text: #171717;
 
   /* bg */
   --primary-bg: #d1d1d1;
@@ -306,6 +309,8 @@
   --positive-bg: #31e47f;
   --positive-subtle-bg: #eafcf2;
   --positive-hover-bg: #83efb2;
+  --button-bg: #fafafa;
+  --button-bg-waitlist: #262626;
 
   /* border */
   --primary-b: #1d894c;
