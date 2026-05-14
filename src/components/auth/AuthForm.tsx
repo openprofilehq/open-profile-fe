@@ -43,8 +43,12 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
 
   const loginMutation = useMutation({
     ...loginOption,
-    onSuccess: async () => {
-      router.replace(returnTo?.startsWith("/") ? returnTo : "/dashboard");
+    onSuccess: (data) => {
+      // Set a marker cookie so the proxy knows the user is authenticated
+      document.cookie = "auth=1; path=/; SameSite=Lax";
+      const onboardingComplete = data?.user?.onboardingComplete;
+      const destination = onboardingComplete ? "/dashboard" : "/create-profile";
+      router.replace(returnTo?.startsWith("/") ? returnTo : destination);
     },
     onError: (err) =>
       toast.error(isApiError(err) ? err.message : "Login failed."),
@@ -136,7 +140,7 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
         <PasswordField
           value={password}
           onChange={setPassword}
-          required={true}
+          required
           showRules={isSignup}
           autoComplete={isSignup ? "new-password" : "current-password"}
         />

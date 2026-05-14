@@ -1,29 +1,77 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { useDebounce } from "@/hooks/useDebounce";
 import ProgressBar from "../profile/ProgressBar";
 import CreateProfileLink from "./CreateProfileLink";
 import CreateProfileInfo from "./CreateProfileInfo";
 import ProfileLinkSuccess from "./ProfileLinkSuccess";
+import {
+  createProfileOption,
+  checkUsernameOption,
+} from "@/api/profile/profile.options";
+import { isApiError } from "@/api/base";
+
+type UsernameStatus = "available" | "taken" | "invalid" | "error" | "";
 
 export default function CreateProfileForm() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
-  const debouncedInput = useDebounce(username, 500);
+  const [fullName, setFullName] = useState("");
+  const [photoUrl, setPhotoUrl] = useState("");
+  const debouncedUsername = useDebounce(username, 500);
 
-  const validLinks = ["oyinkan", "delbie", "solari"];
-  const available =
-    debouncedInput === ""
-      ? ""
-      : validLinks.includes(debouncedInput)
+  const usernameQuery = useQuery(checkUsernameOption(debouncedUsername));
+
+  const usernameStatus: UsernameStatus = usernameQuery.isLoading
+    ? ""
+    : usernameQuery.isError
+      ? isApiError(usernameQuery.error) &&
+        usernameQuery.error.message?.toLowerCase().includes("format")
+        ? "invalid"
+        : "error"
+      : usernameQuery.data?.available === true
+        ? "available"
+        : usernameQuery.data?.available === false
+          ? "taken"
+          : "";
+
+  const availableLabel =
+    usernameQuery.isLoading && debouncedUsername
+      ? "Checking…"
+      : usernameStatus === "available"
         ? "This username is available"
-        : "This username is not available";
+        : usernameStatus === "taken"
+          ? "This username is not available"
+          : usernameStatus === "invalid"
+            ? "Invalid username format"
+            : usernameStatus === "error"
+              ? "Could not check availability"
+              : "";
 
-  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+  const createProfile = useMutation({
+    ...createProfileOption,
+    onSuccess: () => setCurrentStep(3),
+    onError: (err) =>
+      toast.error(isApiError(err) ? err.message : "Failed to create profile."),
+  });
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (currentStep !== 2) return;
+    createProfile.mutate({
+      username,
+      fullName,
+      bio,
+      // only pass photoUrl if it's a real URL (not a blob preview)
+      ...(photoUrl && photoUrl.startsWith("http") ? { photoUrl } : {}),
+    });
   }
 
   return (
@@ -35,7 +83,7 @@ export default function CreateProfileForm() {
           {currentStep === 1 && (
             <CreateProfileLink
               username={username}
-              available={available}
+              available={availableLabel}
               onUpdateUsername={(e) => setUsername(e.target.value)}
               onUpdateStep={() => setCurrentStep(2)}
             />
@@ -44,13 +92,27 @@ export default function CreateProfileForm() {
           {currentStep === 2 && (
             <CreateProfileInfo
               bio={bio}
+              fullName={fullName}
               onUpdateBio={(e) => setBio(e.target.value)}
-              onUpdateStep={() => setCurrentStep(3)}
+              onUpdateFullName={(e) => setFullName(e.target.value)}
+              onUpdateStep={() =>
+                handleSubmit({
+                  preventDefault: () => {},
+                } as React.FormEvent<HTMLFormElement>)
+              }
+              isPending={createProfile.isPending}
+              photoUrl={photoUrl}
+              onPhotoUrl={setPhotoUrl}
             />
           )}
 
           {currentStep === 3 && (
-            <ProfileLinkSuccess username={username} bio={bio} />
+            <ProfileLinkSuccess
+              username={username}
+              bio={bio}
+              photoUrl={photoUrl || undefined}
+              onContinue={() => router.replace("/dashboard")}
+            />
           )}
         </form>
       </AuthLayout>
