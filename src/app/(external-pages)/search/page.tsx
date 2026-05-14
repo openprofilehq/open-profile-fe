@@ -23,15 +23,13 @@ function SearchPageInner() {
 
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [total, setTotal] = useState(0);
-  const [status, setStatus] = useState<SearchStatus>("idle");
+  const [status, setStatus] = useState<SearchStatus>(
+    query.trim() ? "loading" : "idle"
+  );
   const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
-    if (!query.trim()) {
-      setStatus("idle");
-      setProfiles([]);
-      return;
-    }
+    if (!query.trim()) return;
 
     let cancelled = false;
 
@@ -51,16 +49,10 @@ function SearchPageInner() {
         const data = (await res.json()) as Record<string, unknown>;
         if (cancelled) return;
 
-        const results: Profile[] =
-          (data?.data as Profile[]) ??
-          (data?.results as Profile[]) ??
-          (data?.profiles as Profile[]) ??
-          (Array.isArray(data) ? (data as Profile[]) : []);
-
+        const rawData = data?.data ?? data?.results ?? data?.profiles ?? data;
+        const results: Profile[] = Array.isArray(rawData) ? rawData : [];
         const count =
-          (data?.total as number) ??
-          (data?.count as number) ??
-          results.length;
+          (data?.total as number) ?? (data?.count as number) ?? results.length;
 
         setTotal(count);
 
