@@ -134,9 +134,9 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
         </div>
 
         <PasswordField
-          value={isSignup ? password : undefined}
-          onChange={isSignup ? setPassword : () => {}}
-          required={isSignup}
+          value={password}
+          onChange={setPassword}
+          required={true}
           showRules={isSignup}
           autoComplete={isSignup ? "new-password" : "current-password"}
         />
