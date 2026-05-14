@@ -2,20 +2,15 @@ import { ChangeEvent } from "react";
 import { motion } from "motion/react";
 import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 type CreateProfileInfoProps = {
-  fullName: string;
   bio: string;
-  onUpdateFullName: (e: ChangeEvent<HTMLInputElement>) => void;
   onUpdateBio: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   onUpdateStep: () => void;
 };
 
 export default function CreateProfileInfo({
-  fullName,
   bio,
-  onUpdateFullName,
   onUpdateBio,
   onUpdateStep,
 }: CreateProfileInfoProps) {
@@ -50,21 +45,6 @@ export default function CreateProfileInfo({
         </div>
 
         <div className="mt-16 flex flex-col gap-1.5">
-          <div>
-            <label className="mb-1 inline-block font-bold text-[#454545]">
-              Full Name
-            </label>
-
-            <Input
-              type="text"
-              name="fullname"
-              value={fullName}
-              onChange={onUpdateFullName}
-              placeholder="Enter your name"
-              className="bg-white py-6 placeholder:text-lg"
-            />
-          </div>
-
           <div className="mt-4">
             <label className="mb-1 inline-block font-bold text-[#454545]">
               Bio
@@ -72,12 +52,11 @@ export default function CreateProfileInfo({
 
             <textarea
               className="w-full resize-none rounded-lg border-2 border-[#ededed] bg-white p-3"
+              value={bio}
               onChange={onUpdateBio}
               rows={5}
               placeholder="Product designer & side project builder based in lagos"
-            >
-              {bio}
-            </textarea>
+            />
           </div>
 
           <Button

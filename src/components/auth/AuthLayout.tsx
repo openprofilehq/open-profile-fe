@@ -24,7 +24,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       <div
-        className={`relative flex flex-1 items-center justify-center px-4 ${pathname !== "/create-profile" ? "py-10" : "mt-55"}`}
+        className={`relative flex flex-1 items-center justify-center px-4 ${pathname !== "/create-profile" ? "py-10" : "md:mt-0"}`}
       >
         <div className="absolute bottom-15 left-0 z-0 hidden lg:block">
           <Image

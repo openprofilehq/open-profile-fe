@@ -4,20 +4,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 type createProfileLinkProps = {
-  profileLink: string;
+  username: string;
   available: string;
-  onUpdateLink: (e: ChangeEvent<HTMLInputElement>) => void;
+  onUpdateUsername: (e: ChangeEvent<HTMLInputElement>) => void;
   onUpdateStep: () => void;
 };
 
-// onValidate: (val: string) => void;
-
 export default function CreateProfileLink({
-  profileLink,
+  username,
   available,
-  onUpdateLink,
+  onUpdateUsername,
   onUpdateStep,
 }: createProfileLinkProps) {
+  const availableCheck = available.includes("not available");
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -34,28 +34,36 @@ export default function CreateProfileLink({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label className="font-bold text-[#454545]">Enter Name</label>
+        <div className="flex flex-col gap-2 md:flex-row">
+          <label
+            htmlFor="username"
+            className="bg-inverse-bg flex basis-1/4 rounded-md py-3 pl-3 text-lg font-normal md:items-center md:justify-center"
+          >
+            open.profile/
+          </label>
 
-        <Input
-          type="text"
-          name="profile-link"
-          value={profileLink}
-          onChange={onUpdateLink}
-          placeholder="open.profile/"
-          className={`bg-[#FAFAFA] py-6 ${available === "Not available" ? "border-[#FF4D4D]" : "border-[#EDEDED]"} placeholder:text-lg`}
-        />
+          <Input
+            type="text"
+            id="username"
+            name="profile-username"
+            value={username}
+            onChange={onUpdateUsername}
+            placeholder="Enter username"
+            className={`basis-2/3 bg-[#FAFAFA] py-3 shadow-none md:py-6 md:text-lg ${availableCheck ? "border-[#A72E2E] text-[#A72E2E]" : "border-[#EDEDED]"} placeholder:text-lg`}
+          />
+        </div>
 
         <span
-          className={`${available === "Not available" ? "text-[#FF4D4D]" : "text-[#145B33]"} text-sm`}
+          className={`text-lg md:ml-34 ${availableCheck ? "text-[#A72E2E]" : "text-[#145B33]"}`}
         >
           {available}
         </span>
 
         <Button
           type="button"
-          className={`mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-medium shadow-none transition-colors ${profileLink.length === 0 || available === "Not available" ? "cursor-not-allowed" : "cursor-pointer"}`}
+          className={`mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-medium shadow-none transition-colors ${username.length === 0 || availableCheck ? "cursor-not-allowed" : "cursor-pointer"}`}
           onClick={onUpdateStep}
-          disabled={profileLink.length === 0 || available === "Not available"}
+          disabled={username.length === 0 || availableCheck}
         >
           Continue
         </Button>
