@@ -27,10 +27,11 @@ export default function SearchInput({
   };
 
   return (
-    <div className={`flex flex-col w-full max-w-xl mx-auto px-4 md:px-0 ${className}`}>
-      <form onSubmit={handleSubmit} className="flex flex-col w-full">
-        {/* Stacked on mobile with gap, side-by-side on md+ */}
-        <div className="flex flex-col gap-2 md:flex-row md:gap-0 w-full">
+    <div
+      className={`mx-auto flex w-full max-w-xl flex-col px-4 md:px-0 ${className}`}
+    >
+      <form onSubmit={handleSubmit} className="flex w-full flex-col">
+        <div className="flex w-full flex-col gap-2 md:flex-row md:gap-2">
           <input
             type="text"
             value={query}
@@ -39,31 +40,20 @@ export default function SearchInput({
               if (error) setError("");
             }}
             placeholder="e.g john-doe"
-            className="
-              w-full px-4 py-3 text-sm bg-white
-              border border-gray-300
-              rounded-md md:rounded-l-md md:rounded-tr-none md:rounded-br-none
-              focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent
-            "
+            className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-sm focus:border-transparent focus:ring-2 focus:ring-teal-500 focus:outline-none"
           />
           <button
             type="submit"
-            className="
-              w-full md:w-auto
-              bg-teal-700 hover:bg-teal-800 text-white
-              px-5 py-3 text-sm font-medium
-              rounded-md md:rounded-r-md md:rounded-tl-none md:rounded-bl-none
-              transition-colors whitespace-nowrap
-            "
+            style={{ backgroundColor: "#087583" }}
+            className="w-full rounded-md px-6 py-3 text-sm font-medium whitespace-nowrap text-white transition-opacity hover:opacity-90 md:w-auto"
           >
             Search a Profile
           </button>
         </div>
       </form>
 
-      {/* Validation error */}
       {error && (
-        <div className="flex items-center gap-1.5 mt-2 text-red-500 text-sm">
+        <div className="mt-2 flex items-center gap-1.5 text-sm text-red-500">
           <AlertCircle size={14} className="flex-shrink-0" />
           <span>{error}</span>
         </div>
