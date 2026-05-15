@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 type createProfileLinkProps = {
   username: string;
   available: string;
+  isAvailable: boolean;
   onUpdateUsername: (e: ChangeEvent<HTMLInputElement>) => void;
   onUpdateStep: () => void;
 };
@@ -13,11 +14,12 @@ type createProfileLinkProps = {
 export default function CreateProfileLink({
   username,
   available,
+  isAvailable,
   onUpdateUsername,
   onUpdateStep,
 }: createProfileLinkProps) {
-  const availableCheck =
-    available.includes("not available") ||
+  const hasError =
+    available.includes("taken") ||
     available.includes("Invalid") ||
     available.includes("Checking") ||
     available.includes("Could not");
@@ -53,21 +55,21 @@ export default function CreateProfileLink({
             value={username}
             onChange={onUpdateUsername}
             placeholder="Enter username"
-            className={`basis-2/3 bg-[#FAFAFA] py-3 shadow-none md:py-6 md:text-lg ${availableCheck ? "border-[#A72E2E] text-[#A72E2E]" : "border-[#EDEDED]"} placeholder:text-lg`}
+            className={`basis-2/3 bg-[#FAFAFA] py-3 shadow-none md:py-6 md:text-lg ${hasError ? "border-[#A72E2E] text-[#A72E2E]" : "border-[#EDEDED]"} placeholder:text-lg`}
           />
         </div>
 
         <span
-          className={`text-lg md:ml-34 ${availableCheck ? "text-[#A72E2E]" : "text-[#145B33]"}`}
+          className={`min-h-6 text-lg md:ml-34 ${hasError ? "text-[#A72E2E]" : "text-[#145B33]"}`}
         >
           {available}
         </span>
 
         <Button
           type="button"
-          className={`mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-medium shadow-none transition-colors ${username.length === 0 || availableCheck ? "cursor-not-allowed" : "cursor-pointer"}`}
+          className={`mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-medium shadow-none transition-colors ${!isAvailable ? "cursor-not-allowed" : "cursor-pointer"}`}
           onClick={onUpdateStep}
-          disabled={username.length === 0 || availableCheck}
+          disabled={!isAvailable}
         >
           Continue
         </Button>

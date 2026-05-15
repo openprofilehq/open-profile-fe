@@ -1,13 +1,12 @@
 import { ApiError } from "@/api/base/base.error";
 import { ApiResponse } from "@/api/base/base.type";
+import { env } from "@/env/client";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
-import { env } from "@/env/client";
-
 export const api = axios.create({
-  baseURL: `${env.NEXT_PUBLIC_API_URL}/api/v1`,
-  withCredentials: true,
+  baseURL: `${env.NEXT_PUBLIC_API_URL}/api`,
   timeout: 60 * 1000,
+  withCredentials: true,
 });
 
 function getApiErrorMessage(message?: unknown): string {
@@ -51,7 +50,8 @@ export async function callApi<TResData>({
     if (e instanceof AxiosError) {
       throw new ApiError(
         e.response ? getApiErrorMessage(e.response.data?.message) : e.message,
-        e.response?.data?.message
+        e.response?.data?.message,
+        e.response?.status
       );
     }
 

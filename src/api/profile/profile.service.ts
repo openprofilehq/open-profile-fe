@@ -14,13 +14,21 @@ export function createProfile(data: CreateProfileRequest) {
   });
 }
 
-export function checkUsername(username: string, signal?: AbortSignal) {
-  return callApi<UsernameCheckResponse>({
+export async function checkUsername(username: string, signal?: AbortSignal) {
+  const data = await callApi<
+    UsernameCheckResponse & { statusCode?: number; error?: string }
+  >({
     url: "/usernames/check",
     method: "GET",
     params: { username },
     signal,
   });
+
+  if (data.error === "USERNAME_TAKEN" || data.statusCode === 409) {
+    return { available: false, username };
+  }
+
+  return data;
 }
 
 export function getProfileByUsername(username: string) {

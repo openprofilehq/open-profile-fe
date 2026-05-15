@@ -44,7 +44,6 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
   const loginMutation = useMutation({
     ...loginOption,
     onSuccess: (data) => {
-      // Set a marker cookie so the proxy knows the user is authenticated
       document.cookie = "auth=1; path=/; SameSite=Lax";
       const onboardingComplete = data?.user?.onboardingComplete;
       const destination = onboardingComplete ? "/dashboard" : "/create-profile";
