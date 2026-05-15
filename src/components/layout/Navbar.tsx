@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
 
 export function Navbar() {
@@ -59,7 +59,6 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* Desktop CTA */}
           <div className="hidden items-center gap-3 md:flex">
             <Link
               href="/login"
@@ -70,14 +69,13 @@ export function Navbar() {
             </Link>
             <Link
               href="/signup"
-              className="flex h-[44px] items-center justify-center rounded-[8px] bg-[#087583] px-[16px] py-[12px] text-[15px] font-medium whitespace-nowrap text-[#FEFEFE] transition-colors hover:bg-[#065E69]"
+              className="bg-brand hover:bg-brand-hover flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-medium whitespace-nowrap text-white transition-colors"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               Get Started
             </Link>
           </div>
 
-          {/* Mobile hamburger */}
           <button
             className="z-50 flex flex-col gap-1.5 p-2 md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -152,7 +150,7 @@ export function Navbar() {
               <Link
                 href="/signup"
                 onClick={() => setMobileOpen(false)}
-                className="flex h-[52px] w-full items-center justify-center rounded-[10px] bg-[#087583] text-[16px] font-medium text-white"
+                className="bg-brand hover:bg-brand-hover flex h-[52px] w-full items-center justify-center rounded-[10px] text-[16px] font-medium text-white"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               >
                 Get Started

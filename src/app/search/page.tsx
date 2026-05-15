@@ -6,20 +6,9 @@ import { Search, AlertCircle } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
-
-type SearchResult = {
-  id?: string;
-  name?: string;
-  fullName?: string;
-  username?: string;
-  title?: string;
-  role?: string;
-  bio?: string;
-  avatar?: string;
-  profileImage?: string;
-  profilePicture?: string;
-  slug?: string;
-};
+import { Input } from "@/components/ui/input";
+import { useQuery } from "@tanstack/react-query";
+import { searchProfilesOption } from "@/api/search/search.options";
 
 export default function SearchPage() {
   const router = useRouter();
@@ -27,52 +16,25 @@ export default function SearchPage() {
 
   const initialQuery = params.get("q") || "";
   const [query, setQuery] = useState(initialQuery);
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [searched, setSearched] = useState(false);
-  const [error, setError] = useState("");
+  const [submittedQuery, setSubmittedQuery] = useState(initialQuery);
 
-  async function runSearch(value: string) {
+  const { data, isFetching, isError, error } = useQuery(
+    searchProfilesOption(submittedQuery)
+  );
+
+  const results = data?.results ?? [];
+  const searched = submittedQuery.trim().length >= 2;
+
+  function runSearch(value: string) {
     const searchValue = value.trim();
 
-    setError("");
-
-    if (searchValue.length < 3) {
-      setResults([]);
-      setSearched(false);
-      setError("Please enter at least 3 characters to search");
+    if (searchValue.length < 2) {
+      setSubmittedQuery("");
       return;
     }
 
-    setLoading(true);
-    setSearched(true);
-
-    try {
-      const res = await fetch(
-        `/api/search?q=${encodeURIComponent(searchValue)}`
-      );
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        const errorMessage =
-          typeof data?.message === "string" ? data.message : "Search failed";
-
-        throw new Error(errorMessage);
-      }
-
-      const list = Array.isArray(data)
-        ? data
-        : data?.data?.results || data?.results || data?.users || [];
-
-      setResults(list);
-      router.replace(`/search?q=${encodeURIComponent(searchValue)}`);
-    } catch (err) {
-      setResults([]);
-      setError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
+    setSubmittedQuery(searchValue);
+    router.replace(`/search?q=${encodeURIComponent(searchValue)}`);
   }
 
   function handleSubmit(e: FormEvent) {
@@ -94,29 +56,26 @@ export default function SearchPage() {
             onSubmit={handleSubmit}
             className="mt-6 flex w-full flex-col gap-3 md:flex-row"
           >
-            <input
+            <Input
               value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                if (e.target.value.length >= 3) setError("");
-              }}
+              onChange={(e) => setQuery(e.target.value)}
               placeholder="e.g john-doe"
-              className="h-[56px] w-full rounded-[8px] bg-white px-4 text-[16px] outline-none md:flex-1"
+              className="h-[56px] w-full rounded-[8px] border-0 bg-white px-4 text-[16px] shadow-none outline-none md:flex-1"
             />
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={isFetching}
               className="h-[56px] w-full rounded-[8px] bg-[#087583] px-8 font-medium text-white disabled:opacity-60 md:w-auto"
             >
-              {loading ? "Searching..." : "Search a Profile"}
+              {isFetching ? "Searching..." : "Search a Profile"}
             </button>
           </form>
 
-          {error && (
+          {isError && (
             <p className="mt-3 flex items-center gap-2 text-left text-[14px] text-[#FF3158]">
               <AlertCircle size={16} />
-              {error}
+              {error instanceof Error ? error.message : "Search failed"}
             </p>
           )}
         </div>
@@ -143,7 +102,7 @@ export default function SearchPage() {
 
       {searched && (
         <section className="mx-auto max-w-[1040px] px-4 py-12">
-          {results.length === 0 && !loading ? (
+          {results.length === 0 && !isFetching ? (
             <div className="py-16 text-center">
               <h3 className="text-[18px] font-semibold text-[#050505]">
                 No results found
@@ -151,7 +110,7 @@ export default function SearchPage() {
 
               <p className="mt-3 text-[14px] text-[#666]">
                 We couldn&apos;t find any published profiles matching &quot;
-                {query}&quot;.
+                {submittedQuery}&quot;.
               </p>
 
               <p className="mt-2 text-[14px] text-[#666]">
@@ -167,8 +126,7 @@ export default function SearchPage() {
                   user.username ||
                   "Open Profile User";
 
-                const role =
-                  user.role || user.title || user.bio || "Open Profile member";
+                const bio = user.bio || "Open Profile member";
 
                 const image =
                   user.avatar ||
@@ -195,7 +153,7 @@ export default function SearchPage() {
                       <div className="min-w-0">
                         <h3 className="truncate font-semibold">{name}</h3>
                         <p className="line-clamp-2 text-sm text-[#666]">
-                          {role}
+                          {bio}
                         </p>
                       </div>
                     </div>

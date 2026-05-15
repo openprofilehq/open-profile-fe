@@ -1,9 +1,11 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { CircleCheck } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 const profiles = [
   {
@@ -102,12 +104,12 @@ export function Hero() {
               className="h-[50px] flex-1 rounded-[5.57px] border border-[#C9C9C9] bg-[#FAFAFA] px-[12px] py-4 text-[16px] leading-[24px] text-[#454545] transition outline-none placeholder:text-[#454545] focus:ring-2 focus:ring-[#087583]/40 sm:py-0"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             />
-            <button
+            <Button
               className="h-[56px] w-full rounded-[8px] bg-[#087583] px-[16px] text-[16px] leading-[24px] whitespace-nowrap text-white transition-colors hover:bg-[#065E69] sm:h-[50px] sm:w-auto"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               Search a Profile
-            </button>
+            </Button>
           </motion.div>
 
           {/* Social proof */}
