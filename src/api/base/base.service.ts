@@ -2,8 +2,11 @@ import { ApiError } from "@/api/base/base.error";
 import { ApiResponse } from "@/api/base/base.type";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
+import { env } from "@/env/client";
+
 export const api = axios.create({
-  baseURL: "/api/proxy",
+  baseURL: `${env.NEXT_PUBLIC_API_URL}/api/v1`,
+  withCredentials: true,
   timeout: 60 * 1000,
 });
 
