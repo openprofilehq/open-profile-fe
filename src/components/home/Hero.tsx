@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { CircleCheck } from "lucide-react";
-import { Button } from "../ui/button";
+
+import { Button } from "@/components/ui/button";
 
 const profiles = [
   {
@@ -67,11 +68,11 @@ export function Hero() {
           >
             Create{" "}
             <span className="relative mx-2 inline-block">
-              <span className="text-link-hover-text absolute -top-5 left-1/2 -translate-x-1/2 text-xl leading-none tracking-wider whitespace-nowrap">
+              <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-xl leading-none tracking-wider whitespace-nowrap text-[#087583]">
                 \ | /
               </span>
               <span
-                className="text-link-hover-text italic"
+                className="text-[#087583] italic"
                 style={{ fontFamily: "'Dancing Script', cursive" }}
               >
                 One
@@ -83,7 +84,7 @@ export function Hero() {
           {/* Subtext */}
           <motion.p
             {...fadeUp(0.12)}
-            className="max-w-134.5 text-[16px] leading-6.5 font-normal text-[#050505] md:text-[18px]"
+            className="max-w-[538px] text-[16px] leading-[26px] font-normal text-[#050505] md:text-[18px]"
             style={{ fontFamily: "'Afacad', sans-serif" }}
           >
             Turn your scattered online presence into one searchable profile that
@@ -93,17 +94,20 @@ export function Hero() {
           {/* Search */}
           <motion.div
             {...fadeUp(0.2)}
-            className="flex w-full max-w-lg flex-col items-stretch gap-[6.73px] sm:flex-row"
+            className="flex w-full max-w-[512px] flex-col items-stretch gap-[6.73px] sm:flex-row"
           >
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="open.profile/"
-              className="text-label-text placeholder:text-label-text h-12.5 flex-1 rounded-[5.57px] border border-[#C9C9C9] bg-[#FAFAFA] px-3 py-4 text-[16px] leading-6 transition outline-none focus:ring-2 focus:ring-[#087583]/40 sm:py-0"
+              className="h-[50px] flex-1 rounded-[5.57px] border border-[#C9C9C9] bg-[#FAFAFA] px-[12px] py-4 text-[16px] leading-[24px] text-[#454545] transition outline-none placeholder:text-[#454545] focus:ring-2 focus:ring-[#087583]/40 sm:py-0"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             />
-            <Button className="h-14 w-full rounded-[8px] px-4 text-[16px] leading-6 whitespace-nowrap sm:h-12.5 sm:w-auto">
+            <Button
+              className="h-[56px] w-full rounded-[8px] bg-[#087583] px-[16px] text-[16px] leading-[24px] whitespace-nowrap text-white transition-colors hover:bg-[#065E69] sm:h-[50px] sm:w-auto"
+              style={{ fontFamily: "'Afacad', sans-serif" }}
+            >
               Search a Profile
             </Button>
           </motion.div>
@@ -139,7 +143,7 @@ export function Hero() {
               ))}
             </div>
             <p
-              className="text-label-text text-[14px] leading-[24px] font-normal md:text-[16px]"
+              className="text-[14px] leading-[24px] font-normal text-[#454545] md:text-[16px]"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               Join over Creators and freelancers that trusts us all over the
