@@ -20,7 +20,7 @@ export async function callApiServer<TResData>({
   data?: unknown;
   params?: Record<string, unknown>;
 }): Promise<TResData> {
-  const fullUrl = new URL(`${env.API_BASE_URL}/api${url}`);
+  const fullUrl = new URL(`${env.API_BASE_URL}/api/v1${url}`);
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
       if (v !== undefined) fullUrl.searchParams.set(k, String(v));

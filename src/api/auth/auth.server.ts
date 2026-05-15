@@ -50,7 +50,7 @@ export function logoutApi() {
 
 export function refreshTokenApi(data: { refreshToken: string }) {
   return callApiServer<{ accessToken: string; refreshToken: string }>({
-    url: "/auth/refresh",
+    url: "/auth/refresh-token",
     method: "POST",
     data,
   });
