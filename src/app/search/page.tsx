@@ -143,13 +143,21 @@ export default function SearchPage() {
 
       {searched && (
         <section className="mx-auto max-w-[1040px] px-4 py-12">
-          <h2 className="mb-1 text-[18px] font-semibold">Search Results</h2>
-          <p className="mb-8 text-sm text-[#777]">
-            Showing {results.length} results
-          </p>
-
           {results.length === 0 && !loading ? (
-            <p className="text-[#666]">No profiles found.</p>
+            <div className="py-16 text-center">
+              <h3 className="text-[18px] font-semibold text-[#050505]">
+                No results found
+              </h3>
+
+              <p className="mt-3 text-[14px] text-[#666]">
+                We couldn&apos;t find any published profiles matching &quot;
+                {query}&quot;.
+              </p>
+
+              <p className="mt-2 text-[14px] text-[#666]">
+                Try a different name or username.
+              </p>
+            </div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2">
               {results.map((user, index) => {
