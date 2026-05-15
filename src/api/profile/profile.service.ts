@@ -8,7 +8,7 @@ import {
 
 export function createProfile(data: CreateProfileRequest) {
   return callApi<CreateProfileResponse>({
-    url: "/profile",
+    url: "/profiles",
     method: "POST",
     data,
   });
@@ -33,7 +33,7 @@ export async function checkUsername(username: string, signal?: AbortSignal) {
 
 export function getProfileByUsername(username: string) {
   return callApi<ProfileResponse>({
-    url: `/profile/${username}`,
+    url: `/profiles/${username}`,
     method: "GET",
   });
 }
