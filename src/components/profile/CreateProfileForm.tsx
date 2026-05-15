@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -32,10 +32,11 @@ export default function CreateProfileForm() {
   const usernameStatus: UsernameStatus = usernameQuery.isLoading
     ? ""
     : usernameQuery.isError
-      ? isApiError(usernameQuery.error) &&
-        usernameQuery.error.message?.toLowerCase().includes("format")
-        ? "invalid"
-        : "error"
+      ? isApiError(usernameQuery.error) && usernameQuery.error.status === 409
+        ? "taken"
+        : isApiError(usernameQuery.error) && usernameQuery.error.status === 400
+          ? "invalid"
+          : "error"
       : usernameQuery.data?.available === true
         ? "available"
         : usernameQuery.data?.available === false
@@ -48,7 +49,7 @@ export default function CreateProfileForm() {
       : usernameStatus === "available"
         ? "This username is available"
         : usernameStatus === "taken"
-          ? "This username is not available"
+          ? "This username is taken"
           : usernameStatus === "invalid"
             ? "Invalid username format"
             : usernameStatus === "error"
@@ -62,7 +63,7 @@ export default function CreateProfileForm() {
       toast.error(isApiError(err) ? err.message : "Failed to create profile."),
   });
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (currentStep !== 2) return;
     createProfile.mutate({
@@ -77,6 +78,19 @@ export default function CreateProfileForm() {
   return (
     <>
       <ProgressBar currentStep={currentStep} />
+      <div className="absolute top-4 right-4">
+        <button
+          type="button"
+          onClick={() => {
+            document.cookie = "auth=; path=/; max-age=0";
+            document.cookie = "access_token=; path=/; max-age=0";
+            router.replace("/login");
+          }}
+          className="text-sm text-gray-500 hover:underline"
+        >
+          Log out
+        </button>
+      </div>
 
       <AuthLayout>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -84,6 +98,7 @@ export default function CreateProfileForm() {
             <CreateProfileLink
               username={username}
               available={availableLabel}
+              isAvailable={usernameStatus === "available"}
               onUpdateUsername={(e) => setUsername(e.target.value)}
               onUpdateStep={() => setCurrentStep(2)}
             />
@@ -98,7 +113,7 @@ export default function CreateProfileForm() {
               onUpdateStep={() =>
                 handleSubmit({
                   preventDefault: () => {},
-                } as React.FormEvent<HTMLFormElement>)
+                } as FormEvent<HTMLFormElement>)
               }
               isPending={createProfile.isPending}
               photoUrl={photoUrl}
