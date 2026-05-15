@@ -7,9 +7,13 @@ import { Button } from "@/components/ui/button";
 export default function ProfileLinkSuccess({
   username,
   bio,
+  photoUrl,
+  onContinue,
 }: {
   username: string;
   bio: string;
+  photoUrl?: string;
+  onContinue?: () => void;
 }) {
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -29,13 +33,24 @@ export default function ProfileLinkSuccess({
         </h2>
 
         <div className="flex w-full flex-col items-center justify-center">
-          <Image
-            src="/avatar.png"
-            width={80}
-            height={80}
-            className="mt-3"
-            alt=""
-          />
+          {photoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={photoUrl}
+              width={80}
+              height={80}
+              className="mt-3 h-20 w-20 rounded-full object-cover"
+              alt=""
+            />
+          ) : (
+            <Image
+              src="/avatar.png"
+              width={80}
+              height={80}
+              className="mt-3 h-20 w-20 rounded-full object-cover"
+              alt=""
+            />
+          )}
 
           <span className="mt-4 flex items-center gap-2 text-center font-bold text-[#747474]">
             open.profile/{username}
@@ -54,6 +69,7 @@ export default function ProfileLinkSuccess({
         <Button
           type="button"
           className="mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-normal shadow-none transition-colors"
+          onClick={onContinue}
         >
           Continue To Dashboard
         </Button>

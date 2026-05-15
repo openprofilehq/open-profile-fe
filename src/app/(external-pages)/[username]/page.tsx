@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getUserProfile } from "@/api/users/users.service";
+import { type ProfileResponse } from "@/api/profile/profile.type";
+import { getProfileByUsername } from "@/api/profile/profile.service";
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -11,23 +12,19 @@ type Props = {
 export default async function UserProfilePage({ params }: Props) {
   const { username } = await params;
 
-  let userProfile;
+  let profile: ProfileResponse;
   try {
-    userProfile = await getUserProfile(username);
-  } catch (_error) {
+    profile = await getProfileByUsername(username);
+  } catch {
     notFound();
   }
 
-  const name = userProfile?.fullName || "User";
-  const userHandle = userProfile?.username || username;
-  const avatar = userProfile?.photoUrl || "/user-placeholder.jpg";
-  const bio = userProfile?.bio || "No bio yet.";
-
+  const name = profile.fullName ?? username;
   const initials = name
     .split(" ")
-    .map((n) => n[0])
+    .map((n: string) => n[0])
     .join("")
-    .substring(0, 2)
+    .slice(0, 2)
     .toUpperCase();
 
   return (
@@ -55,21 +52,20 @@ export default async function UserProfilePage({ params }: Props) {
           />
         </div>
 
-        {/* Profile empty state */}
         <div className="relative z-10 flex w-full max-w-lg flex-col items-center gap-4 text-center">
           <Avatar className="h-20 w-20">
-            <AvatarImage src={avatar} alt={name} />
+            <AvatarImage src={profile.photoUrl ?? ""} alt={name} />
             <AvatarFallback className="text-xl">{initials}</AvatarFallback>
           </Avatar>
-
           <div>
             <h1 className="text-xl font-bold text-[#050505]">{name}</h1>
-            <p className="text-sm text-gray-500">@{userHandle}</p>
+            <p className="text-sm text-gray-500">@{profile.username}</p>
           </div>
-
-          <p className="text-justify text-sm leading-relaxed text-[#050505]">
-            {bio}
-          </p>
+          {profile.bio && (
+            <p className="text-justify text-sm leading-relaxed text-[#050505]">
+              {profile.bio}
+            </p>
+          )}
         </div>
 
         <div className="absolute top-15 right-0 z-0 hidden lg:block">
