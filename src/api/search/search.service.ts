@@ -27,7 +27,7 @@ export function searchProfiles({
   signal?: AbortSignal;
 }) {
   return callApi<SearchResponse>({
-    url: "/v1/search",
+    url: "/search",
     method: "GET",
     params: { q },
     signal,
