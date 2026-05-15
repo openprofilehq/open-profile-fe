@@ -41,7 +41,9 @@ export default function ForgotPasswordVerifyPage() {
       />
 
       <div className="flex flex-col gap-3">
-        <label className="text-sm font-medium text-[#454545]">Enter code</label>
+        <label className="text-label-text text-sm font-medium">
+          Enter code
+        </label>
         <OtpInput onChange={setCode} />
         <Button
           onClick={handleVerify}

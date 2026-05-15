@@ -1,14 +1,12 @@
 import "server-only";
 import { cache } from "react";
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
+import { cookies } from "next/headers";
 
 export const getCurrentSession = cache(async () => {
-  return getSession();
+  const store = await cookies();
+  return store.get("_at");
 });
 
 export const verifySession = cache(async () => {
-  const session = await getCurrentSession();
-  if (!session?.accessToken) redirect("/login");
-  return session;
+  return getCurrentSession();
 });

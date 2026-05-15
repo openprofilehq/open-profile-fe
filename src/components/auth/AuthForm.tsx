@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AuthLayout } from "@/components/auth/AuthLayout";
@@ -11,28 +12,28 @@ import {
   PasswordField,
   allPasswordRulesMet,
 } from "@/components/auth/PasswordField";
-import type { AuthState } from "@/app/actions/auth";
+import { loginOption, signupOption } from "@/api/auth/auth.options";
+import { isApiError } from "@/api/base";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type Props = {
   mode: "login" | "signup";
-  action: (prev: AuthState, formData: FormData) => Promise<AuthState>;
   googleAuthUrl: string;
 };
 
-export function AuthForm({ mode, action, googleAuthUrl }: Props) {
+export function AuthForm({ mode, googleAuthUrl }: Props) {
   const router = useRouter();
-  const [pending, setPending] = useState(false);
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get("returnTo");
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
-  const isSignup = mode === "signup";
 
-  const searchParams = useSearchParams();
-  const returnTo = searchParams.get("returnTo");
+  const isSignup = mode === "signup";
 
   const isValid: boolean = isSignup
     ? name.trim().split(/\s+/).length >= 2 &&
@@ -40,28 +41,41 @@ export function AuthForm({ mode, action, googleAuthUrl }: Props) {
       allPasswordRulesMet(password)
     : EMAIL_RE.test(email) && password.length > 0;
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setPending(true);
-    try {
-      const result = await action(undefined, new FormData(e.currentTarget));
-      if (result?.redirectTo) {
-        router.replace(
-          returnTo && returnTo.startsWith("/") ? returnTo : result.redirectTo
-        );
-        return;
-      }
+  const loginMutation = useMutation({
+    ...loginOption,
+    onSuccess: (data) => {
+      // Set a marker cookie so the proxy knows the user is authenticated
+      document.cookie = "auth=1; path=/; SameSite=Lax";
+      const onboardingComplete = data?.user?.onboardingComplete;
+      const destination = onboardingComplete ? "/dashboard" : "/create-profile";
+      router.replace(returnTo?.startsWith("/") ? returnTo : destination);
+    },
+    onError: (err) =>
+      toast.error(isApiError(err) ? err.message : "Login failed."),
+  });
 
-      if (result?.error) toast.error(result.error);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Something went wrong.");
-    } finally {
-      setPending(false);
+  const signupMutation = useMutation({
+    ...signupOption,
+    onSuccess: () => {
+      router.replace(`/verify-email?email=${encodeURIComponent(email)}`);
+    },
+    onError: (err) =>
+      toast.error(isApiError(err) ? err.message : "Signup failed."),
+  });
+
+  const pending = loginMutation.isPending || signupMutation.isPending;
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (isSignup) {
+      signupMutation.mutate({ fullName: name, email, password });
+    } else {
+      loginMutation.mutate({ email, password });
     }
   }
 
   const inputClass =
-    "h-11 bg-[#FAFAFA] border border-[#EDEDED] shadow-none placeholder:text-[#747474]";
+    "h-11 bg-[#FAFAFA] border border-input-b shadow-none placeholder:text-input-text";
 
   return (
     <AuthLayout>
@@ -79,7 +93,7 @@ export function AuthForm({ mode, action, googleAuthUrl }: Props) {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {isSignup && (
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-[#454545]">
+            <label className="text-label-text text-sm font-medium">
               Full Name
             </label>
             <Input
@@ -103,7 +117,7 @@ export function AuthForm({ mode, action, googleAuthUrl }: Props) {
         )}
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-[#454545]">
+          <label className="text-label-text text-sm font-medium">
             Email Address
           </label>
           <Input
@@ -111,26 +125,22 @@ export function AuthForm({ mode, action, googleAuthUrl }: Props) {
             type="email"
             placeholder="Enter your email address"
             autoComplete="email"
-            {...(isSignup
-              ? {
-                  required: true,
-                  value: email,
-                  onChange: (e) => setEmail(e.target.value),
-                  onBlur: () =>
-                    setEmailError(
-                      email && !EMAIL_RE.test(email) ? "Incorrect email" : ""
-                    ),
-                }
-              : {})}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onBlur={() =>
+              setEmailError(
+                email && !EMAIL_RE.test(email) ? "Incorrect email" : ""
+              )
+            }
             className={`${inputClass} ${emailError ? "border-red-400" : ""}`}
           />
           {emailError && <p className="text-xs text-red-500">{emailError}</p>}
         </div>
 
         <PasswordField
-          value={isSignup ? password : undefined}
-          onChange={isSignup ? setPassword : () => {}}
-          required={isSignup}
+          value={password}
+          onChange={setPassword}
+          required
           showRules={isSignup}
           autoComplete={isSignup ? "new-password" : "current-password"}
         />
@@ -139,7 +149,7 @@ export function AuthForm({ mode, action, googleAuthUrl }: Props) {
           <div className="-mt-2 flex justify-end">
             <Link
               href="/forgot-password"
-              className="text-sm font-medium text-[#087583] hover:underline"
+              className="text-link-hover-text text-sm font-medium hover:underline"
             >
               Forgot password?
             </Link>
@@ -151,8 +161,8 @@ export function AuthForm({ mode, action, googleAuthUrl }: Props) {
           disabled={pending || (isSignup && !isValid)}
           className={`mt-1 h-[52px] w-full rounded-[10px] text-[16px] font-medium shadow-none transition-colors ${
             isSignup && !isValid
-              ? "border border-[#454545] bg-white text-[#454545]"
-              : "border-0 bg-[#087583] text-[#FEFEFE] hover:bg-[#065E69]"
+              ? "border-button-b text-label-text border bg-white"
+              : "bg-brand-hover-bg border-0 text-[#FEFEFE] hover:bg-[#065E69]"
           }`}
         >
           {pending ? "Please wait…" : "Continue"}
@@ -160,29 +170,29 @@ export function AuthForm({ mode, action, googleAuthUrl }: Props) {
       </form>
 
       {isSignup && (
-        <p className="text-center text-xs text-[#454545]">
+        <p className="text-label-text text-center text-xs">
           By Continuing, you agree to Openprofile&apos;s{" "}
           <Link
             href="/privacy"
-            className="font-semibold text-[#087583] hover:underline"
+            className="text-link-hover-text font-semibold hover:underline"
           >
             privacy policy
           </Link>
           , and{" "}
           <Link
             href="/terms"
-            className="font-semibold text-[#087583] hover:underline"
+            className="text-link-hover-text font-semibold hover:underline"
           >
             Terms and Conditions
           </Link>
         </p>
       )}
 
-      <div className="text-center text-xs text-[#454545]">OR</div>
+      <div className="text-label-text text-center text-xs">OR</div>
 
       <a
         href={googleAuthUrl}
-        className="flex h-11 w-full items-center justify-center gap-3 rounded-lg border border-[#EDEDED] bg-[#FAFAFA] text-sm font-medium transition-colors hover:bg-[#f0f0f0]"
+        className="border-input-b flex h-11 w-full items-center justify-center gap-3 rounded-lg border bg-[#FAFAFA] text-sm font-medium transition-colors hover:bg-[#f0f0f0]"
       >
         <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
           <path
@@ -211,7 +221,7 @@ export function AuthForm({ mode, action, googleAuthUrl }: Props) {
             Already have an account?{" "}
             <Link
               href="/login"
-              className="font-medium text-[#087583] hover:underline"
+              className="text-link-hover-text font-medium hover:underline"
             >
               Sign In here
             </Link>
@@ -221,7 +231,7 @@ export function AuthForm({ mode, action, googleAuthUrl }: Props) {
             Don&apos;t have an account?{" "}
             <Link
               href="/signup"
-              className="font-medium text-[#087583] hover:underline"
+              className="text-link-hover-text font-medium hover:underline"
             >
               Sign up here
             </Link>

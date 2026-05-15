@@ -3,9 +3,16 @@ export type LoginRequest = {
   password: string;
 };
 
-// TODO: Add the correct response type
 export type LoginResponse = {
-  token: string;
+  status?: string;
+  user?: {
+    id?: string;
+    email?: string;
+    role?: string;
+    onboardingComplete?: boolean;
+  };
+  accessToken?: string;
+  refreshToken?: string;
 };
 
 export type SignupRequest = {
@@ -14,12 +21,22 @@ export type SignupRequest = {
   fullName: string;
 };
 
-// TODO: Add the correct response type
 export type SignupResponse = {
-  token: string;
+  message?: string;
 };
 
-// TODO: Add the correct response type
 export type User = {
   id: string;
+  email: string;
+  fullName?: string;
+  username: string | null;
+  bio: string | null;
+  photoUrl: string | null;
+  isPublished: boolean;
+  role: string | null;
+  authProvider: string;
+  isVerified: boolean;
+  onboardingComplete: boolean;
+  createdAt: string;
+  updatedAt: string;
 };

@@ -3,13 +3,13 @@ name: Frontend CI/CD
 on:
   push:
     branches:
-      - feature/ci-cd
+      - feat/ci-cd
       - dev
       - staging
       - production
   pull_request:
     branches:
-      - feature/ci-cd
+      - feat/ci-cd
       - dev
       - staging
       - production
@@ -84,7 +84,9 @@ jobs:
           password: ${{ secrets.EC2_PASSWORD }}
           script: |
             cd /var/www/openprofile-fe/staging
-            pnpm install --config.ignore-scripts=true
+            rm -rf .next || true
+            pnpm install
+            pnpm install react-icons
             pnpm build
       - name: Start app with PM2
         uses: appleboy/ssh-action@v1.0.3
@@ -132,6 +134,8 @@ jobs:
           password: ${{ secrets.EC2_PASSWORD }}
           script: |
             cd /var/www/openprofile-fe/production
+            rm -rf .next || true
+            pnpm install
             pnpm install --config.ignore-scripts=true
             pnpm build
       - name: Start app with PM2

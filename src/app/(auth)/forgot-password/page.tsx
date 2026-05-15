@@ -48,7 +48,7 @@ export default function ForgotPasswordPage() {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-[#454545]">
+          <label className="text-label-text text-sm font-medium">
             Email Address
           </label>
           <Input
@@ -62,7 +62,7 @@ export default function ForgotPasswordPage() {
                 email && !EMAIL_RE.test(email) ? "Incorrect email" : ""
               )
             }
-            className={`h-11 border border-[#EDEDED] bg-[#FAFAFA] shadow-none placeholder:text-[#747474] ${emailError ? "border-red-400" : ""}`}
+            className={`border-input-b placeholder:text-input-text h-11 border bg-[#FAFAFA] shadow-none ${emailError ? "border-red-400" : ""}`}
           />
           {emailError && <p className="text-xs text-red-500">{emailError}</p>}
         </div>

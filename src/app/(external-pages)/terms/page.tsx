@@ -184,7 +184,8 @@ export default function PrivacyPolicy() {
               <div className="sticky top-24 flex-2 rounded-xl">
                 <nav className="space-y-2">
                   {sections.map((section) => (
-                    <button
+                    <Button
+                      variant="dropdownItem"
                       key={section.id}
                       onClick={() => setActiveSection(section.id)}
                       className={`w-full cursor-pointer rounded-lg p-4 px-5 text-left text-xl transition-all duration-200 lg:mt-3 ${
@@ -197,7 +198,7 @@ export default function PrivacyPolicy() {
                         <span>{section.id}</span>
                         <span>{section.title}</span>
                       </span>
-                    </button>
+                    </Button>
                   ))}
                 </nav>
               </div>

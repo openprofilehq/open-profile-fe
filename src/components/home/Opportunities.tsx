@@ -28,7 +28,7 @@ export function Opportunities() {
 
       <div className="flex flex-col gap-[22px] lg:flex-row">
         {/* Left Card */}
-        <div className="relative flex min-h-[370px] flex-col items-center rounded-[8px] bg-[#087583] text-center shadow-sm lg:w-[45%]">
+        <div className="bg-brand-hover-bg relative flex min-h-[370px] flex-col items-center rounded-[8px] text-center shadow-sm lg:w-[45%]">
           <div className="relative z-10 m-10 w-full">
             <h3 className="mx-auto max-w-[280px] text-[17px] leading-snug font-semibold text-white">
               A community of professionals and ecosystem of creatives
