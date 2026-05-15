@@ -1,94 +1,37 @@
 "use client";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState, Suspense } from "react";
 import SearchInput from "@/components/search/SearchInput";
-import SearchResultCard, { Profile } from "@/components/search/SearchResultCard";
+import SearchResultCard from "@/components/search/SearchResultCard";
 import EmptyState from "@/components/search/EmptyState";
 import LoadingState from "@/components/search/LoadingState";
 import NoResultsState from "@/components/search/NoResultsState";
 import ErrorState from "@/components/search/ErrorState";
-import Footer from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { CTA } from "@/components/home/CTA";
-
-type SearchStatus = "idle" | "loading" | "results" | "not-found" | "error";
-
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://api.staging.open-profile.hng14.com";
+import { useProfileSearch } from "@/hooks/useProfileSearch";
 
 function SearchPageInner() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") ?? "";
-
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [total, setTotal] = useState(0);
-  const [status, setStatus] = useState<SearchStatus>(
-    query.trim() ? "loading" : "idle"
-  );
   const [retryCount, setRetryCount] = useState(0);
 
-  useEffect(() => {
-    if (!query.trim()) return;
-
-    let cancelled = false;
-
-    async function fetchProfiles() {
-      setStatus("loading");
-      try {
-        const res = await fetch(
-          `${API_BASE}/api/v1/search?q=${encodeURIComponent(query.trim())}`
-        );
-        if (cancelled) return;
-
-        if (!res.ok) {
-          setStatus("error");
-          return;
-        }
-
-        const data = (await res.json()) as Record<string, unknown>;
-        if (cancelled) return;
-
-        const rawData = data?.data ?? data?.results ?? data?.profiles ?? data;
-        const results: Profile[] = Array.isArray(rawData) ? rawData : [];
-        const count =
-          (data?.total as number) ?? (data?.count as number) ?? results.length;
-
-        setTotal(count);
-
-        if (results.length > 0) {
-          setProfiles(results);
-          setStatus("results");
-        } else {
-          setProfiles([]);
-          setStatus("not-found");
-        }
-      } catch {
-        if (!cancelled) setStatus("error");
-      }
-    }
-
-    void fetchProfiles();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [query, retryCount]);
+  const { profiles, total, status } = useProfileSearch(query, retryCount);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-white">
       <Navbar />
 
       {/* ── Hero ── */}
       <section className="mt-19 bg-[#dceef0] pt-14 pb-16 text-center">
-        <h1 className="text-[2rem] md:text-[2.5rem] font-bold text-gray-900 mb-6">
+        <h1 className="mb-6 text-[2rem] font-bold text-gray-900 md:text-[2.5rem]">
           Find Someone on Open Profile
         </h1>
         <SearchInput initialValue={query} />
       </section>
 
       {/* ── Body ── */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-8">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
         {status === "idle" && <EmptyState />}
         {status === "loading" && <LoadingState query={query} />}
         {status === "error" && (
@@ -98,10 +41,10 @@ function SearchPageInner() {
 
         {status === "results" && (
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-1">
+            <h2 className="mb-1 text-lg font-semibold text-gray-900">
               Search Results
             </h2>
-            <p className="text-sm text-gray-500 mb-6">
+            <p className="mb-6 text-sm text-gray-500">
               {profiles.length === 1
                 ? `Found 1 result for "${query}"`
                 : `Showing ${profiles.length} of ${total}`}
@@ -110,7 +53,7 @@ function SearchPageInner() {
               className={
                 profiles.length === 1
                   ? "flex flex-col gap-3"
-                  : "grid grid-cols-1 md:grid-cols-2 gap-4"
+                  : "grid grid-cols-1 gap-4 md:grid-cols-2"
               }
             >
               {profiles.map((profile) => (
@@ -122,7 +65,6 @@ function SearchPageInner() {
       </main>
 
       <CTA />
-      <Footer />
     </div>
   );
 }
@@ -131,8 +73,8 @@ export default function SearchPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-white flex items-center justify-center">
-          <div className="w-10 h-10 rounded-full border-4 border-teal-600 border-t-transparent animate-spin" />
+        <div className="flex min-h-screen items-center justify-center bg-white">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-teal-600 border-t-transparent" />
         </div>
       }
     >
