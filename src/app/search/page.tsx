@@ -18,21 +18,25 @@ export default function SearchPage() {
   const [query, setQuery] = useState(initialQuery);
   const [submittedQuery, setSubmittedQuery] = useState(initialQuery);
 
+  const [validationError, setValidationError] = useState("");
+
   const { data, isFetching, isError, error } = useQuery(
     searchProfilesOption(submittedQuery)
   );
 
   const results = data?.results ?? [];
-  const searched = submittedQuery.trim().length >= 2;
+  const searched = submittedQuery.trim().length >= 3;
 
   function runSearch(value: string) {
     const searchValue = value.trim();
 
-    if (searchValue.length < 2) {
+    if (searchValue.length < 3) {
       setSubmittedQuery("");
+      setValidationError("Please enter at least 3 characters to search");
       return;
     }
 
+    setValidationError("");
     setSubmittedQuery(searchValue);
     router.replace(`/search?q=${encodeURIComponent(searchValue)}`);
   }
@@ -71,6 +75,13 @@ export default function SearchPage() {
               {isFetching ? "Searching..." : "Search a Profile"}
             </button>
           </form>
+
+          {validationError && (
+            <p className="mt-3 flex items-center gap-2 text-left text-[14px] text-[#FF3158]">
+              <AlertCircle size={16} />
+              {validationError}
+            </p>
+          )}
 
           {isError && (
             <p className="mt-3 flex items-center gap-2 text-left text-[14px] text-[#FF3158]">
