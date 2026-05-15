@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
-import { Button } from "../ui/button";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -20,7 +19,7 @@ export function Navbar() {
   return (
     <>
       <header
-        className={`border-input-b fixed top-0 right-0 left-0 z-50 w-full border-b transition-colors duration-300 ${scrolled ? "bg-white/70 backdrop-blur-md" : "bg-white"}`}
+        className={`fixed top-0 right-0 left-0 z-50 w-full border-b border-[#EDEDED] transition-colors duration-300 ${scrolled ? "bg-white/70 backdrop-blur-md" : "bg-white"}`}
       >
         <nav className="mx-auto flex h-[76px] w-full max-w-[1440px] items-center justify-between pr-[20px] pl-[20px] md:pr-[112px] md:pl-[112px]">
           {/* Logo */}
@@ -39,48 +38,45 @@ export function Navbar() {
           <div className="hidden items-center gap-4 md:flex">
             <Link
               href="#how-it-works"
-              className="hover:text-link-hover-text text-[17px] leading-[26px] font-medium text-[#050505] transition-colors"
+              className="text-[17px] leading-[26px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               How it works
             </Link>
             <Link
               href="#pricing"
-              className="hover:text-link-hover-text text-[16px] leading-[24px] font-medium text-[#050505] transition-colors"
+              className="text-[16px] leading-[24px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               Pricing
             </Link>
             <Link
               href="/faq"
-              className="hover:text-link-hover-text text-[16px] leading-[24px] font-medium text-[#050505] transition-colors"
+              className="text-[16px] leading-[24px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               FAQ
             </Link>
           </div>
 
-          {/* Desktop CTA */}
           <div className="hidden items-center gap-3 md:flex">
             <Link
               href="/login"
-              className="text-link-hover-text flex h-[44px] items-center justify-center rounded-[8px] bg-[#FAFAFA] px-[16px] py-[12px] text-[15px] font-semibold transition-colors hover:bg-[#E5F4F6]"
+              className="flex h-[44px] items-center justify-center rounded-[8px] bg-[#FAFAFA] px-[16px] py-[12px] text-[15px] font-semibold text-[#087583] transition-colors hover:bg-[#E5F4F6]"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               Login
             </Link>
             <Link
               href="/signup"
-              className="bg-brand-hover-bg flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-medium whitespace-nowrap text-[#FEFEFE] transition-colors hover:bg-[#065E69]"
+              className="bg-brand hover:bg-brand-hover flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-medium whitespace-nowrap text-white transition-colors"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               Get Started
             </Link>
           </div>
 
-          {/* Mobile hamburger */}
-          <Button
-            variant="hamburger"
+          <button
             className="z-50 flex flex-col gap-1.5 p-2 md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
@@ -94,7 +90,7 @@ export function Navbar() {
             <span
               className={`block h-0.5 w-5 bg-[#050505] transition-transform duration-200 ${mobileOpen ? "-translate-y-2 -rotate-45" : ""}`}
             />
-          </Button>
+          </button>
         </nav>
       </header>
 
@@ -108,21 +104,20 @@ export function Navbar() {
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className="fixed inset-0 z-50 flex flex-col bg-white md:hidden"
           >
-            <div className="border-input-b flex h-[76px] items-center justify-between border-b px-6">
+            <div className="flex h-[76px] items-center justify-between border-b border-[#EDEDED] px-6">
               <span
-                className="text-link-hover-text text-[18px] font-semibold"
+                className="text-[18px] font-semibold text-[#087583]"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               >
                 Menu
               </span>
-              <Button
-                variant="hamburger"
+              <button
                 onClick={() => setMobileOpen(false)}
                 className="p-2 text-[#050505]"
                 aria-label="Close menu"
               >
                 <X className="h-5 w-5" />
-              </Button>
+              </button>
             </div>
 
             <div className="flex flex-1 flex-col gap-8 px-6 pt-8">
@@ -147,7 +142,7 @@ export function Navbar() {
               <Link
                 href="/login"
                 onClick={() => setMobileOpen(false)}
-                className="border-input-b text-link-hover-text flex h-[52px] w-full items-center justify-center rounded-[10px] border bg-[#F5F5F5] text-[16px] font-semibold"
+                className="flex h-[52px] w-full items-center justify-center rounded-[10px] border border-[#EDEDED] bg-[#F5F5F5] text-[16px] font-semibold text-[#087583]"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               >
                 Login
@@ -155,7 +150,7 @@ export function Navbar() {
               <Link
                 href="/signup"
                 onClick={() => setMobileOpen(false)}
-                className="bg-brand-hover-bg flex h-[52px] w-full items-center justify-center rounded-[10px] text-[16px] font-medium text-white"
+                className="bg-brand hover:bg-brand-hover flex h-[52px] w-full items-center justify-center rounded-[10px] text-[16px] font-medium text-white"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               >
                 Get Started
