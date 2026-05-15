@@ -46,7 +46,7 @@ export default function ForgotPasswordVerifyPage() {
         <Button
           onClick={handleVerify}
           disabled={!isComplete}
-          className="w-full h-11 font-semibold rounded-lg shadow-none transition-opacity bg-brand hover:bg-[#065E69] text-white border-0 disabled:opacity-50"
+          className="bg-brand h-11 w-full rounded-lg border-0 font-semibold text-white shadow-none transition-opacity hover:bg-[#065E69] disabled:opacity-50"
         >
           Continue
         </Button>

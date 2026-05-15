@@ -46,7 +46,7 @@ export function ResendTimer({ initialSeconds = 98, email: _email }: Props) {
       <button
         onClick={handleResend}
         disabled={resending}
-        className="text-brand font-medium hover:underline cursor-pointer disabled:opacity-50"
+        className="text-brand cursor-pointer font-medium hover:underline disabled:opacity-50"
       >
         Resend Code
       </button>

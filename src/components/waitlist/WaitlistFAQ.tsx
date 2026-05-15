@@ -66,12 +66,12 @@ export function WaitlistFAQ() {
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={containerVariants}
-        className="max-w-[800px] mx-auto px-6 md:px-8"
+        className="mx-auto max-w-[800px] px-6 md:px-8"
       >
-        <div className="text-center mb-12">
+        <div className="mb-12 text-center">
           <motion.h2
             variants={itemVariants}
-            className="text-[32px] md:text-[40px] font-semibold text-[#050505]"
+            className="text-[32px] font-semibold text-[#050505] md:text-[40px]"
             style={{ fontFamily: "'Afacad', sans-serif" }}
           >
             FAQs
@@ -86,16 +86,16 @@ export function WaitlistFAQ() {
                   value={`item-${index}`}
                   className="border-[#E5E5E5]"
                 >
-                  <AccordionTrigger className="hover:no-underline py-6">
+                  <AccordionTrigger className="py-6 hover:no-underline">
                     <span
-                      className="text-left font-medium text-[16px] md:text-[18px] text-[#050505]"
+                      className="text-left text-[16px] font-medium text-[#050505] md:text-[18px]"
                       style={{ fontFamily: "'Afacad', sans-serif" }}
                     >
                       {item.question}
                     </span>
                   </AccordionTrigger>
                   <AccordionContent
-                    className="text-[15px] md:text-[16px] text-[#454545] leading-relaxed pb-6"
+                    className="pb-6 text-[15px] leading-relaxed text-[#454545] md:text-[16px]"
                     style={{ fontFamily: "'Afacad', sans-serif" }}
                   >
                     {item.answer}

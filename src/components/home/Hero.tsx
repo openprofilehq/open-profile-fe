@@ -54,23 +54,23 @@ export function Hero() {
     profiles[(current + offset) % profiles.length];
 
   return (
-    <section className="w-full bg-white overflow-hidden">
-      <div className="max-w-[1440px] mx-auto px-6 md:px-[125px] pt-[60px] md:pt-[80px] pb-[40px] flex flex-col lg:flex-row items-start lg:items-center gap-8 lg:gap-4 relative">
+    <section className="w-full overflow-hidden bg-white">
+      <div className="relative mx-auto flex max-w-[1440px] flex-col items-start gap-8 px-6 pt-[60px] pb-[40px] md:px-[125px] md:pt-[80px] lg:flex-row lg:items-center lg:gap-4">
         {/* ───────────────── LEFT COLUMN ───────────────── */}
-        <div className="flex flex-col gap-4 w-full lg:max-w-[500px] shrink-0 z-10">
+        <div className="z-10 flex w-full shrink-0 flex-col gap-4 lg:max-w-[500px]">
           {/* Heading */}
           <motion.h1
             {...fadeUp(0.05)}
-            className="font-semibold text-[38px] sm:text-[46px] md:text-[56px] leading-[1.12] tracking-[-1px] text-[#050505]"
+            className="text-[38px] leading-[1.12] font-semibold tracking-[-1px] text-[#050505] sm:text-[46px] md:text-[56px]"
             style={{ fontFamily: "'Afacad', sans-serif" }}
           >
             Create{" "}
-            <span className="relative inline-block mx-2">
-              <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[#087583] text-xl leading-none tracking-wider whitespace-nowrap">
+            <span className="relative mx-2 inline-block">
+              <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-xl leading-none tracking-wider whitespace-nowrap text-[#087583]">
                 \ | /
               </span>
               <span
-                className="italic text-[#087583]"
+                className="text-[#087583] italic"
                 style={{ fontFamily: "'Dancing Script', cursive" }}
               >
                 One
@@ -82,7 +82,7 @@ export function Hero() {
           {/* Subtext */}
           <motion.p
             {...fadeUp(0.12)}
-            className="font-normal text-[16px] md:text-[18px] leading-[26px] text-[#050505] max-w-[538px]"
+            className="max-w-[538px] text-[16px] leading-[26px] font-normal text-[#050505] md:text-[18px]"
             style={{ fontFamily: "'Afacad', sans-serif" }}
           >
             Turn your scattered online presence into one searchable profile that
@@ -92,18 +92,18 @@ export function Hero() {
           {/* Search */}
           <motion.div
             {...fadeUp(0.2)}
-            className="flex flex-col sm:flex-row items-stretch gap-[6.73px] w-full max-w-[512px]"
+            className="flex w-full max-w-[512px] flex-col items-stretch gap-[6.73px] sm:flex-row"
           >
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="open.profile/"
-              className="flex-1 h-[50px] py-4 sm:py-0 px-[12px] bg-[#FAFAFA] border border-[#C9C9C9] rounded-[5.57px] text-[16px] leading-[24px] text-[#454545] placeholder:text-[#454545] outline-none focus:ring-2 focus:ring-[#087583]/40 transition"
+              className="h-[50px] flex-1 rounded-[5.57px] border border-[#C9C9C9] bg-[#FAFAFA] px-[12px] py-4 text-[16px] leading-[24px] text-[#454545] transition outline-none placeholder:text-[#454545] focus:ring-2 focus:ring-[#087583]/40 sm:py-0"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             />
             <button
-              className="w-full sm:w-auto h-[56px] sm:h-[50px] px-[16px] bg-[#087583] hover:bg-[#065E69] rounded-[8px] text-white text-[16px] leading-[24px] whitespace-nowrap transition-colors"
+              className="h-[56px] w-full rounded-[8px] bg-[#087583] px-[16px] text-[16px] leading-[24px] whitespace-nowrap text-white transition-colors hover:bg-[#065E69] sm:h-[50px] sm:w-auto"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               Search a Profile
@@ -122,7 +122,7 @@ export function Hero() {
               {miniAvatars.map((src, i) => (
                 <div
                   key={i}
-                  className="absolute rounded-full overflow-hidden border-[2.52px] border-white"
+                  className="absolute overflow-hidden rounded-full border-[2.52px] border-white"
                   style={{
                     width: "35px",
                     height: "35px",
@@ -141,7 +141,7 @@ export function Hero() {
               ))}
             </div>
             <p
-              className="font-normal text-[14px] md:text-[16px] leading-[24px] text-[#454545]"
+              className="text-[14px] leading-[24px] font-normal text-[#454545] md:text-[16px]"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               Join over Creators and freelancers that trusts us all over the
@@ -151,7 +151,7 @@ export function Hero() {
         </div>
 
         {/* ───────────────── RIGHT COLUMN — desktop only ───────────────── */}
-        <div className="relative flex-1 w-full overflow-visible -ml-[10px] hidden lg:block">
+        <div className="relative -ml-[10px] hidden w-full flex-1 overflow-visible lg:block">
           {/* LEFT fade */}
           <div
             style={{
@@ -181,13 +181,13 @@ export function Hero() {
             }}
           />
 
-          <div className="flex gap-4 items-start justify-center w-full translate-x-[8px]">
+          <div className="flex w-full translate-x-[8px] items-start justify-center gap-4">
             {[0, 1, 2].map((offset, i) => {
               const p = getProfile(offset);
               return (
                 <div
                   key={i}
-                  className="relative shrink-0 rounded-[9px] overflow-hidden"
+                  className="relative shrink-0 overflow-hidden rounded-[9px]"
                   style={{ width: "210px", height: "365px" }}
                 >
                   <AnimatePresence mode="wait">
@@ -216,21 +216,21 @@ export function Hero() {
                             "linear-gradient(360deg, rgba(0,0,0,0.9) 19.96%, rgba(102,102,102,0) 42.85%)",
                         }}
                       />
-                      <div className="absolute bottom-0 left-0 z-10 p-[15px_18px] flex flex-col gap-1">
+                      <div className="absolute bottom-0 left-0 z-10 flex flex-col gap-1 p-[15px_18px]">
                         <div className="flex items-center gap-1">
                           <span
-                            className="font-bold text-[20px] leading-[26px] text-[#FEFEFE]"
+                            className="text-[20px] leading-[26px] font-bold text-[#FEFEFE]"
                             style={{ fontFamily: "'Afacad', sans-serif" }}
                           >
                             {p.name}
                           </span>
                           <CircleCheck
-                            className="w-5 h-5 shrink-0"
+                            className="h-5 w-5 shrink-0"
                             style={{ color: "#98FAC3" }}
                           />
                         </div>
                         <span
-                          className="font-medium text-[14px] leading-[24px] text-[#E6E6E6]"
+                          className="text-[14px] leading-[24px] font-medium text-[#E6E6E6]"
                           style={{ fontFamily: "'Afacad', sans-serif" }}
                         >
                           {p.role}
@@ -245,7 +245,7 @@ export function Hero() {
         </div>
 
         {/* ───────────────── MOBILE CARDS ───────────────── */}
-        <div className="lg:hidden relative w-full">
+        <div className="relative w-full lg:hidden">
           {/* LEFT fade */}
           <div
             style={{
@@ -275,14 +275,14 @@ export function Hero() {
             }}
           />
 
-          <div className="flex gap-2 w-full">
+          <div className="flex w-full gap-2">
             {[0, 1, 2].map((offset, i) => {
               const p = getProfile(offset);
               const isMiddle = i === 1;
               return (
                 <div
                   key={i}
-                  className="relative flex flex-col justify-end rounded-[9px] overflow-hidden"
+                  className="relative flex flex-col justify-end overflow-hidden rounded-[9px]"
                   style={{ height: "320px", flex: isMiddle ? "1.5" : "1" }}
                 >
                   <AnimatePresence mode="wait">
@@ -313,21 +313,21 @@ export function Hero() {
                         "linear-gradient(360deg, rgba(0,0,0,0.9) 19.96%, rgba(102,102,102,0) 42.85%)",
                     }}
                   />
-                  <div className="absolute bottom-0 left-0 z-10 p-[10px_12px] flex flex-col gap-0.5">
+                  <div className="absolute bottom-0 left-0 z-10 flex flex-col gap-0.5 p-[10px_12px]">
                     <div className="flex items-center gap-1">
                       <span
-                        className="font-bold text-[13px] leading-[18px] text-[#FEFEFE] whitespace-nowrap"
+                        className="text-[13px] leading-[18px] font-bold whitespace-nowrap text-[#FEFEFE]"
                         style={{ fontFamily: "'Afacad', sans-serif" }}
                       >
                         {p.name}
                       </span>
                       <CircleCheck
-                        className="w-3.5 h-3.5 shrink-0"
+                        className="h-3.5 w-3.5 shrink-0"
                         style={{ color: "#98FAC3" }}
                       />
                     </div>
                     <span
-                      className="font-medium text-[11px] leading-[16px] text-[#E6E6E6] whitespace-nowrap"
+                      className="text-[11px] leading-[16px] font-medium whitespace-nowrap text-[#E6E6E6]"
                       style={{ fontFamily: "'Afacad', sans-serif" }}
                     >
                       {p.role}
@@ -340,7 +340,7 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="hidden lg:block px-[125px] pt-[40px] pb-[80px]">
+      <div className="hidden px-[125px] pt-[40px] pb-[80px] lg:block">
         <div className="border-t border-[#C9C9C9]" />
       </div>
     </section>

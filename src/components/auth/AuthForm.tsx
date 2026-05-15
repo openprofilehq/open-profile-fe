@@ -65,11 +65,11 @@ export function AuthForm({ mode, action, googleAuthUrl }: Props) {
 
   return (
     <AuthLayout>
-      <div className="text-center mb-1">
+      <div className="mb-1 text-center">
         <h1 className="text-2xl font-bold text-[#050505]">
           {isSignup ? "Join Openprofile" : "Welcome back"}
         </h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="mt-1 text-sm text-gray-500">
           {isSignup
             ? "Create a verified profile that tells the world exactly who you are"
             : "Sign in to your Openprofile account"}
@@ -136,10 +136,10 @@ export function AuthForm({ mode, action, googleAuthUrl }: Props) {
         />
 
         {!isSignup && (
-          <div className="flex justify-end -mt-2">
+          <div className="-mt-2 flex justify-end">
             <Link
               href="/forgot-password"
-              className="text-sm text-[#087583] font-medium hover:underline"
+              className="text-sm font-medium text-[#087583] hover:underline"
             >
               Forgot password?
             </Link>
@@ -149,10 +149,10 @@ export function AuthForm({ mode, action, googleAuthUrl }: Props) {
         <Button
           type="submit"
           disabled={pending || (isSignup && !isValid)}
-          className={`w-full h-[52px] font-medium text-[16px] rounded-[10px] shadow-none mt-1 transition-colors ${
+          className={`mt-1 h-[52px] w-full rounded-[10px] text-[16px] font-medium shadow-none transition-colors ${
             isSignup && !isValid
-              ? "bg-white text-[#454545] border border-[#454545]"
-              : "bg-[#087583] hover:bg-[#065E69] text-[#FEFEFE] border-0"
+              ? "border border-[#454545] bg-white text-[#454545]"
+              : "border-0 bg-[#087583] text-[#FEFEFE] hover:bg-[#065E69]"
           }`}
         >
           {pending ? "Please wait…" : "Continue"}
@@ -164,25 +164,25 @@ export function AuthForm({ mode, action, googleAuthUrl }: Props) {
           By Continuing, you agree to Openprofile&apos;s{" "}
           <Link
             href="/privacy"
-            className="text-[#087583] font-semibold hover:underline"
+            className="font-semibold text-[#087583] hover:underline"
           >
             privacy policy
           </Link>
           , and{" "}
           <Link
             href="/terms"
-            className="text-[#087583] font-semibold hover:underline"
+            className="font-semibold text-[#087583] hover:underline"
           >
             Terms and Conditions
           </Link>
         </p>
       )}
 
-      <div className="text-xs text-[#454545] text-center">OR</div>
+      <div className="text-center text-xs text-[#454545]">OR</div>
 
       <a
         href={googleAuthUrl}
-        className="flex items-center justify-center gap-3 w-full h-11 rounded-lg bg-[#FAFAFA] border border-[#EDEDED] text-sm font-medium hover:bg-[#f0f0f0] transition-colors"
+        className="flex h-11 w-full items-center justify-center gap-3 rounded-lg border border-[#EDEDED] bg-[#FAFAFA] text-sm font-medium transition-colors hover:bg-[#f0f0f0]"
       >
         <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
           <path
@@ -211,7 +211,7 @@ export function AuthForm({ mode, action, googleAuthUrl }: Props) {
             Already have an account?{" "}
             <Link
               href="/login"
-              className="text-[#087583] font-medium hover:underline"
+              className="font-medium text-[#087583] hover:underline"
             >
               Sign In here
             </Link>
@@ -221,7 +221,7 @@ export function AuthForm({ mode, action, googleAuthUrl }: Props) {
             Don&apos;t have an account?{" "}
             <Link
               href="/signup"
-              className="text-[#087583] font-medium hover:underline"
+              className="font-medium text-[#087583] hover:underline"
             >
               Sign up here
             </Link>

@@ -50,7 +50,7 @@ export default function VerifyEmailPage() {
         <Button
           type="submit"
           disabled={!isComplete || pending}
-          className="w-full h-11 font-semibold rounded-lg shadow-none transition-opacity bg-[#087583] hover:bg-[#065E69] text-white border-0 disabled:opacity-50"
+          className="h-11 w-full rounded-lg border-0 bg-[#087583] font-semibold text-white shadow-none transition-opacity hover:bg-[#065E69] disabled:opacity-50"
         >
           {pending ? "Verifying…" : "Continue"}
         </Button>

@@ -18,7 +18,9 @@ function extractError(data: Record<string, unknown>, fallback: string): string {
   return fallback;
 }
 
-export type ContactActionState = { error?: string; success?: boolean } | undefined;
+export type ContactActionState =
+  | { error?: string; success?: boolean }
+  | undefined;
 
 export async function contactAction(
   _prev: ContactActionState,
@@ -39,7 +41,9 @@ export async function contactAction(
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
-    return { error: extractError(data, "Failed to send message. Please try again.") };
+    return {
+      error: extractError(data, "Failed to send message. Please try again."),
+    };
   }
 
   return { success: true };

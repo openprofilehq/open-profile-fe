@@ -88,32 +88,32 @@ export function Pricing() {
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={containerVariants}
-        className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col items-center"
+        className="mx-auto flex max-w-7xl flex-col items-center px-4 md:px-8"
       >
         <motion.h2
           variants={itemVariants}
-          className="text-[28px] md:text-[40px] font-semibold text-center text-[#050505] mb-10"
+          className="mb-10 text-center text-[28px] font-semibold text-[#050505] md:text-[40px]"
         >
           Choose the plan that fits your needs.
         </motion.h2>
 
         <motion.div
           variants={containerVariants}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl"
+          className="grid w-full max-w-6xl grid-cols-1 gap-6 md:grid-cols-3"
         >
           {plans.map((plan, index) => (
             <motion.div
               key={index}
               variants={itemVariants}
-              className={`rounded-[16px] p-4 xl:p-8 flex flex-col h-full border ${
+              className={`flex h-full flex-col rounded-[16px] border p-4 xl:p-8 ${
                 plan.highlighted
-                  ? "bg-[#087583] border-[#087583] text-white "
-                  : "bg-white border-[#E5E5E5] text-[#050505]"
+                  ? "border-[#087583] bg-[#087583] text-white"
+                  : "border-[#E5E5E5] bg-white text-[#050505]"
               }`}
             >
               <div className="mb-8">
                 <p
-                  className={`text-[16px] font-medium mb-4 ${
+                  className={`mb-4 text-[16px] font-medium ${
                     plan.highlighted ? "text-white" : "text-[#525252]"
                   }`}
                 >
@@ -137,20 +137,20 @@ export function Pricing() {
 
               <div className="flex-1">
                 <p
-                  className={`text-[14px] font-bold mb-6 ${
+                  className={`mb-6 text-[14px] font-bold ${
                     plan.highlighted ? "text-white" : "text-[#050505]"
                   }`}
                 >
                   {plan.featureTitle || "Includes:"}
                 </p>
-                <ul className="space-y-4 mb-10">
+                <ul className="mb-10 space-y-4">
                   {plan.features.map((feature, fIndex) => (
                     <li
                       key={fIndex}
                       className="flex items-start gap-3 text-[14px]"
                     >
                       <Check
-                        className={`w-4 h-4 shrink-0 mt-0.5 ${
+                        className={`mt-0.5 h-4 w-4 shrink-0 ${
                           plan.highlighted ? "text-white" : "text-[#087583]"
                         }`}
                       />
@@ -168,10 +168,10 @@ export function Pricing() {
 
               <Button
                 variant="outline"
-                className={`w-full py-4 h-auto rounded-[8px] font-bold text-[14px] transition-all duration-300 ${
+                className={`h-auto w-full rounded-[8px] py-4 text-[14px] font-bold transition-all duration-300 ${
                   plan.highlighted
-                    ? "bg-white text-[#087583] hover:bg-white/95 border-transparent"
-                    : "bg-white text-[#087583] hover:bg-[#087583]/5 border-[#087583]"
+                    ? "border-transparent bg-white text-[#087583] hover:bg-white/95"
+                    : "border-[#087583] bg-white text-[#087583] hover:bg-[#087583]/5"
                 }`}
               >
                 {plan.buttonText}

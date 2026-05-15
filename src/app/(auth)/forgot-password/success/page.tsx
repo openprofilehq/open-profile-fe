@@ -13,7 +13,7 @@ export default function ResetPasswordSuccessPage() {
           <h1 className="text-2xl font-bold text-[#050505]">
             Password Reset Successful
           </h1>
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="mt-2 text-sm text-gray-500">
             Your password has been reset. You can now sign in with your new
             password.
           </p>
@@ -21,7 +21,7 @@ export default function ResetPasswordSuccessPage() {
 
         <Button
           asChild
-          className="w-full h-11 bg-[#087583] hover:bg-[#065E69] text-white font-semibold rounded-lg shadow-none border-0"
+          className="h-11 w-full rounded-lg border-0 bg-[#087583] font-semibold text-white shadow-none hover:bg-[#065E69]"
         >
           <Link href="/login">Continue</Link>
         </Button>

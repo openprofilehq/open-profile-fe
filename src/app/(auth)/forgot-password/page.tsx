@@ -39,9 +39,9 @@ export default function ForgotPasswordPage() {
 
   return (
     <AuthLayout>
-      <div className="text-center mb-2">
-        <h1 className="text-2xl font-bold text-primary">Forgot Password</h1>
-        <p className="text-sm text-gray-500 mt-1">
+      <div className="mb-2 text-center">
+        <h1 className="text-primary text-2xl font-bold">Forgot Password</h1>
+        <p className="mt-1 text-sm text-gray-500">
           Enter your email address and we&apos;ll send you a reset code
         </p>
       </div>
@@ -62,7 +62,7 @@ export default function ForgotPasswordPage() {
                 email && !EMAIL_RE.test(email) ? "Incorrect email" : ""
               )
             }
-            className={`h-11 bg-[#FAFAFA] border border-[#EDEDED] shadow-none placeholder:text-[#747474] ${emailError ? "border-red-400" : ""}`}
+            className={`h-11 border border-[#EDEDED] bg-[#FAFAFA] shadow-none placeholder:text-[#747474] ${emailError ? "border-red-400" : ""}`}
           />
           {emailError && <p className="text-xs text-red-500">{emailError}</p>}
         </div>
@@ -70,7 +70,7 @@ export default function ForgotPasswordPage() {
         <Button
           type="submit"
           disabled={!isValid || pending}
-          className="w-full h-11 font-semibold rounded-lg shadow-none transition-opacity bg-brand hover:bg-[#065E69] text-white border-0 disabled:opacity-50"
+          className="bg-brand h-11 w-full rounded-lg border-0 font-semibold text-white shadow-none transition-opacity hover:bg-[#065E69] disabled:opacity-50"
         >
           {pending ? "Sending…" : "Continue"}
         </Button>

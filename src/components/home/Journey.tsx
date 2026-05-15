@@ -52,7 +52,7 @@ function MobileStepCard({ step }: { step: Step }) {
         alt="step number"
         width={140}
         height={140}
-        className="absolute right-0 top-[-30px] opacity-100"
+        className="absolute top-[-30px] right-0 opacity-100"
       />
 
       {/* Icon */}
@@ -69,14 +69,7 @@ function MobileStepCard({ step }: { step: Step }) {
       {/* Content */}
       <div className="relative z-10">
         <h3
-          className={`
-            text-[32px]
-            font-semisemibold
-            leading-[1.1]
-            tracking-[-0.03em]
-            pb-4
-            ${step.titleColor === "teal" ? "text-[#00798C]" : "text-[#202020]"}
-          `}
+          className={`font-semisemibold pb-4 text-[32px] leading-[1.1] tracking-[-0.03em] ${step.titleColor === "teal" ? "text-[#00798C]" : "text-[#202020]"} `}
         >
           {step.title}
         </h3>
@@ -102,31 +95,20 @@ export function Journey() {
           className="flex flex-col items-center text-center"
         >
           {/* Badge */}
-          <div className="rounded-[24px] bg-[#F2FDFE] pl-3.5 pr-5.5 w-fit flex items-center gap-1 mx-auto h-7.5">
+          <div className="mx-auto flex h-7.5 w-fit items-center gap-1 rounded-[24px] bg-[#F2FDFE] pr-5.5 pl-3.5">
             <Image
               src="/target_assets/icon-flash.svg"
               alt=""
               width={16}
               height={16}
             />
-            <p className="font-medium text-[12px] leading-4 text-brand font-sfpror">
+            <p className="text-brand font-sfpror text-[12px] leading-4 font-medium">
               Your Journey Starts Here
             </p>
           </div>
 
           {/* Heading */}
-          <h2
-            className="
-              mt-6
-              max-w-[900px]
-              text-[34px]
-              md:text-[40px]
-              font-semibold
-              leading-[1.05]
-              tracking-[-0.04em]
-              text-[#111111]
-            "
-          >
+          <h2 className="mt-6 max-w-[900px] text-[34px] leading-[1.05] font-semibold tracking-[-0.04em] text-[#111111] md:text-[40px]">
             Create the profile people should find first
           </h2>
         </motion.div>
@@ -134,19 +116,7 @@ export function Journey() {
         {/* DESKTOP */}
         <div className="relative hidden lg:block lg:h-[480px] xl:h-[560px]">
           {/* Wave */}
-          <div
-            className="
-              absolute
-              left-1/2
-              lg:top-[160px]
-              xl:top-[180px]
-              -translate-x-1/2
-              w-[85%]
-              xl:w-[75%]
-              max-w-[1150px]
-              min-w-[900px]
-            "
-          >
+          <div className="absolute left-1/2 w-[85%] max-w-[1150px] min-w-[900px] -translate-x-1/2 lg:top-[160px] xl:top-[180px] xl:w-[75%]">
             <Image
               src="/journey/Wave.svg"
               alt="wave"
@@ -163,15 +133,7 @@ export function Journey() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="
-              absolute
-              lg:left-[2%]
-              xl:left-[4%]
-              lg:top-[150px]
-              xl:top-[170px]
-              lg:w-[260px]
-              xl:w-[320px]
-            "
+            className="absolute lg:top-[150px] lg:left-[2%] lg:w-[260px] xl:top-[170px] xl:left-[4%] xl:w-[320px]"
           >
             {/* Ghost */}
             <Image
@@ -179,27 +141,11 @@ export function Journey() {
               alt="step number"
               width={180}
               height={180}
-              className="
-                absolute
-                lg:-top-[80px]
-                xl:-top-[95px]
-                lg:left-[-10px]
-                xl:left-[0px]
-                opacity-100
-              "
+              className="absolute opacity-100 lg:-top-[80px] lg:left-[-10px] xl:-top-[95px] xl:left-[0px]"
             />
 
             {/* Icon */}
-            <div
-              className="
-                absolute
-                lg:-left-[20px]
-                xl:left-[95px]
-                lg:top-[125px]
-                xl:top-[130px]
-                z-20
-              "
-            >
+            <div className="absolute z-20 lg:top-[125px] lg:-left-[20px] xl:top-[130px] xl:left-[95px]">
               <Image
                 src={steps[0].icon}
                 alt="step icon"
@@ -210,29 +156,11 @@ export function Journey() {
 
             {/* Content */}
             <div className="relative z-10">
-              <h3
-                className="
-                  lg:text-[28px]
-                  xl:text-[32px]
-                  font-semibold
-                  leading-[1.05]
-                  tracking-[-0.04em]
-                  text-[#00798C]
-                "
-              >
+              <h3 className="leading-[1.05] font-semibold tracking-[-0.04em] text-[#00798C] lg:text-[28px] xl:text-[32px]">
                 {steps[0].title}
               </h3>
 
-              <p
-                className="
-                  mt-5
-                  lg:text-[15px]
-                  xl:text-[18px]
-                  leading-[1.8]
-                  xl:leading-[2]
-                  text-[#6B7280]
-                "
-              >
+              <p className="mt-5 leading-[1.8] text-[#6B7280] lg:text-[15px] xl:text-[18px] xl:leading-[2]">
                 {steps[0].description}
               </p>
             </div>
@@ -244,15 +172,7 @@ export function Journey() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="
-              absolute
-              left-1/2
-              lg:top-[340px]
-              xl:top-[380px]
-              lg:w-[300px]
-              xl:w-[360px]
-              -translate-x-1/2
-            "
+            className="absolute left-1/2 -translate-x-1/2 lg:top-[340px] lg:w-[300px] xl:top-[380px] xl:w-[360px]"
           >
             {/* Ghost */}
             <Image
@@ -260,26 +180,11 @@ export function Journey() {
               alt="step number"
               width={180}
               height={180}
-              className="
-                absolute
-                lg:-top-[90px]
-                xl:-top-[100px]
-                lg:left-[220px]
-                xl:left-[250px]
-              "
+              className="absolute lg:-top-[90px] lg:left-[220px] xl:-top-[100px] xl:left-[250px]"
             />
 
             {/* Icon */}
-            <div
-              className="
-                absolute
-                lg:-top-[210px]
-                xl:-top-[230px]
-                lg:left-[220px]
-                xl:left-[250px]
-                z-20
-              "
-            >
+            <div className="absolute z-20 lg:-top-[210px] lg:left-[220px] xl:-top-[230px] xl:left-[250px]">
               <Image
                 src={steps[1].icon}
                 alt="step icon"
@@ -289,30 +194,12 @@ export function Journey() {
             </div>
 
             {/* Content */}
-            <div className="relative z-10 lg:pl-[20px] xl:pl-[40px] pt-[10px]">
-              <h3
-                className="
-                  lg:text-[28px]
-                  xl:text-[32px]
-                  font-semibold
-                  leading-[1.05]
-                  tracking-[-0.04em]
-                  text-[#454545]
-                "
-              >
+            <div className="relative z-10 pt-[10px] lg:pl-[20px] xl:pl-[40px]">
+              <h3 className="leading-[1.05] font-semibold tracking-[-0.04em] text-[#454545] lg:text-[28px] xl:text-[32px]">
                 {steps[1].title}
               </h3>
 
-              <p
-                className="
-                  mt-5
-                  lg:text-[15px]
-                  xl:text-[18px]
-                  leading-[1.8]
-                  xl:leading-[2]
-                  text-[#6B7280]
-                "
-              >
+              <p className="mt-5 leading-[1.8] text-[#6B7280] lg:text-[15px] xl:text-[18px] xl:leading-[2]">
                 {steps[1].description}
               </p>
             </div>
@@ -324,15 +211,7 @@ export function Journey() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="
-              absolute
-              lg:right-[1%]
-              xl:right-[3%]
-              lg:top-[310px]
-              xl:top-[350px]
-              lg:w-[280px]
-              xl:w-[360px]
-            "
+            className="absolute lg:top-[310px] lg:right-[1%] lg:w-[280px] xl:top-[350px] xl:right-[3%] xl:w-[360px]"
           >
             {/* Ghost */}
             <Image
@@ -340,26 +219,11 @@ export function Journey() {
               alt="step number"
               width={180}
               height={180}
-              className="
-                absolute
-                lg:-top-[40px]
-                xl:-top-[50px]
-                lg:-right-[30px]
-                xl:-right-[40px]
-              "
+              className="absolute lg:-top-[40px] lg:-right-[30px] xl:-top-[50px] xl:-right-[40px]"
             />
 
             {/* Icon */}
-            <div
-              className="
-                absolute
-                lg:-top-[110px]
-                xl:-top-[105px]
-                lg:-right-[20px]
-                xl:right-[90px]
-                z-20
-              "
-            >
+            <div className="absolute z-20 lg:-top-[110px] lg:-right-[20px] xl:-top-[105px] xl:right-[90px]">
               <Image
                 src={steps[2].icon}
                 alt="step icon"
@@ -370,29 +234,11 @@ export function Journey() {
 
             {/* Content */}
             <div className="relative z-10 lg:pt-[30px] xl:pt-[40px]">
-              <h3
-                className="
-                  lg:text-[28px]
-                  xl:text-[32px]
-                  font-semibold
-                  leading-[1.05]
-                  tracking-[-0.04em]
-                  text-[#202020]
-                "
-              >
+              <h3 className="leading-[1.05] font-semibold tracking-[-0.04em] text-[#202020] lg:text-[28px] xl:text-[32px]">
                 {steps[2].title}
               </h3>
 
-              <p
-                className="
-                  mt-5
-                  lg:text-[15px]
-                  xl:text-[18px]
-                  leading-[1.8]
-                  xl:leading-[2]
-                  text-[#6B7280]
-                "
-              >
+              <p className="mt-5 leading-[1.8] text-[#6B7280] lg:text-[15px] xl:text-[18px] xl:leading-[2]">
                 {steps[2].description}
               </p>
             </div>

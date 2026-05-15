@@ -66,18 +66,18 @@ export function FAQ() {
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={containerVariants}
-        className="max-w-7xl mx-auto px-4 md:px-8"
+        className="mx-auto max-w-7xl px-4 md:px-8"
       >
-        <div className="text-center mb-10">
+        <div className="mb-10 text-center">
           <motion.h2
             variants={itemVariants}
-            className="text-[32px] md:text-[40px] font-semibold tracking-tight text-[#050505]"
+            className="text-[32px] font-semibold tracking-tight text-[#050505] md:text-[40px]"
           >
             Frequently asked questions
           </motion.h2>
         </div>
 
-        <motion.div variants={containerVariants} className="max-w-3xl mx-auto">
+        <motion.div variants={containerVariants} className="mx-auto max-w-3xl">
           <Accordion type="single" collapsible className="w-full">
             {faqData.map((item, index) => (
               <motion.div key={index} variants={itemVariants}>
@@ -85,10 +85,10 @@ export function FAQ() {
                   value={`item-${index}`}
                   className="border-[#E5E5E5]"
                 >
-                  <AccordionTrigger className="hover:no-underline px-0">
+                  <AccordionTrigger className="px-0 hover:no-underline">
                     <span className="pr-4">{item.question}</span>
                   </AccordionTrigger>
-                  <AccordionContent className="text-[15px] text-[#525252] leading-relaxed pb-6 px-0">
+                  <AccordionContent className="px-0 pb-6 text-[15px] leading-relaxed text-[#525252]">
                     {item.answer}
                   </AccordionContent>
                 </AccordionItem>

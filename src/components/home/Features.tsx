@@ -56,14 +56,7 @@ function FeatureCard({
         duration: 0.5,
         delay: delay / 1000,
       }}
-      className="
-  flex flex-col
-  gap-3
-  rounded-2xl
-  p-3
-  sm:p-4
-  md:p-6
-"
+      className="flex flex-col gap-3 rounded-2xl p-3 sm:p-4 md:p-6"
     >
       <div className="shrink-0">
         <Image
@@ -71,32 +64,18 @@ function FeatureCard({
           alt={feature.title}
           width={50}
           height={50}
-          className="
-      object-contain
-    "
+          className="object-contain"
         />
       </div>
 
       <h3
-        className="
-  text-lg
-  sm:text-xl
-  font-bold
-  leading-snug
-  text-white
-"
+        className="text-lg leading-snug font-bold text-white sm:text-xl"
         style={{ fontFamily: "'Inter', sans-serif" }}
       >
         {feature.title}
       </h3>
 
-      <p
-        className="
-  text-sm
-  leading-7
-  text-teal-100/70
-"
-      >
+      <p className="text-sm leading-7 text-teal-100/70">
         {feature.description}
       </p>
     </motion.div>
@@ -115,49 +94,30 @@ export function Features() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.6 }}
-        className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col items-center gap-4 mb-16 text-center"
+        className="mx-auto mb-16 flex max-w-7xl flex-col items-center gap-4 px-4 text-center md:px-8"
       >
-        <span className="rounded-[24px] bg-[#F2FDFE] pl-3.5 pr-5.5 w-fit flex items-center gap-1 mx-auto h-7.5">
+        <span className="mx-auto flex h-7.5 w-fit items-center gap-1 rounded-[24px] bg-[#F2FDFE] pr-5.5 pl-3.5">
           <Image
             src="/target_assets/icon-flash.svg"
             alt=""
             width={16}
             height={16}
           />
-          <p className="font-medium text-[12px] leading-4 text-brand font-sfpror">
+          <p className="text-brand font-sfpror text-[12px] leading-4 font-medium">
             Powerful Features
           </p>
         </span>
 
         <h2
           id="features-heading"
-          className="
-  text-3xl
-  sm:text-4xl
-  md:text-5xl
-  font-extrabold
-  text-white
-  tracking-tight
-  leading-tight
-"
+          className="text-3xl leading-tight font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl"
         >
           One link, clear Proof, faster opportunities
         </h2>
       </motion.div>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <div
-          className="
-  grid
-  grid-cols-1
-  md:grid-cols-2
-  gap-y-4
-  sm:gap-y-6
-  md:gap-y-14
-  gap-x-6
-  md:gap-x-16
-"
-        >
+      <div className="mx-auto max-w-7xl px-4 md:px-8">
+        <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:gap-y-6 md:grid-cols-2 md:gap-x-16 md:gap-y-14">
           {features.map((feature, i) => (
             <FeatureCard
               key={feature.id}
@@ -173,27 +133,11 @@ export function Features() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.8 }}
-        className="max-w-7xl mx-auto px-4 md:px-8 flex justify-center mt-12 md:mt-20"
+        className="mx-auto mt-12 flex max-w-7xl justify-center px-4 md:mt-20 md:px-8"
       >
         <Link
           href="/signup"
-          className="
-  w-full
-  sm:w-auto
-  rounded-lg
-  bg-white
-  px-6
-  sm:px-8
-  py-3.5
-  text-sm
-  font-semibold
-  text-teal-700
-      transition-all duration-200
-      hover:bg-teal-50
-      hover:scale-105
-      active:scale-95
-      cursor-pointer
-    "
+          className="w-full cursor-pointer rounded-lg bg-white px-6 py-3.5 text-sm font-semibold text-teal-700 transition-all duration-200 hover:scale-105 hover:bg-teal-50 active:scale-95 sm:w-auto sm:px-8"
           style={{ fontFamily: "'Inter', sans-serif" }}
         >
           Create Your Profile Now

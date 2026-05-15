@@ -86,11 +86,11 @@ export function Proof() {
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={containerVariants}
-        className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col items-center"
+        className="mx-auto flex max-w-7xl flex-col items-center px-4 md:px-8"
       >
         <motion.div
           variants={itemVariants}
-          className="rounded-[24px] bg-[#F2FDFE] pl-3.5 pr-5.5 w-fit flex items-center gap-1 mx-auto h-7.5 mb-8"
+          className="mx-auto mb-8 flex h-7.5 w-fit items-center gap-1 rounded-[24px] bg-[#F2FDFE] pr-5.5 pl-3.5"
         >
           <Image
             src="/target_assets/icon-flash.svg"
@@ -98,34 +98,34 @@ export function Proof() {
             width={16}
             height={16}
           />
-          <p className="font-medium text-[12px] leading-4 text-brand font-sfpror">
+          <p className="text-brand font-sfpror text-[12px] leading-4 font-medium">
             Social Proof
           </p>
         </motion.div>
 
         <motion.h2
           variants={itemVariants}
-          className="text-[32px] lg:text-[40px] font-semibold text-center text-[#050505] mb-8"
+          className="mb-8 text-center text-[32px] font-semibold text-[#050505] lg:text-[40px]"
         >
           Join creators and freelancers building their identity online
         </motion.h2>
 
         <motion.div
           variants={containerVariants}
-          className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-4 w-full"
+          className="grid w-full grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-5"
         >
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={index}
               variants={itemVariants}
-              className={`bg-white rounded-[16px] p-6 px-4 flex flex-col justify-between ${testimonial.className} ${index === 0 || index === 5 ? "hidden md:flex" : ""}`}
+              className={`flex flex-col justify-between rounded-[16px] bg-white p-6 px-4 ${testimonial.className} ${index === 0 || index === 5 ? "hidden md:flex" : ""}`}
             >
               <div className="mb-4 md:mb-8">
                 {testimonial.text.split("\n\n").map((para, i) => (
                   <p
                     key={i}
-                    className={`text-[11px] md:text-[15px] leading-[1.5] text-[#454545] font-normal ${
-                      i === 0 && testimonial.text.includes("\n\n") ? "mb-6" : ""
+                    className={`text-[11px] leading-[1.5] font-normal text-[#454545] md:text-[15px] ${
+                      i === 0 && testimonial.text.includes(" ") ? "mb-6" : ""
                     }`}
                   >
                     {i === 0 && <>&quot;</>}
@@ -137,16 +137,16 @@ export function Proof() {
                 ))}
               </div>
 
-              <div className="flex items-center justify-between mt-auto">
+              <div className="mt-auto flex items-center justify-between">
                 <div>
-                  <h4 className="text-[12px] md:text-[15px] font-bold text-[#050505] mb-0.5">
+                  <h4 className="mb-0.5 text-[12px] font-bold text-[#050505] md:text-[15px]">
                     {testimonial.name}
                   </h4>
-                  <p className="text-[11px] md:text-[13px] text-[#737373] font-medium">
+                  <p className="text-[11px] font-medium text-[#737373] md:text-[13px]">
                     {testimonial.role}
                   </p>
                 </div>
-                <div className="relative w-8 h-8 md:w-12 md:h-12 rounded-full overflow-hidden shrink-0">
+                <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full md:h-12 md:w-12">
                   <Image
                     src={testimonial.image}
                     alt={testimonial.name}

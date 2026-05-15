@@ -92,7 +92,7 @@ const lines = [
 
 export default function Impression() {
   return (
-    <div className="font-afacad text-primary grid grid-cols-1 lg:grid-cols-2 gap-10 xl:gap-20 w-full items-center">
+    <div className="font-afacad text-primary grid w-full grid-cols-1 items-center gap-10 lg:grid-cols-2 xl:gap-20">
       {/* left visual */}
       <motion.div
         variants={fadeIn}
@@ -100,7 +100,7 @@ export default function Impression() {
         whileInView="show"
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="hidden lg:flex relative items-center justify-center w-full max-w-[528px] mx-auto overflow-hidden"
+        className="relative mx-auto hidden w-full max-w-[528px] items-center justify-center overflow-hidden lg:flex"
         style={{ aspectRatio: `${OUTER_W} / ${OUTER_H}` }}
       >
         {/* SVG — dashes + user icon only, centered inside outer container */}
@@ -165,7 +165,7 @@ export default function Impression() {
         {/* social cards — HTML divs absolutely positioned at corners */}
 
         {/* top row */}
-        <div className="absolute top-0 left-0 right-0 flex items-start justify-between sm:pl-[19px] gap-4">
+        <div className="absolute top-0 right-0 left-0 flex items-start justify-between gap-4 sm:pl-[19px]">
           {socials.slice(0, 2).map(({ label, sub, bg, icon }, i) => (
             <motion.div
               key={label}
@@ -174,15 +174,15 @@ export default function Impression() {
               whileInView="show"
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.3 + i * 0.15 }}
-              className="w-[143px] h-18 bg-[#FEFEFE] border border-[#EDEDED] rounded-[16px] flex items-center justify-start gap-2 pl-4 rotate-[0.82deg]"
+              className="flex h-18 w-[143px] rotate-[0.82deg] items-center justify-start gap-2 rounded-[16px] border border-[#EDEDED] bg-[#FEFEFE] pl-4"
             >
               <div
                 style={{ backgroundColor: bg }}
-                className="shrink-0 h-8.5 w-8.5 border border-[#EDEDED] flex items-center justify-center rounded-[4px]"
+                className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-[4px] border border-[#EDEDED]"
               >
                 <Image src={icon} alt={label} width={24} height={24} />
               </div>
-              <p className="text-[14px] leading-5 flex flex-col">
+              <p className="flex flex-col text-[14px] leading-5">
                 <span>{label}</span>
                 <span>{sub}</span>
               </p>
@@ -191,7 +191,7 @@ export default function Impression() {
         </div>
 
         {/* bottom row */}
-        <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between sm:pr-0.5 sm:pb-1.5 gap-4">
+        <div className="absolute right-0 bottom-0 left-0 flex items-end justify-between gap-4 sm:pr-0.5 sm:pb-1.5">
           {socials.slice(2).map(({ label, sub, bg, icon }, i) => (
             <motion.div
               key={label}
@@ -200,15 +200,15 @@ export default function Impression() {
               whileInView="show"
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.5 + i * 0.15 }}
-              className="w-[143px] h-18 bg-[#FEFEFE] border border-[#EDEDED] rounded-[16px] flex items-center justify-start gap-2 pl-4 rotate-[0.82deg]"
+              className="flex h-18 w-[143px] rotate-[0.82deg] items-center justify-start gap-2 rounded-[16px] border border-[#EDEDED] bg-[#FEFEFE] pl-4"
             >
               <div
                 style={{ backgroundColor: bg }}
-                className="shrink-0 h-8.5 w-8.5 border border-[#EDEDED] flex items-center justify-center rounded-[4px]"
+                className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-[4px] border border-[#EDEDED]"
               >
                 <Image src={icon} alt={label} width={24} height={24} />
               </div>
-              <p className="text-[14px] leading-5 flex flex-col">
+              <p className="flex flex-col text-[14px] leading-5">
                 <span>{label}</span>
                 <span>{sub}</span>
               </p>
@@ -224,7 +224,7 @@ export default function Impression() {
         whileInView="show"
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        className="flex flex-col items-start gap-6 justify-center w-full"
+        className="flex w-full flex-col items-start justify-center gap-6"
       >
         <div className="space-y-4">
           <motion.p
@@ -233,7 +233,7 @@ export default function Impression() {
             whileInView="show"
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="text-[28px] md:text-[34px] lg:text-[40px] leading-9 md:leading-11 lg:leading-12 tracking-[-1px] font-semibold font-afacad"
+            className="font-afacad text-[28px] leading-9 font-semibold tracking-[-1px] md:text-[34px] md:leading-11 lg:text-[40px] lg:leading-12"
           >
             Your Links Are Scattered.{" "}
             <span className="text-[#087583]">
@@ -247,7 +247,7 @@ export default function Impression() {
             whileInView="show"
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="text-[15px] md:text-[16px] lg:text-[18px] leading-6 lg:leading-6.5 flex flex-col font-afacad gap-4 md:gap-6"
+            className="font-afacad flex flex-col gap-4 text-[15px] leading-6 md:gap-6 md:text-[16px] lg:text-[18px] lg:leading-6.5"
           >
             <span>
               Your projects may be on GitHub. Your designs may be on Behance.
@@ -275,7 +275,7 @@ export default function Impression() {
         >
           <Link
             href="/signup"
-            className="font-medium text-[#FEFEFE] bg-brand h-12 rounded-[8px] px-4 cursor-pointer flex items-center justify-center"
+            className="bg-brand flex h-12 cursor-pointer items-center justify-center rounded-[8px] px-4 font-medium text-[#FEFEFE]"
           >
             Create Your Profile Now
           </Link>
