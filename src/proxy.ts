@@ -12,7 +12,7 @@ const AUTH_ONLY = ["/login", "/signup", "/forgot-password", "/verify-email"];
 
 export const proxy: NextProxy = (request) => {
   const { pathname } = request.nextUrl;
-  const isLoggedIn = request.cookies.has("auth");
+  const isLoggedIn = request.cookies.has("access_token");
 
   if (!isLoggedIn && PROTECTED.some((p) => pathname.startsWith(p))) {
     const url = request.nextUrl.clone();
