@@ -13,7 +13,10 @@ type CreateProfileInfoProps = {
   onUpdateStep: () => void;
   isPending?: boolean;
   photoUrl?: string;
-  onPhotoUrl?: (url: string, file: File) => void;
+
+  onPhotoUrl?: (url: string) => void;
+  photoFile?: File | null;
+  onPhotoFile?: (file: File | null) => void;
 };
 
 export default function CreateProfileInfo({
@@ -24,6 +27,7 @@ export default function CreateProfileInfo({
   onUpdateStep,
   isPending,
   onPhotoUrl,
+  onPhotoFile,
 }: CreateProfileInfoProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -33,7 +37,9 @@ export default function CreateProfileInfo({
     if (!file) return;
     const objectUrl = URL.createObjectURL(file);
     setPreview(objectUrl);
-    onPhotoUrl?.(objectUrl, file);
+
+    onPhotoUrl?.(objectUrl);
+    onPhotoFile?.(file);
   }
 
   return (

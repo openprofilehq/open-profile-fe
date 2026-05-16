@@ -31,6 +31,7 @@ export default function CreateProfileForm() {
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
   const [fullName, setFullName] = useState("");
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoUrl, setPhotoUrl] = useState("");
   const debouncedUsername = useDebounce(username, 300);
 
@@ -144,6 +145,8 @@ export default function CreateProfileForm() {
             isPending={createProfile.isPending}
             photoUrl={photoUrl}
             onPhotoUrl={setPhotoUrl}
+            photoFile={photoFile}
+            onPhotoFile={setPhotoFile}
           />
         )}
 
