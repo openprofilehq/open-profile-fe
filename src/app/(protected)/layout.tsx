@@ -1,5 +1,5 @@
 "use client";
-import { userQueryOptions } from "@/api/auth/auth.options";
+import { getCurrentUserOption } from "@/api/auth/auth.options";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -24,7 +24,7 @@ export default function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { data: user, isLoading, isError } = useQuery(userQueryOptions);
+  const { data: user, isLoading, isError } = useQuery(getCurrentUserOption());
   const router = useRouter();
   const pathname = usePathname();
 
