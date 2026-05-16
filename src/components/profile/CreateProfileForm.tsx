@@ -15,7 +15,6 @@ import {
   checkUsernameOption,
 } from "@/api/profile/profile.options";
 import { callApi, isApiError } from "@/api/base";
-import { getCurrentUserOption } from "@/api/auth/auth.options";
 
 type UsernameStatus = "available" | "taken" | "invalid" | "error" | "";
 
@@ -30,7 +29,6 @@ export default function CreateProfileForm() {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const debouncedUsername = useDebounce(username, 500);
 
-  const { data: user } = useQuery(getCurrentUserOption());
   const usernameQuery = useQuery(checkUsernameOption(debouncedUsername));
 
   const usernameStatus: UsernameStatus = usernameQuery.isLoading
@@ -80,7 +78,6 @@ export default function CreateProfileForm() {
         ["auth", "me"],
         (prev) => (prev ? { ...prev, onboardingComplete: true } : prev)
       );
-      queryClient.setQueryData(["profile", "exists", user?.id], true);
       setCurrentStep(3);
     },
     onError: (err) => {
@@ -89,7 +86,6 @@ export default function CreateProfileForm() {
           ["auth", "me"],
           (prev) => (prev ? { ...prev, onboardingComplete: true } : prev)
         );
-        queryClient.setQueryData(["profile", "exists", user?.id], true);
         setCurrentStep(3);
         return;
       }
