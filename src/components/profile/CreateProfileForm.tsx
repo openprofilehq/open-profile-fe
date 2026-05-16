@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -14,17 +14,19 @@ import {
   createProfileOption,
   checkUsernameOption,
 } from "@/api/profile/profile.options";
-import { isApiError } from "@/api/base";
+import { callApi, isApiError } from "@/api/base";
 
 type UsernameStatus = "available" | "taken" | "invalid" | "error" | "";
 
 export default function CreateProfileForm() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [currentStep, setCurrentStep] = useState(1);
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
   const [fullName, setFullName] = useState("");
   const [photoUrl, setPhotoUrl] = useState("");
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const debouncedUsername = useDebounce(username, 500);
 
   const usernameQuery = useQuery(checkUsernameOption(debouncedUsername));
@@ -58,9 +60,37 @@ export default function CreateProfileForm() {
 
   const createProfile = useMutation({
     ...createProfileOption,
-    onSuccess: () => setCurrentStep(3),
-    onError: (err) =>
-      toast.error(isApiError(err) ? err.message : "Failed to create profile."),
+    onSuccess: async () => {
+      if (photoFile) {
+        try {
+          const form = new FormData();
+          form.append("photo", photoFile);
+          await callApi({
+            url: `/profiles/${username}`,
+            method: "PATCH",
+            data: form,
+          });
+        } catch {
+          toast.error("Profile created but photo upload failed.");
+        }
+      }
+      queryClient.setQueryData<import("@/api/auth/auth.type").User>(
+        ["auth", "me"],
+        (prev) => (prev ? { ...prev, onboardingComplete: true } : prev)
+      );
+      setCurrentStep(3);
+    },
+    onError: (err) => {
+      if (isApiError(err) && err.status === 409) {
+        queryClient.setQueryData<import("@/api/auth/auth.type").User>(
+          ["auth", "me"],
+          (prev) => (prev ? { ...prev, onboardingComplete: true } : prev)
+        );
+        setCurrentStep(3);
+        return;
+      }
+      toast.error(isApiError(err) ? err.message : "Failed to create profile.");
+    },
   });
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -117,7 +147,10 @@ export default function CreateProfileForm() {
               }
               isPending={createProfile.isPending}
               photoUrl={photoUrl}
-              onPhotoUrl={setPhotoUrl}
+              onPhotoUrl={(url, file) => {
+                setPhotoUrl(url);
+                setPhotoFile(file);
+              }}
             />
           )}
 
