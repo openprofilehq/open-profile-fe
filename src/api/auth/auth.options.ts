@@ -18,3 +18,10 @@ export const getCurrentUserOption = () =>
     queryFn: ({ signal }) => getCurrentUser({ signal }),
     staleTime: QueryStaleTime.fiveMins,
   });
+
+export const userQueryOptions = queryOptions({
+  queryKey: ["auth", "me"],
+  queryFn: ({ signal }) => getCurrentUser({ signal }),
+  staleTime: QueryStaleTime.fiveMins,
+  retry: false,
+});
