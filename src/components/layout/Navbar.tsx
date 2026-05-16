@@ -6,12 +6,12 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { userQueryOptions } from "@/api/auth/auth.options";
+import { getCurrentUserOption } from "@/api/auth/auth.options";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { data: user } = useQuery(userQueryOptions);
+  const { data: user } = useQuery(getCurrentUserOption());
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
