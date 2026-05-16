@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 type CreateProfileLinkProps = {
   username: string;
   available: string;
+  isAvailable: boolean;
   onUpdateUsername: (e: ChangeEvent<HTMLInputElement>) => void;
   onUpdateStep: () => void;
 };
@@ -13,6 +14,7 @@ type CreateProfileLinkProps = {
 export default function CreateProfileLink({
   username,
   available,
+  isAvailable,
   onUpdateUsername,
   onUpdateStep,
 }: CreateProfileLinkProps) {
