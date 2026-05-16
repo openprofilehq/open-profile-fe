@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-type createProfileLinkProps = {
+type CreateProfileLinkProps = {
   username: string;
   available: string;
   onUpdateUsername: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -15,36 +15,41 @@ export default function CreateProfileLink({
   available,
   onUpdateUsername,
   onUpdateStep,
-}: createProfileLinkProps) {
-  const availableCheck =
-    available.includes("not available") ||
-    available.includes("Invalid") ||
-    available.includes("Checking") ||
-    available.includes("Could not");
+}: CreateProfileLinkProps) {
+  const isChecking = available.includes("Checking");
+  const isAvailable = available === "Available";
+  const isUnavailable =
+    available === "Username not available" ||
+    available === "Invalid username format" ||
+    available === "Could not check availability";
+
+  const canContinue = username.length > 0 && isAvailable && !isChecking;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
+      className="flex flex-1 flex-col justify-center"
     >
-      <div className="mb-1 text-center">
+      <div className="mb-8 text-center">
         <h1 className="text-primary text-3xl font-bold">Create Your Link</h1>
 
-        <p className="mt-1 text-[#454545]">
+        <p className="mx-auto mt-3 max-w-[520px] text-[#454545]">
           Your account has been successfully created. You can now create your
-          own unique link with you name
+          own unique link with your name
         </p>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <div className="flex flex-col gap-2 md:flex-row">
-          <label
-            htmlFor="username"
-            className="bg-neutral-bg flex basis-1/4 rounded-md py-3 pl-3 text-lg font-normal md:items-center md:justify-center"
-          >
+      <div className="mx-auto flex w-full max-w-[560px] flex-col gap-3">
+        <label htmlFor="username" className="font-bold text-[#454545]">
+          Enter Name
+        </label>
+
+        <div className="flex flex-col gap-2 md:flex-row md:gap-3">
+          <div className="flex h-[56px] items-center rounded-[8px] bg-[#F0F0F0] px-4 text-lg text-[#050505] md:w-[170px]">
             open.profile/
-          </label>
+          </div>
 
           <Input
             type="text"
@@ -53,21 +58,39 @@ export default function CreateProfileLink({
             value={username}
             onChange={onUpdateUsername}
             placeholder="Enter username"
-            className={`basis-2/3 bg-[#FAFAFA] py-3 shadow-none md:py-6 md:text-lg ${availableCheck ? "border-[#A72E2E] text-[#A72E2E]" : "border-[#EDEDED]"} placeholder:text-lg`}
+            className={`h-[56px] flex-1 rounded-[8px] bg-[#FAFAFA] px-4 text-lg shadow-none ${
+              isUnavailable
+                ? "border-[#FF3158] text-[#A72E2E]"
+                : isAvailable
+                  ? "border-[#050505] text-[#050505]"
+                  : "border-[#EDEDED] text-[#050505]"
+            }`}
           />
         </div>
 
-        <span
-          className={`text-lg md:ml-34 ${availableCheck ? "text-[#A72E2E]" : "text-[#145B33]"}`}
-        >
-          {available}
-        </span>
+        {available && (
+          <span
+            className={`text-sm ${
+              isUnavailable
+                ? "text-[#FF3158]"
+                : isChecking
+                  ? "text-[#747474]"
+                  : "text-[#145B33]"
+            }`}
+          >
+            {available}
+          </span>
+        )}
 
         <Button
           type="button"
-          className={`mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-medium shadow-none transition-colors ${username.length === 0 || availableCheck ? "cursor-not-allowed" : "cursor-pointer"}`}
+          className={`mt-5 h-13 w-full rounded-[10px] text-[16px] font-medium shadow-none transition-colors ${
+            canContinue
+              ? "bg-[#087583] text-white"
+              : "cursor-not-allowed bg-[#9ACBD1] text-white"
+          }`}
           onClick={onUpdateStep}
-          disabled={username.length === 0 || availableCheck}
+          disabled={!canContinue}
         >
           Continue
         </Button>
