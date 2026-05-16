@@ -1,8 +1,10 @@
 import Image from "next/image";
-import { useRef } from "react";
 import { motion } from "motion/react";
-import { Copy } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { env } from "@/env/client";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function ProfileLinkSuccess({
   username,
@@ -15,10 +17,17 @@ export default function ProfileLinkSuccess({
   photoUrl?: string;
   onContinue?: () => void;
 }) {
-  const profileRef = useRef<HTMLDivElement>(null);
+  const profileUrl = `${env.NEXT_PUBLIC_PROFILE_BASE_URL}/${encodeURIComponent(username)}`;
+  const [copied, setCopied] = useState(false);
 
-  function runTest() {
-    navigator.clipboard.writeText(profileRef.current?.textContent || "");
+  function copyLink() {
+    navigator.clipboard.writeText(profileUrl).then(
+      () => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      },
+      () => toast.error("Failed to copy link.")
+    );
   }
 
   return (
@@ -53,12 +62,29 @@ export default function ProfileLinkSuccess({
           )}
 
           <span className="mt-4 flex items-center gap-2 text-center font-bold text-[#747474]">
-            open.profile/{username}
-            <Copy
-              className="rotate-90 transform cursor-pointer"
-              size={18}
-              onClick={runTest}
-            />
+            <a
+              href={profileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#747474] no-underline visited:text-[#747474] hover:text-[#747474] hover:no-underline"
+              style={{ textDecoration: "none" }}
+            >
+              {profileUrl}
+            </a>
+            <button
+              type="button"
+              onClick={copyLink}
+              className="shrink-0 cursor-pointer"
+            >
+              {copied ? (
+                <Check size={18} className="text-[#087583]" />
+              ) : (
+                <Copy
+                  size={18}
+                  className="rotate-90 transform text-[#747474]"
+                />
+              )}
+            </button>
           </span>
         </div>
       </div>
