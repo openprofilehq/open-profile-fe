@@ -1,20 +1,16 @@
 import type { NextConfig } from "next";
 
-const apiUrl =
-  process.env.API_BASE_URL ?? "https://api.staging.open-profile.hng14.com";
-const apiHostname = new URL(apiUrl).hostname;
+const apiUrl = process.env.API_BASE_URL;
+const apiHostname = apiUrl ? new URL(apiUrl).hostname : undefined;
 
 const nextConfig: NextConfig = {
   experimental: {
     authInterrupts: true,
   },
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: apiHostname,
-      },
-    ],
+    remotePatterns: apiHostname
+      ? [{ protocol: "https", hostname: apiHostname }]
+      : [],
   },
 };
 
