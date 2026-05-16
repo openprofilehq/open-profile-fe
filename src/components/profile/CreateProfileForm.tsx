@@ -93,16 +93,20 @@ export default function CreateProfileForm() {
     },
   });
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function submitProfile() {
     if (currentStep !== 2) return;
+
     createProfile.mutate({
       username,
       fullName,
       bio,
-      // only pass photoUrl if it's a real URL (not a blob preview)
       ...(photoUrl && photoUrl.startsWith("http") ? { photoUrl } : {}),
     });
+  }
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    submitProfile();
   }
 
   return (
@@ -137,11 +141,7 @@ export default function CreateProfileForm() {
             fullName={fullName}
             onUpdateBio={(e) => setBio(e.target.value)}
             onUpdateFullName={(e) => setFullName(e.target.value)}
-            onUpdateStep={() =>
-              handleSubmit({
-                preventDefault: () => {},
-              } as React.FormEvent<HTMLFormElement>)
-            }
+            onUpdateStep={submitProfile}
             isPending={createProfile.isPending}
             photoUrl={photoUrl}
             onPhotoUrl={setPhotoUrl}
