@@ -5,10 +5,13 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { userQueryOptions } from "@/api/auth/auth.options";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { data: user } = useQuery(userQueryOptions);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -59,21 +62,34 @@ export function Navbar() {
             </Link>
           </div>
 
+          {/* Desktop auth buttons */}
           <div className="hidden items-center gap-3 md:flex">
-            <Link
-              href="/login"
-              className="flex h-[44px] items-center justify-center rounded-[8px] bg-[#FAFAFA] px-[16px] py-[12px] text-[15px] font-semibold text-[#087583] transition-colors hover:bg-[#E5F4F6]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
-              Login
-            </Link>
-            <Link
-              href="/signup"
-              className="bg-brand hover:bg-brand-hover flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-medium whitespace-nowrap text-white transition-colors"
-              style={{ fontFamily: "'Afacad', sans-serif" }}
-            >
-              Get Started
-            </Link>
+            {user ? (
+              <Link
+                href="/dashboard"
+                className="bg-brand hover:bg-brand-hover flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-medium whitespace-nowrap text-white transition-colors"
+                style={{ fontFamily: "'Afacad', sans-serif" }}
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="flex h-[44px] items-center justify-center rounded-[8px] bg-[#FAFAFA] px-[16px] py-[12px] text-[15px] font-semibold text-[#087583] transition-colors hover:bg-[#E5F4F6]"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  className="bg-brand hover:bg-brand-hover flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-medium whitespace-nowrap text-white transition-colors"
+                  style={{ fontFamily: "'Afacad', sans-serif" }}
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
 
           <button
@@ -139,22 +155,35 @@ export function Navbar() {
             </div>
 
             <div className="flex flex-col gap-3 px-6 pb-10">
-              <Link
-                href="/login"
-                onClick={() => setMobileOpen(false)}
-                className="flex h-[52px] w-full items-center justify-center rounded-[10px] border border-[#EDEDED] bg-[#F5F5F5] text-[16px] font-semibold text-[#087583]"
-                style={{ fontFamily: "'Afacad', sans-serif" }}
-              >
-                Login
-              </Link>
-              <Link
-                href="/signup"
-                onClick={() => setMobileOpen(false)}
-                className="bg-brand hover:bg-brand-hover flex h-[52px] w-full items-center justify-center rounded-[10px] text-[16px] font-medium text-white"
-                style={{ fontFamily: "'Afacad', sans-serif" }}
-              >
-                Get Started
-              </Link>
+              {user ? (
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileOpen(false)}
+                  className="bg-brand hover:bg-brand-hover flex h-[52px] w-full items-center justify-center rounded-[10px] text-[16px] font-medium text-white"
+                  style={{ fontFamily: "'Afacad', sans-serif" }}
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex h-[52px] w-full items-center justify-center rounded-[10px] border border-[#EDEDED] bg-[#F5F5F5] text-[16px] font-semibold text-[#087583]"
+                    style={{ fontFamily: "'Afacad', sans-serif" }}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={() => setMobileOpen(false)}
+                    className="bg-brand hover:bg-brand-hover flex h-[52px] w-full items-center justify-center rounded-[10px] text-[16px] font-medium text-white"
+                    style={{ fontFamily: "'Afacad', sans-serif" }}
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
           </motion.div>
         )}
