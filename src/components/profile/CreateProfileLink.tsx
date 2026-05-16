@@ -19,7 +19,6 @@ export default function CreateProfileLink({
   onUpdateStep,
 }: CreateProfileLinkProps) {
   const isChecking = available.includes("Checking");
-  const isAvailable = available === "Available";
   const isUnavailable =
     available === "Username not available" ||
     available === "Invalid username format" ||

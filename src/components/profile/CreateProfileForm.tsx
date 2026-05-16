@@ -86,6 +86,7 @@ export default function CreateProfileForm() {
           <CreateProfileLink
             username={username}
             available={availableLabel}
+            isAvailable={usernameStatus === "available"}
             onUpdateUsername={(e) =>
               setUsername(
                 e.target.value
