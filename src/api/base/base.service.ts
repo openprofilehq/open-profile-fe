@@ -9,6 +9,67 @@ export const api = axios.create({
   withCredentials: true,
 });
 
+// track if we're already refreshing to avoid multiple refresh calls
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (value: unknown) => void;
+  reject: (reason?: unknown) => void;
+}> = [];
+
+const processQueue = (error: unknown) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(null);
+    }
+  });
+  failedQueue = [];
+};
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as AxiosRequestConfig & {
+      _retry?: boolean;
+    };
+
+    if (error.response?.status !== 401 || originalRequest._retry) {
+      return Promise.reject(error);
+    }
+
+    // don't refresh if the failing request IS the refresh or login endpoint
+    if (
+      originalRequest.url?.includes("/auth/refresh-token") ||
+      originalRequest.url?.includes("/auth/login") ||
+      originalRequest.url?.includes("/auth/me")
+    ) {
+      return Promise.reject(error);
+    }
+
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        failedQueue.push({ resolve, reject });
+      }).then(() => api(originalRequest));
+    }
+
+    originalRequest._retry = true;
+    isRefreshing = true;
+
+    try {
+      await api.post("/auth/refresh-token");
+      processQueue(null);
+      return api(originalRequest);
+    } catch (refreshError) {
+      processQueue(refreshError);
+      // reject and let the layout handle redirects
+      return Promise.reject(refreshError);
+    } finally {
+      isRefreshing = false;
+    }
+  }
+);
+
 function getApiErrorMessage(message?: unknown): string {
   if (typeof message === "string") return message;
 
