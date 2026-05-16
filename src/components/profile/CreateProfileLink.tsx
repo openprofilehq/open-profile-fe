@@ -3,10 +3,12 @@ import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+type UsernameStatus = "available" | "taken" | "error" | "checking" | "";
+
 type CreateProfileLinkProps = {
   username: string;
   available: string;
-  isAvailable: boolean;
+  status: UsernameStatus;
   onUpdateUsername: (e: ChangeEvent<HTMLInputElement>) => void;
   onUpdateStep: () => void;
 };
@@ -14,17 +16,15 @@ type CreateProfileLinkProps = {
 export default function CreateProfileLink({
   username,
   available,
-  isAvailable,
+  status,
   onUpdateUsername,
   onUpdateStep,
 }: CreateProfileLinkProps) {
-  const isChecking = available.includes("Checking");
-  const isUnavailable =
-    available === "Username not available" ||
-    available === "Invalid username format" ||
-    available === "Could not check availability";
+  const isChecking = status === "checking";
+  const isAvailable = status === "available";
+  const isUnavailable = status === "taken" || status === "error";
 
-  const canContinue = username.length > 0 && isAvailable && !isChecking;
+  const canContinue = username.length > 0 && isAvailable;
 
   return (
     <motion.div
