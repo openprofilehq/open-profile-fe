@@ -163,7 +163,7 @@ export default function SearchPage() {
                     </div>
 
                     <Link
-                      href={`/${user.username}`}
+                      href={user.username ? `/${user.username}` : "#"}
                       className="shrink-0 rounded-[6px] bg-[#087583] px-6 py-3 text-sm text-white"
                     >
                       View Profile

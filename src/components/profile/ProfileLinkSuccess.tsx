@@ -4,6 +4,7 @@ import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { env } from "@/env/client";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function ProfileLinkSuccess({
   username,
@@ -16,14 +17,17 @@ export default function ProfileLinkSuccess({
   photoUrl?: string;
   onContinue?: () => void;
 }) {
-  const profileUrl = `${env.NEXT_PUBLIC_PROFILE_BASE_URL}/${username}`;
+  const profileUrl = `${env.NEXT_PUBLIC_PROFILE_BASE_URL}/${encodeURIComponent(username)}`;
   const [copied, setCopied] = useState(false);
 
   function copyLink() {
-    navigator.clipboard.writeText(profileUrl).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+    navigator.clipboard.writeText(profileUrl).then(
+      () => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      },
+      () => toast.error("Failed to copy link.")
+    );
   }
 
   return (

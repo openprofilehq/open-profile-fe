@@ -60,7 +60,7 @@ export function Hero() {
   function handleSearch() {
     const username = query.trim();
     if (!username) return;
-    router.push(`/${username}`);
+    router.push(`/${encodeURIComponent(username)}`);
   }
 
   return (

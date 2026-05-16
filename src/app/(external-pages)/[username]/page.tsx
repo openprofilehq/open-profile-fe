@@ -13,7 +13,7 @@ export default async function UserProfilePage({ params }: Props) {
   const { username } = await params;
 
   const res = await fetch(
-    `${serverEnv.API_BASE_URL}/api/v1/profiles/${username}`,
+    `${serverEnv.API_BASE_URL}/api/v1/profiles/${encodeURIComponent(username)}`,
     {
       cache: "no-store",
     }
@@ -35,7 +35,7 @@ export default async function UserProfilePage({ params }: Props) {
   const photoSrc = profile.photoUrl
     ? profile.photoUrl.startsWith("http")
       ? profile.photoUrl
-      : `${serverEnv.API_BASE_URL}${profile.photoUrl}`
+      : new URL(profile.photoUrl, serverEnv.API_BASE_URL).toString()
     : "";
 
   return (

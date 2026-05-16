@@ -32,7 +32,7 @@ export function hasProfileOption(userId: string | undefined, skip = false) {
         return false;
       } catch (err) {
         if (isApiError(err) && err.status === 409) return true;
-        return false;
+        throw err;
       }
     },
   });

@@ -72,7 +72,9 @@ export default function CreateProfileForm() {
             method: "PATCH",
             data: form,
           });
-        } catch {}
+        } catch {
+          toast.error("Profile created but photo upload failed.");
+        }
       }
       queryClient.setQueryData<import("@/api/auth/auth.type").User>(
         ["auth", "me"],
@@ -83,6 +85,10 @@ export default function CreateProfileForm() {
     },
     onError: (err) => {
       if (isApiError(err) && err.status === 409) {
+        queryClient.setQueryData<import("@/api/auth/auth.type").User>(
+          ["auth", "me"],
+          (prev) => (prev ? { ...prev, onboardingComplete: true } : prev)
+        );
         queryClient.setQueryData(["profile", "exists", user?.id], true);
         setCurrentStep(3);
         return;
