@@ -88,7 +88,7 @@ export default function ProfileLinkSuccess({
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              open.profile/{username}
+              {profileUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
             </a>
             <button
               type="button"
