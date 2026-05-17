@@ -1,13 +1,25 @@
 import { ChevronRight, Eye, Link2, Pencil, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const actions = [
-  { title: "Manage links", description: "Update your links", icon: Link2 },
-  { title: "Your portfolio", description: "Add your portfolio", icon: Link2 },
+  {
+    title: "Manage links",
+    description: "Update your links",
+    icon: Link2,
+    href: "/dashboard/profile-builder",
+  },
+  {
+    title: "Your portfolio",
+    description: "Add your portfolio",
+    icon: Link2,
+    href: "/dashboard/profile-builder",
+  },
   {
     title: "Customize your profile",
     description: "Adjust font, color, spacing and appearance",
     icon: Palette,
+    href: "/dashboard/profile-builder",
   },
 ];
 
@@ -42,9 +54,10 @@ export default function ProfileOverviewCard() {
         const Icon = item.icon;
 
         return (
-          <button
-            type="button"
+          <Link
             key={item.title}
+            href={item.href}
+            aria-label={item.title}
             className="flex w-full items-center justify-between rounded-[12px] border border-[#EDEDED] bg-white p-5 text-left"
           >
             <div className="flex items-start gap-3">
@@ -59,7 +72,7 @@ export default function ProfileOverviewCard() {
             </div>
 
             <ChevronRight size={22} />
-          </button>
+          </Link>
         );
       })}
 

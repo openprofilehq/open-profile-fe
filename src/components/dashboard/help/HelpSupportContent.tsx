@@ -5,16 +5,19 @@ const supportItems = [
     title: "FAQs",
     description: "Find answers to common questions and platform guidance.",
     icon: MessageCircleQuestion,
+    href: "/faq",
   },
   {
     title: "Contact Support",
     description: "Reach out to our support team for direct assistance.",
     icon: Mail,
+    href: "mailto:support@openprofile.com",
   },
   {
     title: "Privacy & Security",
     description: "Learn how we protect your account and personal data.",
     icon: ShieldQuestion,
+    href: "/privacy-policy",
   },
 ];
 
@@ -53,7 +56,7 @@ export default function HelpSupportContent() {
               </div>
 
               <a
-                href="mailto:support@openprofile.com"
+                href={item.href}
                 className="rounded-[8px] border border-[#EDEDED] px-4 py-2 text-sm font-medium text-[#050505]"
               >
                 Open

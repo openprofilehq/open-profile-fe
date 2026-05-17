@@ -1,6 +1,25 @@
 import { ExternalLink, ImageIcon } from "lucide-react";
 
-const links = [1, 2, 3];
+const links = [
+  {
+    id: 1,
+    title: "Portfolio",
+    url: "https://yourlink.com/portfolio",
+    subtitle: "yourlink.com/portfolio",
+  },
+  {
+    id: 2,
+    title: "Latest Project",
+    url: "https://yourlink.com/project",
+    subtitle: "yourlink.com/project",
+  },
+  {
+    id: 3,
+    title: "Book a Call",
+    url: "https://yourlink.com/book",
+    subtitle: "yourlink.com/book",
+  },
+];
 
 export default function FeaturedLinks() {
   return (
@@ -10,8 +29,8 @@ export default function FeaturedLinks() {
       <div className="mt-6 flex flex-col gap-4">
         {links.map((item) => (
           <a
-            key={item}
-            href="https://yourlink.com/@title"
+            key={item.id}
+            href={item.url}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-between rounded-[18px] border border-[#EDEDED] p-4 no-underline"
@@ -22,8 +41,8 @@ export default function FeaturedLinks() {
               </span>
 
               <div>
-                <h3 className="font-bold text-[#050505]">Link</h3>
-                <p className="text-[#A2A2A2]">yourlink.com/@title</p>
+                <h3 className="font-bold text-[#050505]">{item.title}</h3>
+                <p className="text-[#A2A2A2]">{item.subtitle}</p>
               </div>
             </div>
 
