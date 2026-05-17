@@ -25,14 +25,15 @@ export default function ProfileLinkSuccess({
 
   const profileUrl = getProfileUrl();
 
-  const initials = fullName
+  const initials = fullName?.trim()
     ? fullName
-        .split(" ")
+        .trim()
+        .split(/\s+/)
         .map((n) => n[0])
         .join("")
         .toUpperCase()
         .slice(0, 2)
-    : username.slice(0, 2).toUpperCase();
+    : (username || "").slice(0, 2).toUpperCase();
 
   async function handleCopy(e: React.MouseEvent) {
     e.preventDefault();
