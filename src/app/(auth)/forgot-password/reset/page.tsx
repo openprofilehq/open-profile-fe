@@ -22,7 +22,10 @@ export default function ResetPasswordPage() {
   const token = searchParams.get("token") ?? "";
 
   const isValid =
-    allPasswordRulesMet(password) && confirm.length > 0 && password === confirm;
+    Boolean(token) &&
+    allPasswordRulesMet(password) &&
+    confirm.length > 0 &&
+    password === confirm;
 
   const resetMutation = useMutation({
     ...resetPasswordOption,
@@ -35,6 +38,10 @@ export default function ResetPasswordPage() {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!token) {
+      toast.error("Invalid or missing reset token. Please request a new link.");
+      return;
+    }
     resetMutation.mutate({ resetToken: token, newPassword: password });
   }
 
