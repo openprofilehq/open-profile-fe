@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AuthLayout } from "@/components/auth/AuthLayout";
@@ -24,6 +24,7 @@ type Props = {
 
 export function AuthForm({ mode, googleAuthUrl }: Props) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const returnTo = searchParams.get("returnTo");
 
@@ -43,8 +44,12 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
 
   const loginMutation = useMutation({
     ...loginOption,
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      if (data?.accessToken) {
+        document.cookie = `access_token=${data.accessToken}; path=/; SameSite=Lax`;
+      }
       document.cookie = "auth=1; path=/; SameSite=Lax";
+      await queryClient.resetQueries({ queryKey: ["auth", "me"] });
       const onboardingComplete = data?.user?.onboardingComplete;
       const destination = onboardingComplete ? "/dashboard" : "/create-profile";
       router.replace(returnTo?.startsWith("/") ? returnTo : destination);
