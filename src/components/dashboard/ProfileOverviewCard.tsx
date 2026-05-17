@@ -42,9 +42,10 @@ export default function ProfileOverviewCard() {
         const Icon = item.icon;
 
         return (
-          <section
+          <button
+            type="button"
             key={item.title}
-            className="flex items-center justify-between rounded-[12px] border border-[#EDEDED] bg-white p-5"
+            className="flex w-full items-center justify-between rounded-[12px] border border-[#EDEDED] bg-white p-5 text-left"
           >
             <div className="flex items-start gap-3">
               <span className="flex h-7 w-7 items-center justify-center rounded-[8px] border border-[#EDEDED]">
@@ -58,7 +59,7 @@ export default function ProfileOverviewCard() {
             </div>
 
             <ChevronRight size={22} />
-          </section>
+          </button>
         );
       })}
 

@@ -12,7 +12,7 @@ export default function ProfileSummaryCard() {
       />
 
       <div>
-        <h2 className="text-3xl font-bold">Micaela, Robinsonss</h2>
+        <h2 className="text-3xl font-bold">Micaela Robinson</h2>
         <p className="mt-4 max-w-[650px] text-xl leading-8 text-[#050505]">
           I&apos;m a digital creator focusing on the intersection of design,
           technology, and intentional living. Sharing insights to help you build

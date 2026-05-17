@@ -52,9 +52,12 @@ export default function HelpSupportContent() {
                 </div>
               </div>
 
-              <button className="rounded-[8px] border border-[#EDEDED] px-4 py-2 text-sm font-medium text-[#050505]">
+              <a
+                href="mailto:support@openprofile.com"
+                className="rounded-[8px] border border-[#EDEDED] px-4 py-2 text-sm font-medium text-[#050505]"
+              >
                 Open
-              </button>
+              </a>
             </section>
           );
         })}

@@ -17,7 +17,7 @@ export default function DashboardTopbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <button className="text-[#050505]">
+          <button className="text-[#050505]" aria-label="Search">
             <Search size={24} />
           </button>
 
