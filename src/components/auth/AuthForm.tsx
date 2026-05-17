@@ -47,6 +47,9 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
     onSuccess: async (data) => {
       if (data?.accessToken) {
         document.cookie = `access_token=${data.accessToken}; path=/; SameSite=Lax`;
+      } else {
+        document.cookie =
+          "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
       }
       document.cookie = "auth=1; path=/; SameSite=Lax";
       await queryClient.resetQueries({ queryKey: ["auth", "me"] });
