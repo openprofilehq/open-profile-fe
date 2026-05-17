@@ -1,70 +1,222 @@
-import { Mail, MessageCircleQuestion, ShieldQuestion } from "lucide-react";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Bug,
+  ChevronDown,
+  ChevronRight,
+  FileText,
+  Lock,
+  Mail,
+  Palette,
+  Rocket,
+  Search,
+  Send,
+  Share2,
+  ShieldCheck,
+} from "lucide-react";
 
-const supportItems = [
+const categories = [
   {
-    title: "FAQs",
-    description: "Find answers to common questions and platform guidance.",
-    icon: MessageCircleQuestion,
-    href: "/faq",
+    title: "Getting Started",
+    description: "Essential steps to launch your first profile.",
+    icon: Rocket,
   },
+  {
+    title: "Profile Management",
+    description: "Update, edit, and curate your public data.",
+    icon: FileText,
+  },
+  {
+    title: "Templates",
+    description: "Customizing layouts and visual themes.",
+    icon: Palette,
+  },
+  {
+    title: "Verification System",
+    description: "Learn how to get your identity verified.",
+    icon: ShieldCheck,
+  },
+  {
+    title: "Invites & Sharing",
+    description: "Managing permissions and network growth.",
+    icon: Share2,
+  },
+  {
+    title: "Account & Security",
+    description: "Privacy settings and account protection.",
+    icon: Lock,
+  },
+];
+
+const guides = [
+  {
+    title: "How Open.Profile works",
+    description:
+      "A comprehensive overview of the modular architecture and data-driven profiles.",
+    icon: FileText,
+    href: "/dashboard/help/how-open-profile-works",
+    action: "Read the guide",
+  },
+  {
+    title: "Setting up your profile",
+    description:
+      "Step-by-step instructions for beginners to create a high-impact digital presence.",
+    icon: Palette,
+    href: "/dashboard/help/setting-up-your-profile",
+    action: "Start setup",
+  },
+  {
+    title: "Making your profile discoverable",
+    description:
+      "Advanced SEO and networking tips to ensure your profile reaches the right audience.",
+    icon: Search,
+    href: "/dashboard/help/profile-discoverability",
+    action: "Learn more",
+  },
+];
+
+const quickActions = [
   {
     title: "Contact Support",
-    description: "Reach out to our support team for direct assistance.",
-    icon: Mail,
     href: "mailto:support@openprofile.com",
+    icon: Mail,
   },
   {
-    title: "Privacy & Security",
-    description: "Learn how we protect your account and personal data.",
-    icon: ShieldQuestion,
-    href: "/privacy-policy",
+    title: "Report a Bug",
+    href: "mailto:support@openprofile.com?subject=Bug%20Report",
+    icon: Bug,
   },
+  {
+    title: "Send Feedback",
+    href: "mailto:support@openprofile.com?subject=Feedback",
+    icon: Send,
+  },
+];
+
+const faqs = [
+  "Can I use a custom domain with my profile?",
+  "How do I export my profile data?",
+  "What templates are available for free?",
+  "How does the verification system work?",
 ];
 
 export default function HelpSupportContent() {
   return (
-    <div className="mx-auto w-full max-w-[920px]">
-      <div>
-        <h1 className="text-3xl font-bold text-[#050505]">Help and Support</h1>
+    <div className="mx-auto w-full max-w-[1030px]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_220px]">
+        <section className="rounded-[10px] border border-[#EDEDED] bg-white p-6">
+          <h1 className="font-bold text-[#050505]">Help & Support</h1>
+          <p className="mt-2 max-w-[520px] text-sm text-[#454545]">
+            Find answers, learn how to optimize your profile, and get technical
+            assistance from our team.
+          </p>
+        </section>
 
-        <p className="mt-2 text-[#747474]">
-          Need assistance? Explore help resources and contact support.
-        </p>
-      </div>
+        <section className="rounded-[10px] border border-[#EDEDED] bg-white p-5">
+          <h2 className="font-bold text-[#050505]">Quick Actions</h2>
 
-      <div className="mt-8 flex flex-col gap-4">
-        {supportItems.map((item) => {
-          const Icon = item.icon;
+          <div className="mt-4 flex flex-col gap-3">
+            {quickActions.map((item) => {
+              const Icon = item.icon;
 
-          return (
-            <section
-              key={item.title}
-              className="flex items-center justify-between rounded-[12px] border border-[#EDEDED] bg-white p-5"
-            >
-              <div className="flex items-start gap-4">
-                <span className="flex h-11 w-11 items-center justify-center rounded-[10px] bg-[#E5F4F6] text-[#087583]">
-                  <Icon size={22} />
-                </span>
-
-                <div>
-                  <h2 className="text-lg font-bold text-[#050505]">
+              return (
+                <a
+                  key={item.title}
+                  href={item.href}
+                  className="flex items-center justify-between rounded-[8px] border border-[#EDEDED] px-3 py-3 text-sm font-medium text-[#050505]"
+                >
+                  <span className="flex items-center gap-2">
+                    <Icon size={16} />
                     {item.title}
-                  </h2>
-
-                  <p className="mt-1 text-[#747474]">{item.description}</p>
-                </div>
-              </div>
-
-              <a
-                href={item.href}
-                className="rounded-[8px] border border-[#EDEDED] px-4 py-2 text-sm font-medium text-[#050505]"
-              >
-                Open
-              </a>
-            </section>
-          );
-        })}
+                  </span>
+                  <ChevronRight size={16} />
+                </a>
+              );
+            })}
+          </div>
+        </section>
       </div>
+
+      <section className="mt-8">
+        <h2 className="font-bold text-[#050505]">Browse by Category</h2>
+
+        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {categories.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <Link
+                key={item.title}
+                href="/dashboard/help"
+                className="rounded-[8px] border border-[#EDEDED] bg-white p-5 text-[#050505]"
+              >
+                <Icon size={18} />
+                <h3 className="mt-5 font-bold">{item.title}</h3>
+                <p className="mt-2 text-sm text-[#454545]">
+                  {item.description}
+                </p>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="mt-8">
+        <h2 className="font-bold text-[#050505]">Learning & Guides</h2>
+
+        <div className="mt-4 flex flex-col gap-4">
+          {guides.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <Link
+                key={item.title}
+                href={item.href}
+                className="grid grid-cols-1 overflow-hidden rounded-[8px] border border-[#EDEDED] bg-white text-[#050505] md:grid-cols-[170px_1fr]"
+              >
+                <div className="flex min-h-[110px] items-center justify-center bg-[#DFF3F6] text-[#087583]">
+                  <Icon size={34} />
+                </div>
+
+                <div className="p-5">
+                  <h3 className="font-bold">{item.title}</h3>
+                  <p className="mt-2 text-sm text-[#454545]">
+                    {item.description}
+                  </p>
+
+                  <span className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-[#050505]">
+                    {item.action}
+                    <ArrowRight size={14} />
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="mt-8">
+        <h2 className="font-bold text-[#050505]">Frequently Asked Questions</h2>
+
+        <div className="mt-4 flex flex-col gap-3">
+          {faqs.map((question, index) => (
+            <details
+              key={question}
+              className="rounded-[8px] border border-[#EDEDED] bg-white px-5 py-4"
+              open={index === 0}
+            >
+              <summary className="flex cursor-pointer list-none items-center justify-between font-bold text-[#050505]">
+                {question}
+                <ChevronDown size={16} />
+              </summary>
+
+              {index === 0 && (
+                <p className="mt-3 text-sm text-[#454545]">Yes, soon.</p>
+              )}
+            </details>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
