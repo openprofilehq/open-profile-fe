@@ -31,7 +31,7 @@ export default function DashboardSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden min-h-[calc(100vh-76px)] w-[250px] border-r border-[#EDEDED] bg-white md:flex md:flex-col">
+    <aside className="sticky top-[76px] hidden h-[calc(100vh-76px)] w-[250px] shrink-0 border-r border-[#EDEDED] bg-white lg:flex lg:flex-col">
       <nav className="flex flex-1 flex-col gap-2 p-3 pt-6">
         {navItems.map((item) => {
           const Icon = item.icon;

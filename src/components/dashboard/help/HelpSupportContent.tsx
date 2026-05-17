@@ -102,17 +102,43 @@ const faqs = [
 
 export default function HelpSupportContent() {
   return (
-    <div className="mx-auto w-full max-w-[1030px]">
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_220px]">
-        <section className="rounded-[10px] border border-[#EDEDED] bg-white p-6">
-          <h1 className="font-bold text-[#050505]">Help & Support</h1>
-          <p className="mt-2 max-w-[520px] text-sm text-[#454545]">
-            Find answers, learn how to optimize your profile, and get technical
-            assistance from our team.
-          </p>
-        </section>
+    <div className="w-full max-w-[980px]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_100px] lg:gap-x-14">
+        <div>
+          <section className="rounded-[10px] border border-[#EDEDED] bg-white px-6 py-5">
+            <h1 className="font-bold text-[#050505]">Help & Support</h1>
+            <p className="mt-2 max-w-[520px] text-sm text-[#454545]">
+              Find answers, learn how to optimize your profile, and get
+              technical assistance from our team.
+            </p>
+          </section>
 
-        <section className="rounded-[10px] border border-[#EDEDED] bg-white p-5">
+          <section className="mt-6">
+            <h2 className="font-bold text-[#050505]">Browse by Category</h2>
+
+            <div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {categories.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <Link
+                    key={item.title}
+                    href="/dashboard/help"
+                    className="min-h-[150px] rounded-[8px] border border-[#EDEDED] bg-white p-6 text-[#050505]"
+                  >
+                    <Icon size={18} />
+                    <h3 className="mt-5 font-bold">{item.title}</h3>
+                    <p className="mt-2 text-sm text-[#454545]">
+                      {item.description}
+                    </p>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        </div>
+
+        <aside className="w-[260px] self-start rounded-[10px] border border-[#EDEDED] bg-white p-4">
           <h2 className="font-bold text-[#050505]">Quick Actions</h2>
 
           <div className="mt-4 flex flex-col gap-3">
@@ -123,7 +149,7 @@ export default function HelpSupportContent() {
                 <a
                   key={item.title}
                   href={item.href}
-                  className="flex items-center justify-between rounded-[8px] border border-[#EDEDED] px-3 py-3 text-sm font-medium text-[#050505]"
+                  className="flex items-center justify-between gap-3 rounded-[8px] border border-[#EDEDED] px-3 py-3 text-sm font-medium whitespace-nowrap text-[#050505]"
                 >
                   <span className="flex items-center gap-2">
                     <Icon size={16} />
@@ -134,32 +160,8 @@ export default function HelpSupportContent() {
               );
             })}
           </div>
-        </section>
+        </aside>
       </div>
-
-      <section className="mt-8">
-        <h2 className="font-bold text-[#050505]">Browse by Category</h2>
-
-        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {categories.map((item) => {
-            const Icon = item.icon;
-
-            return (
-              <Link
-                key={item.title}
-                href="/dashboard/help"
-                className="rounded-[8px] border border-[#EDEDED] bg-white p-5 text-[#050505]"
-              >
-                <Icon size={18} />
-                <h3 className="mt-5 font-bold">{item.title}</h3>
-                <p className="mt-2 text-sm text-[#454545]">
-                  {item.description}
-                </p>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
 
       <section className="mt-8">
         <h2 className="font-bold text-[#050505]">Learning & Guides</h2>
@@ -172,7 +174,7 @@ export default function HelpSupportContent() {
               <Link
                 key={item.title}
                 href={item.href}
-                className="grid grid-cols-1 overflow-hidden rounded-[8px] border border-[#EDEDED] bg-white text-[#050505] md:grid-cols-[170px_1fr]"
+                className="grid grid-cols-1 overflow-hidden rounded-[8px] border border-[#EDEDED] bg-white text-[#050505] md:grid-cols-[210px_1fr]"
               >
                 <div className="flex min-h-[110px] items-center justify-center bg-[#DFF3F6] text-[#087583]">
                   <Icon size={34} />
