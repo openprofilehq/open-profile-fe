@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import DashboardSidebar from "./DashboardSidebar";
 import DashboardTopbar from "./DashboardTopbar";
+import MobileDashboardNav from "./MobileDashboardNav";
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -13,9 +14,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <div className="flex">
         <DashboardSidebar />
-
-        <main className="flex-1 p-6 md:p-10">{children}</main>
+        <main className="flex-1 p-6 pb-24 md:p-10">{children}</main>
       </div>
+      <MobileDashboardNav />
     </div>
   );
 }
