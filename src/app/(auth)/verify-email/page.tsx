@@ -17,7 +17,7 @@ export default function VerifyEmailPage() {
   const email = params.get("email") ?? "";
   const [code, setCode] = useState<string[]>([]);
 
-  const isComplete = code.length === 6 && code.every(Boolean);
+  const isComplete = Boolean(email) && code.length === 6 && code.every(Boolean);
 
   const verifyMutation = useMutation({
     ...verifyEmailOtpOption,
@@ -30,6 +30,10 @@ export default function VerifyEmailPage() {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!email) {
+      toast.error("Invalid or missing email address.");
+      return;
+    }
     verifyMutation.mutate({ email, otp: code.join("") });
   }
 
