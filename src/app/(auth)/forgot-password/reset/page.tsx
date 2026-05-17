@@ -19,17 +19,14 @@ export default function ResetPasswordPage() {
   const [confirm, setConfirm] = useState("");
   const [confirmError, setConfirmError] = useState("");
   const searchParams = useSearchParams();
-  const token = searchParams.get("token") ?? "";
 
   const isValid =
-    Boolean(token) &&
-    allPasswordRulesMet(password) &&
-    confirm.length > 0 &&
-    password === confirm;
+    allPasswordRulesMet(password) && confirm.length > 0 && password === confirm;
 
   const resetMutation = useMutation({
     ...resetPasswordOption,
     onSuccess: () => {
+      sessionStorage.removeItem("resetToken");
       router.push("/forgot-password/success");
     },
     onError: (err) =>
@@ -38,11 +35,16 @@ export default function ResetPasswordPage() {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!token) {
+    const currentToken =
+      (typeof window !== "undefined"
+        ? sessionStorage.getItem("resetToken")
+        : null) || searchParams.get("token");
+
+    if (!currentToken) {
       toast.error("Invalid or missing reset token. Please request a new link.");
       return;
     }
-    resetMutation.mutate({ resetToken: token, newPassword: password });
+    resetMutation.mutate({ resetToken: currentToken, newPassword: password });
   }
 
   return (

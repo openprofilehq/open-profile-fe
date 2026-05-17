@@ -23,9 +23,8 @@ export default function ForgotPasswordVerifyPage() {
   const verifyMutation = useMutation({
     ...verifyResetOtpOption,
     onSuccess: (data) => {
-      router.push(
-        `/forgot-password/reset?token=${encodeURIComponent(data.resetToken)}&email=${encodeURIComponent(email)}`
-      );
+      sessionStorage.setItem("resetToken", data.resetToken);
+      router.push(`/forgot-password/reset?email=${encodeURIComponent(email)}`);
     },
     onError: (err) =>
       toast.error(isApiError(err) ? err.message : "Verification failed."),
