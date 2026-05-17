@@ -16,13 +16,7 @@ import {
 } from "@/api/profile/profile.options";
 import { callApi, isApiError } from "@/api/base";
 
-type UsernameStatus =
-  | "available"
-  | "taken"
-  | "invalid"
-  | "error"
-  | "checking"
-  | "";
+type UsernameStatus = "available" | "taken" | "error" | "checking" | "";
 
 export default function CreateProfileForm() {
   const router = useRouter();
@@ -34,12 +28,13 @@ export default function CreateProfileForm() {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoUrl, setPhotoUrl] = useState("");
   const debouncedUsername = useDebounce(username, 300);
+  const isUsernameSynced = username === debouncedUsername;
 
   const usernameQuery = useQuery(checkUsernameOption(debouncedUsername));
 
   const usernameStatus: UsernameStatus = !debouncedUsername
     ? ""
-    : usernameQuery.isLoading || usernameQuery.isFetching
+    : !isUsernameSynced || usernameQuery.isLoading || usernameQuery.isFetching
       ? "checking"
       : usernameQuery.isError
         ? "error"
@@ -130,7 +125,9 @@ export default function CreateProfileForm() {
               )
             }
             onUpdateStep={() => {
-              if (usernameStatus === "available") setCurrentStep(2);
+              if (isUsernameSynced && usernameStatus === "available") {
+                setCurrentStep(2);
+              }
             }}
           />
         )}
