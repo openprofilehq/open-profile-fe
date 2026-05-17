@@ -38,8 +38,10 @@ export function ResendTimer({ initialSeconds = 98, email = "" }: Props) {
       Didn&apos;t get a code?{" "}
       <Button
         variant="links"
-        onClick={() => resendMutation.mutate({ email })}
-        disabled={resendMutation.isPending || seconds > 0}
+        onClick={() => {
+          if (email) resendMutation.mutate({ email });
+        }}
+        disabled={resendMutation.isPending || seconds > 0 || !email}
         className="text-brand cursor-pointer font-medium hover:underline disabled:cursor-not-allowed disabled:opacity-50"
       >
         Resend Code
