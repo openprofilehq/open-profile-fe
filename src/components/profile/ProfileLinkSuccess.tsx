@@ -23,6 +23,8 @@ export default function ProfileLinkSuccess({
     return `${window.location.origin.replace(/\/$/, "")}/${username}/`;
   };
 
+  const profileUrl = getProfileUrl();
+
   const initials = fullName
     ? fullName
         .split(" ")
@@ -37,7 +39,7 @@ export default function ProfileLinkSuccess({
     e.stopPropagation();
 
     try {
-      await navigator.clipboard.writeText(getProfileUrl());
+      await navigator.clipboard.writeText(profileUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -75,7 +77,7 @@ export default function ProfileLinkSuccess({
 
           <div className="pointer-events-auto relative z-30 mt-4 flex items-center gap-2 text-center font-bold text-[#747474]">
             <a
-              href={getProfileUrl()}
+              href={profileUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="cursor-pointer underline-offset-4 transition-opacity hover:underline hover:opacity-80"
