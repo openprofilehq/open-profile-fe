@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { env } from "@/env/client";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function ProfileLinkSuccess({
   username,
@@ -29,7 +32,7 @@ export default function ProfileLinkSuccess({
 
   const getProfileUrl = () => {
     if (typeof window === "undefined") return "";
-    return `${window.location.origin.replace(/\/$/, "")}/${username}/`;
+    return `${window.location.origin.replace(/\/$/, "")}/${encodeURIComponent(username)}/`;
   };
 
   const profileUrl = getProfileUrl();
