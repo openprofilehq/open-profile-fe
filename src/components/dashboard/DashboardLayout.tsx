@@ -14,7 +14,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <div className="flex">
         <DashboardSidebar />
-        <main className="flex-1 p-6 pb-24 md:p-10">{children}</main>
+        <main className="ml-62.5 flex-1 p-6 pb-24 md:p-10">{children}</main>
       </div>
       <MobileDashboardNav />
     </div>

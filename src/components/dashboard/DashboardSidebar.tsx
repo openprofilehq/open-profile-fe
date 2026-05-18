@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { House, FileText, Settings, Headphones, LogOut } from "lucide-react";
+import { logout } from "@/app/actions/auth";
 
 const navItems = [
   {
@@ -30,8 +31,13 @@ const navItems = [
 export default function DashboardSidebar() {
   const pathname = usePathname();
 
+  const handleLogout = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    logout();
+  };
+
   return (
-    <aside className="hidden min-h-[calc(100vh-76px)] w-[250px] border-r border-[#EDEDED] bg-white md:flex md:flex-col">
+    <aside className="fixed inset-y-0 top-19 min-h-[calc(100vh-76px)] w-62.5 border-r border-[#EDEDED] bg-white md:flex md:flex-col">
       <nav className="flex flex-1 flex-col gap-2 p-3 pt-6">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -58,7 +64,10 @@ export default function DashboardSidebar() {
         })}
       </nav>
 
-      <div className="flex items-center gap-3 px-6 py-6 text-[#D92D20] opacity-70">
+      <div
+        className="flex cursor-pointer items-center gap-3 px-6 py-6 text-[#D92D20] opacity-70"
+        onClick={handleLogout}
+      >
         <LogOut size={22} />
         <span className="text-[18px]">Logout</span>
       </div>
