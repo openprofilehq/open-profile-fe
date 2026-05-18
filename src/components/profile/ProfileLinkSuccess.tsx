@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export default function ProfileLinkSuccess({
   username,
@@ -42,7 +43,7 @@ export default function ProfileLinkSuccess({
         .join("")
         .toUpperCase()
         .slice(0, 2)
-    : (username || "").slice(0, 2).toUpperCase();
+    : (username || "").slice(0, 2).toUpperCase() || "?";
 
   async function handleCopy(e: React.MouseEvent) {
     e.preventDefault();
@@ -57,6 +58,7 @@ export default function ProfileLinkSuccess({
       copyResetTimerRef.current = setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy link:", err);
+      toast.error("Failed to copy link");
     }
   }
 
@@ -93,11 +95,7 @@ export default function ProfileLinkSuccess({
               href={profileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="cursor-pointer underline-offset-4 transition-opacity hover:underline hover:opacity-80"
-              style={{
-                color: "inherit",
-                textDecoration: "none",
-              }}
+              className="cursor-pointer text-inherit no-underline underline-offset-4 transition-opacity hover:underline hover:opacity-80"
               onClick={(e) => e.stopPropagation()}
             >
               {profileUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
