@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AuthLayout } from "@/components/auth/AuthLayout";
@@ -12,7 +12,11 @@ import {
   PasswordField,
   allPasswordRulesMet,
 } from "@/components/auth/PasswordField";
-import { loginOption, signupOption } from "@/api/auth/auth.options";
+import {
+  loginOption,
+  signupOption,
+  userQueryOptions,
+} from "@/api/auth/auth.options";
 import { isApiError } from "@/api/base";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -24,6 +28,7 @@ type Props = {
 
 export function AuthForm({ mode, googleAuthUrl }: Props) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const returnTo = searchParams.get("returnTo");
 
@@ -43,7 +48,9 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
 
   const loginMutation = useMutation({
     ...loginOption,
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      document.cookie = "auth=1; path=/; SameSite=Lax";
+      await queryClient.resetQueries({ queryKey: userQueryOptions.queryKey });
       const onboardingComplete = data?.user?.onboardingComplete;
       const destination = onboardingComplete ? "/dashboard" : "/create-profile";
       router.replace(returnTo?.startsWith("/") ? returnTo : destination);
