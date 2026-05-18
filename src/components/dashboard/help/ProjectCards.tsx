@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import Image from "next/image";
 
 const ProjectCards = ({
   img,
@@ -14,7 +15,13 @@ const ProjectCards = ({
   return (
     <div className="flex flex-col gap-4">
       <div className="h-72.5 w-86 border">
-        <img src={img} alt={projectTitle} className="w-full" />
+        <Image
+          src={img}
+          alt={projectTitle}
+          className="w-full"
+          width={300}
+          height={250}
+        />
       </div>
       <div className="flex flex-col items-start p-4">
         <div>
