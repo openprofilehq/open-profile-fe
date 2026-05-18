@@ -9,20 +9,6 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-// Attach access token (stored after login) as Bearer on every request
-api.interceptors.request.use((config) => {
-  if (typeof document !== "undefined") {
-    const match = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("access_token="));
-    const token = match?.split("=")[1];
-    if (token && !config.headers["Authorization"]) {
-      config.headers["Authorization"] = `Bearer ${token}`;
-    }
-  }
-  return config;
-});
-
 function getApiErrorMessage(message?: unknown): string {
   if (typeof message === "string") return message;
 

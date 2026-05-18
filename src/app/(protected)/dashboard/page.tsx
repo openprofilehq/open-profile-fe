@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { logoutOption } from "@/api/auth/auth.options";
+import { logoutOption, userQueryOptions } from "@/api/auth/auth.options";
 import { Button } from "@/components/ui/button";
 
 export default function DashboardPage() {
@@ -12,12 +12,8 @@ export default function DashboardPage() {
   const logoutMutation = useMutation({
     ...logoutOption,
     onSettled: async () => {
-      // Clear the client-set token cookies
-      document.cookie =
-        "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      document.cookie = "auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       // Bust the cached user so nothing stale lingers
-      await queryClient.resetQueries({ queryKey: ["auth", "me"] });
+      await queryClient.resetQueries({ queryKey: userQueryOptions.queryKey });
       router.replace("/login");
     },
   });

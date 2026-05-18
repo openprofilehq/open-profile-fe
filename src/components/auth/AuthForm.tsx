@@ -12,7 +12,11 @@ import {
   PasswordField,
   allPasswordRulesMet,
 } from "@/components/auth/PasswordField";
-import { loginOption, signupOption } from "@/api/auth/auth.options";
+import {
+  loginOption,
+  signupOption,
+  userQueryOptions,
+} from "@/api/auth/auth.options";
 import { isApiError } from "@/api/base";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -45,14 +49,8 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
   const loginMutation = useMutation({
     ...loginOption,
     onSuccess: async (data) => {
-      if (data?.accessToken) {
-        document.cookie = `access_token=${data.accessToken}; path=/; SameSite=Lax`;
-      } else {
-        document.cookie =
-          "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
-      }
       document.cookie = "auth=1; path=/; SameSite=Lax";
-      await queryClient.resetQueries({ queryKey: ["auth", "me"] });
+      await queryClient.resetQueries({ queryKey: userQueryOptions.queryKey });
       const onboardingComplete = data?.user?.onboardingComplete;
       const destination = onboardingComplete ? "/dashboard" : "/create-profile";
       router.replace(returnTo?.startsWith("/") ? returnTo : destination);
