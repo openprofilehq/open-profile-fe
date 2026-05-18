@@ -5,6 +5,8 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { LogOut } from "lucide-react";
 import { logout } from "@/app/actions/auth";
+import { useQuery } from "@tanstack/react-query";
+import { dashboardProfileOption } from "@/api/profile/profile.options";
 
 const accountSettings = [
   {
@@ -52,12 +54,14 @@ const subscription: {
 } | null = null;
 
 export default function SettingsContent() {
-  const [isProfileVisible, setIsProfileVisible] = useState(() => {
-    if (typeof window === "undefined") return false;
+  const [isProfileVisible, setIsProfileVisible] = useState(false);
 
-    return localStorage.getItem("profileVisibility") === "public";
-  });
   const [isPending, startTransition] = useTransition();
+
+  const dashboardProfile = useQuery(dashboardProfileOption());
+  const profile = dashboardProfile.data;
+
+  const profileVisibility = isProfileVisible || Boolean(profile?.isPublished);
 
   const planName = subscription?.planName ?? "Free";
 
@@ -68,14 +72,7 @@ export default function SettingsContent() {
     : "N/A";
 
   function handleVisibilityToggle() {
-    setIsProfileVisible((currentValue) => {
-      const nextValue = !currentValue;
-      localStorage.setItem(
-        "profileVisibility",
-        nextValue ? "public" : "private"
-      );
-      return nextValue;
-    });
+    setIsProfileVisible(!profileVisibility);
   }
 
   const billingDateLabel = subscription?.nextBillingDate
@@ -159,20 +156,20 @@ export default function SettingsContent() {
 
                 <button
                   type="button"
-                  aria-pressed={isProfileVisible}
+                  aria-pressed={profileVisibility}
                   aria-label={
-                    isProfileVisible
+                    profileVisibility
                       ? "Make profile private"
                       : "Make profile public"
                   }
                   onClick={handleVisibilityToggle}
                   className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
-                    isProfileVisible ? "bg-[#087583]" : "bg-[#E5EAF0]"
+                    profileVisibility ? "bg-[#087583]" : "bg-[#E5EAF0]"
                   }`}
                 >
                   <span
                     className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-all ${
-                      isProfileVisible ? "left-6" : "left-1"
+                      profileVisibility ? "left-6" : "left-1"
                     }`}
                   />
                 </button>
