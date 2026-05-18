@@ -16,7 +16,7 @@ const navItems = [
 
 export default function MobileDashboardNav() {
   return (
-    <nav className="fixed right-0 bottom-0 left-0 z-50 flex items-center justify-between border-t border-[#EDEDED] bg-white px-4 py-3 md:hidden">
+    <nav className="fixed right-0 bottom-0 left-0 z-50 flex items-center justify-between border-t border-[#EDEDED] bg-white px-4 py-3 lg:hidden">
       {navItems.map((item) => {
         const Icon = item.icon;
 
