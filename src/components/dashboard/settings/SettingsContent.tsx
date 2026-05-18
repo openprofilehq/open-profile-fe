@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useTransition, useState } from "react";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
 import { LogOut } from "lucide-react";
 import { logout } from "@/app/actions/auth";
 
@@ -42,14 +43,43 @@ const profilePreferences = [
   },
 ];
 
-const nextBillingDate: string | null = null;
+const subscription: {
+  planName: string;
+  price: number;
+  currency: string;
+  interval: string;
+  nextBillingDate?: string | null;
+} | null = null;
 
 export default function SettingsContent() {
-  const [isProfileVisible, setIsProfileVisible] = useState(false);
+  const [isProfileVisible, setIsProfileVisible] = useState(() => {
+    if (typeof window === "undefined") return false;
+
+    return localStorage.getItem("profileVisibility") === "public";
+  });
   const [isPending, startTransition] = useTransition();
 
-  const billingDateLabel = nextBillingDate
-    ? new Date(nextBillingDate).toLocaleDateString("en-US", {
+  const planName = subscription?.planName ?? "Free";
+
+  const planPriceLabel = subscription
+    ? `${subscription.currency}${subscription.price.toFixed(2)} / ${
+        subscription.interval
+      }`
+    : "N/A";
+
+  function handleVisibilityToggle() {
+    setIsProfileVisible((currentValue) => {
+      const nextValue = !currentValue;
+      localStorage.setItem(
+        "profileVisibility",
+        nextValue ? "public" : "private"
+      );
+      return nextValue;
+    });
+  }
+
+  const billingDateLabel = subscription?.nextBillingDate
+    ? new Date(subscription.nextBillingDate).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -58,7 +88,12 @@ export default function SettingsContent() {
 
   function handleLogout() {
     startTransition(async () => {
-      await logout();
+      try {
+        await logout();
+      } catch (error) {
+        console.error("Logout failed:", error);
+        toast.error("Logout failed. Please try again.");
+      }
     });
   }
 
@@ -130,7 +165,7 @@ export default function SettingsContent() {
                       ? "Make profile private"
                       : "Make profile public"
                   }
-                  onClick={() => setIsProfileVisible((value) => !value)}
+                  onClick={handleVisibilityToggle}
                   className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
                     isProfileVisible ? "bg-[#087583]" : "bg-[#E5EAF0]"
                   }`}
@@ -185,11 +220,11 @@ export default function SettingsContent() {
               <div className="flex items-center justify-between">
                 <p className="text-xs text-[#454545] uppercase">Current Plan</p>
                 <span className="rounded-full bg-[#E9FFE9] px-2 py-1 text-[10px] text-[#087A32]">
-                  PRO
+                  {planName}
                 </span>
               </div>
 
-              <p className="mt-3 font-bold text-[#050505]">$29.00 / Month</p>
+              <p className="mt-3 font-bold text-[#050505]">{planPriceLabel}</p>
               <p className="mt-2 text-xs text-[#747474]">
                 Next billing date: {billingDateLabel}
               </p>
