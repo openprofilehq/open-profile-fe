@@ -20,31 +20,37 @@ const categories = [
     title: "Getting Started",
     description: "Essential steps to launch your first profile.",
     icon: Rocket,
+    slug: "getting-started",
   },
   {
     title: "Profile Management",
     description: "Update, edit, and curate your public data.",
     icon: FileText,
+    slug: "profile-management",
   },
   {
     title: "Templates",
     description: "Customizing layouts and visual themes.",
     icon: Palette,
+    slug: "templates",
   },
   {
     title: "Verification System",
     description: "Learn how to get your identity verified.",
     icon: ShieldCheck,
+    slug: "verification-system",
   },
   {
     title: "Invites & Sharing",
     description: "Managing permissions and network growth.",
     icon: Share2,
+    slug: "invites-sharing",
   },
   {
     title: "Account & Security",
     description: "Privacy settings and account protection.",
     icon: Lock,
+    slug: "account-security",
   },
 ];
 
@@ -94,16 +100,32 @@ const quickActions = [
 ];
 
 const faqs = [
-  "Can I use a custom domain with my profile?",
-  "How do I export my profile data?",
-  "What templates are available for free?",
-  "How does the verification system work?",
+  {
+    question: "Can I use a custom domain with my profile?",
+    answer:
+      "Yes, custom domain support is planned for supported profile plans.",
+  },
+  {
+    question: "How do I export my profile data?",
+    answer:
+      "You will be able to export your profile data from your account settings when export tools are available.",
+  },
+  {
+    question: "What templates are available for free?",
+    answer:
+      "Free templates include the default profile layouts available in the profile builder.",
+  },
+  {
+    question: "How does the verification system work?",
+    answer:
+      "Verification helps confirm profile identity and credibility using supported account or document checks.",
+  },
 ];
 
 export default function HelpSupportContent() {
   return (
     <div className="w-full max-w-[980px]">
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_100px] lg:gap-x-14">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_260px] lg:gap-x-14">
         <div>
           <section className="rounded-[10px] border border-[#EDEDED] bg-white px-6 py-5">
             <h1 className="font-bold text-[#050505]">Help & Support</h1>
@@ -122,8 +144,8 @@ export default function HelpSupportContent() {
 
                 return (
                   <Link
-                    key={item.title}
-                    href="/dashboard/help"
+                    key={item.slug}
+                    href={`/dashboard/help#${item.slug}`}
                     className="min-h-[150px] rounded-[8px] border border-[#EDEDED] bg-white p-6 text-[#050505]"
                   >
                     <Icon size={18} />
@@ -138,7 +160,7 @@ export default function HelpSupportContent() {
           </section>
         </div>
 
-        <aside className="w-[260px] self-start rounded-[10px] border border-[#EDEDED] bg-white p-4">
+        <aside className="self-start rounded-[10px] border border-[#EDEDED] bg-white p-4">
           <h2 className="font-bold text-[#050505]">Quick Actions</h2>
 
           <div className="mt-4 flex flex-col gap-3">
@@ -201,20 +223,17 @@ export default function HelpSupportContent() {
         <h2 className="font-bold text-[#050505]">Frequently Asked Questions</h2>
 
         <div className="mt-4 flex flex-col gap-3">
-          {faqs.map((question, index) => (
+          {faqs.map((item) => (
             <details
-              key={question}
+              key={item.question}
               className="rounded-[8px] border border-[#EDEDED] bg-white px-5 py-4"
-              open={index === 0}
             >
               <summary className="flex cursor-pointer list-none items-center justify-between font-bold text-[#050505]">
-                {question}
+                {item.question}
                 <ChevronDown size={16} />
               </summary>
 
-              {index === 0 && (
-                <p className="mt-3 text-sm text-[#454545]">Yes, soon.</p>
-              )}
+              <p className="mt-3 text-sm text-[#454545]">{item.answer}</p>
             </details>
           ))}
         </div>

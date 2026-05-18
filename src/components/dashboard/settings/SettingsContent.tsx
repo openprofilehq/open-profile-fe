@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useTransition, useState } from "react";
 import { LogOut } from "lucide-react";
+import { logout } from "@/app/actions/auth";
 
 const accountSettings = [
   {
@@ -40,7 +42,26 @@ const profilePreferences = [
   },
 ];
 
+const nextBillingDate: string | null = null;
+
 export default function SettingsContent() {
+  const [isProfileVisible, setIsProfileVisible] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  const billingDateLabel = nextBillingDate
+    ? new Date(nextBillingDate).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+    : "Not available";
+
+  function handleLogout() {
+    startTransition(() => {
+      void logout();
+    });
+  }
+
   return (
     <div className="mx-auto w-full max-w-[1030px]">
       <div>
@@ -103,10 +124,22 @@ export default function SettingsContent() {
 
                 <button
                   type="button"
-                  aria-label="Toggle profile visibility"
-                  className="relative h-7 w-12 rounded-full bg-[#E5EAF0]"
+                  aria-pressed={isProfileVisible}
+                  aria-label={
+                    isProfileVisible
+                      ? "Make profile private"
+                      : "Make profile public"
+                  }
+                  onClick={() => setIsProfileVisible((value) => !value)}
+                  className={`relative h-7 w-12 rounded-full transition-colors ${
+                    isProfileVisible ? "bg-[#087583]" : "bg-[#E5EAF0]"
+                  }`}
                 >
-                  <span className="absolute top-1 left-1 h-5 w-5 rounded-full bg-white shadow-sm" />
+                  <span
+                    className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-all ${
+                      isProfileVisible ? "left-6" : "left-1"
+                    }`}
+                  />
                 </button>
               </div>
 
@@ -158,13 +191,13 @@ export default function SettingsContent() {
 
               <p className="mt-3 font-bold text-[#050505]">$29.00 / Month</p>
               <p className="mt-2 text-xs text-[#747474]">
-                Next billing date: Oct 24, 2023
+                Next billing date: {billingDateLabel}
               </p>
             </div>
 
             <Link
               href="/dashboard/settings/billing"
-              className="mt-3 flex h-11 items-center justify-center rounded-[8px] bg-[#087583] font-semibold text-white"
+              className="mx-auto mt-3 flex h-11 w-full items-center justify-center rounded-[8px] bg-[#087583] font-semibold text-white md:max-w-[260px]"
             >
               Manage billing
             </Link>
@@ -187,9 +220,11 @@ export default function SettingsContent() {
 
             <button
               type="button"
-              className="mt-4 h-10 w-full rounded-[8px] border border-[#F04438] text-[#D92D20]"
+              disabled={isPending}
+              onClick={handleLogout}
+              className="mx-auto mt-4 block h-10 w-full rounded-[8px] border border-[#F04438] text-[#D92D20] disabled:cursor-not-allowed disabled:opacity-60 md:max-w-[260px]"
             >
-              Log out
+              {isPending ? "Logging out..." : "Log out"}
             </button>
           </section>
         </aside>
