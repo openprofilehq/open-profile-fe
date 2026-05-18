@@ -57,8 +57,8 @@ export default function SettingsContent() {
     : "Not available";
 
   function handleLogout() {
-    startTransition(() => {
-      void logout();
+    startTransition(async () => {
+      await logout();
     });
   }
 
@@ -112,7 +112,7 @@ export default function SettingsContent() {
             </h2>
 
             <div className="mt-5 flex flex-col">
-              <div className="flex items-center justify-between border-b border-[#EDEDED] py-4">
+              <div className="flex items-center justify-between gap-4 border-b border-[#EDEDED] py-4">
                 <div>
                   <h3 className="font-bold text-[#050505]">
                     Profile visibility
@@ -131,7 +131,7 @@ export default function SettingsContent() {
                       : "Make profile public"
                   }
                   onClick={() => setIsProfileVisible((value) => !value)}
-                  className={`relative h-7 w-12 rounded-full transition-colors ${
+                  className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
                     isProfileVisible ? "bg-[#087583]" : "bg-[#E5EAF0]"
                   }`}
                 >
