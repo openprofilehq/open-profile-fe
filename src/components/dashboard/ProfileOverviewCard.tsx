@@ -23,14 +23,24 @@ const actions = [
   },
 ];
 
-export default function ProfileOverviewCard() {
+type Props = {
+  profile?: {
+    username?: string;
+    fullName?: string;
+    bio?: string | null;
+  };
+};
+
+export default function ProfileOverviewCard({ profile }: Props) {
   return (
     <>
       <section className="rounded-[12px] border border-[#EDEDED] bg-white p-4">
         <p className="text-sm text-[#454545] uppercase">Profile Overview</p>
 
         <div className="mt-3 rounded-[10px] bg-[#FAFAFA] p-4">
-          <h1 className="text-2xl font-bold">Welcome, Micaela</h1>
+          <h1 className="text-2xl font-bold">
+            Welcome, {profile?.fullName ?? "User"}
+          </h1>
           <p className="mt-3 max-w-[390px] text-[#454545]">
             Your profile is live and ready to share. Manage your public page,
             update key sections, and keep things current from one place
@@ -82,7 +92,7 @@ export default function ProfileOverviewCard() {
 
           <div className="mt-4 flex justify-between text-sm">
             <span className="text-[#454545]">Public URL</span>
-            <span>openprofile.com/michela</span>
+            <span>openprofile.com/{profile?.username ?? "username"}</span>
           </div>
 
           <div className="mt-3 flex justify-between text-sm">
