@@ -4,6 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { House, FileText, Settings, Headphones, LogOut } from "lucide-react";
 import { logout } from "@/app/actions/auth";
+import type { CSSProperties } from "react";
+
+const TOPBAR_HEIGHT = "76px";
 
 const navItems = [
   {
@@ -37,7 +40,14 @@ export default function DashboardSidebar() {
   };
 
   return (
-    <aside className="fixed inset-y-0 top-19 min-h-[calc(100vh-76px)] w-62.5 border-r border-[#EDEDED] bg-white md:flex md:flex-col">
+    <aside
+      style={
+        {
+          "--topbar-height": TOPBAR_HEIGHT,
+        } as CSSProperties
+      }
+      className="sticky top-[var(--topbar-height)] hidden h-[calc(100vh-var(--topbar-height))] w-[280px] shrink-0 border-r border-[#EDEDED] bg-white lg:flex lg:flex-col"
+    >
       <nav className="flex flex-1 flex-col gap-2 p-3 pt-6">
         {navItems.map((item) => {
           const Icon = item.icon;
