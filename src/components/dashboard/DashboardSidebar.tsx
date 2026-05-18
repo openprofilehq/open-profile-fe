@@ -1,10 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { House, FileText, Settings, Headphones, LogOut } from "lucide-react";
-import { logout } from "@/app/actions/auth";
 import type { CSSProperties } from "react";
+import { logoutOption } from "@/api/auth/auth.options";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { isApiError } from "@/api/base";
+import { Button } from "../ui/button";
 
 const TOPBAR_HEIGHT = "76px";
 
@@ -33,11 +37,22 @@ const navItems = [
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
 
-  const handleLogout = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    logout();
+    logoutMutation.mutate();
   };
+
+  const logoutMutation = useMutation({
+    ...logoutOption,
+    onSuccess: () => {
+      sessionStorage.removeItem("resetToken");
+      router.push("/login");
+    },
+    onError: (err) =>
+      toast.error(isApiError(err) ? err.message : "Logout failed."),
+  });
 
   return (
     <aside
@@ -74,13 +89,16 @@ export default function DashboardSidebar() {
         })}
       </nav>
 
-      <div
-        className="flex cursor-pointer items-center gap-3 px-6 py-6 text-[#D92D20] opacity-70"
+      <Button
+        type="button"
+        size="lg"
+        variant="logout"
+        disabled={logoutMutation.isPending}
         onClick={handleLogout}
       >
         <LogOut size={22} />
         <span className="text-[18px]">Logout</span>
-      </div>
+      </Button>
     </aside>
   );
 }

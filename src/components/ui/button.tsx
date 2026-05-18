@@ -17,6 +17,8 @@ const buttonVariants = cva(
           "bg-white text-brand border-brand aria-expanded:bg-muted aria-expanded:text-foreground",
         links:
           "bg-transparent text-brand hover:bg-transparent aria-expanded:bg-transparent aria-expanded:text-brand",
+        logout:
+          "bg-transparent text-red-600 justify-start hover:bg-transparent aria-expanded:bg-transparent aria-expanded:text-brand",
         waitlist:
           "bg-button-bg-waitlist text-white hover:bg-positive-hover aria-expanded:bg-positive aria-expanded:text-white disabled:bg-positive/80 disabled:text-white/80",
         hamburger:
