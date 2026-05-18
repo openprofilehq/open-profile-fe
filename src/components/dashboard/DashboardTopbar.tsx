@@ -5,14 +5,14 @@ import { Button } from "@/components/ui/button";
 export default function DashboardTopbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-[#EDEDED] bg-white">
-      <div className="flex h-[76px] items-center justify-between px-4 md:px-8">
+      <div className="flex h-19 items-center justify-between px-4 md:px-8">
         <div className="flex items-center gap-2">
           <Image
             src="/logo.svg"
             alt="Open Profile"
             width={180}
             height={40}
-            className="h-auto w-[160px]"
+            className="h-auto w-40"
           />
         </div>
 
