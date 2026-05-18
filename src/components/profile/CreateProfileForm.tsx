@@ -147,17 +147,16 @@ export default function CreateProfileForm() {
           />
         )}
 
-          {currentStep === 3 && (
-            <ProfileLinkSuccess
-              username={username}
-              fullName={fullName}
-              bio={bio}
-              photoUrl={photoUrl || undefined}
-              onContinue={() => router.replace("/dashboard")}
-            />
-          )}
-        </form>
-      </AuthLayout>
-    </>
+        {currentStep === 3 && (
+          <ProfileLinkSuccess
+            username={username}
+            fullName={fullName}
+            bio={bio}
+            photoUrl={photoUrl || undefined}
+            onContinue={() => router.replace("/dashboard")}
+          />
+        )}
+      </form>
+    </AuthLayout>
   );
 }
