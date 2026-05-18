@@ -61,7 +61,7 @@ export default function DashboardSidebar() {
           "--topbar-height": TOPBAR_HEIGHT,
         } as CSSProperties
       }
-      className="sticky top-[var(--topbar-height)] hidden h-[calc(100vh-var(--topbar-height))] w-[280px] shrink-0 border-r border-[#EDEDED] bg-white lg:flex lg:flex-col"
+      className="top-(--topbar-height)] sticky hidden h-[calc(100vh-var(--topbar-height))] w-70 shrink-0 border-r border-[#EDEDED] bg-white lg:flex lg:flex-col"
     >
       <nav className="flex flex-1 flex-col gap-2 p-3 pt-6">
         {navItems.map((item) => {
