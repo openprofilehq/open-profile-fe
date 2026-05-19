@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { getImageUrl } from "@/utils/profile";
 
 type Props = {
   profile?: {
@@ -9,9 +10,7 @@ type Props = {
 };
 
 export default function HighlightCard({ profile }: Props) {
-  const imageSrc = profile?.photoUrl
-    ? `${process.env.NEXT_PUBLIC_API_URL}${profile.photoUrl}`
-    : null;
+  const imageSrc = getImageUrl(profile?.photoUrl);
 
   return (
     <section className="rounded-[12px] border border-[#EDEDED] bg-white p-6">
