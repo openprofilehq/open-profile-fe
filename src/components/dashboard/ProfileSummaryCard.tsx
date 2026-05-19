@@ -11,17 +11,19 @@ type Props = {
 export default function ProfileSummaryCard({ profile }: Props) {
   return (
     <section className="flex flex-col gap-5 rounded-[12px] border border-[#EDEDED] bg-white p-6 md:flex-row md:items-start">
-      <Image
-        src={
-          profile?.photoUrl
-            ? `${process.env.NEXT_PUBLIC_API_URL}${profile.photoUrl}`
-            : "/avatar.png"
-        }
-        alt="Profile avatar"
-        width={96}
-        height={96}
-        className="h-24 w-24 rounded-full object-cover"
-      />
+      {profile?.photoUrl ? (
+        <Image
+          src={`${process.env.NEXT_PUBLIC_API_URL}${profile.photoUrl}`}
+          alt={profile?.fullName ?? "Profile avatar"}
+          width={96}
+          height={96}
+          className="h-24 w-24 rounded-full object-cover"
+        />
+      ) : (
+        <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-[#E5F4F6] text-3xl font-bold text-[#087583]">
+          {profile?.fullName?.charAt(0).toUpperCase() ?? "U"}
+        </div>
+      )}
 
       <div>
         <h2 className="text-3xl font-bold">{profile?.fullName ?? "No Name"}</h2>
