@@ -4,6 +4,7 @@ import {
   CreateProfileResponse,
   UsernameCheckResponse,
   ProfileResponse,
+  DashboardProfileResponse,
 } from "./profile.type";
 
 export function createProfile(data: CreateProfileRequest) {
@@ -11,6 +12,14 @@ export function createProfile(data: CreateProfileRequest) {
     url: "/profiles",
     method: "POST",
     data,
+  });
+}
+
+export function getDashboardProfile(signal?: AbortSignal) {
+  return callApi<DashboardProfileResponse>({
+    url: "/profiles/dashboard",
+    method: "GET",
+    signal,
   });
 }
 

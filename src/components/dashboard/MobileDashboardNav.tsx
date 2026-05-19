@@ -2,6 +2,13 @@
 
 import Link from "next/link";
 import { FileText, Headphones, House, LogOut, Settings } from "lucide-react";
+import { CSSProperties } from "react";
+import { Button } from "../ui/button";
+import { usePathname, useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { logoutOption } from "@/api/auth/auth.options";
+import { toast } from "sonner";
+import { isApiError } from "@/api/base";
 
 const navItems = [
   { label: "Home", href: "/dashboard", icon: House },
@@ -14,28 +21,65 @@ const navItems = [
   { label: "Help", href: "/dashboard/help", icon: Headphones },
 ];
 
+const TOPBAR_HEIGHT = "76px";
+
 export default function MobileDashboardNav() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    logoutMutation.mutate();
+  };
+
+  const logoutMutation = useMutation({
+    ...logoutOption,
+    onSuccess: () => {
+      sessionStorage.removeItem("resetToken");
+      router.push("/login");
+    },
+    onError: (err) =>
+      toast.error(isApiError(err) ? err.message : "Logout failed."),
+  });
   return (
-    <nav className="fixed right-0 bottom-0 left-0 z-50 flex items-center justify-between border-t border-[#EDEDED] bg-white px-4 py-3 md:hidden">
-      {navItems.map((item) => {
-        const Icon = item.icon;
+    <aside
+      style={
+        {
+          "--topbar-height": TOPBAR_HEIGHT,
+        } as CSSProperties
+      }
+      className="sticky top-(--topbar-height) right-0 bottom-0 left-0 z-50 flex h-[calc(100vh-var(--topbar-height))] w-22.5 shrink-0 flex-col border-t border-[#EDEDED] bg-white px-4 py-3 lg:hidden"
+    >
+      <nav className="flex flex-1 flex-col gap-5">
+        {navItems.map((item) => {
+          const Icon = item.icon;
 
-        return (
-          <Link
-            key={item.label}
-            href={item.href}
-            className="flex flex-col items-center gap-1 text-[11px] font-medium text-[#050505]"
-          >
-            <Icon size={20} />
-            <span>{item.label}</span>
-          </Link>
-        );
-      })}
+          const isActive =
+            item.href === "/dashboard"
+              ? pathname === "/dashboard"
+              : pathname.startsWith(item.href);
 
-      <button className="flex flex-col items-center gap-1 text-[11px] font-medium text-[#D92D20]">
+          return (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={`flex flex-col items-center gap-1 rounded-md p-3 text-[11px] font-medium ${
+                isActive ? "bg-brand text-white" : "text-[#050505]"
+              }`}
+            >
+              <Icon size={20} />
+            </Link>
+          );
+        })}
+      </nav>
+      <Button
+        type="button"
+        size="lg"
+        variant="logout"
+        disabled={logoutMutation.isPending}
+        onClick={handleLogout}
+      >
         <LogOut size={20} />
-        <span>Logout</span>
-      </button>
-    </nav>
+      </Button>
+    </aside>
   );
 }
