@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { getImageUrl } from "@/utils/profile";
 
 type Props = {
   profile?: {
@@ -9,11 +10,12 @@ type Props = {
 };
 
 export default function ProfileSummaryCard({ profile }: Props) {
+  const profileImageUrl = getImageUrl(profile?.photoUrl);
   return (
     <section className="flex flex-col gap-5 rounded-[12px] border border-[#EDEDED] bg-white p-6 md:flex-row md:items-start">
-      {profile?.photoUrl ? (
+      {profileImageUrl ? (
         <Image
-          src={`${process.env.NEXT_PUBLIC_API_URL}${profile.photoUrl}`}
+          src={profileImageUrl}
           alt={profile?.fullName ?? "Profile avatar"}
           width={96}
           height={96}

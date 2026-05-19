@@ -1,9 +1,8 @@
 "use client";
-
-import { useMemo } from "react";
 import { ChevronRight, Eye, Link2, Pencil, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { getDisplayUrl, getProfileUrl } from "@/utils/profile";
 
 const actions = [
   {
@@ -35,15 +34,7 @@ type Props = {
 };
 
 export default function ProfileOverviewCard({ profile }: Props) {
-  const publicProfileUrl = useMemo(() => {
-    if (!profile?.username) return "Profile URL not available";
-
-    if (typeof window === "undefined") {
-      return `/${profile.username}`;
-    }
-
-    return `${window.location.origin}/${profile.username}`;
-  }, [profile?.username]);
+  const publicProfileUrl = getProfileUrl(profile?.username);
   return (
     <>
       <section className="rounded-[12px] border border-[#EDEDED] bg-white p-4">
@@ -105,7 +96,9 @@ export default function ProfileOverviewCard({ profile }: Props) {
           <div className="mt-4 flex justify-between text-sm">
             <span className="text-[#454545]">Public URL</span>
             <span className="text-right break-all">
-              {publicProfileUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+              {publicProfileUrl
+                ? getDisplayUrl(publicProfileUrl)
+                : "Profile URL not available"}
             </span>
           </div>
 
