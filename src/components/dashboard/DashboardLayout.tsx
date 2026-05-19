@@ -18,6 +18,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           {children}
         </main>
       </div>
+
       <MobileDashboardNav />
     </div>
   );
