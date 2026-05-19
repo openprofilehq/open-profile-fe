@@ -1,3 +1,5 @@
+import { env } from "@/env/client";
+
 export function getProfileUrl(username?: string, origin?: string) {
   if (!username) return "";
 
@@ -16,5 +18,5 @@ export function getImageUrl(path?: string | null) {
 
   if (path.startsWith("http")) return path;
 
-  return `${process.env.NEXT_PUBLIC_API_URL}${path}`;
+  return `${env.NEXT_PUBLIC_API_URL}${path}`;
 }
