@@ -1,69 +1,122 @@
-import { ImageIcon, Link2, Palette, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+"use client";
 
-const builderItems = [
-  {
-    title: "Profile Details",
-    description: "Update your name, bio, avatar, and public profile content.",
-    icon: ImageIcon,
-  },
-  {
-    title: "Links",
-    description: "Add, remove, or reorder links shown on your profile.",
-    icon: Link2,
-  },
-  {
-    title: "Appearance",
-    description: "Customize your profile theme, colors, and layout style.",
-    icon: Palette,
-  },
-];
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { dashboardProfileOption } from "@/api/profile/profile.options";
+import BuilderHeader from "./BuilderHeader";
+import LeftSidebar from "./LeftSidebar";
+import PreviewCanvas from "./PreviewCanvas";
+import RightPanel from "./RightPanel";
+
+interface Section {
+  id: string;
+  title: string;
+  type: string;
+}
 
 export default function ProfileBuilderContent() {
+  const dashboardProfile = useQuery(dashboardProfileOption());
+  const profile = dashboardProfile.data;
+  // Styles State
+  const [font, setFont] = useState("Afacad");
+  const [textColor, setTextColor] = useState("#050505");
+  const [bgColor, setBgColor] = useState("#FFFFFF");
+  const [iconColor, setIconColor] = useState("#087583");
+  const [spacing, setSpacing] = useState(20);
+  const [borderRadius, setBorderRadius] = useState<
+    "sharp" | "medium" | "round"
+  >("medium");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  // Sections State
+  const [sections, setSections] = useState<Section[]>([
+    { id: "1", title: "Bio - John Smith", type: "bio" },
+  ]);
+
+  // UI Selection State
+  const [activeTab, setActiveTab] = useState<"general" | "section">("general");
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
+    "1"
+  );
+
+  // Handlers
+  const handleSelectSection = (id: string) => {
+    setSelectedSectionId(id);
+    setActiveTab("section");
+  };
+
+  const handleAddSection = (title: string, type: string) => {
+    const newSection: Section = {
+      id: Math.random().toString(36).substr(2, 9),
+      title,
+      type,
+    };
+    setSections([...sections, newSection]);
+    setSelectedSectionId(newSection.id);
+    setActiveTab("section");
+  };
+
+  const handleRemoveSection = (id: string) => {
+    const updated = sections.filter((s) => s.id !== id);
+    setSections(updated);
+    if (selectedSectionId === id) {
+      setSelectedSectionId(updated[0]?.id || null);
+    }
+  };
+
+  const handleUpdateSection = (id: string, updates: Partial<Section>) => {
+    setSections(sections.map((s) => (s.id === id ? { ...s, ...updates } : s)));
+  };
+
+  const selectedSection =
+    sections.find((s) => s.id === selectedSectionId) || null;
+
   return (
-    <div className="mx-auto w-full max-w-[920px]">
-      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-[#050505]">Profile Builder</h1>
-          <p className="mt-2 text-[#747474]">
-            Manage the content and appearance of your public profile.
-          </p>
-        </div>
+    <div className="bg-primary-bg flex h-screen w-screen flex-col overflow-hidden">
+      <BuilderHeader />
 
-        <Button className="h-11 rounded-[10px] bg-[#087583] text-white hover:bg-[#065e69]">
-          <Plus size={18} />
-          Add Section
-        </Button>
-      </div>
+      <div className="flex flex-1 gap-2 overflow-hidden bg-[#F6F7F9] p-2 px-4">
+        <LeftSidebar
+          sections={sections}
+          selectedSectionId={selectedSectionId}
+          onSelectSection={handleSelectSection}
+          onAddSection={handleAddSection}
+          onRemoveSection={handleRemoveSection}
+          profile={profile}
+        />
 
-      <div className="mt-8 flex flex-col gap-4">
-        {builderItems.map((item) => {
-          const Icon = item.icon;
+        <PreviewCanvas
+          font={font}
+          textColor={textColor}
+          bgColor={bgColor}
+          iconColor={iconColor}
+          spacing={spacing}
+          borderRadius={borderRadius}
+          theme={theme}
+          sections={sections}
+          profile={profile}
+        />
 
-          return (
-            <section
-              key={item.title}
-              className="flex items-center justify-between rounded-[12px] border border-[#EDEDED] bg-white p-5"
-            >
-              <div className="flex items-start gap-4">
-                <span className="flex h-11 w-11 items-center justify-center rounded-[10px] bg-[#E5F4F6] text-[#087583]">
-                  <Icon size={22} />
-                </span>
-
-                <div>
-                  <h2 className="text-lg font-bold text-[#050505]">
-                    {item.title}
-                  </h2>
-                  <p className="mt-1 text-[#747474]">{item.description}</p>
-                </div>
-              </div>
-
-              <button className="rounded-[8px] border border-[#EDEDED] px-4 py-2 text-sm font-medium text-[#050505]">
-                Manage
-              </button>
-            </section>
-          );
-        })}
+        <RightPanel
+          font={font}
+          onChangeFont={setFont}
+          textColor={textColor}
+          onChangeTextColor={setTextColor}
+          bgColor={bgColor}
+          onChangeBgColor={setBgColor}
+          iconColor={iconColor}
+          onChangeIconColor={setIconColor}
+          spacing={spacing}
+          onChangeSpacing={setSpacing}
+          borderRadius={borderRadius}
+          onChangeBorderRadius={setBorderRadius}
+          theme={theme}
+          onChangeTheme={setTheme}
+          activeTab={activeTab}
+          onChangeTab={setActiveTab}
+          selectedSection={selectedSection}
+          onUpdateSection={handleUpdateSection}
+        />
       </div>
     </div>
   );
