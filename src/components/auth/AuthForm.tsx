@@ -37,6 +37,7 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
   const [password, setPassword] = useState("");
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const isSignup = mode === "signup";
 
@@ -107,7 +108,10 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
               required
               autoComplete="name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (nameError) setNameError("");
+              }}
               onBlur={() =>
                 setNameError(
                   name.trim().split(/\s+/).length < 2
@@ -131,10 +135,17 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
             placeholder="Enter your email address"
             autoComplete="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (emailError) setEmailError("");
+            }}
             onBlur={() =>
               setEmailError(
-                email && !EMAIL_RE.test(email) ? "Incorrect email" : ""
+                !email
+                  ? "Email is required"
+                  : !EMAIL_RE.test(email)
+                    ? "Incorrect email"
+                    : ""
               )
             }
             className={`${inputClass} ${emailError ? "border-red-400" : ""}`}
@@ -144,10 +155,23 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
 
         <PasswordField
           value={password}
-          onChange={setPassword}
+          onChange={(v) => {
+            setPassword(v);
+            if (passwordError) setPasswordError("");
+          }}
           required
           showRules={isSignup}
           autoComplete={isSignup ? "new-password" : "current-password"}
+          error={passwordError}
+          onBlur={() =>
+            setPasswordError(
+              !password
+                ? "Password is required"
+                : isSignup && !allPasswordRulesMet(password)
+                  ? "Password does not meet all requirements"
+                  : ""
+            )
+          }
         />
 
         {!isSignup && (
