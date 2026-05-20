@@ -83,7 +83,7 @@ const presetIcons = [
   {
     id: "tiktok",
     label: "TikTok",
-    icon: "/profilebuilder_home/icons/tiktok-.svg",
+    icon: "/profilebuilder_home/icons/tiktok.svg",
   },
 ];
 

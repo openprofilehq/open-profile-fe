@@ -67,22 +67,19 @@ export default function ContentOption({
               </div>
             ) : (
               links.map((link) => (
-                <Button
+                <div
                   key={link.id}
-                  type="button"
-                  variant="linkBtn"
-                  size="lg"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Edit link ${link.title}`}
+                  onClick={() => onEditLink(link)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
+                      onEditLink(link);
                     }
                   }}
-                  onClick={() => onEditLink(link)}
-                  tabIndex={0}
-                  style={{
-                    padding: 0,
-                  }}
-                  className="group border-tertiary-b relative flex cursor-pointer items-center justify-between overflow-hidden rounded-md border transition-all duration-200 focus:ring-2 focus:outline-none"
+                  className="group border-tertiary-b relative flex cursor-pointer items-center justify-between overflow-hidden rounded-md border p-3 transition-all duration-200 focus:ring-2 focus:outline-none"
                 >
                   <div className="flex flex-1 items-center justify-between gap-3 px-4">
                     <p className="truncate text-sm text-black">{link.title}</p>
@@ -100,10 +97,10 @@ export default function ContentOption({
                     </button>
                   </div>
 
-                  <div className="border-tertiary-b bg-active-bg text-tertiary-text hover:bg-hover-bg absolute right-0 flex h-10 cursor-grab items-center justify-center self-stretch border-l px-3.5 transition-colors active:cursor-grabbing">
+                  <div className="border-tertiary-b bg-active-bg text-tertiary-text hover:bg-hover-bg absolute top-0 right-0 flex h-13 cursor-grab items-center justify-center self-stretch border-l px-3.5 transition-colors active:cursor-grabbing">
                     <GripVertical size={16} />
                   </div>
-                </Button>
+                </div>
               ))
             )}
           </div>
