@@ -109,7 +109,7 @@ export default function PreviewCanvas({
 
   return (
     <div
-      className={`animate-in fade-in no-scrollbar flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
+      className={`animate-in fade-in no-scrollbar flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-black-100-text" : "bg-transparent"}`}
     >
       {/* Device wrapper */}
       <div className="flex w-full max-w-[780px] flex-col gap-6">
@@ -124,9 +124,9 @@ export default function PreviewCanvas({
               className="relative flex flex-col items-center gap-6 border p-6 shadow-sm transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
             >
               {/* Action buttons (View/Delete) */}
-              <div className="absolute top-6 right-6 flex items-center gap-3 rounded-full border border-[#EDEDED] bg-white px-3.5 py-1.5 shadow-none select-none">
+              <div className="border-tertiary-b bg-neutral-subtle-bg absolute top-6 right-6 flex items-center gap-3 rounded-full border px-3.5 py-1.5 shadow-none select-none">
                 <button
-                  className="text-[#3A3A3A] transition-opacity hover:opacity-80"
+                  className="text-preview-action-icon transition-opacity hover:opacity-80"
                   title="Toggle visibility"
                 >
                   <Eye size={18} strokeWidth={2} />
@@ -162,7 +162,7 @@ export default function PreviewCanvas({
                 </h2>
                 <p
                   style={textStyle}
-                  className="mt-3 text-[15px] leading-relaxed opacity-90 transition-colors"
+                  className="mt-3 text-base leading-relaxed opacity-90 transition-colors"
                 >
                   {profile?.bio ||
                     "I'm a digital creator focusing on the intersection of design, technology, and intentional living. Sharing insights to help you build better products and habits."}
@@ -199,15 +199,15 @@ export default function PreviewCanvas({
                 className="relative flex flex-col border p-6 shadow-sm transition-all duration-300"
               >
                 {/* Action buttons (View/Delete) */}
-                <div className="absolute top-6 right-6 flex items-center gap-3 rounded-[10px] border border-[#EDEDED] bg-white px-6 py-3 shadow-none select-none">
+                <div className="border-tertiary-b bg-neutral-subtle-bg absolute top-6 right-6 flex items-center gap-3 rounded-[10px] border px-6 py-3 shadow-none select-none">
                   <button
-                    className="text-[#3A3A3A] transition-opacity hover:opacity-80"
+                    className="text-preview-action-icon transition-opacity hover:opacity-80"
                     title="Toggle visibility"
                   >
                     <Eye size={18} strokeWidth={2} />
                   </button>
                   <button
-                    className="text-[#9F2B2B] transition-opacity hover:opacity-80"
+                    className="text-preview-action-delete transition-opacity hover:opacity-80"
                     title="Delete section"
                   >
                     <Trash2 size={18} strokeWidth={2} />
@@ -234,7 +234,7 @@ export default function PreviewCanvas({
                 {/* Section-specific placeholders */}
                 {section.type === "projects" && (
                   <div className="grid grid-cols-1 gap-4">
-                    <div className="border-tertiary-b flex items-center justify-between rounded-lg border bg-black/5 p-4 dark:border-[#2D2D2D] dark:bg-white/5">
+                    <div className="border-tertiary-b dark:border-dark-b flex items-center justify-between rounded-lg border bg-black/5 p-4 dark:bg-white/5">
                       <div>
                         <h4 className="text-sm font-semibold">
                           OpenProfile Platform
@@ -254,7 +254,7 @@ export default function PreviewCanvas({
                       (platform) => (
                         <span
                           key={platform}
-                          className="border-tertiary-b inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold hover:bg-black/5 dark:border-[#2D2D2D] dark:hover:bg-white/5"
+                          className="border-tertiary-b dark:border-dark-b inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/5"
                         >
                           <Link2 size={12} />
                           {platform}

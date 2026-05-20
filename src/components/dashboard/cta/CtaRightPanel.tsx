@@ -58,7 +58,7 @@ export default function CtaRightPanel({
         <div className="gap-2">
           <label className="text-primary-text text-m-medium">Font</label>
           <Select value={font} onValueChange={onChangeFont}>
-            <SelectTrigger className="border-tertiary-b focus:border-brand-b text-m-regular text-primary-text h-10 w-full cursor-pointer rounded-[8px] border bg-white pl-3 transition-all outline-none">
+            <SelectTrigger className="border-tertiary-b focus:border-brand-b text-m-regular text-primary-text bg-neutral-subtle-bg h-10 w-full cursor-pointer rounded-[8px] border pl-3 transition-all outline-none">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="rounded-[8px]">
@@ -142,7 +142,7 @@ export default function CtaRightPanel({
                 <div key={key} className="">
                   <p className="text-primary-text text-m-regular">{label}</p>
 
-                  <div className="border-tertiary-b relative flex h-10 w-full items-center overflow-hidden rounded-[8px] border bg-white">
+                  <div className="border-tertiary-b bg-neutral-subtle-bg relative flex h-10 w-full items-center overflow-hidden rounded-[8px] border">
                     <div
                       className="bg-hover-bg pointer-events-none absolute top-0 bottom-0 left-0 transition-all duration-75"
                       style={{ width: `${(value / 80) * 100}%` }}
@@ -159,7 +159,7 @@ export default function CtaRightPanel({
                       className="cta-slider absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent shadow-sm outline-none"
                     />
 
-                    <span className="text-m-regular pointer-events-none absolute right-3 text-[#121212]">
+                    <span className="text-m-regular text-black-100-text pointer-events-none absolute right-3">
                       {value}
                     </span>
                   </div>

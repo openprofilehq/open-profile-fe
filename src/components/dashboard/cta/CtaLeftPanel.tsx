@@ -30,7 +30,7 @@ export default function CtaLeftPanel({
   const maxSubtitle = 200;
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in flex h-full w-[290px] shrink-0 flex-col border bg-white shadow-sm duration-200 select-none">
+    <aside className="border-tertiary-b animate-in fade-in bg-neutral-subtle-bg flex h-full w-[290px] shrink-0 flex-col border shadow-sm duration-200 select-none">
       {/* Header */}
       <div className="pl-4">
         <button
@@ -46,7 +46,7 @@ export default function CtaLeftPanel({
         </p>
       </div>
 
-      <section className="no-scrollbar flex flex-1 flex-col gap-4 overflow-y-auto border-t border-black px-4 py-6">
+      <section className="no-scrollbar border-primary-100 flex flex-1 flex-col gap-4 overflow-y-auto border-t px-4 py-6">
         {/* Layout */}
         <div className="flex flex-col gap-2">
           <p className="text-m-medium text-primary-text">Layout</p>
@@ -60,7 +60,7 @@ export default function CtaLeftPanel({
                 className={`flex flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-[10px] border transition-all duration-200 ${
                   (section.ctaLayout ?? "center") === l
                     ? "bg-brand-light-subtle-bg"
-                    : "hover:bg-primary-bg bg-white"
+                    : "hover:bg-primary-bg bg-neutral-subtle-bg"
                 }`}
                 title={l}
               >
@@ -98,7 +98,7 @@ export default function CtaLeftPanel({
               onChange={(e) => onUpdate({ ctaSubtitle: e.target.value })}
               className="text-primary-text focus:border-brand-b border-soft-b cta-shadow h-28.75 w-full resize-none rounded-[8px] border px-2 py-2 pb-4 text-sm font-semibold transition-all outline-none"
             />
-            <p className="absolute right-2 bottom-2 text-right text-[11px] font-medium text-[#A3A3A3]">
+            <p className="text-muted-text absolute right-2 bottom-2 text-right text-[11px] font-medium">
               {(section.ctaSubtitle ?? "").length}/{maxSubtitle}
             </p>
           </div>
@@ -108,12 +108,12 @@ export default function CtaLeftPanel({
         <div className="flex flex-col gap-2">
           <label className="text-primary-text text-m-medium">Icon</label>
 
-          <div className="cta-shadow flex items-center justify-between rounded-[8px] border border-[#EDEDED] px-2.25">
+          <div className="cta-shadow border-tertiary-b flex items-center justify-between rounded-[8px] border px-2.25">
             <div className="flex h-9 w-9 items-center justify-center">
               <MessageSquare size={24} className="" />
             </div>
 
-            <button className="h-full border-l border-[#EDEDED] px-3">
+            <button className="border-tertiary-b h-full border-l px-3">
               <Trash2 size={16} className="text-negative-text" />
             </button>
           </div>

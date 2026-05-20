@@ -73,6 +73,11 @@
   --color-input-text: var(--input-text);
   --color-label-text: var(--label-text);
   --color-selected-text: var(--selected-text);
+  --color-black-100-text: var(--black-100-text);
+  --color-preview-action-icon: var(--preview-action-icon);
+  --color-preview-action-delete: var(--preview-action-delete);
+  --color-muted-text: var(--muted-text);
+  --color-primary-100: var(--primary-100);
 
   /* bg colors */
   --color-primary-bg: var(--primary-bg);
@@ -121,6 +126,7 @@
   --color-button-b: var(--button-b);
   --color-selected-b: var(--selected-b);
   --color-soft-b: var(--soft-b);
+  --color-dark-b: var(--dark-b);
 
   /* typography */
   /* heading */
@@ -286,6 +292,11 @@
   --label-text: #454545;
   --selected-text: #171717;
   --button-text: #171717;
+  --black-100-text: #121212;
+  --preview-action-icon: #3a3a3a;
+  --preview-action-delete: #9f2b2b;
+  --muted-text: #a3a3a3;
+  --primary-100: #000000;
 
   /* bg */
   --primary-bg: #fafafa;
@@ -334,6 +345,7 @@
   --button-b: #454545;
   --selected-b: #171717;
   --soft-b: #ebebeb;
+  --dark-b: #2d2d2d;
 }
 
 .dark {

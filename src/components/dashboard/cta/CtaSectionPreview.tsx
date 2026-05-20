@@ -61,7 +61,7 @@ export default function CtaSectionPreview({
   return (
     <div className="space-y-6 pb-6">
       {/* portfolio cards */}
-      <section className="font-afacad grid grid-cols-2 gap-6 rounded-b-[12px] bg-white px-6 pb-6 shadow-sm">
+      <section className="font-afacad bg-neutral-subtle-bg grid grid-cols-2 gap-6 rounded-b-[12px] px-6 pb-6 shadow-sm">
         {PORTFOLIO_ITEMS.map((item) => (
           <div key={item.id} className="border-tertiary-b w-full border">
             <Image
@@ -106,17 +106,17 @@ export default function CtaSectionPreview({
       >
         {/* Action buttons */}
         <div
-          className={`absolute top-6 flex items-center gap-3 rounded-[10px] border border-[#EDEDED] bg-white px-6 py-3 select-none ${isRight ? "left-6" : "right-6"}`}
+          className={`border-tertiary-b bg-neutral-subtle-bg absolute top-6 flex items-center gap-3 rounded-[10px] border px-6 py-3 select-none ${isRight ? "left-6" : "right-6"}`}
         >
           <button
             aria-label="Preview section"
-            className="text-[#3A3A3A] transition-opacity hover:opacity-80"
+            className="text-preview-action-icon transition-opacity hover:opacity-80"
           >
             <Eye size={18} strokeWidth={2} />
           </button>
           <button
             aria-label="Delete section"
-            className="text-[#9F2B2B] transition-opacity hover:opacity-80"
+            className="text-preview-action-delete transition-opacity hover:opacity-80"
           >
             <Trash2 size={18} strokeWidth={2} />
           </button>
