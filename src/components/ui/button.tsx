@@ -25,6 +25,8 @@ const buttonVariants = cva(
           "bg-transparent p-0 aria-expanded:bg-transparent aria-expanded:text-brand [&_svg]:text-brand aria-expanded:[&_svg]:text-brand hover:bg-transparent hover:text-brand aria-expanded:hover:bg-transparent aria-expanded:hover:text-brand disabled:bg-transparent disabled:text-brand/80 disabled:[&_svg]:text-brand/80",
         dropdownItem:
           "bg-white text-[#050505] flex justify-start  hover:bg-[#FAFAFA] aria-expanded:bg-[#FAFAFA] aria-expanded:text-[#050505] disabled:bg-white/80 disabled:text-[#050505]/80 ",
+        linkBtn:
+          "bg-transparent text-brand hover:bg-transparent aria-expanded:bg-transparent aria-expanded:text-brand",
       },
       size: {
         default:
