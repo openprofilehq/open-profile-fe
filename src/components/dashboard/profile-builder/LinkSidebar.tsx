@@ -3,15 +3,8 @@ import { useMemo, useState } from "react";
 import ContentOption from "./ContentOption";
 import SectionOption from "./SectionOption";
 
-export type SavedLink = {
-  id: string;
-  title: string;
-  url: string;
-  iconId: string | null;
-  iconLabel: string | null;
-  iconSrc: string | null;
-  imageSrc: string | null;
-};
+import type { SavedLink } from "./types";
+export type { SavedLink } from "./types";
 
 type LinkSection = {
   id: string;

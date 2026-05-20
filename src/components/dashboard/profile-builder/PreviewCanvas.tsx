@@ -4,24 +4,7 @@ import Image from "next/image";
 import { Folder, Briefcase, ExternalLink, Eye, Trash2 } from "lucide-react";
 import { getImageUrl } from "@/utils/profile";
 import CtaSectionPreview from "../cta/CtaSectionPreview";
-import type { SavedLink } from "./LinkSidebar";
-
-interface Section {
-  id: string;
-  title: string;
-  type: string;
-  ctaTitle?: string;
-  ctaSubtitle?: string;
-  ctaButton?: string;
-  ctaLayout?: "center" | "left" | "right";
-  ctaSpacingTop?: number;
-  ctaSpacingBottom?: number;
-  ctaSpacingGap?: number;
-  ctaSpacingPadding?: number;
-  visible: boolean;
-  subtitle?: string;
-  links?: SavedLink[];
-}
+import type { Section, ProfilePreview } from "./types";
 
 interface PreviewCanvasProps {
   font: string;
@@ -34,11 +17,7 @@ interface PreviewCanvasProps {
   sections: Section[];
   selectedSectionType: string | null;
   selectedSectionId: string | null;
-  profile?: {
-    fullName?: string;
-    bio?: string | null;
-    photoUrl?: string | null;
-  } | null;
+  profile?: ProfilePreview | null;
 }
 
 export default function PreviewCanvas({

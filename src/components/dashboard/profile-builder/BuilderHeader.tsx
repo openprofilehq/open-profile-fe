@@ -7,11 +7,7 @@ import { Search } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
-type BuilderHeaderProps = {
-  username?: string;
-};
-
-export default function BuilderHeader({ username }: BuilderHeaderProps) {
+export default function BuilderHeader() {
   const pathname = usePathname();
 
   const navLinks = [
@@ -41,15 +37,6 @@ export default function BuilderHeader({ username }: BuilderHeaderProps) {
               priority
             />
           </Link>
-
-          <div className="hidden items-center gap-2 lg:flex">
-            <span className="text-sm font-semibold text-[#050505]">
-              @{username ?? "username"}
-            </span>
-            <span className="rounded-full bg-[#E5F4F6] px-2.5 py-1 text-xs font-bold text-[#087583]">
-              Free
-            </span>
-          </div>
         </div>
 
         <nav className="hidden items-center gap-8 md:flex">
@@ -69,7 +56,7 @@ export default function BuilderHeader({ username }: BuilderHeaderProps) {
               >
                 {link.label}
                 {isActive && (
-                  <span className="bg-link-hover-text absolute bottom-0 left-0 h-[2px] w-full rounded-full" />
+                  <span className="bg-link-hover-text absolute bottom-0 left-0 h-0.5 w-full rounded-full" />
                 )}
               </Link>
             );
