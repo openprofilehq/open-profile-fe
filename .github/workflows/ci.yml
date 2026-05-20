@@ -2,9 +2,9 @@ name: CI PIPELINE
 
 on:
   push:
-    branches: [feat/ci-cd, dev, staging, production]
+    branches: [feature/ci-cd, dev, staging, production]
   pull_request:
-    branches: [feat/ci-cd, dev, staging, production]
+    branches: [feature/ci-cd, dev, staging, production]
 
 
 jobs:
