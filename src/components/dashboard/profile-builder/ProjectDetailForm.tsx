@@ -3,13 +3,11 @@
 import { useState, useRef } from "react";
 import { ChevronLeft, Trash2, Upload } from "lucide-react";
 import type { ProjectItem } from "@/api/profile/project.type";
-import {
-  getProjectImageUploadUrl,
-  uploadToCloudinary,
-} from "@/api/uploads/uploads.service";
+import { uploadProjectImage } from "@/api/uploads/uploads.service";
 
 interface ProjectDetailFormProps {
   project: ProjectItem;
+  highlightedCount: number;
   onUpdate: (updates: Partial<ProjectItem>) => void;
   onDelete: () => void;
   onBack: () => void;
@@ -17,17 +15,20 @@ interface ProjectDetailFormProps {
 
 export default function ProjectDetailForm({
   project,
+  highlightedCount,
   onUpdate,
   onDelete,
   onBack,
 }: ProjectDetailFormProps) {
-  // Default to "section" tab to match the design screenshot
   const [activeTab, setActiveTab] = useState<"content" | "section">("section");
   const [urlError, setUrlError] = useState("");
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadError, setUploadError] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
+
+  const MAX_HIGHLIGHTS = 3;
 
   const handleUrlChange = (val: string) => {
     onUpdate({ projectUrl: val });
@@ -42,6 +43,9 @@ export default function ProjectDetailForm({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Reset input so same file can be re-selected later
+    if (fileInputRef.current) fileInputRef.current.value = "";
+
     if (!file.type.startsWith("image/")) {
       setUploadError("Please select an image file (JPG, PNG, GIF, WebP, etc.)");
       return;
@@ -50,9 +54,16 @@ export default function ProjectDetailForm({
     setUploadError("");
     setUploadProgress(0);
 
+    // Cancel any in-flight upload
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
+
     try {
-      const { uploadUrl, expectedUrl } = await getProjectImageUploadUrl(file);
-      await uploadToCloudinary(uploadUrl, file, (pct) => setUploadProgress(pct));
+      const expectedUrl = await uploadProjectImage(
+        file,
+        (pct) => setUploadProgress(pct),
+        abortRef.current.signal
+      );
       onUpdate({ imageUrl: expectedUrl });
       setUploadProgress(null);
     } catch (error) {
@@ -67,7 +78,7 @@ export default function ProjectDetailForm({
     <div className="flex h-full flex-col">
 
       {/* Header */}
-      <div className="shrink-0 flex items-center justify-between px-6 pt-6 mb-4">
+      <div className="mb-4 flex shrink-0 items-center justify-between px-6 pt-6">
         <button
           onClick={onBack}
           className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
@@ -78,7 +89,7 @@ export default function ProjectDetailForm({
 
         <button
           onClick={() => setShowDeleteConfirm(true)}
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-[#E53E3E] transition-all hover:bg-[#FFF0F0]"
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-negative-text transition-all hover:bg-negative-subtle-bg"
           title="Delete project"
         >
           <Trash2 size={17} />
@@ -87,19 +98,21 @@ export default function ProjectDetailForm({
 
       {/* Delete confirmation */}
       {showDeleteConfirm && (
-        <div className="mx-6 mb-4 shrink-0 rounded-[10px] border border-[#FED7D7] bg-[#FFF5F5] p-4">
-          <p className="text-sm font-semibold text-[#C53030]">Delete this project?</p>
-          <p className="mt-1 text-xs text-[#E53E3E]">This cannot be undone.</p>
+        <div className="mx-6 mb-4 shrink-0 rounded-[10px] border border-negative-hover-bg bg-negative-subtle-bg p-4">
+          <p className="text-negative-bold-text text-sm font-semibold">
+            Delete this project?
+          </p>
+          <p className="text-negative-text mt-1 text-xs">This cannot be undone.</p>
           <div className="mt-3 flex gap-2">
             <button
               onClick={() => setShowDeleteConfirm(false)}
-              className="flex-1 rounded-lg border border-[#E2E8F0] bg-white py-1.5 text-xs font-semibold text-[#333] transition-all hover:bg-gray-50"
+              className="border-tertiary-b text-primary-text hover:bg-hover-bg flex-1 rounded-lg border bg-white py-1.5 text-xs font-semibold transition-all"
             >
               Cancel
             </button>
             <button
               onClick={onDelete}
-              className="flex-1 rounded-lg bg-[#E53E3E] py-1.5 text-xs font-semibold text-white transition-all hover:bg-[#C53030]"
+              className="bg-negative-bg hover:bg-negative-bold-text flex-1 rounded-lg py-1.5 text-xs font-semibold text-white transition-all"
             >
               Delete
             </button>
@@ -115,8 +128,8 @@ export default function ProjectDetailForm({
             onClick={() => setActiveTab(tab)}
             className={`mr-6 pb-3 text-sm font-semibold capitalize transition-all ${
               activeTab === tab
-                ? "border-b-2 border-[#087583] text-[#087583]"
-                : "text-[#888] hover:text-[#333]"
+                ? "border-b-2 border-brand-b text-link-hover-text"
+                : "text-tertiary-text hover:text-primary-text"
             }`}
           >
             {tab}
@@ -126,16 +139,14 @@ export default function ProjectDetailForm({
 
       <div className="flex-1 overflow-y-auto px-6 pb-6">
 
-        {/* ── CONTENT TAB — empty per design ── */}
         {activeTab === "content" && (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <p className="text-xs text-[#aaa]">
+            <p className="text-disabled-text text-xs">
               No content options for individual projects.
             </p>
           </div>
         )}
 
-        {/* ── SECTION TAB — all project fields live here ── */}
         {activeTab === "section" && (
           <div className="flex flex-col gap-5">
 
@@ -162,12 +173,14 @@ export default function ProjectDetailForm({
               <textarea
                 rows={4}
                 value={project.subtitle}
-                onChange={(e) => onUpdate({ subtitle: e.target.value.slice(0, 100) })}
+                onChange={(e) =>
+                  onUpdate({ subtitle: e.target.value.slice(0, 100) })
+                }
                 maxLength={100}
                 placeholder="Add text here"
                 className="border-tertiary-b text-primary-text placeholder-tertiary-text focus:border-brand-b focus:ring-brand-b w-full resize-none rounded-[10px] border bg-white px-3 py-2.5 text-sm outline-none focus:ring-1"
               />
-              <p className="mt-1 text-right text-[11px] text-[#aaa]">
+              <p className="text-disabled-text mt-1 text-right text-[11px]">
                 {project.subtitle.length}/100
               </p>
             </div>
@@ -179,9 +192,8 @@ export default function ProjectDetailForm({
               </label>
 
               {project.imageUrl ? (
-                /* Thumbnail row — use direct image rendering for remote uploads */
-                <div className="flex items-center justify-between rounded-[10px] border border-[#E4E4E7] bg-white px-3 py-2">
-                  <div className="relative h-10 w-10 overflow-hidden rounded-lg border border-[#E4E4E7]">
+                <div className="border-tertiary-b flex items-center justify-between rounded-[10px] border bg-white px-3 py-2">
+                  <div className="border-tertiary-b relative h-10 w-10 overflow-hidden rounded-lg border">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={project.imageUrl}
@@ -191,7 +203,7 @@ export default function ProjectDetailForm({
                   </div>
                   <button
                     onClick={() => onUpdate({ imageUrl: null })}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-[#E53E3E] transition-all hover:bg-[#FFF0F0]"
+                    className="text-negative-text hover:bg-negative-subtle-bg flex h-8 w-8 items-center justify-center rounded-lg transition-all"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -200,7 +212,7 @@ export default function ProjectDetailForm({
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploadProgress !== null}
-                  className="border-tertiary-b flex w-full items-center justify-center gap-2 rounded-[10px] border border-dashed bg-white py-4 text-sm font-medium text-[#087583] transition-all hover:bg-[#F0FAFA] disabled:opacity-60"
+                  className="border-tertiary-b text-link-hover-text hover:bg-brand-light-subtle-bg flex w-full items-center justify-center gap-2 rounded-[10px] border border-dashed bg-white py-4 text-sm font-medium transition-all disabled:opacity-60"
                 >
                   <Upload size={16} />
                   {uploadProgress !== null
@@ -210,16 +222,16 @@ export default function ProjectDetailForm({
               )}
 
               {uploadProgress !== null && (
-                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[#E4E4E7]">
+                <div className="bg-tertiary-b mt-2 h-1.5 w-full overflow-hidden rounded-full">
                   <div
-                    className="h-full bg-[#087583] transition-all duration-200"
+                    className="bg-brand-hover-bg h-full transition-all duration-200"
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
               )}
 
               {uploadError && (
-                <p className="mt-1.5 text-xs text-[#E53E3E]">{uploadError}</p>
+                <p className="text-negative-text mt-1.5 text-xs">{uploadError}</p>
               )}
 
               <input
@@ -236,34 +248,48 @@ export default function ProjectDetailForm({
               <label className="text-primary-text mb-1.5 block text-sm font-semibold">
                 Project URL
               </label>
-              {/* Static label row */}
-              <div className="mb-1.5 flex items-center gap-2 rounded-[10px] border border-[#E4E4E7] bg-[#F9F9F9] px-3 py-2.5">
-                <span className="text-sm font-semibold text-[#087583]">View project</span>
+              <div className="border-tertiary-b bg-secondary-bg mb-1.5 flex items-center gap-2 rounded-[10px] border px-3 py-2.5">
+                <span className="text-link-hover-text text-sm font-semibold">
+                  View project
+                </span>
               </div>
-              {/* URL input */}
               <input
                 type="text"
                 value={project.projectUrl}
                 onChange={(e) => handleUrlChange(e.target.value)}
                 placeholder="Search site or paste link ..."
-                className={`border-tertiary-b text-primary-text placeholder-tertiary-text focus:ring-brand-b w-full rounded-[10px] border bg-white px-3 py-2.5 text-sm outline-none focus:ring-1 ${
+                className={`text-primary-text placeholder-tertiary-text w-full rounded-[10px] border bg-white px-3 py-2.5 text-sm outline-none focus:ring-1 ${
                   urlError
-                    ? "border-[#E53E3E] focus:border-[#E53E3E] focus:ring-[#E53E3E]"
-                    : "focus:border-brand-b"
+                    ? "border-negative-bg focus:border-negative-bg focus:ring-negative-bg"
+                    : "border-tertiary-b focus:border-brand-b focus:ring-brand-b"
                 }`}
               />
               {urlError && (
-                <p className="mt-1.5 text-xs text-[#E53E3E]">{urlError}</p>
+                <p className="text-negative-text mt-1.5 text-xs">{urlError}</p>
               )}
             </div>
 
             {/* Highlight toggle */}
-            <div className="flex items-center justify-between rounded-[10px] border border-[#E4E4E7] bg-white px-3 py-3">
-              <span className="text-primary-text text-sm font-semibold">Highlight</span>
+            <div className="border-tertiary-b flex items-center justify-between rounded-[10px] border bg-white px-3 py-3">
+              <div>
+                <span className="text-primary-text text-sm font-semibold">
+                  Highlight
+                </span>
+                {!project.isHighlight && highlightedCount >= MAX_HIGHLIGHTS && (
+                  <p className="text-disabled-text mt-0.5 text-xs">
+                    Max {MAX_HIGHLIGHTS} highlights reached
+                  </p>
+                )}
+              </div>
               <button
-                onClick={() => onUpdate({ isHighlight: !project.isHighlight })}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  project.isHighlight ? "bg-[#1a1a1a]" : "bg-[#D1D5DB]"
+                onClick={() => {
+                  if (!project.isHighlight && highlightedCount >= MAX_HIGHLIGHTS)
+                    return;
+                  onUpdate({ isHighlight: !project.isHighlight });
+                }}
+                disabled={!project.isHighlight && highlightedCount >= MAX_HIGHLIGHTS}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors disabled:opacity-40 ${
+                  project.isHighlight ? "bg-inverse-bg" : "bg-neutral-bg"
                 }`}
                 role="switch"
                 aria-checked={project.isHighlight}

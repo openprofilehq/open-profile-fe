@@ -211,10 +211,21 @@ export default function ProfileBuilderContent() {
       const project = (section?.projects || []).find(
         (p) => p.id === leftPanel.projectId
       );
-      if (!project) return null;
+
+      // If project not found navigate back to list
+      if (!project) {
+        setLeftPanel({ kind: "projects-list", sectionId: leftPanel.sectionId });
+        return null;
+      }
+
+      const highlightedCount = (section?.projects || []).filter(
+        (p) => p.isHighlight
+      ).length;
+
       return (
         <ProjectDetailForm
           project={project}
+          highlightedCount={highlightedCount}
           onUpdate={(updates) =>
             handleUpdateProject(leftPanel.sectionId, leftPanel.projectId, updates)
           }

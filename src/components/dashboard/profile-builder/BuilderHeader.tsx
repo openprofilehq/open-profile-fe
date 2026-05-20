@@ -65,7 +65,7 @@ export default function BuilderHeader() {
             Upgrade
           </Button>
 
-          <Button className="bg-[#087583] hover:bg-[#065e69] h-9 rounded-[10px] px-4 text-sm font-semibold text-white transition-all active:scale-95 md:h-10 md:px-6">
+          <Button className="bg-brand-hover-bg hover:bg-brand h-9 rounded-[10px] px-4 text-sm font-semibold text-white transition-all active:scale-95 md:h-10 md:px-6">
             Publish
           </Button>
         </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import {
   Link2,
   Folder,
@@ -98,12 +97,14 @@ export default function PreviewCanvas({
       : "rgba(10, 146, 164, 0.08)",
   };
 
-  const renderProjectMedia = (project: ProjectItem) => (
-    project.imageUrl ? (
+  const renderProjectMedia = (project: ProjectItem) => {
+    const projectImageUrl = getImageUrl(project.imageUrl || "");
+
+    return projectImageUrl ? (
       <div className="relative h-full min-h-[180px] w-full overflow-hidden rounded-[14px] bg-black/10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={project.imageUrl}
+          src={projectImageUrl}
           alt={project.title || "Project image"}
           className="h-full w-full object-cover"
         />
@@ -115,8 +116,8 @@ export default function PreviewCanvas({
       >
         <Folder size={32} className="opacity-20" />
       </div>
-    )
-  );
+    );
+  };
 
   const renderGridProjects = (section: Section) => {
     const allProjects = section.projects || [];
@@ -222,12 +223,10 @@ export default function PreviewCanvas({
     >
       <div className="relative h-24 w-24 shrink-0 overflow-hidden bg-black/10">
         {project.imageUrl ? (
-          <Image
-            src={project.imageUrl}
+          <img
+            src={getImageUrl(project.imageUrl || "")}
             alt={project.title || "Project image"}
-            fill
-            className="object-cover"
-            unoptimized
+            className="h-full w-full object-cover"
           />
         ) : (
           <div
@@ -450,12 +449,10 @@ export default function PreviewCanvas({
             {/* Avatar */}
             <div className="border-brand-b/20 bg-brand-light-subtle-bg relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-inner">
               {getImageUrl(profile?.photoUrl) ? (
-                <Image
+                <img
                   src={getImageUrl(profile?.photoUrl) || ""}
                   alt={profile?.fullName ?? "Profile avatar"}
-                  fill
-                  className="object-cover"
-                  unoptimized
+                  className="h-full w-full object-cover"
                 />
               ) : (
                 <div className="text-brand-text text-3xl font-bold">
