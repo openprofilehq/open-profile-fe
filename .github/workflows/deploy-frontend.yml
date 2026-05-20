@@ -106,7 +106,7 @@ jobs:
     name: Deploy — production
     needs: ci
     runs-on: ubuntu-latest
-    if: (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging') || (github.event_name == 'push' && github.ref == 'refs/heads/staging')
+    if: (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production') || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     environment: production
 
     steps:
