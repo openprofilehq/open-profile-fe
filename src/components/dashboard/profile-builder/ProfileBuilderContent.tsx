@@ -41,9 +41,31 @@ export default function ProfileBuilderContent() {
   const [borderRadius, setBorderRadius] = useState<"sharp" | "medium" | "round">("medium");
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
-  // Sections State
   const [sections, setSections] = useState<Section[]>([
-    { id: "1", title: "Bio - John Smith", type: "bio" },
+    {
+      id: "bio",
+      title: "Bio",
+      type: "bio",
+      visible: true,
+    },
+    {
+      id: "links",
+      title: "Links - Featured Links",
+      type: "links",
+      visible: true,
+    },
+    {
+      id: "projects",
+      title: "Projects - Portfolio",
+      type: "projects",
+      visible: true,
+    },
+    {
+      id: "cta",
+      title: "CTA - Contact",
+      type: "experience",
+      visible: true,
+    },
   ]);
 
   // UI State

@@ -4,9 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
-export default function BuilderHeader() {
+type BuilderHeaderProps = {
+  username?: string;
+};
+
+export default function BuilderHeader({ username }: BuilderHeaderProps) {
   const pathname = usePathname();
 
   const navLinks = [
@@ -14,6 +19,10 @@ export default function BuilderHeader() {
     { label: "Profile Builder", href: "/dashboard/profile-builder" },
     { label: "Settings", href: "/dashboard/settings" },
   ];
+
+  function handlePublish() {
+    toast.success("Profile published successfully.");
+  }
 
   return (
     <header className="border-tertiary-b bg-white sticky top-0 z-40 w-full shrink-0 border-b px-4 py-2 select-none md:px-6">
@@ -37,7 +46,11 @@ export default function BuilderHeader() {
         {/* Center Nav — hidden on mobile, centered absolutely on md+ */}
         <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 md:flex">
           {navLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive =
+              pathname === link.href ||
+              (link.href === "/dashboard/profile-builder" &&
+                pathname === "/dashboard/canvas");
+
             return (
               <Link
                 key={link.label}

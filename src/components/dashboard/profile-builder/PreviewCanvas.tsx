@@ -47,7 +47,6 @@ export default function PreviewCanvas({
   sections,
   profile,
 }: PreviewCanvasProps) {
-  // Map fonts to real family names or styles
   const fontStyles: Record<string, string> = {
     Afacad: "font-afacad",
     Inter: "font-sans",
@@ -57,7 +56,6 @@ export default function PreviewCanvas({
 
   const selectedFontClass = fontStyles[font] || "font-afacad";
 
-  // Map border radii to pixels
   const radiusMap = {
     sharp: "0px",
     medium: "16px",
@@ -68,7 +66,6 @@ export default function PreviewCanvas({
   // Light/Dark Theme
   const isDark = theme === "dark";
 
-  // Custom Styles
   const cardStyle = {
     backgroundColor:
       bgColor === "#FFFFFF" && isDark
@@ -420,7 +417,7 @@ export default function PreviewCanvas({
       className={`animate-in fade-in flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
     >
       {/* Device wrapper */}
-      <div className="flex w-full max-w-[780px] flex-col gap-6">
+      <div className="flex w-full max-w-195 flex-col gap-6">
         {/* Dynamic Card Container with settings applied */}
         <div
           className={`flex w-full flex-col transition-all duration-300 ${selectedFontClass}`}
@@ -461,20 +458,21 @@ export default function PreviewCanvas({
               )}
             </div>
 
-            {/* Profile Info */}
-            <div className="flex-1 text-center sm:text-left">
-              <h2 className="text-2xl font-bold tracking-tight">
-                {profile?.fullName || "Micaela Robinsonss"}
-              </h2>
-              <p
-                style={textStyle}
-                className="mt-3 text-[15px] leading-relaxed opacity-90 transition-colors"
-              >
-                {profile?.bio ||
-                  "I'm a digital creator focusing on the intersection of design, technology, and intentional living. Sharing insights to help you build better products and habits."}
-              </p>
+              {/* Profile Info */}
+              <div className="flex-1 text-center sm:text-left">
+                <h2 className="text-2xl font-bold tracking-tight">
+                  {profile?.fullName || "Micaela Robinsonss"}
+                </h2>
+                <p
+                  style={textStyle}
+                  className="mt-3 text-[15px] leading-relaxed opacity-90 transition-colors"
+                >
+                  {profile?.bio ||
+                    "I'm a digital creator focusing on the intersection of design, technology, and intentional living. Sharing insights to help you build better products and habits."}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* 2. Dynamic Section Renderers */}
           {sections.map((section) => {
