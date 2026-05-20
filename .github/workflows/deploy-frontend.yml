@@ -13,6 +13,8 @@ on:
       - dev
       - staging
       - production
+    types:
+    - closed
 
 jobs:
   ci:
@@ -52,7 +54,7 @@ jobs:
     name: Deploy — Staging
     needs: ci
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.base_ref == 'staging'
     environment: staging
 
     steps:
@@ -86,6 +88,8 @@ jobs:
             cd /var/www/openprofile-fe/staging
             rm -rf .next || true
             pnpm install --config.ignore-scripts=true
+             # fallback frontend deps
+            pnpm add react-icons --no-save || true
             pnpm build
       - name: Start app with PM2
         uses: appleboy/ssh-action@v1.0.3
@@ -101,7 +105,7 @@ jobs:
     name: Deploy — production
     needs: ci
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/production' && github.event_name == 'push'
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.base_ref == 'production'
     environment: production
 
     steps:
@@ -134,7 +138,6 @@ jobs:
           script: |
             cd /var/www/openprofile-fe/production
             rm -rf .next || true
-            pnpm install
             pnpm install --config.ignore-scripts=true
             pnpm build
       - name: Start app with PM2
