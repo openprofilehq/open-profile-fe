@@ -56,8 +56,17 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
       const destination = onboardingComplete ? "/dashboard" : "/create-profile";
       router.replace(returnTo?.startsWith("/") ? returnTo : destination);
     },
-    onError: (err) =>
-      toast.error(isApiError(err) ? err.message : "Login failed."),
+    onError: (err) => {
+      const isNetworkError =
+        !navigator.onLine || (isApiError(err) && !err.status);
+      toast.error(
+        isNetworkError
+          ? "Something went wrong. Please try again."
+          : isApiError(err)
+            ? err.message
+            : "Login failed."
+      );
+    },
   });
 
   const signupMutation = useMutation({
@@ -65,14 +74,27 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
     onSuccess: () => {
       router.replace(`/verify-email?email=${encodeURIComponent(email)}`);
     },
-    onError: (err) =>
-      toast.error(isApiError(err) ? err.message : "Signup failed."),
+    onError: (err) => {
+      const isNetworkError =
+        !navigator.onLine || (isApiError(err) && !err.status);
+      toast.error(
+        isNetworkError
+          ? "Something went wrong. Please try again."
+          : isApiError(err)
+            ? err.message
+            : "Signup failed."
+      );
+    },
   });
 
   const pending = loginMutation.isPending || signupMutation.isPending;
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!navigator.onLine) {
+      toast.error("Something went wrong. Please try again.");
+      return;
+    }
     if (isSignup) {
       signupMutation.mutate({ fullName: name, email, password });
     } else {
