@@ -196,7 +196,7 @@ export default function PreviewCanvas({
                     </div>
                   </div>
                 ) : (
-                  <h3 className="text-3xl font-bold">{section.title}</h3>
+                  <h3 className="mb-4 text-3xl font-bold">{section.title}</h3>
                 )}
 
                 {/* Section-specific placeholders */}
