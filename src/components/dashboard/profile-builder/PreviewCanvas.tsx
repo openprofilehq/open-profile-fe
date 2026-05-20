@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Folder, Briefcase, ExternalLink, Eye, Trash2 } from "lucide-react";
 import { getImageUrl } from "@/utils/profile";
+import CtaSectionPreview from "../cta/CtaSectionPreview";
 import type { Section, ProfilePreview } from "./types";
 
 interface PreviewCanvasProps {
@@ -14,6 +15,8 @@ interface PreviewCanvasProps {
   borderRadius: "sharp" | "medium" | "round";
   theme: "light" | "dark";
   sections: Section[];
+  selectedSectionType: string | null;
+  selectedSectionId: string | null;
   profile?: ProfilePreview | null;
 }
 
@@ -26,6 +29,8 @@ export default function PreviewCanvas({
   borderRadius,
   theme,
   sections,
+  selectedSectionType,
+  selectedSectionId,
   profile,
 }: PreviewCanvasProps) {
   const fontStyles: Record<string, string> = {
@@ -82,7 +87,7 @@ export default function PreviewCanvas({
 
   return (
     <div
-      className={`animate-in fade-in flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
+      className={`animate-in fade-in no-scrollbar flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-black-100-text" : "bg-transparent"}`}
     >
       {/* Device wrapper */}
       <div className="flex w-full max-w-195 flex-col gap-6">
@@ -91,11 +96,26 @@ export default function PreviewCanvas({
           className={`flex w-full flex-col transition-all duration-300 ${selectedFontClass}`}
         >
           {/* 1. Main Bio Card (Standard Profile Header) */}
-          {isBioVisible && (
+          {selectedSectionType !== "cta" && isBioVisible && (
             <div
               style={cardStyle}
               className="relative flex flex-col items-center gap-6 border p-6 shadow-sm transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
             >
+              {/* Action buttons (View/Delete) */}
+              <div className="border-tertiary-b bg-neutral-subtle-bg absolute top-6 right-6 flex items-center gap-3 rounded-full border px-3.5 py-1.5 shadow-none select-none">
+                <button
+                  className="text-preview-action-icon transition-opacity hover:opacity-80"
+                  title="Toggle visibility"
+                >
+                  <Eye size={18} strokeWidth={2} />
+                </button>
+                <button
+                  className="text-preview-action-delete transition-opacity hover:opacity-80"
+                  title="Delete section"
+                >
+                  <Trash2 size={18} strokeWidth={2} />
+                </button>
+              </div>
               {/* Avatar image */}
               <div className="border-brand-b/20 bg-brand-light-subtle-bg relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-inner">
                 {getImageUrl(profile?.photoUrl) ? (
@@ -120,7 +140,7 @@ export default function PreviewCanvas({
                 </h2>
                 <p
                   style={textStyle}
-                  className="mt-3 text-[15px] leading-relaxed opacity-90 transition-colors"
+                  className="mt-3 text-base leading-relaxed opacity-90 transition-colors"
                 >
                   {profile?.bio ||
                     "I'm a digital creator focusing on the intersection of design, technology, and intentional living. Sharing insights to help you build better products and habits."}
@@ -132,6 +152,23 @@ export default function PreviewCanvas({
           {visibleSections.map((section) => {
             if (section.type === "bio") return null; // Already rendered in main card
 
+            if (section.type === "cta") {
+              // CHANGED: only show CTA preview when it's the selected section
+              if (section.id !== selectedSectionId) return null;
+              return (
+                <CtaSectionPreview
+                  key={section.id}
+                  section={section}
+                  textColor={textColor}
+                  bgColor={bgColor}
+                  iconColor={iconColor}
+                  borderRadius={activeRadius}
+                  isDark={isDark}
+                  fontClass={selectedFontClass}
+                />
+              );
+            }
+
             return (
               <div
                 key={section.id}
@@ -139,15 +176,15 @@ export default function PreviewCanvas({
                 className="relative flex flex-col border p-6 shadow-sm transition-all duration-300"
               >
                 {/* Action buttons (View/Delete) */}
-                <div className="absolute top-6 right-6 flex w-24 items-center justify-between gap-3 rounded-[10px] border border-[#EDEDED] bg-white p-3 shadow-none select-none">
+                <div className="border-tertiary-b bg-neutral-subtle-bg absolute top-6 right-6 flex items-center gap-3 rounded-[10px] border px-6 py-3 shadow-none select-none">
                   <button
-                    className="text-[#3A3A3A] transition-opacity hover:opacity-80"
+                    className="text-preview-action-icon transition-opacity hover:opacity-80"
                     title="Toggle visibility"
                   >
                     <Eye size={18} strokeWidth={2} />
                   </button>
                   <button
-                    className="text-[#9F2B2B] transition-opacity hover:opacity-80"
+                    className="text-preview-action-delete transition-opacity hover:opacity-80"
                     title="Delete section"
                   >
                     <Trash2 size={18} strokeWidth={2} />
@@ -178,7 +215,7 @@ export default function PreviewCanvas({
                 {/* Section-specific placeholders */}
                 {section.type === "projects" && (
                   <div className="grid grid-cols-1 gap-4">
-                    <div className="border-tertiary-b flex items-center justify-between rounded-lg border bg-black/5 p-4 dark:border-[#2D2D2D] dark:bg-white/5">
+                    <div className="border-tertiary-b dark:border-dark-b flex items-center justify-between rounded-lg border bg-black/5 p-4 dark:bg-white/5">
                       <div>
                         <h4 className="text-sm font-semibold">
                           OpenProfile Platform

@@ -27,6 +27,15 @@ export interface Section {
   paddingBottom?: number;
   gap?: number;
   padding?: number;
+  ctaTitle?: string;
+  ctaSubtitle?: string;
+  ctaButton?: string;
+  ctaButtonLink?: string;
+  ctaLayout?: "center" | "left" | "right";
+  ctaSpacingTop?: number;
+  ctaSpacingBottom?: number;
+  ctaSpacingGap?: number;
+  ctaSpacingPadding?: number;
 }
 
 export interface ProfilePreview {
