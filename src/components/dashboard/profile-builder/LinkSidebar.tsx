@@ -1,5 +1,5 @@
 import { ChevronLeft } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import ContentOption from "./ContentOption";
 import SectionOption from "./SectionOption";
 
@@ -40,15 +40,31 @@ const LinkSidebar = ({
     section?.subtitle || ""
   );
 
-  useEffect(() => {
+  const syncSection = (updates: Partial<LinkSection>) => {
     if (!section) return;
 
-    onUpdateSection(section.id, {
-      title: sectionTitle,
-      subtitle: sectionSubtitle,
-      links,
+    onUpdateSection(section.id, updates);
+  };
+
+  const handleTitleChange = (value: string) => {
+    setSectionTitle(value);
+    syncSection({ title: value });
+  };
+
+  const handleSubtitleChange = (value: string) => {
+    setSectionSubtitle(value);
+    syncSection({ subtitle: value });
+  };
+
+  const handleLinksChange = (
+    updateFn: (currentLinks: SavedLink[]) => SavedLink[]
+  ) => {
+    setLinks((currentLinks) => {
+      const nextLinks = updateFn(currentLinks);
+      syncSection({ links: nextLinks });
+      return nextLinks;
     });
-  }, [section, sectionTitle, sectionSubtitle, links, onUpdateSection]);
+  };
 
   const canAddMoreLinks = useMemo(
     () => links.length < 20 || Boolean(editingLink),
@@ -68,7 +84,7 @@ const LinkSidebar = ({
         ? crypto.randomUUID()
         : `${Date.now()}-${links.length + 1}`;
 
-    setLinks((currentLinks) => {
+    handleLinksChange((currentLinks) => {
       if (editingId) {
         return currentLinks.map((currentLink) =>
           currentLink.id === editingId
@@ -85,7 +101,9 @@ const LinkSidebar = ({
   };
 
   const handleDeleteLink = (id: string) => {
-    setLinks((currentLinks) => currentLinks.filter((link) => link.id !== id));
+    handleLinksChange((currentLinks) =>
+      currentLinks.filter((link) => link.id !== id)
+    );
   };
 
   const handleEditLink = (link: SavedLink) => {
@@ -127,8 +145,8 @@ const LinkSidebar = ({
           <ContentOption
             title={sectionTitle}
             subtitle={sectionSubtitle}
-            onTitleChange={setSectionTitle}
-            onSubtitleChange={setSectionSubtitle}
+            onTitleChange={handleTitleChange}
+            onSubtitleChange={handleSubtitleChange}
             links={links}
             onDeleteLink={handleDeleteLink}
             onEditLink={handleEditLink}
