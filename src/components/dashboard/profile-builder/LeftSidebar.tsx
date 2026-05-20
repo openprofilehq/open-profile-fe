@@ -5,19 +5,24 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, Search, Plus, GripVertical, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import LinkSidebar, { type SavedLink } from "./LinkSidebar";
 
 interface Section {
   id: string;
   title: string;
   type: string;
+  subtitle?: string;
+  links?: SavedLink[];
 }
 
 interface LeftSidebarProps {
   sections: Section[];
   selectedSectionId: string | null;
+  selectedSection: Section | null;
   onSelectSection: (id: string) => void;
   onAddSection: (title: string, type: string) => void;
   onRemoveSection: (id: string) => void;
+  onUpdateSection: (id: string, updates: Partial<Section>) => void;
   profile?: {
     fullName?: string;
   } | null;
@@ -26,13 +31,16 @@ interface LeftSidebarProps {
 export default function LeftSidebar({
   sections,
   selectedSectionId,
+  selectedSection,
   onSelectSection,
   onAddSection,
   onRemoveSection,
+  onUpdateSection,
   profile,
 }: LeftSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddingSection, setIsAddingSection] = useState(false);
+  const [linkSidebarOpen, setLinkSidebarOpen] = useState(false);
 
   const filteredSections = sections.filter((section) => {
     const displayTitle =
@@ -49,9 +57,17 @@ export default function LeftSidebar({
     setIsAddingSection(false);
   };
 
+  const isDisabled = sections.some((s) => s.type === "links");
+
+  const handleSwitchToAddLinkSection = () => {
+    handleSelectCard("Links", "links");
+    setIsAddingSection(false);
+    setLinkSidebarOpen(true);
+  };
+
   if (isAddingSection) {
     return (
-      <aside className="border-tertiary-b animate-in fade-in flex h-full w-[290px] shrink-0 flex-col border bg-white p-6 shadow-sm duration-200 select-none">
+      <aside className="border-tertiary-b animate-in fade-in flex h-full w-72.5 shrink-0 flex-col border bg-white p-6 shadow-sm duration-200 select-none">
         {/* Back Button */}
         <div className="mb-6">
           <button
@@ -77,7 +93,7 @@ export default function LeftSidebar({
           <button
             type="button"
             onClick={() => handleSelectCard("Bio", "bio")}
-            className="group border-tertiary-b hover:border-brand-b flex h-[140px] w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
+            className="group border-tertiary-b hover:border-brand-b flex h-35 w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
           >
             <div className="flex flex-1 items-center bg-white p-2">
               <Image
@@ -88,7 +104,7 @@ export default function LeftSidebar({
                 className="object-contain"
               />
             </div>
-            <div className="text-primary-text flex h-[36px] items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
+            <div className="text-primary-text flex h-9 items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
               Bio
             </div>
           </button>
@@ -96,19 +112,30 @@ export default function LeftSidebar({
           {/* Card 2: Links */}
           <button
             type="button"
-            onClick={() => handleSelectCard("Links", "links")}
-            className="group border-tertiary-b hover:border-brand-b flex h-[140px] w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
+            onClick={handleSwitchToAddLinkSection}
+            disabled={isDisabled}
+            className={`group border-tertiary-b hover:border-brand-b disabled:border-tertiary-b flex h-35 w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm disabled:cursor-not-allowed disabled:bg-[#F4F4F5] disabled:opacity-70 ${isDisabled ? "cursor-not-allowed opacity-70" : "hover:shadow-sm"}`}
           >
             <div className="-mx-1 flex flex-1 items-center bg-white p-2">
-              <Image
-                src="/profilebuilder_home/links.png"
-                alt="Links"
-                width={84}
-                height={48}
-                className="object-contain"
-              />
+              {isDisabled ? (
+                <Image
+                  src="/profilebuilder_home/link_disabled.svg"
+                  alt="Links"
+                  width={84}
+                  height={48}
+                  className="object-contain"
+                />
+              ) : (
+                <Image
+                  src="/profilebuilder_home/links.png"
+                  alt="Links"
+                  width={84}
+                  height={48}
+                  className="object-contain"
+                />
+              )}
             </div>
-            <div className="text-primary-text flex h-[36px] items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
+            <div className="text-primary-text flex h-9 items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
               Links
             </div>
           </button>
@@ -117,7 +144,7 @@ export default function LeftSidebar({
           <button
             type="button"
             onClick={() => handleSelectCard("Portfolio", "projects")}
-            className="group border-tertiary-b hover:border-brand-b flex h-[140px] w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
+            className="group border-tertiary-b hover:border-brand-b flex h-35 w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
           >
             <div className="flex flex-1 items-center bg-white p-2">
               <Image
@@ -128,7 +155,7 @@ export default function LeftSidebar({
                 className="object-contain"
               />
             </div>
-            <div className="text-primary-text flex h-[36px] items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
+            <div className="text-primary-text flex h-9 items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
               Portfolio
             </div>
           </button>
@@ -137,7 +164,7 @@ export default function LeftSidebar({
           <button
             type="button"
             onClick={() => handleSelectCard("CTA", "experience")}
-            className="group border-tertiary-b hover:border-brand-b flex h-[140px] w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
+            className="group border-tertiary-b hover:border-brand-b flex h-35 w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
           >
             <div className="flex flex-1 items-center bg-white p-2">
               <Image
@@ -148,7 +175,7 @@ export default function LeftSidebar({
                 className="object-contain"
               />
             </div>
-            <div className="text-primary-text flex h-[36px] items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
+            <div className="text-primary-text flex h-9 items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
               CTA
             </div>
           </button>
@@ -157,8 +184,18 @@ export default function LeftSidebar({
     );
   }
 
+  if (linkSidebarOpen) {
+    return (
+      <LinkSidebar
+        returnTab={() => setLinkSidebarOpen(false)}
+        section={selectedSection?.type === "links" ? selectedSection : null}
+        onUpdateSection={onUpdateSection}
+      />
+    );
+  }
+
   return (
-    <aside className="border-tertiary-b animate-in fade-in flex h-full w-[290px] shrink-0 flex-col border bg-white p-6 shadow-sm duration-200 select-none">
+    <aside className="border-tertiary-b animate-in fade-in flex h-full w-72.5 shrink-0 flex-col border bg-white p-6 shadow-sm duration-200 select-none">
       {/* Back Button */}
       <div className="mb-6">
         <Link

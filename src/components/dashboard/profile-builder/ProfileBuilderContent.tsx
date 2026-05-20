@@ -7,11 +7,14 @@ import BuilderHeader from "./BuilderHeader";
 import LeftSidebar from "./LeftSidebar";
 import PreviewCanvas from "./PreviewCanvas";
 import RightPanel from "./RightPanel";
+import type { SavedLink } from "./LinkSidebar";
 
 interface Section {
   id: string;
   title: string;
   type: string;
+  subtitle?: string;
+  links?: SavedLink[];
 }
 
 export default function ProfileBuilderContent() {
@@ -50,6 +53,8 @@ export default function ProfileBuilderContent() {
       id: Math.random().toString(36).substr(2, 9),
       title,
       type,
+      subtitle: type === "links" ? "" : undefined,
+      links: type === "links" ? [] : undefined,
     };
     setSections([...sections, newSection]);
     setSelectedSectionId(newSection.id);
@@ -79,9 +84,11 @@ export default function ProfileBuilderContent() {
         <LeftSidebar
           sections={sections}
           selectedSectionId={selectedSectionId}
+          selectedSection={selectedSection}
           onSelectSection={handleSelectSection}
           onAddSection={handleAddSection}
           onRemoveSection={handleRemoveSection}
+          onUpdateSection={handleUpdateSection}
           profile={profile}
         />
 
