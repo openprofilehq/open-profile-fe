@@ -1,13 +1,16 @@
 "use client";
 
-import { Sun, Moon, Type, ChevronDown } from "lucide-react";
-
-interface Section {
-  id: string;
-  title: string;
-  type: string;
-  visible: boolean;
-}
+import { Sun, Moon, Type } from "lucide-react";
+import type { Section } from "./types";
+import { ColorPicker } from "@/components/ui/color-picker";
+import { isValidHex } from "@/utils/color";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface RightPanelProps {
   font: string;
@@ -24,13 +27,20 @@ interface RightPanelProps {
   onChangeBorderRadius: (radius: "sharp" | "medium" | "round") => void;
   theme: "light" | "dark";
   onChangeTheme: (theme: "light" | "dark") => void;
-
-  // Tab & Section Management
   activeTab: "general" | "section";
   onChangeTab: (tab: "general" | "section") => void;
   selectedSection: Section | null;
   onUpdateSection: (id: string, updates: Partial<Section>) => void;
 }
+
+const FONT_OPTIONS = [
+  { value: "Afacad", label: "Afacad" },
+  { value: "Inter", label: "Inter Sans" },
+  { value: "Serif", label: "Playfair Serif" },
+  { value: "Mono", label: "Roboto Mono" },
+  { value: "Geoligica", label: "Geoligica" },
+  { value: "Manrope", label: "Manrope" },
+];
 
 export default function RightPanel({
   font,
@@ -52,10 +62,8 @@ export default function RightPanel({
   selectedSection,
   onUpdateSection,
 }: RightPanelProps) {
-  const isValidHex = (color: string) => /^#[0-9A-F]{6}$/i.test(color);
-
   return (
-    <aside className="border-tertiary-b animate-in fade-in flex h-full w-[290px] shrink-0 flex-col overflow-hidden border bg-white shadow-sm duration-200 select-none">
+    <aside className="border-tertiary-b animate-in fade-in hidden h-full w-[290px] shrink-0 flex-col border bg-white shadow-sm duration-200 select-none lg:flex">
       {/* Tabs Header */}
       <div className="border-tertiary-b flex border-b">
         <button
@@ -87,7 +95,7 @@ export default function RightPanel({
       </div>
 
       {/* Settings Body */}
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-x-visible overflow-y-auto p-6">
         {activeTab === "general" ? (
           <div className="flex flex-col gap-6">
             {/* Font Selection */}
@@ -95,21 +103,18 @@ export default function RightPanel({
               <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
                 Font
               </label>
-              <div className="relative w-full">
-                <select
-                  value={font}
-                  onChange={(e) => onChangeFont(e.target.value)}
-                  className="border-tertiary-b text-primary-text focus:border-brand-b w-full cursor-pointer appearance-none rounded-[12px] border bg-white py-3.5 pr-10 pl-4 text-sm font-semibold transition-all outline-none"
-                >
-                  <option value="Afacad">Afacad</option>
-                  <option value="Inter">Inter Sans</option>
-                  <option value="Serif">Playfair Serif</option>
-                  <option value="Mono">Roboto Mono</option>
-                </select>
-                <div className="text-primary-text pointer-events-none absolute inset-y-0 right-3.5 flex items-center">
-                  <ChevronDown size={18} />
-                </div>
-              </div>
+              <Select value={font} onValueChange={onChangeFont}>
+                <SelectTrigger className="border-tertiary-b rounded-[12px] border bg-white px-4 py-3.5 text-sm font-semibold">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {FONT_OPTIONS.map((o) => (
+                    <SelectItem key={o.value} value={o.value}>
+                      {o.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Colors Selection */}
@@ -119,95 +124,21 @@ export default function RightPanel({
               </label>
 
               <div className="border-tertiary-b flex flex-col gap-3 rounded-[16px] border bg-white p-4">
-                {/* Text Color */}
-                <div className="flex items-center justify-between">
-                  <span className="text-tertiary-text text-sm font-semibold">
-                    Text
-                  </span>
-                  <label className="border-tertiary-b bg-hover-bg hover:bg-active-bg relative flex max-w-[145px] flex-1 cursor-pointer items-center gap-2 rounded-[12px] border p-1.5 transition-colors">
-                    <div
-                      style={{
-                        backgroundColor: isValidHex(textColor)
-                          ? textColor
-                          : "#050505",
-                      }}
-                      className="relative h-8 w-8 shrink-0 overflow-hidden rounded-[8px] border border-black/10 shadow-sm"
-                    >
-                      <input
-                        type="color"
-                        value={isValidHex(textColor) ? textColor : "#050505"}
-                        onChange={(e) => onChangeTextColor(e.target.value)}
-                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                      />
-                    </div>
-                    <input
-                      type="text"
-                      value={textColor.toUpperCase()}
-                      onChange={(e) => onChangeTextColor(e.target.value)}
-                      className="text-primary-text w-16 border-0 bg-transparent p-0 text-sm font-bold uppercase outline-none focus:ring-0"
-                    />
-                  </label>
-                </div>
-
-                {/* Background Color */}
-                <div className="flex items-center justify-between">
-                  <span className="text-tertiary-text text-sm font-semibold">
-                    Bg
-                  </span>
-                  <label className="border-tertiary-b bg-hover-bg hover:bg-active-bg relative flex max-w-[145px] flex-1 cursor-pointer items-center gap-2 rounded-[12px] border p-1.5 transition-colors">
-                    <div
-                      style={{
-                        backgroundColor: isValidHex(bgColor)
-                          ? bgColor
-                          : "#FFFFFF",
-                      }}
-                      className="relative h-8 w-8 shrink-0 overflow-hidden rounded-[8px] border border-black/10 shadow-sm"
-                    >
-                      <input
-                        type="color"
-                        value={isValidHex(bgColor) ? bgColor : "#FFFFFF"}
-                        onChange={(e) => onChangeBgColor(e.target.value)}
-                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                      />
-                    </div>
-                    <input
-                      type="text"
-                      value={bgColor.toUpperCase()}
-                      onChange={(e) => onChangeBgColor(e.target.value)}
-                      className="text-primary-text w-16 border-0 bg-transparent p-0 text-sm font-bold uppercase outline-none focus:ring-0"
-                    />
-                  </label>
-                </div>
-
-                {/* Icon Color */}
-                <div className="flex items-center justify-between">
-                  <span className="text-tertiary-text text-sm font-semibold">
-                    Icon
-                  </span>
-                  <label className="border-tertiary-b bg-hover-bg hover:bg-active-bg relative flex max-w-[145px] flex-1 cursor-pointer items-center gap-2 rounded-[12px] border p-1.5 transition-colors">
-                    <div
-                      style={{
-                        backgroundColor: isValidHex(iconColor)
-                          ? iconColor
-                          : "#087583",
-                      }}
-                      className="relative h-8 w-8 shrink-0 overflow-hidden rounded-[8px] border border-black/10 shadow-sm"
-                    >
-                      <input
-                        type="color"
-                        value={isValidHex(iconColor) ? iconColor : "#087583"}
-                        onChange={(e) => onChangeIconColor(e.target.value)}
-                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                      />
-                    </div>
-                    <input
-                      type="text"
-                      value={iconColor.toUpperCase()}
-                      onChange={(e) => onChangeIconColor(e.target.value)}
-                      className="text-primary-text w-16 border-0 bg-transparent p-0 text-sm font-bold uppercase outline-none focus:ring-0"
-                    />
-                  </label>
-                </div>
+                <ColorPicker
+                  label="Text"
+                  color={textColor}
+                  onChange={onChangeTextColor}
+                />
+                <ColorPicker
+                  label="Bg"
+                  color={bgColor}
+                  onChange={onChangeBgColor}
+                />
+                <ColorPicker
+                  label="Icon"
+                  color={iconColor}
+                  onChange={onChangeIconColor}
+                />
               </div>
             </div>
 
@@ -217,41 +148,6 @@ export default function RightPanel({
                 Spacing
               </label>
               <div className="border-tertiary-b relative flex h-[48px] w-full items-center overflow-hidden rounded-[12px] border bg-white">
-                <style
-                  dangerouslySetInnerHTML={{
-                    __html: `
-                  .custom-slider::-webkit-slider-runnable-track {
-                    background: transparent;
-                  }
-                  .custom-slider::-webkit-slider-thumb {
-                    -webkit-appearance: none;
-                    appearance: none;
-                    width: 12px;
-                    height: 32px;
-                    border-radius: 6px;
-                    background-color: #C5C5C5;
-                    cursor: pointer;
-                    transition: background-color 0.15s ease;
-                  }
-                  .custom-slider::-webkit-slider-thumb:hover {
-                    background-color: #A5A5A5;
-                  }
-                  .custom-slider::-moz-range-thumb {
-                    width: 12px;
-                    height: 32px;
-                    border-radius: 6px;
-                    background-color: #C5C5C5;
-                    cursor: pointer;
-                    border: 0;
-                    transition: background-color 0.15s ease;
-                  }
-                  .custom-slider::-moz-range-thumb:hover {
-                    background-color: #A5A5A5;
-                  }
-                `,
-                  }}
-                />
-
                 {/* Left background fill block up to the active value */}
                 <div
                   className="bg-hover-bg pointer-events-none absolute top-0 bottom-0 left-0 transition-all duration-75"
@@ -394,58 +290,131 @@ export default function RightPanel({
           <div className="flex h-full flex-col gap-6">
             {selectedSection ? (
               <div className="flex flex-col gap-6">
+                {/* Font Selection */}
                 <div>
-                  <h3 className="text-primary-text text-base font-bold">
-                    Edit Section
-                  </h3>
-                  <p className="text-tertiary-text text-xs">
-                    Customize specific details for this component.
-                  </p>
-                </div>
-
-                {/* Section Title */}
-                <div>
-                  <label className="text-tertiary-text mb-2 block text-xs font-bold tracking-wider uppercase">
-                    Section Title
+                  <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
+                    Font
                   </label>
-                  <input
-                    type="text"
-                    value={selectedSection.title}
-                    onChange={(e) =>
-                      onUpdateSection(selectedSection.id, {
-                        title: e.target.value,
-                      })
+                  <Select
+                    value={selectedSection.font ?? font}
+                    onValueChange={(val) =>
+                      onUpdateSection(selectedSection.id, { font: val })
                     }
-                    className="border-tertiary-b bg-primary-bg text-primary-text focus:border-brand-b w-full rounded-[10px] border px-4 py-3 text-sm font-semibold transition-all outline-none"
-                  />
-                </div>
-
-                {/* Section Type Selector */}
-                <div>
-                  <label className="text-tertiary-text mb-2 block text-xs font-bold tracking-wider uppercase">
-                    Component Type
-                  </label>
-                  <select
-                    value={selectedSection.type}
-                    onChange={(e) =>
-                      onUpdateSection(selectedSection.id, {
-                        type: e.target.value,
-                      })
-                    }
-                    className="border-tertiary-b bg-primary-bg text-primary-text focus:border-brand-b w-full rounded-[10px] border px-4 py-3 text-sm font-semibold transition-all outline-none"
                   >
-                    <option value="bio">Bio / Header</option>
-                    <option value="projects">Projects Showcase</option>
-                    <option value="links">Social Link Grid</option>
-                    <option value="experience">Timeline / Experience</option>
-                  </select>
+                    <SelectTrigger className="border-tertiary-b rounded-[12px] border bg-white px-4 py-3.5 text-sm font-semibold">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FONT_OPTIONS.map((o) => (
+                        <SelectItem key={o.value} value={o.value}>
+                          {o.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                <div className="border-secondary-b mt-4 rounded-xl border border-dashed p-6 text-center">
-                  <p className="text-tertiary-text text-xs font-semibold">
-                    Additional dynamic items editor will display here based on
-                    chosen component.
-                  </p>
+                {/* Colors Selection */}
+                <div>
+                  <label className="text-primary-text mb-3 block text-xs font-bold tracking-wider uppercase">
+                    Color
+                  </label>
+
+                  <div className="border-tertiary-b flex flex-col gap-3 rounded-[16px] border bg-white p-4">
+                    <ColorPicker
+                      label="Text"
+                      color={
+                        isValidHex(selectedSection.textColor ?? textColor)
+                          ? (selectedSection.textColor ?? textColor)
+                          : "#050505"
+                      }
+                      onChange={(val) =>
+                        onUpdateSection(selectedSection.id, { textColor: val })
+                      }
+                    />
+                    <ColorPicker
+                      label="Bg"
+                      color={
+                        isValidHex(selectedSection.bgColor ?? bgColor)
+                          ? (selectedSection.bgColor ?? bgColor)
+                          : "#FFFFFF"
+                      }
+                      onChange={(val) =>
+                        onUpdateSection(selectedSection.id, { bgColor: val })
+                      }
+                    />
+                    <ColorPicker
+                      label="Icon"
+                      color={
+                        isValidHex(selectedSection.iconColor ?? iconColor)
+                          ? (selectedSection.iconColor ?? iconColor)
+                          : "#087583"
+                      }
+                      onChange={(val) =>
+                        onUpdateSection(selectedSection.id, { iconColor: val })
+                      }
+                    />
+                  </div>
+                </div>
+
+                {/* Section Spacing */}
+                <div>
+                  <label className="text-primary-text mb-4 block text-xs font-bold tracking-wider uppercase">
+                    Spacing
+                  </label>
+                  <div className="flex flex-col gap-4">
+                    {(
+                      [
+                        { label: "Top", key: "paddingTop", defaultVal: 24 },
+                        {
+                          label: "Bottom",
+                          key: "paddingBottom",
+                          defaultVal: 24,
+                        },
+                        { label: "Gap", key: "gap", defaultVal: 20 },
+                        { label: "Padding", key: "padding", defaultVal: 16 },
+                      ] as {
+                        label: string;
+                        key: keyof Pick<
+                          Section,
+                          "paddingTop" | "paddingBottom" | "gap" | "padding"
+                        >;
+                        defaultVal: number;
+                      }[]
+                    ).map((item) => {
+                      const val = Number(
+                        selectedSection[item.key] ?? item.defaultVal
+                      );
+                      return (
+                        <div key={item.label} className="flex flex-col gap-2">
+                          <span className="text-primary-text text-sm font-semibold">
+                            {item.label}
+                          </span>
+                          <div className="border-tertiary-b relative flex h-[48px] w-full items-center overflow-hidden rounded-[12px] border bg-white">
+                            <div
+                              className="bg-hover-bg pointer-events-none absolute top-0 bottom-0 left-0 transition-all duration-75"
+                              style={{ width: `${(val / 48) * 100}%` }}
+                            />
+                            <input
+                              type="range"
+                              min="0"
+                              max="48"
+                              value={val}
+                              onChange={(e) =>
+                                onUpdateSection(selectedSection.id, {
+                                  [item.key]: Number(e.target.value),
+                                })
+                              }
+                              className="custom-slider absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent px-4 outline-none focus:outline-none"
+                            />
+                            <div className="text-primary-text pointer-events-none absolute right-4 text-sm font-semibold select-none">
+                              {val}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             ) : (
