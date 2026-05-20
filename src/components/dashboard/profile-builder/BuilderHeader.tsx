@@ -4,10 +4,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
-export default function BuilderHeader() {
+interface BuilderHeaderProps {
+  onPublish: () => void;
+  isPublishing: boolean;
+}
+
+export default function BuilderHeader({
+  onPublish,
+  isPublishing,
+}: BuilderHeaderProps) {
   const pathname = usePathname();
 
   const navLinks = [
@@ -15,10 +22,6 @@ export default function BuilderHeader() {
     { label: "Profile Builder", href: "/dashboard/profile-builder" },
     { label: "Settings", href: "/dashboard/settings" },
   ];
-
-  function handlePublish() {
-    toast.success("Profile published successfully.");
-  }
 
   return (
     <header className="border-tertiary-b bg-card sticky top-0 z-40 w-full border-b px-6 py-2 select-none">
@@ -73,10 +76,11 @@ export default function BuilderHeader() {
 
           <Button
             type="button"
-            onClick={handlePublish}
-            className="bg-brand-hover-bg hover:bg-brand h-10 rounded-[10px] px-6 text-sm font-semibold text-white transition-all active:scale-95"
+            onClick={onPublish}
+            disabled={isPublishing}
+            className="bg-brand-hover-bg hover:bg-brand h-10 rounded-[10px] px-6 text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-60"
           >
-            Publish
+            {isPublishing ? "Publishing…" : "Publish"}
           </Button>
         </div>
       </div>
