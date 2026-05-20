@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { Menu, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -36,11 +38,13 @@ export default function DashboardTopbar({
             <Search size={24} />
           </button>
 
-          <Button variant="outline" className="hidden border-[#EDEDED] md:flex">
+          <Button className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text hidden h-10 rounded-[10px] border px-5 text-sm font-semibold shadow-none transition-all hover:bg-white active:scale-95 md:flex">
             Upgrade
           </Button>
 
-          <Button className="bg-[#087583] hover:bg-[#065e69]">Publish</Button>
+          <Button className="bg-brand-hover-bg hover:bg-brand h-10 rounded-[10px] px-6 text-sm font-semibold text-white transition-all active:scale-95">
+            Publish
+          </Button>
         </div>
       </div>
     </header>

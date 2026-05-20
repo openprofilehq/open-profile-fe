@@ -3,16 +3,7 @@
 import Image from "next/image";
 import { Folder, Briefcase, ExternalLink, Eye, Trash2 } from "lucide-react";
 import { getImageUrl } from "@/utils/profile";
-import type { SavedLink } from "./LinkSidebar";
-
-interface Section {
-  id: string;
-  title: string;
-  type: string;
-  visible: boolean;
-  subtitle?: string;
-  links?: SavedLink[];
-}
+import type { Section, ProfilePreview } from "./types";
 
 interface PreviewCanvasProps {
   font: string;
@@ -23,11 +14,7 @@ interface PreviewCanvasProps {
   borderRadius: "sharp" | "medium" | "round";
   theme: "light" | "dark";
   sections: Section[];
-  profile?: {
-    fullName?: string;
-    bio?: string | null;
-    photoUrl?: string | null;
-  } | null;
+  profile?: ProfilePreview | null;
 }
 
 export default function PreviewCanvas({
