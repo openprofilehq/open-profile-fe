@@ -7,7 +7,15 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
 
-export default function BuilderHeader() {
+interface BuilderHeaderProps {
+  onPublish: () => void;
+  isPublishing: boolean;
+}
+
+export default function BuilderHeader({
+  onPublish,
+  isPublishing,
+}: BuilderHeaderProps) {
   const pathname = usePathname();
 
   const navLinks = [
@@ -18,7 +26,7 @@ export default function BuilderHeader() {
 
   return (
     <header className="border-tertiary-b bg-card sticky top-0 z-40 w-full border-b px-6 py-2 select-none">
-      <div className="mx-auto flex items-center justify-between">
+      <div className="mx-auto flex items-center justify-between gap-6">
         <div className="flex items-center gap-3">
           <Link
             href={ROUTES.dashboard}
@@ -35,10 +43,13 @@ export default function BuilderHeader() {
           </Link>
         </div>
 
-        {/* Center Nav Links */}
         <nav className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive =
+              pathname === link.href ||
+              (link.href === ROUTES.profileBuilder &&
+                pathname === ROUTES.canvas);
+
             return (
               <Link
                 key={link.label}
@@ -49,14 +60,13 @@ export default function BuilderHeader() {
               >
                 {link.label}
                 {isActive && (
-                  <span className="bg-link-hover-text absolute bottom-0 left-0 h-[2px] w-full rounded-full" />
+                  <span className="bg-link-hover-text absolute bottom-0 left-0 h-0.5 w-full rounded-full" />
                 )}
               </Link>
             );
           })}
         </nav>
 
-        {/* Right Action Controls */}
         <div className="flex items-center gap-4">
           <button
             className="text-primary-text hover:bg-hover-bg flex h-10 w-10 items-center justify-center rounded-full transition-colors active:scale-95"
@@ -65,12 +75,13 @@ export default function BuilderHeader() {
             <Search size={20} />
           </button>
 
-          <Button className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text h-10 rounded-[10px] border px-5 text-sm font-semibold shadow-none transition-all hover:bg-white active:scale-95">
-            Upgrade
-          </Button>
-
-          <Button className="bg-brand-hover-bg hover:bg-brand h-10 rounded-[10px] px-6 text-sm font-semibold text-white transition-all active:scale-95">
-            Publish
+          <Button
+            type="button"
+            onClick={onPublish}
+            disabled={isPublishing}
+            className="bg-brand-hover-bg hover:bg-brand h-10 rounded-[10px] px-6 text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-60"
+          >
+            {isPublishing ? "Publishing…" : "Publish"}
           </Button>
         </div>
       </div>
