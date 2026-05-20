@@ -33,7 +33,7 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
   const returnTo = searchParams.get("returnTo");
 
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(searchParams.get("email") ?? "");
   const [password, setPassword] = useState("");
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
