@@ -2,6 +2,7 @@
 
 import { Sun, Moon, Type, ChevronDown } from "lucide-react";
 import CtaRightPanel from "../cta/CtaRightPanel";
+import { isValidHex } from "@/utils/color";
 
 interface Section {
   id: string;
@@ -56,8 +57,6 @@ export default function RightPanel({
   selectedSection,
   onUpdateSection,
 }: RightPanelProps) {
-  const isValidHex = (color: string) => /^#[0-9A-F]{6}$/i.test(color);
-
   return (
     <aside className="border-tertiary-b animate-in fade-in flex h-full w-[290px] shrink-0 flex-col overflow-hidden border bg-white shadow-sm duration-200 select-none">
       {/* Tabs Header */}

@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { isValidHex } from "@/utils/color";
 
 interface CtaSection {
   id: string;
@@ -50,8 +51,6 @@ export default function CtaRightPanel({
   onChangeIconColor,
   onUpdate,
 }: CtaRightPanelProps) {
-  const isValidHex = (color: string) => /^#[0-9A-F]{6}$/i.test(color);
-
   return (
     <div>
       <div className="no-scrollbar flex flex-col gap-4 overflow-y-auto">
