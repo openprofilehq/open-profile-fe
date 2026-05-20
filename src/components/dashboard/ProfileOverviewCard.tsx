@@ -3,25 +3,26 @@ import { ChevronRight, Eye, Link2, Pencil, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getDisplayUrl, getProfileUrl } from "@/utils/profile";
+import { ROUTES } from "@/constants/routes";
 
 const actions = [
   {
     title: "Manage links",
     description: "Update your links",
     icon: Link2,
-    href: "/dashboard/profile-builder",
+    href: ROUTES.profileBuilder,
   },
   {
     title: "Your portfolio",
     description: "Add your portfolio",
     icon: Link2,
-    href: "/dashboard/profile-builder",
+    href: ROUTES.profileBuilder,
   },
   {
     title: "Customize your profile",
     description: "Adjust font, color, spacing and appearance",
     icon: Palette,
-    href: "/dashboard/profile-builder",
+    href: ROUTES.profileBuilder,
   },
 ];
 

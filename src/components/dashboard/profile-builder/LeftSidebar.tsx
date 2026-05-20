@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, Search, Plus, GripVertical, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/constants/routes";
 
 interface Section {
   id: string;
@@ -162,7 +163,7 @@ export default function LeftSidebar({
       {/* Back Button */}
       <div className="mb-6">
         <Link
-          href="/dashboard"
+          href={ROUTES.dashboard}
           className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
         >
           <ChevronLeft size={20} />

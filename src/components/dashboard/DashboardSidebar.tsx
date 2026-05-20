@@ -9,28 +9,29 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { isApiError } from "@/api/base";
 import { Button } from "../ui/button";
+import { ROUTES } from "@/constants/routes";
 
 const TOPBAR_HEIGHT = "76px";
 
 const navItems = [
   {
     label: "Home",
-    href: "/dashboard",
+    href: ROUTES.dashboard,
     icon: House,
   },
   {
     label: "Profile Builder",
-    href: "/dashboard/profile-builder",
+    href: ROUTES.profileBuilder,
     icon: FileText,
   },
   {
     label: "Settings",
-    href: "/dashboard/settings",
+    href: ROUTES.settings,
     icon: Settings,
   },
   {
     label: "Help and Support",
-    href: "/dashboard/help",
+    href: ROUTES.help,
     icon: Headphones,
   },
 ];
@@ -61,15 +62,15 @@ export default function DashboardSidebar() {
           "--topbar-height": TOPBAR_HEIGHT,
         } as CSSProperties
       }
-      className="top-(--topbar-height)] sticky hidden h-[calc(100vh-var(--topbar-height))] w-70 shrink-0 border-r border-[#EDEDED] bg-white lg:flex lg:flex-col"
+      className="sticky top-[var(--topbar-height)] hidden h-[calc(100vh-var(--topbar-height))] w-70 shrink-0 border-r border-[#EDEDED] bg-white lg:flex lg:flex-col"
     >
       <nav className="flex flex-1 flex-col gap-2 p-3 pt-6">
         {navItems.map((item) => {
           const Icon = item.icon;
 
           const isActive =
-            item.href === "/dashboard"
-              ? pathname === "/dashboard"
+            item.href === ROUTES.dashboard
+              ? pathname === ROUTES.dashboard
               : pathname.startsWith(item.href);
 
           return (

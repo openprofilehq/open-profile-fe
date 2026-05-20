@@ -9,16 +9,17 @@ import { useMutation } from "@tanstack/react-query";
 import { logoutOption } from "@/api/auth/auth.options";
 import { toast } from "sonner";
 import { isApiError } from "@/api/base";
+import { ROUTES } from "@/constants/routes";
 
 const navItems = [
-  { label: "Home", href: "/dashboard", icon: House },
+  { label: "Home", href: ROUTES.dashboard, icon: House },
   {
     label: "Profile Builder",
-    href: "/dashboard/profile-builder",
+    href: ROUTES.profileBuilder,
     icon: FileText,
   },
-  { label: "Settings", href: "/dashboard/settings", icon: Settings },
-  { label: "Help", href: "/dashboard/help", icon: Headphones },
+  { label: "Settings", href: ROUTES.settings, icon: Settings },
+  { label: "Help", href: ROUTES.help, icon: Headphones },
 ];
 
 const TOPBAR_HEIGHT = "76px";
@@ -54,8 +55,8 @@ export default function MobileDashboardNav() {
           const Icon = item.icon;
 
           const isActive =
-            item.href === "/dashboard"
-              ? pathname === "/dashboard"
+            item.href === ROUTES.dashboard
+              ? pathname === ROUTES.dashboard
               : pathname.startsWith(item.href);
 
           return (

@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUserOption } from "@/api/auth/auth.options";
+import { ROUTES } from "@/constants/routes";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -66,7 +67,7 @@ export function Navbar() {
           <div className="hidden items-center gap-3 md:flex">
             {user ? (
               <Link
-                href="/dashboard"
+                href={ROUTES.dashboard}
                 className="bg-brand hover:bg-brand-hover flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-medium whitespace-nowrap text-white transition-colors"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               >
