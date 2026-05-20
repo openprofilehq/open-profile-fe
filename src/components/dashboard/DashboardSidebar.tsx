@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { House, FileText, Settings, Headphones, LogOut } from "lucide-react";
-import type { CSSProperties } from "react";
+import { FileText, Headphones, House, LogOut, Settings, X } from "lucide-react";
+import type { CSSProperties, MouseEvent } from "react";
 import { logoutOption } from "@/api/auth/auth.options";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -35,14 +35,17 @@ const navItems = [
   },
 ];
 
-export default function DashboardSidebar() {
+type DashboardSidebarProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export default function DashboardSidebar({
+  isOpen,
+  onClose,
+}: DashboardSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-
-  const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    logoutMutation.mutate();
-  };
 
   const logoutMutation = useMutation({
     ...logoutOption,
@@ -54,52 +57,83 @@ export default function DashboardSidebar() {
       toast.error(isApiError(err) ? err.message : "Logout failed."),
   });
 
+  const handleLogout = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    logoutMutation.mutate();
+  };
+
   return (
-    <aside
-      style={
-        {
-          "--topbar-height": TOPBAR_HEIGHT,
-        } as CSSProperties
-      }
-      className="sticky top-(--topbar-height) flex h-[calc(100vh-var(--topbar-height))] w-20 shrink-0 flex-col border-r border-[#EDEDED] bg-white transition-all duration-300 lg:w-70"
-    >
-      <nav className="flex flex-1 flex-col gap-2 p-3 pt-6">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-
-          const isActive =
-            item.href === "/dashboard"
-              ? pathname === "/dashboard"
-              : pathname.startsWith(item.href);
-
-          return (
-            <Link
-              key={item.label}
-              href={item.href}
-              className={`flex items-center justify-center gap-3 rounded-[10px] px-4 py-4 text-[18px] font-medium transition-colors lg:justify-start ${
-                isActive
-                  ? "bg-[#087583] text-white"
-                  : "text-[#050505] hover:bg-[#F5F5F5]"
-              }`}
-            >
-              <Icon size={22} className="shrink-0" />
-              <span className="hidden lg:inline">{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
-
-      <Button
+    <>
+      <button
         type="button"
-        size="lg"
-        variant="logout"
-        disabled={logoutMutation.isPending}
-        className="mx-auto w-fit justify-center p-4 lg:mx-0 lg:w-full lg:justify-start"
-        onClick={handleLogout}
+        aria-label="Close dashboard menu overlay"
+        onClick={onClose}
+        className={`fixed inset-0 z-40 bg-black/40 transition-opacity lg:hidden ${
+          isOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      />
+
+      <aside
+        style={
+          {
+            "--topbar-height": TOPBAR_HEIGHT,
+          } as CSSProperties
+        }
+        className={`fixed top-0 bottom-0 left-0 z-50 flex w-[210px] shrink-0 flex-col border-r border-[#EDEDED] bg-white transition-transform duration-300 sm:w-70 lg:sticky lg:top-[var(--topbar-height)] lg:z-30 lg:h-[calc(100vh-var(--topbar-height))] lg:translate-x-0 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
-        <LogOut size={22} className="shrink-0" />
-        <span className="hidden text-[18px] lg:inline">Logout</span>
-      </Button>
-    </aside>
+        <div className="flex h-19 items-center justify-between border-b border-[#EDEDED] px-4 lg:hidden">
+          <span className="font-bold text-[#087583]">Menu</span>
+
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close dashboard menu"
+            className="rounded-[8px] border border-[#EDEDED] p-2"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <nav className="flex flex-1 flex-col gap-2 p-3 pt-6">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+
+            const isActive =
+              item.href === "/dashboard"
+                ? pathname === "/dashboard"
+                : pathname.startsWith(item.href);
+
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                onClick={onClose}
+                className={`flex items-center gap-3 rounded-[10px] px-4 py-4 text-[18px] font-medium transition-colors ${
+                  isActive
+                    ? "bg-[#087583] text-white"
+                    : "text-[#050505] hover:bg-[#F5F5F5]"
+                }`}
+              >
+                <Icon size={22} />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        <Button
+          type="button"
+          size="lg"
+          variant="logout"
+          disabled={logoutMutation.isPending}
+          onClick={handleLogout}
+        >
+          <LogOut size={22} />
+          <span className="text-[18px]">Logout</span>
+        </Button>
+      </aside>
+    </>
   );
 }
