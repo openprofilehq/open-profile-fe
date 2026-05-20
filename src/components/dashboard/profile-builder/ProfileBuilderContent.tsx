@@ -1,18 +1,29 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { dashboardProfileOption } from "@/api/profile/profile.options";
+import { useEffect, useRef, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import {
+  dashboardProfileOption,
+  profileContentOption,
+  draftStateOption,
+} from "@/api/profile/profile.options";
+import { upsertDraft, publishProfile } from "@/api/profile/profile.service";
 import BuilderHeader from "./BuilderHeader";
 import LeftSidebar from "./LeftSidebar";
 import PreviewCanvas from "./PreviewCanvas";
 import RightPanel from "./RightPanel";
-import CtaLeftPanel from "../cta/CtaLeftPanel";
 import Link from "next/link";
 import type { Section } from "./types";
+import { contentToSections, sectionsToContent } from "./builder.utils";
 
 export default function ProfileBuilderContent() {
+  const queryClient = useQueryClient();
+
   const dashboardProfile = useQuery(dashboardProfileOption());
+  const profileContent = useQuery(profileContentOption());
+  const draftState = useQuery(draftStateOption());
+
   const profile = dashboardProfile.data;
 
   const [font, setFont] = useState("Afacad");
@@ -24,15 +35,88 @@ export default function ProfileBuilderContent() {
     "sharp" | "medium" | "round"
   >("medium");
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [sections, setSections] = useState<Section[]>([]);
 
-  const [sections, setSections] = useState<Section[]>([
-    {
-      id: "bio",
-      title: "Bio",
-      type: "bio",
-      visible: true,
-    },
+  const contentLoadedRef = useRef(false);
+  const draftUpdatedAtRef = useRef<string | null>(null);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (
+      contentLoadedRef.current ||
+      !profileContent.isSuccess ||
+      !draftState.isSuccess ||
+      !dashboardProfile.isSuccess
+    ) {
+      return;
+    }
+
+    contentLoadedRef.current = true;
+    setSections(contentToSections(profileContent.data, dashboardProfile.data));
+    draftUpdatedAtRef.current = draftState.data.updatedAt ?? null;
+  }, [
+    profileContent.isSuccess,
+    profileContent.data,
+    draftState.isSuccess,
+    draftState.data,
+    dashboardProfile.isSuccess,
+    dashboardProfile.data,
   ]);
+
+  const { mutate: saveDraft } = useMutation({
+    mutationKey: ["profile", "draft", "upsert"],
+    mutationFn: upsertDraft,
+    onSuccess(response) {
+      const raw = response as unknown as {
+        status?: string;
+        data?: { updatedAt?: string };
+      };
+      const updatedAt = raw?.data?.updatedAt;
+      if (updatedAt) {
+        draftUpdatedAtRef.current = updatedAt;
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (!contentLoadedRef.current) return;
+
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+
+    saveTimerRef.current = setTimeout(() => {
+      const bioSection = sections.find((s) => s.type === "bio");
+      saveDraft({
+        bio: bioSection?.bio ?? null,
+        content: sectionsToContent(sections),
+        ...(draftUpdatedAtRef.current
+          ? { updatedAt: draftUpdatedAtRef.current }
+          : {}),
+      });
+    }, 1000);
+
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    };
+  }, [sections, saveDraft]);
+
+  const { mutate: doPublish, isPending: isPublishing } = useMutation({
+    mutationKey: ["profile", "publish"],
+    mutationFn: publishProfile,
+    onSuccess() {
+      draftUpdatedAtRef.current = null;
+      queryClient.invalidateQueries({ queryKey: ["profile", "content"] });
+      queryClient.invalidateQueries({ queryKey: ["profile", "draft-state"] });
+      toast.success("Profile published successfully.");
+    },
+    onError(error: unknown) {
+      const msg =
+        error instanceof Error ? error.message : "Failed to publish profile.";
+      toast.error(msg);
+    },
+  });
+
+  const handlePublish = () => doPublish(undefined as never);
+
   const resolvedSections = sections.map((section) =>
     section.id === "bio"
       ? {
@@ -58,23 +142,20 @@ export default function ProfileBuilderContent() {
       id: Math.random().toString(36).substr(2, 9),
       title,
       type,
-      ...(type === "cta" && {
-        ctaTitle: "Let's build something.",
-        ctaSubtitle:
-          "I'm currently accepting new projects and consulting opportunities for Q3 2026.",
-        ctaButton: "Start a Conversation",
-        ctaButtonLink: "",
-        ctaLayout: "center",
-        ctaSpacingTop: 24,
-        ctaSpacingBottom: 24,
-        ctaSpacingGap: 20,
-        ctaSpacingPadding: 16,
-      }),
       visible: true,
-      subtitle: type === "links" ? "" : undefined,
+      subtitle: type === "links" ? "" : type === "experience" ? "" : undefined,
       links: type === "links" ? [] : undefined,
+      projects: type === "projects" ? [] : undefined,
+      layout: type === "experience" ? "1" : undefined,
+      buttonText: type === "experience" ? "Start a Conversation" : undefined,
+      url: type === "experience" ? "" : undefined,
+      iconId: type === "experience" ? "chat" : undefined,
+      iconSrc:
+        type === "experience"
+          ? "/profilebuilder_home/icons/chat.svg"
+          : undefined,
+      iconLabel: type === "experience" ? "Chat" : undefined,
     };
-
     setSections([...sections, newSection]);
     setSelectedSectionId(newSection.id);
     setActiveTab("section");
@@ -121,35 +202,21 @@ export default function ProfileBuilderContent() {
       </div>
 
       <div className="bg-primary-bg hidden h-screen w-screen flex-col overflow-hidden lg:flex">
-        <BuilderHeader />
+        <BuilderHeader onPublish={handlePublish} isPublishing={isPublishing} />
 
         <div className="flex flex-1 gap-2 overflow-hidden bg-[#F6F7F9] p-2 px-4">
-          {selectedSection?.type === "cta" ? (
-            <CtaLeftPanel
-              section={selectedSection}
-              onBack={() => {
-                const firstSection = sections.find((s) => s.type !== "cta");
-                setSelectedSectionId(firstSection?.id ?? null);
-                setActiveTab("general");
-              }}
-              onUpdate={(updates) =>
-                handleUpdateSection(selectedSection.id, updates)
-              }
-            />
-          ) : (
-            <LeftSidebar
-              sections={resolvedSections}
-              selectedSectionId={selectedSectionId}
-              selectedSection={selectedSection}
-              onSelectSection={handleSelectSection}
-              onAddSection={handleAddSection}
-              onRemoveSection={handleRemoveSection}
-              onToggleSectionVisibility={handleToggleSectionVisibility}
-              onReorderSections={setSections}
-              onUpdateSection={handleUpdateSection}
-              profile={profile}
-            />
-          )}
+          <LeftSidebar
+            sections={resolvedSections}
+            selectedSectionId={selectedSectionId}
+            selectedSection={selectedSection}
+            onSelectSection={handleSelectSection}
+            onAddSection={handleAddSection}
+            onRemoveSection={handleRemoveSection}
+            onToggleSectionVisibility={handleToggleSectionVisibility}
+            onReorderSections={setSections}
+            onUpdateSection={handleUpdateSection}
+            profile={profile}
+          />
 
           <PreviewCanvas
             font={font}
@@ -161,8 +228,8 @@ export default function ProfileBuilderContent() {
             theme={theme}
             sections={resolvedSections}
             profile={profile}
-            selectedSectionType={selectedSection?.type ?? null}
-            selectedSectionId={selectedSectionId}
+            onToggleSectionVisibility={handleToggleSectionVisibility}
+            onRemoveSection={handleRemoveSection}
           />
 
           <RightPanel

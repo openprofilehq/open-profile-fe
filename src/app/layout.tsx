@@ -1,23 +1,15 @@
 import { Providers } from "@/components/shared/providers";
 import type { Metadata } from "next";
-import { Afacad, Dancing_Script, Manrope, Geologica } from "next/font/google";
+import { Afacad, Dancing_Script } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { env } from "@/env/client";
 import { Toaster } from "sonner";
 
 const afacad = Afacad({ subsets: ["latin"], variable: "--font-afacad" });
-
 const dancing = Dancing_Script({
   subsets: ["latin"],
   variable: "--font-dancing",
-});
-
-const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
-
-const geologica = Geologica({
-  subsets: ["latin"],
-  variable: "--font-geologica",
 });
 
 export const metadata: Metadata = {
@@ -41,7 +33,7 @@ export default function RootLayout({
       className={cn("font-afacad h-full antialiased", afacad.variable)}
     >
       <body
-        className={`flex min-h-full flex-col ${afacad.variable} ${dancing.variable} ${manrope.variable} ${geologica.variable}`}
+        className={`flex min-h-full flex-col ${afacad.variable} ${dancing.variable}`}
       >
         <Providers>
           {children}

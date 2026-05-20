@@ -1,9 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { Folder, Briefcase, ExternalLink, Eye, Trash2 } from "lucide-react";
+import { Folder, ExternalLink, Eye, EyeOff, Trash2 } from "lucide-react";
 import { getImageUrl } from "@/utils/profile";
-import CtaSectionPreview from "../cta/CtaSectionPreview";
 import type { Section, ProfilePreview } from "./types";
 
 interface PreviewCanvasProps {
@@ -15,9 +14,9 @@ interface PreviewCanvasProps {
   borderRadius: "sharp" | "medium" | "round";
   theme: "light" | "dark";
   sections: Section[];
-  selectedSectionType: string | null;
-  selectedSectionId: string | null;
   profile?: ProfilePreview | null;
+  onToggleSectionVisibility: (id: string) => void;
+  onRemoveSection: (id: string) => void;
 }
 
 export default function PreviewCanvas({
@@ -29,9 +28,9 @@ export default function PreviewCanvas({
   borderRadius,
   theme,
   sections,
-  selectedSectionType,
-  selectedSectionId,
   profile,
+  onToggleSectionVisibility,
+  onRemoveSection,
 }: PreviewCanvasProps) {
   const fontStyles: Record<string, string> = {
     Afacad: "font-afacad",
@@ -72,11 +71,25 @@ export default function PreviewCanvas({
         : textColor || (isDark ? "#E0E0E0" : "#454545"),
   };
 
+  const getRgbaColor = (hex: string, alpha: number) => {
+    if (!hex) return `rgba(10, 146, 164, ${alpha})`;
+    const cleanHex = hex.replace("#", "");
+    if (cleanHex.length === 3) {
+      const r = parseInt(cleanHex[0] + cleanHex[0], 16);
+      const g = parseInt(cleanHex[1] + cleanHex[1], 16);
+      const b = parseInt(cleanHex[2] + cleanHex[2], 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+    const num = parseInt(cleanHex, 16);
+    const r = (num >> 16) & 255;
+    const g = (num >> 8) & 255;
+    const b = num & 255;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
   const iconStyle = {
     color: iconColor || "#0a92a4",
-    backgroundColor: isDark
-      ? "rgba(10, 146, 164, 0.15)"
-      : "rgba(10, 146, 164, 0.08)",
+    backgroundColor: getRgbaColor(iconColor || "#0a92a4", isDark ? 0.15 : 0.08),
   };
 
   const visibleSections = sections.filter((section) => section.visible);
@@ -87,7 +100,7 @@ export default function PreviewCanvas({
 
   return (
     <div
-      className={`animate-in fade-in no-scrollbar flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-black-100-text" : "bg-transparent"}`}
+      className={`animate-in fade-in flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
     >
       {/* Device wrapper */}
       <div className="flex w-full max-w-195 flex-col gap-6">
@@ -96,26 +109,11 @@ export default function PreviewCanvas({
           className={`flex w-full flex-col transition-all duration-300 ${selectedFontClass}`}
         >
           {/* 1. Main Bio Card (Standard Profile Header) */}
-          {selectedSectionType !== "cta" && isBioVisible && (
+          {isBioVisible && (
             <div
               style={cardStyle}
               className="relative flex flex-col items-center gap-6 border p-6 shadow-sm transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
             >
-              {/* Action buttons (View/Delete) */}
-              <div className="border-tertiary-b bg-neutral-subtle-bg absolute top-6 right-6 flex items-center gap-3 rounded-full border px-3.5 py-1.5 shadow-none select-none">
-                <button
-                  className="text-preview-action-icon transition-opacity hover:opacity-80"
-                  title="Toggle visibility"
-                >
-                  <Eye size={18} strokeWidth={2} />
-                </button>
-                <button
-                  className="text-preview-action-delete transition-opacity hover:opacity-80"
-                  title="Delete section"
-                >
-                  <Trash2 size={18} strokeWidth={2} />
-                </button>
-              </div>
               {/* Avatar image */}
               <div className="border-brand-b/20 bg-brand-light-subtle-bg relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-inner">
                 {getImageUrl(profile?.photoUrl) ? (
@@ -140,7 +138,7 @@ export default function PreviewCanvas({
                 </h2>
                 <p
                   style={textStyle}
-                  className="mt-3 text-base leading-relaxed opacity-90 transition-colors"
+                  className="mt-3 text-[15px] leading-relaxed opacity-90 transition-colors"
                 >
                   {profile?.bio ||
                     "I'm a digital creator focusing on the intersection of design, technology, and intentional living. Sharing insights to help you build better products and habits."}
@@ -152,45 +150,54 @@ export default function PreviewCanvas({
           {visibleSections.map((section) => {
             if (section.type === "bio") return null; // Already rendered in main card
 
-            if (section.type === "cta") {
-              // CHANGED: only show CTA preview when it's the selected section
-              if (section.id !== selectedSectionId) return null;
-              return (
-                <CtaSectionPreview
-                  key={section.id}
-                  section={section}
-                  textColor={textColor}
-                  bgColor={bgColor}
-                  iconColor={iconColor}
-                  borderRadius={activeRadius}
-                  isDark={isDark}
-                  fontClass={selectedFontClass}
-                />
-              );
-            }
+            const isSectionHighlighted =
+              section.type === "projects" && section.highlightSection;
+            const currentCardStyle = isSectionHighlighted
+              ? {
+                  ...cardStyle,
+                  borderColor: iconColor || "#0a92a4",
+                  boxShadow: `0 0 16px ${iconColor || "#0a92a4"}25`,
+                  borderWidth: "2px",
+                }
+              : cardStyle;
 
             return (
               <div
                 key={section.id}
-                style={cardStyle}
+                style={currentCardStyle}
                 className="relative flex flex-col border p-6 shadow-sm transition-all duration-300"
               >
                 {/* Action buttons (View/Delete) */}
-                <div className="border-tertiary-b bg-neutral-subtle-bg absolute top-6 right-6 flex items-center gap-3 rounded-[10px] border px-6 py-3 shadow-none select-none">
+                <div className="absolute top-6 right-6 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border border-[#EDEDED] bg-white p-3 shadow-none select-none">
                   <button
-                    className="text-preview-action-icon transition-opacity hover:opacity-80"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleSectionVisibility(section.id);
+                    }}
+                    className="text-[#3A3A3A] transition-opacity hover:opacity-80"
                     title="Toggle visibility"
                   >
-                    <Eye size={18} strokeWidth={2} />
+                    {section.visible ? (
+                      <Eye size={18} strokeWidth={2} />
+                    ) : (
+                      <EyeOff size={18} strokeWidth={2} />
+                    )}
                   </button>
                   <button
-                    className="text-preview-action-delete transition-opacity hover:opacity-80"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRemoveSection(section.id);
+                    }}
+                    className="text-[#9F2B2B] transition-opacity hover:opacity-80"
                     title="Delete section"
                   >
                     <Trash2 size={18} strokeWidth={2} />
                   </button>
                 </div>
-                {section.type !== "links" ? (
+                {section.type === "experience" ? null : section.type ===
+                  "links" ? (
+                  <h3 className="mb-4 text-3xl font-bold">{section.title}</h3>
+                ) : (
                   <div
                     className="mb-4 flex items-center justify-between border-b pr-24 pb-4"
                     style={{ borderColor: isDark ? "#2D2D2D" : "#F0F0F0" }}
@@ -201,31 +208,233 @@ export default function PreviewCanvas({
                         className="flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-300"
                       >
                         {section.type === "projects" && <Folder size={18} />}
-                        {section.type === "experience" && (
-                          <Briefcase size={18} />
-                        )}
                       </span>
                       <h3 className="text-lg font-bold">{section.title}</h3>
                     </div>
                   </div>
-                ) : (
-                  <h3 className="mb-4 text-3xl font-bold">{section.title}</h3>
                 )}
 
                 {/* Section-specific placeholders */}
                 {section.type === "projects" && (
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="border-tertiary-b dark:border-dark-b flex items-center justify-between rounded-lg border bg-black/5 p-4 dark:bg-white/5">
-                      <div>
-                        <h4 className="text-sm font-semibold">
-                          OpenProfile Platform
-                        </h4>
-                        <p className="text-tertiary-text mt-1 text-xs">
-                          Open-source links-in-bio platform for modern creators.
-                        </p>
+                  <div>
+                    {section.subtitle && (
+                      <p className="text-tertiary-text mb-6 text-sm leading-relaxed">
+                        {section.subtitle}
+                      </p>
+                    )}
+
+                    {section.projects && section.projects.length > 0 ? (
+                      <div
+                        className={
+                          section.layout === "1"
+                            ? "grid grid-cols-1 gap-4 sm:grid-cols-2"
+                            : "flex flex-col gap-4"
+                        }
+                      >
+                        {section.projects.map((project) => {
+                          const isHighlighted = project.highlighted;
+                          const projectCardStyle = {
+                            borderColor: isHighlighted
+                              ? iconColor || "#0a92a4"
+                              : isDark
+                                ? "#2D2D2D"
+                                : "#EDEDED",
+                            boxShadow: isHighlighted
+                              ? `0 4px 12px ${iconColor || "#0a92a4"}20`
+                              : undefined,
+                            borderWidth: isHighlighted ? "2px" : "1px",
+                            backgroundColor: "transparent",
+                          };
+
+                          // Render Layout 1: Grid Card
+                          if (!section.layout || section.layout === "1") {
+                            return (
+                              <div
+                                key={project.id}
+                                style={projectCardStyle}
+                                className="flex flex-col overflow-hidden rounded-xl border transition-all"
+                              >
+                                {project.imageSrc && (
+                                  <div className="relative aspect-video w-full shrink-0 bg-gray-100 dark:bg-zinc-800">
+                                    <Image
+                                      src={project.imageSrc}
+                                      alt={project.title}
+                                      fill
+                                      className="object-cover"
+                                      unoptimized
+                                    />
+                                  </div>
+                                )}
+                                <div className="flex flex-1 flex-col p-4">
+                                  <h4 className="truncate text-sm font-bold">
+                                    {project.title}
+                                  </h4>
+                                  <p className="text-tertiary-text mt-1 line-clamp-2 flex-1 text-xs">
+                                    {project.description}
+                                  </p>
+                                  {project.url && (
+                                    <a
+                                      href={project.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{
+                                        backgroundColor: iconColor || "#0a92a4",
+                                      }}
+                                      className="mt-4 flex h-9 w-full items-center justify-center rounded-lg px-4 text-center text-xs font-bold text-white transition-opacity hover:opacity-90"
+                                    >
+                                      {project.buttonText || "View project"}
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          // Render Layout 2: Full List Card (Image on top, full width)
+                          if (section.layout === "2") {
+                            return (
+                              <div
+                                key={project.id}
+                                style={projectCardStyle}
+                                className="flex flex-col overflow-hidden rounded-xl border transition-all"
+                              >
+                                {project.imageSrc && (
+                                  <div className="relative h-44 w-full shrink-0 bg-gray-100 dark:bg-zinc-800">
+                                    <Image
+                                      src={project.imageSrc}
+                                      alt={project.title}
+                                      fill
+                                      className="object-cover"
+                                      unoptimized
+                                    />
+                                  </div>
+                                )}
+                                <div className="flex flex-col p-5">
+                                  <h4 className="text-base font-bold">
+                                    {project.title}
+                                  </h4>
+                                  <p className="text-tertiary-text mt-2 text-xs leading-relaxed">
+                                    {project.description}
+                                  </p>
+                                  {project.url && (
+                                    <div className="mt-4 flex justify-start">
+                                      <a
+                                        href={project.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                          backgroundColor:
+                                            iconColor || "#0a92a4",
+                                        }}
+                                        className="flex h-9 items-center justify-center rounded-lg px-5 text-center text-xs font-bold text-white transition-opacity hover:opacity-90"
+                                      >
+                                        {project.buttonText || "View project"}
+                                      </a>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          // Render Layout 3: Image Left
+                          if (section.layout === "3") {
+                            return (
+                              <div
+                                key={project.id}
+                                style={projectCardStyle}
+                                className="flex items-center gap-4 rounded-xl border p-4 transition-all"
+                              >
+                                {project.imageSrc && (
+                                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
+                                    <Image
+                                      src={project.imageSrc}
+                                      alt={project.title}
+                                      fill
+                                      className="object-cover"
+                                      unoptimized
+                                    />
+                                  </div>
+                                )}
+                                <div className="min-w-0 flex-1">
+                                  <h4 className="truncate text-sm font-bold">
+                                    {project.title}
+                                  </h4>
+                                  <p className="text-tertiary-text mt-1 line-clamp-2 text-xs">
+                                    {project.description}
+                                  </p>
+                                  {project.url && (
+                                    <a
+                                      href={project.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{ color: iconColor || "#0a92a4" }}
+                                      className="mt-2 inline-flex items-center gap-1 text-xs font-bold hover:underline"
+                                    >
+                                      <span>
+                                        {project.buttonText || "View project"}
+                                      </span>
+                                      <ExternalLink size={12} />
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          // Render Layout 4: Image Right
+                          if (section.layout === "4") {
+                            return (
+                              <div
+                                key={project.id}
+                                style={projectCardStyle}
+                                className="flex items-center gap-4 rounded-xl border p-4 transition-all"
+                              >
+                                <div className="min-w-0 flex-1">
+                                  <h4 className="truncate text-sm font-bold">
+                                    {project.title}
+                                  </h4>
+                                  <p className="text-tertiary-text mt-1 line-clamp-2 text-xs">
+                                    {project.description}
+                                  </p>
+                                  {project.url && (
+                                    <a
+                                      href={project.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{ color: iconColor || "#0a92a4" }}
+                                      className="mt-2 inline-flex items-center gap-1 text-xs font-bold hover:underline"
+                                    >
+                                      <span>
+                                        {project.buttonText || "View project"}
+                                      </span>
+                                      <ExternalLink size={12} />
+                                    </a>
+                                  )}
+                                </div>
+                                {project.imageSrc && (
+                                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
+                                    <Image
+                                      src={project.imageSrc}
+                                      alt={project.title}
+                                      fill
+                                      className="object-cover"
+                                      unoptimized
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
+
+                          return null;
+                        })}
                       </div>
-                      <ExternalLink size={16} className="text-disabled-text" />
-                    </div>
+                    ) : (
+                      <p className="text-tertiary-text py-4 text-center text-xs">
+                        No projects added yet.
+                      </p>
+                    )}
                   </div>
                 )}
 
@@ -290,14 +499,65 @@ export default function PreviewCanvas({
                 )}
 
                 {section.type === "experience" && (
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-start justify-between text-xs">
-                      <div>
-                        <p className="text-sm font-bold">Lead UI Architect</p>
-                        <p className="text-tertiary-text">Stark Industries</p>
+                  <div
+                    className={`flex flex-col py-4 ${
+                      section.layout === "2"
+                        ? "items-start text-left"
+                        : section.layout === "3"
+                          ? "items-end text-right"
+                          : "items-center text-center"
+                    }`}
+                  >
+                    {/* Icon card wrapper */}
+                    {section.iconSrc && (
+                      <div
+                        style={{
+                          borderColor: isDark ? "#2D2D2D" : "#EDEDED",
+                        }}
+                        className="mb-5 flex h-16 w-16 shrink-0 items-center justify-center rounded-[16px] border bg-white shadow-[0_2px_8px_rgba(0,0,0,0.03)] transition-all duration-300"
+                      >
+                        <div className="relative h-7 w-7">
+                          <Image
+                            src={section.iconSrc}
+                            alt={section.iconLabel || "CTA Icon"}
+                            fill
+                            className="object-contain filter dark:invert"
+                            unoptimized
+                          />
+                        </div>
                       </div>
-                      <span className="text-disabled-text">2024 - Present</span>
-                    </div>
+                    )}
+
+                    {/* Title */}
+                    <h4 className="text-[32px] leading-snug font-bold tracking-tight text-[#050505] dark:text-white">
+                      {section.title || "Let's build something"}
+                    </h4>
+
+                    {/* Subtitle */}
+                    {section.subtitle && (
+                      <p
+                        style={textStyle}
+                        className="text-tertiary-text mt-3 max-w-lg text-[15px] leading-relaxed font-medium"
+                      >
+                        {section.subtitle}
+                      </p>
+                    )}
+
+                    {/* Action Button */}
+                    {section.buttonText && (
+                      <a
+                        href={section.url || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          backgroundColor: iconColor || "#0a92a4",
+                          borderRadius: activeRadius || "8px",
+                        }}
+                        className="mt-6 inline-flex h-11 items-center justify-center px-[32px] text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90 active:scale-95"
+                      >
+                        {section.buttonText}
+                      </a>
+                    )}
                   </div>
                 )}
               </div>
