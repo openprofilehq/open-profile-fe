@@ -50,7 +50,7 @@ export default function LeftSidebar({
 
   if (isAddingSection) {
     return (
-      <aside className="border-tertiary-b bg-card animate-in fade-in flex h-full w-[320px] shrink-0 flex-col border-r p-6 duration-200 select-none">
+      <aside className="border-tertiary-b animate-in fade-in flex h-full w-[320px] shrink-0 flex-col border bg-white p-6 shadow-sm duration-200 select-none">
         {/* Back Button */}
         <div className="mb-6">
           <button
@@ -196,7 +196,7 @@ export default function LeftSidebar({
   }
 
   return (
-    <aside className="border-tertiary-b bg-card animate-in fade-in flex h-full w-[320px] shrink-0 flex-col border-r p-6 duration-200 select-none">
+    <aside className="border-tertiary-b animate-in fade-in flex h-full w-[320px] shrink-0 flex-col border bg-white p-6 shadow-sm duration-200 select-none">
       {/* Back Button */}
       <div className="mb-6">
         <Link

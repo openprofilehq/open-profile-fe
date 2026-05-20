@@ -16,7 +16,7 @@ export default function BuilderHeader() {
   ];
 
   return (
-    <header className="border-tertiary-b bg-card sticky top-0 z-40 w-full border-b px-6 py-4 select-none">
+    <header className="border-tertiary-b bg-card sticky top-0 z-40 w-full border-b px-6 py-2 select-none">
       <div className="mx-auto flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link
@@ -24,7 +24,7 @@ export default function BuilderHeader() {
             className="flex items-center transition-transform active:scale-95"
           >
             <Image
-              src="/favicon.ico"
+              src="/logomark.svg"
               alt="Open Profile"
               width={40}
               height={40}
@@ -64,14 +64,11 @@ export default function BuilderHeader() {
             <Search size={20} />
           </button>
 
-          <Button
-            variant="outline"
-            className="border-tertiary-b text-primary-text hover:bg-hover-bg h-10 rounded-[10px] px-5 text-sm font-semibold transition-all"
-          >
+          <Button className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text h-10 rounded-[10px] border px-5 text-sm font-semibold shadow-none transition-all hover:bg-white active:scale-95">
             Upgrade
           </Button>
 
-          <Button className="bg-brand-hover-bg hover:bg-brand h-10 rounded-[10px] px-6 text-sm font-semibold text-white shadow-sm transition-all active:scale-95">
+          <Button className="bg-brand-hover-bg hover:bg-brand h-10 rounded-[10px] px-6 text-sm font-semibold text-white transition-all active:scale-95">
             Publish
           </Button>
         </div>

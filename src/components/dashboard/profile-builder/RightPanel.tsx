@@ -52,7 +52,7 @@ export default function RightPanel({
   onUpdateSection,
 }: RightPanelProps) {
   return (
-    <aside className="border-tertiary-b bg-card flex h-full w-[360px] shrink-0 flex-col border-l select-none">
+    <aside className="border-tertiary-b animate-in fade-in flex h-full w-[360px] shrink-0 flex-col overflow-hidden border bg-white shadow-sm duration-200 select-none">
       {/* Tabs Header */}
       <div className="border-tertiary-b flex border-b">
         <button

@@ -72,13 +72,10 @@ export default function ProfileBuilderContent() {
     sections.find((s) => s.id === selectedSectionId) || null;
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#FAFAFA]">
-      {/* 1. Header (Standard full screen top header) */}
+    <div className="bg-primary-bg flex h-screen w-screen flex-col overflow-hidden">
       <BuilderHeader />
 
-      {/* 2. Main Builder Workplace (Left, Canvas, Right) */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Left Side: Sections Outline */}
+      <div className="flex flex-1 gap-4 overflow-hidden bg-[#F6F7F9] p-4">
         <LeftSidebar
           sections={sections}
           selectedSectionId={selectedSectionId}
@@ -88,7 +85,6 @@ export default function ProfileBuilderContent() {
           profile={profile}
         />
 
-        {/* Center Canvas Preview: Real-time update device */}
         <PreviewCanvas
           font={font}
           textColor={textColor}

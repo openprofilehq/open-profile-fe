@@ -1,7 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { Link2, Folder, Briefcase, ExternalLink } from "lucide-react";
+import {
+  Link2,
+  Folder,
+  Briefcase,
+  ExternalLink,
+  Eye,
+  Trash2,
+} from "lucide-react";
 import { getImageUrl } from "@/utils/profile";
 
 interface Section {
@@ -57,7 +64,6 @@ export default function PreviewCanvas({
 
   // Light/Dark Theme backgrounds
   const isDark = theme === "dark";
-  const canvasBg = "bg-background";
 
   // Custom Styles
   const cardStyle = {
@@ -80,9 +86,7 @@ export default function PreviewCanvas({
   };
 
   return (
-    <div
-      className={`flex flex-1 items-start justify-center overflow-y-auto p-8 transition-colors duration-300 ${canvasBg}`}
-    >
+    <div className="animate-in fade-in flex flex-1 justify-center overflow-y-auto duration-200">
       {/* Device wrapper */}
       <div className="flex w-full max-w-[640px] flex-col gap-6">
         {/* Dynamic Card Container with settings applied */}
@@ -92,8 +96,23 @@ export default function PreviewCanvas({
           {/* 1. Main Bio Card (Standard Profile Header) */}
           <div
             style={cardStyle}
-            className="flex flex-col items-center gap-6 border p-6 shadow-sm transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
+            className="relative flex flex-col items-center gap-6 border p-6 shadow-sm transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
           >
+            {/* Action buttons (View/Delete) */}
+            <div className="absolute top-6 right-6 flex items-center gap-3 rounded-full border border-[#EDEDED] bg-white px-3.5 py-1.5 shadow-none select-none">
+              <button
+                className="text-[#3A3A3A] transition-opacity hover:opacity-80"
+                title="Toggle visibility"
+              >
+                <Eye size={18} strokeWidth={2} />
+              </button>
+              <button
+                className="text-[#9F2B2B] transition-opacity hover:opacity-80"
+                title="Delete section"
+              >
+                <Trash2 size={18} strokeWidth={2} />
+              </button>
+            </div>
             {/* Avatar image */}
             <div className="border-brand-b/20 bg-brand-light-subtle-bg relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-inner">
               {getImageUrl(profile?.photoUrl) ? (
@@ -134,10 +153,26 @@ export default function PreviewCanvas({
               <div
                 key={section.id}
                 style={cardStyle}
-                className="flex flex-col border p-6 shadow-sm transition-all duration-300"
+                className="relative flex flex-col border p-6 shadow-sm transition-all duration-300"
               >
+                {/* Action buttons (View/Delete) */}
+                <div className="absolute top-6 right-6 flex items-center gap-3 rounded-[10px] border border-[#EDEDED] bg-white px-6 py-3 shadow-none select-none">
+                  <button
+                    className="text-[#3A3A3A] transition-opacity hover:opacity-80"
+                    title="Toggle visibility"
+                  >
+                    <Eye size={18} strokeWidth={2} />
+                  </button>
+                  <button
+                    className="text-[#9F2B2B] transition-opacity hover:opacity-80"
+                    title="Delete section"
+                  >
+                    <Trash2 size={18} strokeWidth={2} />
+                  </button>
+                </div>
+
                 <div
-                  className="mb-4 flex items-center justify-between border-b pb-4"
+                  className="mb-4 flex items-center justify-between border-b pr-24 pb-4"
                   style={{ borderColor: isDark ? "#2D2D2D" : "#F0F0F0" }}
                 >
                   <div className="flex items-center gap-3">
@@ -151,10 +186,6 @@ export default function PreviewCanvas({
                     </span>
                     <h3 className="text-lg font-bold">{section.title}</h3>
                   </div>
-
-                  <span className="text-disabled-text text-xs font-semibold tracking-wider uppercase">
-                    {section.type}
-                  </span>
                 </div>
 
                 {/* Section-specific placeholders */}
