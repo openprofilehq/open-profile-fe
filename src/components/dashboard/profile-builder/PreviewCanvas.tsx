@@ -10,11 +10,20 @@ import {
   Trash2,
 } from "lucide-react";
 import { getImageUrl } from "@/utils/profile";
+import CtaSectionPreview from "../cta/CtaSectionPreview";
 
 interface Section {
   id: string;
   title: string;
   type: string;
+  ctaTitle?: string;
+  ctaSubtitle?: string;
+  ctaButton?: string;
+  ctaLayout?: "center" | "left" | "right";
+  ctaSpacingTop?: number;
+  ctaSpacingBottom?: number;
+  ctaSpacingGap?: number;
+  ctaSpacingPadding?: number;
 }
 
 interface PreviewCanvasProps {
@@ -26,6 +35,8 @@ interface PreviewCanvasProps {
   borderRadius: "sharp" | "medium" | "round";
   theme: "light" | "dark";
   sections: Section[];
+  selectedSectionType: string | null;
+  selectedSectionId: string | null;
   profile?: {
     fullName?: string;
     bio?: string | null;
@@ -42,6 +53,8 @@ export default function PreviewCanvas({
   borderRadius,
   theme,
   sections,
+  selectedSectionType,
+  selectedSectionId,
   profile,
 }: PreviewCanvasProps) {
   // Map fonts to real family names or styles
@@ -96,7 +109,7 @@ export default function PreviewCanvas({
 
   return (
     <div
-      className={`animate-in fade-in flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
+      className={`animate-in fade-in no-scrollbar flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
     >
       {/* Device wrapper */}
       <div className="flex w-full max-w-[780px] flex-col gap-6">
@@ -105,60 +118,79 @@ export default function PreviewCanvas({
           className={`flex w-full flex-col transition-all duration-300 ${selectedFontClass}`}
         >
           {/* 1. Main Bio Card (Standard Profile Header) */}
-          <div
-            style={cardStyle}
-            className="relative flex flex-col items-center gap-6 border p-6 shadow-sm transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
-          >
-            {/* Action buttons (View/Delete) */}
-            <div className="absolute top-6 right-6 flex items-center gap-3 rounded-full border border-[#EDEDED] bg-white px-3.5 py-1.5 shadow-none select-none">
-              <button
-                className="text-[#3A3A3A] transition-opacity hover:opacity-80"
-                title="Toggle visibility"
-              >
-                <Eye size={18} strokeWidth={2} />
-              </button>
-              <button
-                className="text-[#9F2B2B] transition-opacity hover:opacity-80"
-                title="Delete section"
-              >
-                <Trash2 size={18} strokeWidth={2} />
-              </button>
-            </div>
-            {/* Avatar image */}
-            <div className="border-brand-b/20 bg-brand-light-subtle-bg relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-inner">
-              {getImageUrl(profile?.photoUrl) ? (
-                <Image
-                  src={getImageUrl(profile?.photoUrl) || ""}
-                  alt={profile?.fullName ?? "Profile avatar"}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                <div className="text-brand-text text-3xl font-bold">
-                  {(profile?.fullName || "M").charAt(0).toUpperCase()}
-                </div>
-              )}
-            </div>
+          {selectedSectionType !== "cta" && (
+            <div
+              style={cardStyle}
+              className="relative flex flex-col items-center gap-6 border p-6 shadow-sm transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
+            >
+              {/* Action buttons (View/Delete) */}
+              <div className="absolute top-6 right-6 flex items-center gap-3 rounded-full border border-[#EDEDED] bg-white px-3.5 py-1.5 shadow-none select-none">
+                <button
+                  className="text-[#3A3A3A] transition-opacity hover:opacity-80"
+                  title="Toggle visibility"
+                >
+                  <Eye size={18} strokeWidth={2} />
+                </button>
+                <button
+                  className="text-[#9F2B2B] transition-opacity hover:opacity-80"
+                  title="Delete section"
+                >
+                  <Trash2 size={18} strokeWidth={2} />
+                </button>
+              </div>
+              {/* Avatar image */}
+              <div className="border-brand-b/20 bg-brand-light-subtle-bg relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-inner">
+                {getImageUrl(profile?.photoUrl) ? (
+                  <Image
+                    src={getImageUrl(profile?.photoUrl) || ""}
+                    alt={profile?.fullName ?? "Profile avatar"}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="text-brand-text text-3xl font-bold">
+                    {(profile?.fullName || "M").charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
 
-            {/* Profile Info */}
-            <div className="flex-1 text-center sm:text-left">
-              <h2 className="text-2xl font-bold tracking-tight">
-                {profile?.fullName || "Micaela Robinsonss"}
-              </h2>
-              <p
-                style={textStyle}
-                className="mt-3 text-[15px] leading-relaxed opacity-90 transition-colors"
-              >
-                {profile?.bio ||
-                  "I'm a digital creator focusing on the intersection of design, technology, and intentional living. Sharing insights to help you build better products and habits."}
-              </p>
+              {/* Profile Info */}
+              <div className="flex-1 text-center sm:text-left">
+                <h2 className="text-2xl font-bold tracking-tight">
+                  {profile?.fullName || "Micaela Robinsonss"}
+                </h2>
+                <p
+                  style={textStyle}
+                  className="mt-3 text-[15px] leading-relaxed opacity-90 transition-colors"
+                >
+                  {profile?.bio ||
+                    "I'm a digital creator focusing on the intersection of design, technology, and intentional living. Sharing insights to help you build better products and habits."}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* 2. Dynamic Section Renderers */}
           {sections.map((section) => {
             if (section.type === "bio") return null; // Already rendered in main card
+
+            if (section.type === "cta") {
+              // CHANGED: only show CTA preview when it's the selected section
+              if (section.id !== selectedSectionId) return null;
+              return (
+                <CtaSectionPreview
+                  key={section.id}
+                  section={section}
+                  textColor={textColor}
+                  bgColor={bgColor}
+                  iconColor={iconColor}
+                  borderRadius={activeRadius}
+                  isDark={isDark}
+                  fontClass={selectedFontClass}
+                />
+              );
+            }
 
             return (
               <div

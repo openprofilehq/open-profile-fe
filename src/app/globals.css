@@ -7,6 +7,7 @@
 @theme inline {
   --font-afacad: var(--font-afacad);
   --font-dancing: var(--font-dancing);
+  --font-manrope: var(--font-manrope);
 
   --color-brand: var(--brand);
   --color-background: var(--background);
@@ -100,6 +101,7 @@
   --color-positive-hover-bg: var(--positive-hover-bg);
   --color-button-bg: var(--button-bg);
   --color-button-bg-waitlist: var(--button-bg-waitlist);
+  --color-neutral-subtle-bg: var(--neutral-subtle-bg);
 
   /* border colors */
   --color-primary-b: var(--primary-b);
@@ -117,6 +119,7 @@
   --color-input-b: var(--input-b);
   --color-button-b: var(--button-b);
   --color-selected-b: var(--selected-b);
+  --color-soft-b: var(--soft-b);
 
   /* typography */
   /* heading */
@@ -311,6 +314,7 @@
   --positive-hover-bg: #83efb2;
   --button-bg: #fafafa;
   --button-bg-waitlist: #262626;
+  --neutral-subtle-bg: #ffffff;
 
   /* border */
   --primary-b: #ababab;
@@ -328,6 +332,7 @@
   --input-b: #ededed;
   --button-b: #454545;
   --selected-b: #171717;
+  --soft-b: #ebebeb;
 }
 
 .dark {
@@ -374,4 +379,39 @@
   html {
     @apply font-afacad;
   }
+}
+
+.cta-shadow {
+  @apply shadow-[0px_1px_2px_rgba(10,13,20,0.03)];
+}
+
+.cta-font-item {
+  @apply h-10 cursor-pointer rounded-[8px];
+}
+
+.cta-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 38px;
+  border-radius: 5px;
+  background-color: #c5c5c5;
+  cursor: pointer;
+}
+
+.cta-slider::-moz-range-thumb {
+  width: 10px;
+  height: 38px;
+  border-radius: 5px;
+  background-color: #c5c5c5;
+  cursor: pointer;
+  border: 0;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

@@ -1,11 +1,16 @@
 "use client";
 
 import { Sun, Moon, Type, ChevronDown } from "lucide-react";
+import CtaRightPanel from "../cta/CtaRightPanel";
 
 interface Section {
   id: string;
   title: string;
   type: string;
+  ctaSpacingTop?: number;
+  ctaSpacingBottom?: number;
+  ctaSpacingGap?: number;
+  ctaSpacingPadding?: number;
 }
 
 interface RightPanelProps {
@@ -86,7 +91,7 @@ export default function RightPanel({
       </div>
 
       {/* Settings Body */}
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="no-scrollbar flex-1 overflow-y-auto p-6">
         {activeTab === "general" ? (
           <div className="flex flex-col gap-6">
             {/* Font Selection */}
@@ -392,61 +397,78 @@ export default function RightPanel({
         ) : (
           <div className="flex h-full flex-col gap-6">
             {selectedSection ? (
-              <div className="flex flex-col gap-6">
-                <div>
-                  <h3 className="text-primary-text text-base font-bold">
-                    Edit Section
-                  </h3>
-                  <p className="text-tertiary-text text-xs">
-                    Customize specific details for this component.
-                  </p>
-                </div>
+              selectedSection.type === "cta" ? (
+                <CtaRightPanel
+                  section={selectedSection}
+                  font={font}
+                  onChangeFont={onChangeFont}
+                  textColor={textColor}
+                  onChangeTextColor={onChangeTextColor}
+                  bgColor={bgColor}
+                  onChangeBgColor={onChangeBgColor}
+                  iconColor={iconColor}
+                  onChangeIconColor={onChangeIconColor}
+                  onUpdate={(updates) =>
+                    onUpdateSection(selectedSection.id, updates)
+                  }
+                />
+              ) : (
+                <div className="flex flex-col gap-6">
+                  <div>
+                    <h3 className="text-primary-text text-base font-bold">
+                      Edit Section
+                    </h3>
+                    <p className="text-tertiary-text text-xs">
+                      Customize specific details for this component.
+                    </p>
+                  </div>
 
-                {/* Section Title */}
-                <div>
-                  <label className="text-tertiary-text mb-2 block text-xs font-bold tracking-wider uppercase">
-                    Section Title
-                  </label>
-                  <input
-                    type="text"
-                    value={selectedSection.title}
-                    onChange={(e) =>
-                      onUpdateSection(selectedSection.id, {
-                        title: e.target.value,
-                      })
-                    }
-                    className="border-tertiary-b bg-primary-bg text-primary-text focus:border-brand-b w-full rounded-[10px] border px-4 py-3 text-sm font-semibold transition-all outline-none"
-                  />
-                </div>
+                  {/* Section Title */}
+                  <div>
+                    <label className="text-tertiary-text mb-2 block text-xs font-bold tracking-wider uppercase">
+                      Section Title
+                    </label>
+                    <input
+                      type="text"
+                      value={selectedSection.title}
+                      onChange={(e) =>
+                        onUpdateSection(selectedSection.id, {
+                          title: e.target.value,
+                        })
+                      }
+                      className="border-tertiary-b bg-primary-bg text-primary-text focus:border-brand-b w-full rounded-[10px] border px-4 py-3 text-sm font-semibold transition-all outline-none"
+                    />
+                  </div>
 
-                {/* Section Type Selector */}
-                <div>
-                  <label className="text-tertiary-text mb-2 block text-xs font-bold tracking-wider uppercase">
-                    Component Type
-                  </label>
-                  <select
-                    value={selectedSection.type}
-                    onChange={(e) =>
-                      onUpdateSection(selectedSection.id, {
-                        type: e.target.value,
-                      })
-                    }
-                    className="border-tertiary-b bg-primary-bg text-primary-text focus:border-brand-b w-full rounded-[10px] border px-4 py-3 text-sm font-semibold transition-all outline-none"
-                  >
-                    <option value="bio">Bio / Header</option>
-                    <option value="projects">Projects Showcase</option>
-                    <option value="links">Social Link Grid</option>
-                    <option value="experience">Timeline / Experience</option>
-                  </select>
-                </div>
+                  {/* Section Type Selector */}
+                  <div>
+                    <label className="text-tertiary-text mb-2 block text-xs font-bold tracking-wider uppercase">
+                      Component Type
+                    </label>
+                    <select
+                      value={selectedSection.type}
+                      onChange={(e) =>
+                        onUpdateSection(selectedSection.id, {
+                          type: e.target.value,
+                        })
+                      }
+                      className="border-tertiary-b bg-primary-bg text-primary-text focus:border-brand-b w-full rounded-[10px] border px-4 py-3 text-sm font-semibold transition-all outline-none"
+                    >
+                      <option value="bio">Bio / Header</option>
+                      <option value="projects">Projects Showcase</option>
+                      <option value="links">Social Link Grid</option>
+                      <option value="experience">Timeline / Experience</option>
+                    </select>
+                  </div>
 
-                <div className="border-secondary-b mt-4 rounded-xl border border-dashed p-6 text-center">
-                  <p className="text-tertiary-text text-xs font-semibold">
-                    Additional dynamic items editor will display here based on
-                    chosen component.
-                  </p>
+                  <div className="border-secondary-b mt-4 rounded-xl border border-dashed p-6 text-center">
+                    <p className="text-tertiary-text text-xs font-semibold">
+                      Additional dynamic items editor will display here based on
+                      chosen component.
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )
             ) : (
               <div className="flex h-[300px] flex-col items-center justify-center px-4 text-center">
                 <Type size={32} className="text-disabled-text mb-3" />
