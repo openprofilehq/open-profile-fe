@@ -52,24 +52,6 @@ export default function ProfileBuilderContent() {
       type: "bio",
       visible: true,
     },
-    {
-      id: "links",
-      title: "Links - Featured Links",
-      type: "links",
-      visible: true,
-    },
-    {
-      id: "projects",
-      title: "Projects - Portfolio",
-      type: "projects",
-      visible: true,
-    },
-    {
-      id: "cta",
-      title: "CTA - Contact",
-      type: "experience",
-      visible: true,
-    },
   ]);
 
   const resolvedSections = sections.map((section) =>
@@ -164,32 +146,32 @@ export default function ProfileBuilderContent() {
         <BuilderHeader username={profile?.username} />
 
         <div className="flex flex-1 gap-2 overflow-hidden bg-[#F6F7F9] p-2 px-4">
-        {selectedSection?.type === "cta" ? (
-          <CtaLeftPanel
-            section={selectedSection}
-            onBack={() => {
-              const firstSection = sections.find((s) => s.type !== "cta");
-              setSelectedSectionId(firstSection?.id ?? null);
-              setActiveTab("general");
-            }}
-            onUpdate={(updates) =>
-              handleUpdateSection(selectedSection.id, updates)
-            }
-          />
-        ) : (
-          <LeftSidebar
-            sections={resolvedSections}
-            selectedSectionId={selectedSectionId}
-            selectedSection={selectedSection}
-            onSelectSection={handleSelectSection}
-            onAddSection={handleAddSection}
-            onRemoveSection={handleRemoveSection}
-            onToggleSectionVisibility={handleToggleSectionVisibility}
-            onReorderSections={setSections}
-            onUpdateSection={handleUpdateSection}
-            profile={profile}
-          />
-        )}
+          {selectedSection?.type === "cta" ? (
+            <CtaLeftPanel
+              section={selectedSection}
+              onBack={() => {
+                const firstSection = sections.find((s) => s.type !== "cta");
+                setSelectedSectionId(firstSection?.id ?? null);
+                setActiveTab("general");
+              }}
+              onUpdate={(updates) =>
+                handleUpdateSection(selectedSection.id, updates)
+              }
+            />
+          ) : (
+            <LeftSidebar
+              sections={resolvedSections}
+              selectedSectionId={selectedSectionId}
+              selectedSection={selectedSection}
+              onSelectSection={handleSelectSection}
+              onAddSection={handleAddSection}
+              onRemoveSection={handleRemoveSection}
+              onToggleSectionVisibility={handleToggleSectionVisibility}
+              onReorderSections={setSections}
+              onUpdateSection={handleUpdateSection}
+              profile={profile}
+            />
+          )}
 
           <PreviewCanvas
             font={font}
