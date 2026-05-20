@@ -61,7 +61,7 @@ export default function DashboardSidebar() {
           "--topbar-height": TOPBAR_HEIGHT,
         } as CSSProperties
       }
-      className="top-(--topbar-height)] sticky hidden h-[calc(100vh-var(--topbar-height))] w-70 shrink-0 border-r border-[#EDEDED] bg-white lg:flex lg:flex-col"
+      className="sticky top-(--topbar-height) flex h-[calc(100vh-var(--topbar-height))] w-20 shrink-0 flex-col border-r border-[#EDEDED] bg-white transition-all duration-300 lg:w-70"
     >
       <nav className="flex flex-1 flex-col gap-2 p-3 pt-6">
         {navItems.map((item) => {
@@ -76,14 +76,14 @@ export default function DashboardSidebar() {
             <Link
               key={item.label}
               href={item.href}
-              className={`flex items-center gap-3 rounded-[10px] px-4 py-4 text-[18px] font-medium transition-colors ${
+              className={`flex items-center justify-center gap-3 rounded-[10px] px-4 py-4 text-[18px] font-medium transition-colors lg:justify-start ${
                 isActive
                   ? "bg-[#087583] text-white"
                   : "text-[#050505] hover:bg-[#F5F5F5]"
               }`}
             >
-              <Icon size={22} />
-              <span>{item.label}</span>
+              <Icon size={22} className="shrink-0" />
+              <span className="hidden lg:inline">{item.label}</span>
             </Link>
           );
         })}
@@ -94,10 +94,11 @@ export default function DashboardSidebar() {
         size="lg"
         variant="logout"
         disabled={logoutMutation.isPending}
+        className="mx-auto w-fit justify-center p-4 lg:mx-0 lg:w-full lg:justify-start"
         onClick={handleLogout}
       >
-        <LogOut size={22} />
-        <span className="text-[18px]">Logout</span>
+        <LogOut size={22} className="shrink-0" />
+        <span className="hidden text-[18px] lg:inline">Logout</span>
       </Button>
     </aside>
   );

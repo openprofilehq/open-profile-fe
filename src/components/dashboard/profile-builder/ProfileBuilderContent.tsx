@@ -8,23 +8,12 @@ import LeftSidebar from "./LeftSidebar";
 import PreviewCanvas from "./PreviewCanvas";
 import RightPanel from "./RightPanel";
 import Link from "next/link";
-import type { SavedLink } from "./LinkSidebar";
-
-interface Section {
-  id: string;
-  title: string;
-  type: string;
-  visible: boolean;
-  fullName?: string;
-  bio?: string;
-  subtitle?: string;
-  links?: SavedLink[];
-}
+import type { Section } from "./types";
 
 export default function ProfileBuilderContent() {
   const dashboardProfile = useQuery(dashboardProfileOption());
   const profile = dashboardProfile.data;
-  // Styles State
+
   const [font, setFont] = useState("Afacad");
   const [textColor, setTextColor] = useState("#050505");
   const [bgColor, setBgColor] = useState("#FFFFFF");
@@ -61,7 +50,6 @@ export default function ProfileBuilderContent() {
       visible: true,
     },
   ]);
-
   const resolvedSections = sections.map((section) =>
     section.id === "bio"
       ? {
@@ -77,7 +65,6 @@ export default function ProfileBuilderContent() {
     "bio"
   );
 
-  // Handlers
   const handleSelectSection = (id: string) => {
     setSelectedSectionId(id);
     setActiveTab("section");
@@ -138,7 +125,7 @@ export default function ProfileBuilderContent() {
       </div>
 
       <div className="bg-primary-bg hidden h-screen w-screen flex-col overflow-hidden lg:flex">
-        <BuilderHeader username={profile?.username} />
+        <BuilderHeader />
 
         <div className="flex flex-1 gap-2 overflow-hidden bg-[#F6F7F9] p-2 px-4">
           <LeftSidebar
