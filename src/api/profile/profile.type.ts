@@ -25,3 +25,17 @@ export type ProfileResponse = {
   photoUrl: string | null;
   isPublished?: boolean;
 };
+
+export type DashboardProfileResponse = {
+  username: string;
+  fullName: string;
+  bio: string | null;
+  photoUrl: string | null;
+  templateType: string | null;
+  themeSettings: unknown | null;
+  isPublished: boolean;
+  hasUnpublishedChanges: boolean;
+  ctaLabel: string | null;
+  ctaUrl: string | null;
+  components: unknown[];
+};
