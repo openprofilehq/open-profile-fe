@@ -1,20 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import {
-  Link2,
-  Folder,
-  Briefcase,
-  ExternalLink,
-  Eye,
-  Trash2,
-} from "lucide-react";
+import { Link2, Folder, Briefcase, ExternalLink } from "lucide-react";
 import { getImageUrl } from "@/utils/profile";
 
 interface Section {
   id: string;
   title: string;
   type: string;
+  visible: boolean;
 }
 
 interface PreviewCanvasProps {
@@ -44,7 +38,6 @@ export default function PreviewCanvas({
   sections,
   profile,
 }: PreviewCanvasProps) {
-  // Map fonts to real family names or styles
   const fontStyles: Record<string, string> = {
     Afacad: "font-afacad",
     Inter: "font-sans",
@@ -54,7 +47,6 @@ export default function PreviewCanvas({
 
   const selectedFontClass = fontStyles[font] || "font-afacad";
 
-  // Map border radii to pixels
   const radiusMap = {
     sharp: "0px",
     medium: "16px",
@@ -62,10 +54,8 @@ export default function PreviewCanvas({
   };
   const activeRadius = radiusMap[borderRadius] || "16px";
 
-  // Light/Dark Theme backgrounds
   const isDark = theme === "dark";
 
-  // Custom Styles
   const cardStyle = {
     backgroundColor:
       bgColor === "#FFFFFF" && isDark
@@ -94,6 +84,12 @@ export default function PreviewCanvas({
       : "rgba(10, 146, 164, 0.08)",
   };
 
+  const visibleSections = sections.filter((section) => section.visible);
+
+  const isBioVisible = visibleSections.some(
+    (section) => section.type === "bio"
+  );
+
   return (
     <div
       className={`animate-in fade-in flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
@@ -105,59 +101,45 @@ export default function PreviewCanvas({
           className={`flex w-full flex-col transition-all duration-300 ${selectedFontClass}`}
         >
           {/* 1. Main Bio Card (Standard Profile Header) */}
-          <div
-            style={cardStyle}
-            className="relative flex flex-col items-center gap-6 border p-6 shadow-sm transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
-          >
-            {/* Action buttons (View/Delete) */}
-            <div className="absolute top-6 right-6 flex items-center gap-3 rounded-full border border-[#EDEDED] bg-white px-3.5 py-1.5 shadow-none select-none">
-              <button
-                className="text-[#3A3A3A] transition-opacity hover:opacity-80"
-                title="Toggle visibility"
-              >
-                <Eye size={18} strokeWidth={2} />
-              </button>
-              <button
-                className="text-[#9F2B2B] transition-opacity hover:opacity-80"
-                title="Delete section"
-              >
-                <Trash2 size={18} strokeWidth={2} />
-              </button>
-            </div>
-            {/* Avatar image */}
-            <div className="border-brand-b/20 bg-brand-light-subtle-bg relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-inner">
-              {getImageUrl(profile?.photoUrl) ? (
-                <Image
-                  src={getImageUrl(profile?.photoUrl) || ""}
-                  alt={profile?.fullName ?? "Profile avatar"}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                <div className="text-brand-text text-3xl font-bold">
-                  {(profile?.fullName || "M").charAt(0).toUpperCase()}
-                </div>
-              )}
-            </div>
+          {isBioVisible && (
+            <div
+              style={cardStyle}
+              className="relative flex flex-col items-center gap-6 border p-6 shadow-sm transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
+            >
+              {/* Avatar image */}
+              <div className="border-brand-b/20 bg-brand-light-subtle-bg relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-inner">
+                {getImageUrl(profile?.photoUrl) ? (
+                  <Image
+                    src={getImageUrl(profile?.photoUrl) || ""}
+                    alt={profile?.fullName ?? "Profile avatar"}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="text-brand-text text-3xl font-bold">
+                    {(profile?.fullName || "M").charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
 
-            {/* Profile Info */}
-            <div className="flex-1 text-center sm:text-left">
-              <h2 className="text-2xl font-bold tracking-tight">
-                {profile?.fullName || "Micaela Robinsonss"}
-              </h2>
-              <p
-                style={textStyle}
-                className="mt-3 text-[15px] leading-relaxed opacity-90 transition-colors"
-              >
-                {profile?.bio ||
-                  "I'm a digital creator focusing on the intersection of design, technology, and intentional living. Sharing insights to help you build better products and habits."}
-              </p>
+              {/* Profile Info */}
+              <div className="flex-1 text-center sm:text-left">
+                <h2 className="text-2xl font-bold tracking-tight">
+                  {profile?.fullName || "Micaela Robinsonss"}
+                </h2>
+                <p
+                  style={textStyle}
+                  className="mt-3 text-[15px] leading-relaxed opacity-90 transition-colors"
+                >
+                  {profile?.bio ||
+                    "I'm a digital creator focusing on the intersection of design, technology, and intentional living. Sharing insights to help you build better products and habits."}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* 2. Dynamic Section Renderers */}
-          {sections.map((section) => {
+          {visibleSections.map((section) => {
             if (section.type === "bio") return null; // Already rendered in main card
 
             return (
@@ -166,22 +148,6 @@ export default function PreviewCanvas({
                 style={cardStyle}
                 className="relative flex flex-col border p-6 shadow-sm transition-all duration-300"
               >
-                {/* Action buttons (View/Delete) */}
-                <div className="absolute top-6 right-6 flex items-center gap-3 rounded-[10px] border border-[#EDEDED] bg-white px-6 py-3 shadow-none select-none">
-                  <button
-                    className="text-[#3A3A3A] transition-opacity hover:opacity-80"
-                    title="Toggle visibility"
-                  >
-                    <Eye size={18} strokeWidth={2} />
-                  </button>
-                  <button
-                    className="text-[#9F2B2B] transition-opacity hover:opacity-80"
-                    title="Delete section"
-                  >
-                    <Trash2 size={18} strokeWidth={2} />
-                  </button>
-                </div>
-
                 <div
                   className="mb-4 flex items-center justify-between border-b pr-24 pb-4"
                   style={{ borderColor: isDark ? "#2D2D2D" : "#F0F0F0" }}
