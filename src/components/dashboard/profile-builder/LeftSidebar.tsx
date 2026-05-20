@@ -15,8 +15,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import LinkSidebar, { type SavedLink } from "./LinkSidebar";
-
+import LinkSidebar from "./LinkSidebar";
 import type { Section } from "./types";
 
 interface LeftSidebarProps {
@@ -95,7 +94,7 @@ export default function LeftSidebar({
 
   if (isAddingSection) {
     return (
-      <aside className="border-tertiary-b animate-in fade-in flex h-full w-72.5 shrink-0 flex-col border bg-white p-6 shadow-sm duration-200 select-none">
+      <aside className="border-tertiary-b animate-in fade-in hidden h-full w-72.5 shrink-0 flex-col border bg-white p-6 shadow-sm duration-200 select-none lg:flex">
         {/* Back Button */}
         <div className="mb-6">
           <button
@@ -324,7 +323,7 @@ export default function LeftSidebar({
   }
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in flex h-full w-72.5 shrink-0 flex-col border bg-white p-6 shadow-sm duration-200 select-none">
+    <aside className="border-tertiary-b animate-in fade-in hidden h-full w-72.5 shrink-0 flex-col border bg-white p-6 shadow-sm duration-200 select-none lg:flex">
       {/* Back Button */}
       <div className="mb-6">
         <Link

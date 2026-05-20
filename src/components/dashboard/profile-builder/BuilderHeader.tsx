@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
 export default function BuilderHeader() {
@@ -15,28 +16,30 @@ export default function BuilderHeader() {
     { label: "Settings", href: "/dashboard/settings" },
   ];
 
+  function handlePublish() {
+    toast.success("Profile published successfully.");
+  }
 
   return (
-    <header className="border-tertiary-b bg-white sticky top-0 z-40 w-full shrink-0 border-b px-4 py-2 select-none md:px-6">
-      <div className="relative mx-auto flex h-12 items-center justify-between">
+    <header className="border-tertiary-b bg-card sticky top-0 z-40 w-full border-b px-6 py-2 select-none">
+      <div className="mx-auto flex items-center justify-between gap-6">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard"
+            className="flex items-center transition-transform active:scale-95"
+          >
+            <Image
+              src="/logomark.svg"
+              alt="Open Profile"
+              width={40}
+              height={40}
+              className="border-tertiary-b h-10 w-10 rounded-full border bg-white object-contain"
+              priority
+            />
+          </Link>
+        </div>
 
-        {/* Logo */}
-        <Link
-          href="/dashboard"
-          className="flex items-center transition-transform active:scale-95"
-        >
-          <Image
-            src="/logomark.svg"
-            alt="Open Profile"
-            width={36}
-            height={36}
-            className="border-tertiary-b h-9 w-9 rounded-full border bg-white object-contain md:h-10 md:w-10"
-            priority
-          />
-        </Link>
-
-        {/* Center Nav — hidden on mobile, centered absolutely on md+ */}
-        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => {
             const isActive =
               pathname === link.href ||
@@ -47,30 +50,32 @@ export default function BuilderHeader() {
               <Link
                 key={link.label}
                 href={link.href}
-                className={`py-1 text-base font-medium transition-colors duration-200 hover:text-link-hover-text ${
+                className={`hover:text-link-hover-text relative py-1 text-base font-medium transition-all duration-200 ${
                   isActive ? "text-link-hover-text" : "text-tertiary-text"
                 }`}
               >
                 {link.label}
+                {isActive && (
+                  <span className="bg-link-hover-text absolute bottom-0 left-0 h-0.5 w-full rounded-full" />
+                )}
               </Link>
             );
           })}
         </nav>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex items-center gap-4">
           <button
-            className="text-primary-text hover:bg-hover-bg flex h-9 w-9 items-center justify-center rounded-full transition-colors active:scale-95 md:h-10 md:w-10"
+            className="text-primary-text hover:bg-hover-bg flex h-10 w-10 items-center justify-center rounded-full transition-colors active:scale-95"
             aria-label="Search"
           >
-            <Search size={18} />
+            <Search size={20} />
           </button>
 
-          <Button className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text hidden h-9 rounded-[10px] border px-4 text-sm font-semibold shadow-none transition-all hover:bg-white active:scale-95 sm:flex md:h-10 md:px-5">
-            Upgrade
-          </Button>
-
-          <Button className="bg-brand-hover-bg hover:bg-brand h-9 rounded-[10px] px-4 text-sm font-semibold text-white transition-all active:scale-95 md:h-10 md:px-6">
+          <Button
+            type="button"
+            onClick={handlePublish}
+            className="bg-brand-hover-bg hover:bg-brand h-10 rounded-[10px] px-6 text-sm font-semibold text-white transition-all active:scale-95"
+          >
             Publish
           </Button>
         </div>
