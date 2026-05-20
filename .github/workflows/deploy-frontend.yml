@@ -1,21 +1,23 @@
-name: Frontend CI/CD
+name: DEPLOY FRONTEND Pipeline
 
 on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
   push:
     branches:
-      - feat/ci-cd
-      - dev
-      - staging
-      - production
-  pull_request:
-    branches:
-      - feat/ci-cd
-      - dev
-      - staging
-      - production
-    types:
-    - closed
-
+       - feat/ci-cd
+       - dev
+       - staging
+       - production
 jobs:
   ci:
     name: CI — Lint, Typecheck & Build
