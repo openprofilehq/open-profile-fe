@@ -14,6 +14,8 @@ export const api = axios.create({
 });
 
 function getApiErrorMessage(message?: unknown): string {
+  // Use a backend-provided error message when available, otherwise fall back to
+  // a generic client-facing error.
   if (typeof message === "string") return message;
   return "An error occurred. Please check your input and try again.";
 }

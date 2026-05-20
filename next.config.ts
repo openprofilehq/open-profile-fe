@@ -12,6 +12,16 @@ const nextConfig: NextConfig = {
   images: {
     qualities: [75, 100],
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "open-profile.hng14.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "api.staging.open-profile.hng14.com",
+        pathname: "/**",
+      },
       ...(apiHostname
         ? [
             {

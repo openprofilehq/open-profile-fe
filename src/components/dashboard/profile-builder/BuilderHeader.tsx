@@ -42,8 +42,8 @@ export default function BuilderHeader() {
               <Link
                 key={link.label}
                 href={link.href}
-                className={`py-1 text-base font-medium transition-colors duration-200 hover:text-[#087583] ${
-                  isActive ? "text-[#087583]" : "text-[#888]"
+                className={`py-1 text-base font-medium transition-colors duration-200 hover:text-link-hover-text ${
+                  isActive ? "text-link-hover-text" : "text-tertiary-text"
                 }`}
               >
                 {link.label}
@@ -61,7 +61,7 @@ export default function BuilderHeader() {
             <Search size={18} />
           </button>
 
-          <Button className="border-brand-b bg-brand-light-subtle-bg text-[#087583] hidden h-9 rounded-[10px] border px-4 text-sm font-semibold shadow-none transition-all hover:bg-white active:scale-95 sm:flex md:h-10 md:px-5">
+          <Button className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text hidden h-9 rounded-[10px] border px-4 text-sm font-semibold shadow-none transition-all hover:bg-white active:scale-95 sm:flex md:h-10 md:px-5">
             Upgrade
           </Button>
 

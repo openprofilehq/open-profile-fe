@@ -177,7 +177,7 @@ export default function ProjectsForm({
                 <span className="text-primary-text text-sm font-bold">Projects</span>
                 {highlightedCount > 0 && (
                   <span className="text-tertiary-text text-xs">
-                    {highlightedCount}/{MAX_HIGHLIGHTS} Highlighted
+                    {highlightedCount} Highlight{highlightedCount === 1 ? "" : "s"}
                   </span>
                 )}
               </div>
