@@ -1,9 +1,19 @@
-import type { SavedLink } from "./LinkSidebar";
+export type SectionType = "bio" | "links" | "projects" | "experience";
+
+export interface SavedLink {
+  id: string;
+  title: string;
+  url: string;
+  iconId: string | null;
+  iconLabel: string | null;
+  iconSrc: string | null;
+  imageSrc: string | null;
+}
 
 export interface Section {
   id: string;
   title: string;
-  type: string;
+  type: SectionType | string;
   visible: boolean;
   fullName?: string;
   bio?: string;

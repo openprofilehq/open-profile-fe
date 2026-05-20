@@ -2,7 +2,7 @@
 
 import { Sun, Moon, Type, ChevronDown, Pipette } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { HexAlphaColorPicker } from "react-colorful";
+import { HexColorPicker } from "react-colorful";
 import type { Section } from "./types";
 
 interface RightPanelProps {
@@ -218,9 +218,9 @@ function CustomColorPicker({
             .kiro-picker .react-colorful__alpha-pointer { width: 14px !important; height: 14px !important; border: 2px solid white !important; box-shadow: 0 1px 4px rgba(0,0,0,0.3) !important; }
           `}</style>
           <div className="kiro-picker p-3 pb-0">
-            <HexAlphaColorPicker
+            <HexColorPicker
               color={safeColor}
-              onChange={(val) => onChange(val.slice(0, 7))}
+              onChange={onChange}
               style={{ width: "100%" }}
             />
           </div>
@@ -281,6 +281,7 @@ function CustomColorPicker({
                   <button
                     key={c}
                     type="button"
+                    aria-label={`Set color to ${c}`}
                     onClick={() => onChange(c)}
                     className={`h-[22px] w-[22px] shrink-0 rounded-full border border-black/10 transition-transform hover:scale-110 active:scale-95 ${safeColor.toUpperCase() === c.toUpperCase() ? "ring-primary-text ring-2 ring-offset-1" : ""}`}
                     style={{ backgroundColor: c }}
@@ -613,19 +614,27 @@ export default function RightPanel({
                     Spacing
                   </label>
                   <div className="flex flex-col gap-4">
-                    {[
-                      { label: "Top", key: "paddingTop", defaultVal: 24 },
-                      { label: "Bottom", key: "paddingBottom", defaultVal: 24 },
-                      { label: "Gap", key: "gap", defaultVal: 20 },
-                      { label: "Padding", key: "padding", defaultVal: 16 },
-                    ].map((item) => {
+                    {(
+                      [
+                        { label: "Top", key: "paddingTop", defaultVal: 24 },
+                        {
+                          label: "Bottom",
+                          key: "paddingBottom",
+                          defaultVal: 24,
+                        },
+                        { label: "Gap", key: "gap", defaultVal: 20 },
+                        { label: "Padding", key: "padding", defaultVal: 16 },
+                      ] as {
+                        label: string;
+                        key: keyof Pick<
+                          Section,
+                          "paddingTop" | "paddingBottom" | "gap" | "padding"
+                        >;
+                        defaultVal: number;
+                      }[]
+                    ).map((item) => {
                       const val = Number(
-                        (
-                          selectedSection as unknown as Record<
-                            string,
-                            number | undefined
-                          >
-                        )[item.key] ?? item.defaultVal
+                        selectedSection[item.key] ?? item.defaultVal
                       );
                       return (
                         <div key={item.label} className="flex flex-col gap-2">
