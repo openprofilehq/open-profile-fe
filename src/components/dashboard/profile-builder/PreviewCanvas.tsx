@@ -1,14 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { Link2, Folder, Briefcase, ExternalLink } from "lucide-react";
+import { Folder, Briefcase, ExternalLink, Eye, Trash2 } from "lucide-react";
 import { getImageUrl } from "@/utils/profile";
+import type { SavedLink } from "./LinkSidebar";
 
 interface Section {
   id: string;
   title: string;
   type: string;
   visible: boolean;
+  subtitle?: string;
+  links?: SavedLink[];
 }
 
 interface PreviewCanvasProps {
@@ -95,7 +98,7 @@ export default function PreviewCanvas({
       className={`animate-in fade-in flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
     >
       {/* Device wrapper */}
-      <div className="flex w-full max-w-[780px] flex-col gap-6">
+      <div className="flex w-full max-w-195 flex-col gap-6">
         {/* Dynamic Card Container with settings applied */}
         <div
           className={`flex w-full flex-col transition-all duration-300 ${selectedFontClass}`}
@@ -148,22 +151,42 @@ export default function PreviewCanvas({
                 style={cardStyle}
                 className="relative flex flex-col border p-6 shadow-sm transition-all duration-300"
               >
-                <div
-                  className="mb-4 flex items-center justify-between border-b pr-24 pb-4"
-                  style={{ borderColor: isDark ? "#2D2D2D" : "#F0F0F0" }}
-                >
-                  <div className="flex items-center gap-3">
-                    <span
-                      style={iconStyle}
-                      className="flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-300"
-                    >
-                      {section.type === "projects" && <Folder size={18} />}
-                      {section.type === "links" && <Link2 size={18} />}
-                      {section.type === "experience" && <Briefcase size={18} />}
-                    </span>
-                    <h3 className="text-lg font-bold">{section.title}</h3>
-                  </div>
+                {/* Action buttons (View/Delete) */}
+                <div className="absolute top-6 right-6 flex w-24 items-center justify-between gap-3 rounded-[10px] border border-[#EDEDED] bg-white p-3 shadow-none select-none">
+                  <button
+                    className="text-[#3A3A3A] transition-opacity hover:opacity-80"
+                    title="Toggle visibility"
+                  >
+                    <Eye size={18} strokeWidth={2} />
+                  </button>
+                  <button
+                    className="text-[#9F2B2B] transition-opacity hover:opacity-80"
+                    title="Delete section"
+                  >
+                    <Trash2 size={18} strokeWidth={2} />
+                  </button>
                 </div>
+                {section.type !== "links" ? (
+                  <div
+                    className="mb-4 flex items-center justify-between border-b pr-24 pb-4"
+                    style={{ borderColor: isDark ? "#2D2D2D" : "#F0F0F0" }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        style={iconStyle}
+                        className="flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-300"
+                      >
+                        {section.type === "projects" && <Folder size={18} />}
+                        {section.type === "experience" && (
+                          <Briefcase size={18} />
+                        )}
+                      </span>
+                      <h3 className="text-lg font-bold">{section.title}</h3>
+                    </div>
+                  </div>
+                ) : (
+                  <h3 className="mb-4 text-3xl font-bold">{section.title}</h3>
+                )}
 
                 {/* Section-specific placeholders */}
                 {section.type === "projects" && (
@@ -183,17 +206,61 @@ export default function PreviewCanvas({
                 )}
 
                 {section.type === "links" && (
-                  <div className="flex flex-wrap gap-2">
-                    {["Twitter", "GitHub", "YouTube", "LinkedIn"].map(
-                      (platform) => (
-                        <span
-                          key={platform}
-                          className="border-tertiary-b inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold hover:bg-black/5 dark:border-[#2D2D2D] dark:hover:bg-white/5"
-                        >
-                          <Link2 size={12} />
-                          {platform}
-                        </span>
-                      )
+                  <div className="flex flex-col gap-4">
+                    {section.subtitle && (
+                      <p className="text-tertiary-text leading-relaxed">
+                        {section.subtitle}
+                      </p>
+                    )}
+
+                    {section.links && section.links.length > 0 && (
+                      <div className="grid grid-cols-1 gap-3">
+                        {section.links.map((link) => (
+                          <div
+                            key={link.id}
+                            className="border-tertiary-b flex items-center justify-between rounded-xl border bg-white/60 p-4 transition-colors hover:bg-black/5 dark:border-[#2D2D2D] dark:bg-white/5 dark:hover:bg-white/10"
+                          >
+                            <div className="flex min-w-0 items-center gap-3">
+                              {link.imageSrc ? (
+                                <Image
+                                  src={link.imageSrc}
+                                  alt={link.title}
+                                  width={40}
+                                  height={40}
+                                  unoptimized
+                                  className="h-10 w-10 shrink-0 rounded-md object-cover"
+                                />
+                              ) : link.iconSrc ? (
+                                <span className="rounded-md border p-2">
+                                  <Image
+                                    src={link.iconSrc}
+                                    alt={link.iconLabel ?? link.title}
+                                    width={24}
+                                    height={24}
+                                    className="shrink-0"
+                                  />
+                                </span>
+                              ) : (
+                                <span className="bg-brand-light-subtle-bg text-brand-text flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-sm font-bold">
+                                  {link.title.charAt(0).toUpperCase()}
+                                </span>
+                              )}
+
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-semibold">
+                                  {link.title}
+                                </p>
+                                <p className="truncate text-xs text-gray-500">
+                                  {link.url}
+                                </p>
+                              </div>
+                            </div>
+                            <span className="cursor-pointer rounded-full border p-2">
+                              <ExternalLink size={14} className="shrink-0" />
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     )}
                   </div>
                 )}

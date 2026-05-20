@@ -24,7 +24,7 @@ export function Navbar() {
       <header
         className={`fixed top-0 right-0 left-0 z-50 w-full border-b border-[#EDEDED] transition-colors duration-300 ${scrolled ? "bg-white/70 backdrop-blur-md" : "bg-white"}`}
       >
-        <nav className="mx-auto flex h-[76px] w-full max-w-[1440px] items-center justify-between pr-[20px] pl-[20px] md:pr-[112px] md:pl-[112px]">
+        <nav className="mx-auto flex h-[76px] w-full max-w-[1440px] items-center justify-between gap-8 px-5 md:px-10 lg:px-[112px]">
           {/* Logo */}
           <Link href="/#" className="flex shrink-0 items-center gap-1">
             <Image
@@ -32,13 +32,13 @@ export function Navbar() {
               alt="Open Profile"
               width={170}
               height={32}
-              className="h-[32px] w-auto"
+              className="h-[30px] w-auto md:h-[28px] lg:h-[32px]"
               style={{ width: "auto" }}
             />
           </Link>
 
           {/* Desktop nav links */}
-          <div className="hidden items-center gap-4 md:flex">
+          <div className="hidden items-center gap-6 md:flex lg:gap-8">
             <Link
               href="#how-it-works"
               className="text-[17px] leading-[26px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
