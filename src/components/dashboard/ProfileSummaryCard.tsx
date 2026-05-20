@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getImageUrl } from "@/utils/profile";
 
 type Props = {
@@ -13,9 +14,11 @@ export default function ProfileSummaryCard({ profile }: Props) {
   return (
     <section className="flex flex-col gap-5 rounded-[12px] border border-[#EDEDED] bg-white p-6 md:flex-row md:items-start">
       {profileImageUrl ? (
-        <img
+        <Image
           src={profileImageUrl}
           alt={profile?.fullName ?? "Profile avatar"}
+          width={96}
+          height={96}
           className="h-24 w-24 rounded-full object-cover"
         />
       ) : (

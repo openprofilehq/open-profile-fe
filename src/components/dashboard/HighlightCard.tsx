@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getImageUrl } from "@/utils/profile";
 
 type Props = {
@@ -18,11 +19,14 @@ export default function HighlightCard({ profile }: Props) {
       <div className="mt-6 flex flex-col gap-8 rounded-[28px] border border-[#EDEDED] p-6 md:flex-row md:items-center">
         <div className="flex flex-1 justify-center bg-[#F4F4F4] p-10">
           {imageSrc ? (
-            <img
-              src={imageSrc}
-              alt={profile?.fullName ?? "Profile image"}
-              className="h-auto w-full max-w-[260px] rounded-[12px] object-cover"
-            />
+            <div className="relative h-[180px] w-full max-w-[260px]">
+              <Image
+                src={imageSrc}
+                alt={profile?.fullName ?? "Profile image"}
+                fill
+                className="rounded-[12px] object-cover"
+              />
+            </div>
           ) : (
             <div className="flex h-[180px] w-full max-w-[260px] items-center justify-center rounded-[12px] bg-white text-[#747474]">
               No image yet

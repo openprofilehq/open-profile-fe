@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ChevronLeft, Trash2, Upload } from "lucide-react";
 import type { ProjectItem } from "@/api/profile/project.type";
 import { uploadProjectImage } from "@/api/uploads/uploads.service";
@@ -27,6 +27,12 @@ export default function ProjectDetailForm({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
 
   const MAX_HIGHLIGHTS = 3;
 
