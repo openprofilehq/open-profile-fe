@@ -19,9 +19,9 @@ export default function BuilderHeader({
   const pathname = usePathname();
 
   const navLinks = [
-    { label: "Home", href: ROUTES.dashboard },
-    { label: "Profile Builder", href: ROUTES.profileBuilder },
-    { label: "Settings", href: ROUTES.settings },
+    { label: "Home", href: ROUTES.dashboard.home },
+    { label: "Profile Builder", href: ROUTES.dashboard.profileBuilder },
+    { label: "Settings", href: ROUTES.dashboard.settings.home },
   ];
 
   return (
@@ -29,7 +29,7 @@ export default function BuilderHeader({
       <div className="mx-auto flex items-center justify-between gap-6">
         <div className="flex items-center gap-3">
           <Link
-            href={ROUTES.dashboard}
+            href={ROUTES.dashboard.home}
             className="flex items-center transition-transform active:scale-95"
           >
             <Image
@@ -47,8 +47,8 @@ export default function BuilderHeader({
           {navLinks.map((link) => {
             const isActive =
               pathname === link.href ||
-              (link.href === ROUTES.profileBuilder &&
-                pathname === ROUTES.canvas);
+              (link.href === ROUTES.dashboard.profileBuilder &&
+                pathname === ROUTES.dashboard.canvas);
 
             return (
               <Link

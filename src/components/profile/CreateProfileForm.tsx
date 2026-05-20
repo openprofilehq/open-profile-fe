@@ -154,7 +154,7 @@ export default function CreateProfileForm() {
             fullName={fullName}
             bio={bio}
             photoUrl={photoUrl || undefined}
-            onContinue={() => router.replace(ROUTES.dashboard)}
+            onContinue={() => router.replace(ROUTES.dashboard.home)}
           />
         )}
       </form>

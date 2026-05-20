@@ -10,19 +10,19 @@ const actions = [
     title: "Manage links",
     description: "Update your links",
     icon: Link2,
-    href: ROUTES.profileBuilder,
+    href: ROUTES.dashboard.profileBuilder,
   },
   {
     title: "Your portfolio",
     description: "Add your portfolio",
     icon: Link2,
-    href: ROUTES.profileBuilder,
+    href: ROUTES.dashboard.profileBuilder,
   },
   {
     title: "Customize your profile",
     description: "Adjust font, color, spacing and appearance",
     icon: Palette,
-    href: ROUTES.profileBuilder,
+    href: ROUTES.dashboard.profileBuilder,
   },
 ];
 

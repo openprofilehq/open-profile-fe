@@ -195,7 +195,7 @@ export default function ProfileBuilderContent() {
           Please use a desktop or large tablet to edit your profile layout.
         </p>
         <Link
-          href={ROUTES.dashboard}
+          href={ROUTES.dashboard.home}
           className="mt-6 rounded-[8px] bg-[#087583] px-5 py-3 font-semibold text-white"
         >
           Back to dashboard

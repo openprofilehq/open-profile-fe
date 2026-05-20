@@ -67,7 +67,7 @@ export function Navbar() {
           <div className="hidden items-center gap-3 md:flex">
             {user ? (
               <Link
-                href={ROUTES.dashboard}
+                href={ROUTES.dashboard.home}
                 className="bg-brand hover:bg-brand-hover flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-medium whitespace-nowrap text-white transition-colors"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               >
@@ -158,7 +158,7 @@ export function Navbar() {
             <div className="flex flex-col gap-3 px-6 pb-10">
               {user ? (
                 <Link
-                  href={ROUTES.dashboard}
+                  href={ROUTES.dashboard.home}
                   onClick={() => setMobileOpen(false)}
                   className="bg-brand hover:bg-brand-hover flex h-[52px] w-full items-center justify-center rounded-[10px] text-[16px] font-medium text-white"
                   style={{ fontFamily: "'Afacad', sans-serif" }}

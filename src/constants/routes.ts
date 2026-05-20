@@ -1,13 +1,21 @@
 export const ROUTES = {
-  dashboard: "/dashboard",
-  profileBuilder: "/dashboard/profile-builder",
-  settings: "/dashboard/settings",
-  settingsEmail: "/dashboard/settings/email",
-  settingsSecurity: "/dashboard/settings/security",
-  settingsBilling: "/dashboard/settings/billing",
-  help: "/dashboard/help",
-  canvas: "/dashboard/canvas",
-  login: "/login",
-  signup: "/signup",
-  faq: "/faq",
+  dashboard: {
+    home: "/dashboard",
+    profileBuilder: "/dashboard/profile-builder",
+    canvas: "/dashboard/canvas",
+    help: "/dashboard/help",
+    settings: {
+      home: "/dashboard/settings",
+      email: "/dashboard/settings/email",
+      security: "/dashboard/settings/security",
+      billing: "/dashboard/settings/billing",
+    },
+  },
+  auth: {
+    login: "/login",
+    signup: "/signup",
+  },
+  public: {
+    faq: "/faq",
+  },
 } as const;

@@ -16,22 +16,22 @@ const TOPBAR_HEIGHT = "76px";
 const navItems = [
   {
     label: "Home",
-    href: ROUTES.dashboard,
+    href: ROUTES.dashboard.home,
     icon: House,
   },
   {
     label: "Profile Builder",
-    href: ROUTES.profileBuilder,
+    href: ROUTES.dashboard.profileBuilder,
     icon: FileText,
   },
   {
     label: "Settings",
-    href: ROUTES.settings,
+    href: ROUTES.dashboard.settings.home,
     icon: Settings,
   },
   {
     label: "Help and Support",
-    href: ROUTES.help,
+    href: ROUTES.dashboard.help,
     icon: Headphones,
   },
 ];
@@ -102,8 +102,8 @@ export default function DashboardSidebar({
             const Icon = item.icon;
 
             const isActive =
-              item.href === ROUTES.dashboard
-                ? pathname === ROUTES.dashboard
+              item.href === ROUTES.dashboard.home
+                ? pathname === ROUTES.dashboard.home
                 : pathname === item.href ||
                   pathname.startsWith(`${item.href}/`);
 
