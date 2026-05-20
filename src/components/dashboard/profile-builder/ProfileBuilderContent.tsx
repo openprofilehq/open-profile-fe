@@ -75,7 +75,7 @@ export default function ProfileBuilderContent() {
     <div className="bg-primary-bg flex h-screen w-screen flex-col overflow-hidden">
       <BuilderHeader />
 
-      <div className="flex flex-1 gap-4 overflow-hidden bg-[#F6F7F9] p-4">
+      <div className="flex flex-1 gap-1 overflow-hidden bg-[#F6F7F9] p-2 px-4">
         <LeftSidebar
           sections={sections}
           selectedSectionId={selectedSectionId}

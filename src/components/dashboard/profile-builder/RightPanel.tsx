@@ -52,7 +52,7 @@ export default function RightPanel({
   onUpdateSection,
 }: RightPanelProps) {
   return (
-    <aside className="border-tertiary-b animate-in fade-in flex h-full w-[360px] shrink-0 flex-col overflow-hidden border bg-white shadow-sm duration-200 select-none">
+    <aside className="border-tertiary-b animate-in fade-in flex h-full w-[290px] shrink-0 flex-col overflow-hidden border bg-white shadow-sm duration-200 select-none">
       {/* Tabs Header */}
       <div className="border-tertiary-b flex border-b">
         <button
@@ -115,16 +115,16 @@ export default function RightPanel({
                 Colors
               </label>
 
-              <div className="border-tertiary-b flex flex-col gap-3 rounded-[16px] border bg-white p-5">
+              <div className="border-tertiary-b flex flex-col gap-3 rounded-[16px] border bg-white p-4">
                 {/* Text Color */}
                 <div className="flex items-center justify-between">
                   <span className="text-tertiary-text text-sm font-semibold">
                     Text
                   </span>
-                  <label className="border-tertiary-b bg-hover-bg hover:bg-active-bg relative flex w-[180px] cursor-pointer items-center gap-2.5 rounded-[12px] border p-2 transition-colors">
+                  <label className="border-tertiary-b bg-hover-bg hover:bg-active-bg relative flex max-w-[145px] flex-1 cursor-pointer items-center gap-2 rounded-[12px] border p-1.5 transition-colors">
                     <div
                       style={{ backgroundColor: textColor }}
-                      className="relative h-8 w-10 shrink-0 overflow-hidden rounded-[8px] border border-black/10 shadow-sm"
+                      className="relative h-8 w-8 shrink-0 overflow-hidden rounded-[8px] border border-black/10 shadow-sm"
                     >
                       <input
                         type="color"
@@ -137,7 +137,7 @@ export default function RightPanel({
                       type="text"
                       value={textColor.toUpperCase()}
                       onChange={(e) => onChangeTextColor(e.target.value)}
-                      className="text-primary-text w-20 border-0 bg-transparent p-0 text-sm font-bold uppercase outline-none focus:ring-0"
+                      className="text-primary-text w-16 border-0 bg-transparent p-0 text-sm font-bold uppercase outline-none focus:ring-0"
                     />
                   </label>
                 </div>
@@ -147,10 +147,10 @@ export default function RightPanel({
                   <span className="text-tertiary-text text-sm font-semibold">
                     Bg
                   </span>
-                  <label className="border-tertiary-b bg-hover-bg hover:bg-active-bg relative flex w-[180px] cursor-pointer items-center gap-2.5 rounded-[12px] border p-2 transition-colors">
+                  <label className="border-tertiary-b bg-hover-bg hover:bg-active-bg relative flex max-w-[145px] flex-1 cursor-pointer items-center gap-2 rounded-[12px] border p-1.5 transition-colors">
                     <div
                       style={{ backgroundColor: bgColor }}
-                      className="relative h-8 w-10 shrink-0 overflow-hidden rounded-[8px] border border-black/10 shadow-sm"
+                      className="relative h-8 w-8 shrink-0 overflow-hidden rounded-[8px] border border-black/10 shadow-sm"
                     >
                       <input
                         type="color"
@@ -163,7 +163,7 @@ export default function RightPanel({
                       type="text"
                       value={bgColor.toUpperCase()}
                       onChange={(e) => onChangeBgColor(e.target.value)}
-                      className="text-primary-text w-20 border-0 bg-transparent p-0 text-sm font-bold uppercase outline-none focus:ring-0"
+                      className="text-primary-text w-16 border-0 bg-transparent p-0 text-sm font-bold uppercase outline-none focus:ring-0"
                     />
                   </label>
                 </div>
@@ -173,10 +173,10 @@ export default function RightPanel({
                   <span className="text-tertiary-text text-sm font-semibold">
                     Icon
                   </span>
-                  <label className="border-tertiary-b bg-hover-bg hover:bg-active-bg relative flex w-[180px] cursor-pointer items-center gap-2.5 rounded-[12px] border p-2 transition-colors">
+                  <label className="border-tertiary-b bg-hover-bg hover:bg-active-bg relative flex max-w-[145px] flex-1 cursor-pointer items-center gap-2 rounded-[12px] border p-1.5 transition-colors">
                     <div
                       style={{ backgroundColor: iconColor }}
-                      className="relative h-8 w-10 shrink-0 overflow-hidden rounded-[8px] border border-black/10 shadow-sm"
+                      className="relative h-8 w-8 shrink-0 overflow-hidden rounded-[8px] border border-black/10 shadow-sm"
                     >
                       <input
                         type="color"
@@ -189,7 +189,7 @@ export default function RightPanel({
                       type="text"
                       value={iconColor.toUpperCase()}
                       onChange={(e) => onChangeIconColor(e.target.value)}
-                      className="text-primary-text w-20 border-0 bg-transparent p-0 text-sm font-bold uppercase outline-none focus:ring-0"
+                      className="text-primary-text w-16 border-0 bg-transparent p-0 text-sm font-bold uppercase outline-none focus:ring-0"
                     />
                   </label>
                 </div>

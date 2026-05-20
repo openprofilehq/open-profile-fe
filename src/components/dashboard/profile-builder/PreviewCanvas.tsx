@@ -67,15 +67,24 @@ export default function PreviewCanvas({
 
   // Custom Styles
   const cardStyle = {
-    backgroundColor: bgColor || (isDark ? "#1E1E1E" : "#FFFFFF"),
+    backgroundColor:
+      bgColor === "#FFFFFF" && isDark
+        ? "#1E1E1E"
+        : bgColor || (isDark ? "#1E1E1E" : "#FFFFFF"),
     borderRadius: activeRadius,
-    color: textColor || (isDark ? "#FAFAFA" : "#050505"),
+    color:
+      textColor === "#050505" && isDark
+        ? "#FAFAFA"
+        : textColor || (isDark ? "#FAFAFA" : "#050505"),
     borderColor: isDark ? "#2D2D2D" : "#EDEDED",
     marginBottom: `${spacing}px`,
   };
 
   const textStyle = {
-    color: textColor || (isDark ? "#E0E0E0" : "#454545"),
+    color:
+      textColor === "#050505" && isDark
+        ? "#E0E0E0"
+        : textColor || (isDark ? "#E0E0E0" : "#454545"),
   };
 
   const iconStyle = {
@@ -86,9 +95,11 @@ export default function PreviewCanvas({
   };
 
   return (
-    <div className="animate-in fade-in flex flex-1 justify-center overflow-y-auto duration-200">
+    <div
+      className={`animate-in fade-in flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
+    >
       {/* Device wrapper */}
-      <div className="flex w-full max-w-[640px] flex-col gap-6">
+      <div className="flex w-full max-w-[780px] flex-col gap-6">
         {/* Dynamic Card Container with settings applied */}
         <div
           className={`flex w-full flex-col transition-all duration-300 ${selectedFontClass}`}
