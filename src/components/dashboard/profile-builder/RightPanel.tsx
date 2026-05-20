@@ -1,6 +1,6 @@
 "use client";
 
-import { Sun, Moon, Sliders, Type, Palette } from "lucide-react";
+import { Sun, Moon, Type, ChevronDown } from "lucide-react";
 
 interface Section {
   id: string;
@@ -19,6 +19,8 @@ interface RightPanelProps {
   onChangeIconColor: (color: string) => void;
   spacing: number;
   onChangeSpacing: (spacing: number) => void;
+  borderRadius: "sharp" | "medium" | "round";
+  onChangeBorderRadius: (radius: "sharp" | "medium" | "round") => void;
   theme: "light" | "dark";
   onChangeTheme: (theme: "light" | "dark") => void;
 
@@ -40,6 +42,8 @@ export default function RightPanel({
   onChangeIconColor,
   spacing,
   onChangeSpacing,
+  borderRadius,
+  onChangeBorderRadius,
   theme,
   onChangeTheme,
   activeTab,
@@ -50,31 +54,31 @@ export default function RightPanel({
   return (
     <aside className="border-tertiary-b bg-card flex h-full w-[360px] shrink-0 flex-col border-l select-none">
       {/* Tabs Header */}
-      <div className="border-tertiary-b flex border-b p-2">
+      <div className="border-tertiary-b flex border-b">
         <button
           onClick={() => onChangeTab("general")}
-          className={`relative flex-1 py-3 text-center text-sm font-bold transition-all ${
+          className={`relative flex-1 py-4 text-center text-sm font-bold transition-all ${
             activeTab === "general"
-              ? "text-link-hover-text"
+              ? "text-primary-text"
               : "text-tertiary-text hover:text-primary-text"
           }`}
         >
           General
           {activeTab === "general" && (
-            <span className="bg-link-hover-text absolute bottom-0 left-0 h-[2px] w-full transition-all" />
+            <span className="bg-primary-text absolute bottom-0 left-0 h-[2.5px] w-full transition-all" />
           )}
         </button>
         <button
           onClick={() => onChangeTab("section")}
-          className={`relative flex-1 py-3 text-center text-sm font-bold transition-all ${
+          className={`relative flex-1 py-4 text-center text-sm font-bold transition-all ${
             activeTab === "section"
-              ? "text-link-hover-text"
+              ? "text-primary-text"
               : "text-tertiary-text hover:text-primary-text"
           }`}
         >
           Section
           {activeTab === "section" && (
-            <span className="bg-link-hover-text absolute bottom-0 left-0 h-[2px] w-full transition-all" />
+            <span className="bg-primary-text absolute bottom-0 left-0 h-[2.5px] w-full transition-all" />
           )}
         </button>
       </div>
@@ -85,145 +89,288 @@ export default function RightPanel({
           <div className="flex flex-col gap-6">
             {/* Font Selection */}
             <div>
-              <label className="text-tertiary-text mb-2 flex items-center gap-2 text-xs font-bold tracking-wider uppercase">
-                <Type size={14} />
+              <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
                 Font
               </label>
-              <select
-                value={font}
-                onChange={(e) => onChangeFont(e.target.value)}
-                className="border-tertiary-b bg-primary-bg text-primary-text focus:border-brand-b w-full rounded-[10px] border px-4 py-3 text-sm font-semibold transition-all outline-none"
-              >
-                <option value="Afacad">Afacad</option>
-                <option value="Inter">Inter Sans</option>
-                <option value="Serif">Playfair Serif</option>
-                <option value="Mono">Roboto Mono</option>
-              </select>
+              <div className="relative w-full">
+                <select
+                  value={font}
+                  onChange={(e) => onChangeFont(e.target.value)}
+                  className="border-tertiary-b text-primary-text focus:border-brand-b w-full cursor-pointer appearance-none rounded-[12px] border bg-white py-3.5 pr-10 pl-4 text-sm font-semibold transition-all outline-none"
+                >
+                  <option value="Afacad">Afacad</option>
+                  <option value="Inter">Inter Sans</option>
+                  <option value="Serif">Playfair Serif</option>
+                  <option value="Mono">Roboto Mono</option>
+                </select>
+                <div className="text-primary-text pointer-events-none absolute inset-y-0 right-3.5 flex items-center">
+                  <ChevronDown size={18} />
+                </div>
+              </div>
             </div>
 
             {/* Colors Selection */}
             <div>
-              <label className="text-tertiary-text mb-3 flex items-center gap-2 text-xs font-bold tracking-wider uppercase">
-                <Palette size={14} />
+              <label className="text-primary-text mb-3 block text-xs font-bold tracking-wider uppercase">
                 Colors
               </label>
 
-              <div className="border-tertiary-b bg-primary-bg flex flex-col gap-3 rounded-[12px] border p-4">
+              <div className="border-tertiary-b flex flex-col gap-3 rounded-[16px] border bg-white p-5">
                 {/* Text Color */}
                 <div className="flex items-center justify-between">
-                  <span className="text-tertiary-text text-xs font-semibold">
+                  <span className="text-tertiary-text text-sm font-semibold">
                     Text
                   </span>
-                  <div className="border-tertiary-b flex items-center gap-2 rounded-lg border bg-white px-2.5 py-1.5 shadow-sm">
-                    <input
-                      type="color"
-                      value={textColor}
-                      onChange={(e) => onChangeTextColor(e.target.value)}
-                      className="h-5 w-5 cursor-pointer rounded border-0 p-0 outline-none"
-                    />
+                  <label className="border-tertiary-b bg-hover-bg hover:bg-active-bg relative flex w-[180px] cursor-pointer items-center gap-2.5 rounded-[12px] border p-2 transition-colors">
+                    <div
+                      style={{ backgroundColor: textColor }}
+                      className="relative h-8 w-10 shrink-0 overflow-hidden rounded-[8px] border border-black/10 shadow-sm"
+                    >
+                      <input
+                        type="color"
+                        value={textColor}
+                        onChange={(e) => onChangeTextColor(e.target.value)}
+                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                      />
+                    </div>
                     <input
                       type="text"
                       value={textColor.toUpperCase()}
                       onChange={(e) => onChangeTextColor(e.target.value)}
-                      className="text-primary-text w-16 border-0 p-0 text-center text-xs font-bold uppercase outline-none"
+                      className="text-primary-text w-20 border-0 bg-transparent p-0 text-sm font-bold uppercase outline-none focus:ring-0"
                     />
-                  </div>
+                  </label>
                 </div>
 
                 {/* Background Color */}
                 <div className="flex items-center justify-between">
-                  <span className="text-tertiary-text text-xs font-semibold">
+                  <span className="text-tertiary-text text-sm font-semibold">
                     Bg
                   </span>
-                  <div className="border-tertiary-b flex items-center gap-2 rounded-lg border bg-white px-2.5 py-1.5 shadow-sm">
-                    <input
-                      type="color"
-                      value={bgColor}
-                      onChange={(e) => onChangeBgColor(e.target.value)}
-                      className="h-5 w-5 cursor-pointer rounded border-0 p-0 outline-none"
-                    />
+                  <label className="border-tertiary-b bg-hover-bg hover:bg-active-bg relative flex w-[180px] cursor-pointer items-center gap-2.5 rounded-[12px] border p-2 transition-colors">
+                    <div
+                      style={{ backgroundColor: bgColor }}
+                      className="relative h-8 w-10 shrink-0 overflow-hidden rounded-[8px] border border-black/10 shadow-sm"
+                    >
+                      <input
+                        type="color"
+                        value={bgColor}
+                        onChange={(e) => onChangeBgColor(e.target.value)}
+                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                      />
+                    </div>
                     <input
                       type="text"
                       value={bgColor.toUpperCase()}
                       onChange={(e) => onChangeBgColor(e.target.value)}
-                      className="text-primary-text w-16 border-0 p-0 text-center text-xs font-bold uppercase outline-none"
+                      className="text-primary-text w-20 border-0 bg-transparent p-0 text-sm font-bold uppercase outline-none focus:ring-0"
                     />
-                  </div>
+                  </label>
                 </div>
 
                 {/* Icon Color */}
                 <div className="flex items-center justify-between">
-                  <span className="text-tertiary-text text-xs font-semibold">
+                  <span className="text-tertiary-text text-sm font-semibold">
                     Icon
                   </span>
-                  <div className="border-tertiary-b flex items-center gap-2 rounded-lg border bg-white px-2.5 py-1.5 shadow-sm">
-                    <input
-                      type="color"
-                      value={iconColor}
-                      onChange={(e) => onChangeIconColor(e.target.value)}
-                      className="h-5 w-5 cursor-pointer rounded border-0 p-0 outline-none"
-                    />
+                  <label className="border-tertiary-b bg-hover-bg hover:bg-active-bg relative flex w-[180px] cursor-pointer items-center gap-2.5 rounded-[12px] border p-2 transition-colors">
+                    <div
+                      style={{ backgroundColor: iconColor }}
+                      className="relative h-8 w-10 shrink-0 overflow-hidden rounded-[8px] border border-black/10 shadow-sm"
+                    >
+                      <input
+                        type="color"
+                        value={iconColor}
+                        onChange={(e) => onChangeIconColor(e.target.value)}
+                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                      />
+                    </div>
                     <input
                       type="text"
                       value={iconColor.toUpperCase()}
                       onChange={(e) => onChangeIconColor(e.target.value)}
-                      className="text-primary-text w-16 border-0 p-0 text-center text-xs font-bold uppercase outline-none"
+                      className="text-primary-text w-20 border-0 bg-transparent p-0 text-sm font-bold uppercase outline-none focus:ring-0"
                     />
-                  </div>
+                  </label>
                 </div>
               </div>
             </div>
 
             {/* Spacing Slider */}
             <div>
-              <div className="mb-2 flex items-center justify-between">
-                <label className="text-tertiary-text flex items-center gap-2 text-xs font-bold tracking-wider uppercase">
-                  <Sliders size={14} />
-                  Spacing
-                </label>
-                <span className="bg-hover-bg text-primary-text rounded px-2 py-0.5 text-xs font-bold">
-                  {spacing}px
-                </span>
-              </div>
-              <div className="flex items-center gap-4">
+              <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
+                Spacing
+              </label>
+              <div className="border-tertiary-b relative flex h-[48px] w-full items-center overflow-hidden rounded-[12px] border bg-white">
+                <style
+                  dangerouslySetInnerHTML={{
+                    __html: `
+                  .custom-slider::-webkit-slider-runnable-track {
+                    background: transparent;
+                  }
+                  .custom-slider::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    width: 12px;
+                    height: 32px;
+                    border-radius: 6px;
+                    background-color: #C5C5C5;
+                    cursor: pointer;
+                    transition: background-color 0.15s ease;
+                  }
+                  .custom-slider::-webkit-slider-thumb:hover {
+                    background-color: #A5A5A5;
+                  }
+                  .custom-slider::-moz-range-thumb {
+                    width: 12px;
+                    height: 32px;
+                    border-radius: 6px;
+                    background-color: #C5C5C5;
+                    cursor: pointer;
+                    border: 0;
+                    transition: background-color 0.15s ease;
+                  }
+                  .custom-slider::-moz-range-thumb:hover {
+                    background-color: #A5A5A5;
+                  }
+                `,
+                  }}
+                />
+
+                {/* Left background fill block up to the active value */}
+                <div
+                  className="bg-hover-bg pointer-events-none absolute top-0 bottom-0 left-0 transition-all duration-75"
+                  style={{ width: `${(spacing / 48) * 100}%` }}
+                />
+
+                {/* The actual native input slider overlaying everything */}
                 <input
                   type="range"
                   min="0"
                   max="48"
                   value={spacing}
                   onChange={(e) => onChangeSpacing(Number(e.target.value))}
-                  className="bg-active-bg accent-link-hover-text h-1.5 flex-1 cursor-pointer appearance-none rounded-lg"
+                  className="custom-slider absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent px-4 outline-none focus:outline-none"
                 />
+
+                {/* Numeric display text absolutely positioned on the right */}
+                <div className="text-primary-text pointer-events-none absolute right-4 text-sm font-semibold select-none">
+                  {spacing}
+                </div>
+              </div>
+            </div>
+
+            {/* Border Radius */}
+            <div>
+              <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
+                Border Radius
+              </label>
+              <div className="border-tertiary-b flex gap-1 rounded-[12px] border bg-white p-1">
+                <button
+                  type="button"
+                  onClick={() => onChangeBorderRadius("medium")}
+                  className={`flex flex-1 items-center justify-center rounded-[8px] py-3 transition-all duration-200 ${
+                    borderRadius === "medium"
+                      ? "bg-hover-bg text-primary-text"
+                      : "text-tertiary-text hover:bg-primary-bg hover:text-primary-text"
+                  }`}
+                  title="Medium"
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M6 18V12C6 8.68629 8.68629 6 12 6H18"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onChangeBorderRadius("sharp")}
+                  className={`flex flex-1 items-center justify-center rounded-[8px] py-3 transition-all duration-200 ${
+                    borderRadius === "sharp"
+                      ? "bg-hover-bg text-primary-text"
+                      : "text-tertiary-text hover:bg-primary-bg hover:text-primary-text"
+                  }`}
+                  title="Sharp"
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M6 18V6H18"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onChangeBorderRadius("round")}
+                  className={`flex flex-1 items-center justify-center rounded-[8px] py-3 transition-all duration-200 ${
+                    borderRadius === "round"
+                      ? "bg-hover-bg text-primary-text"
+                      : "text-tertiary-text hover:bg-primary-bg hover:text-primary-text"
+                  }`}
+                  title="Round"
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M6 18V15C6 10.0294 10.0294 6 15 6H18"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
               </div>
             </div>
 
             {/* Theme Selector */}
             <div>
-              <label className="text-tertiary-text mb-3 block text-xs font-bold tracking-wider uppercase">
+              <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
                 Theme
               </label>
-              <div className="border-tertiary-b bg-primary-bg flex rounded-xl border p-1.5">
+              <div className="border-tertiary-b flex gap-1 rounded-[12px] border bg-white p-1">
                 <button
+                  type="button"
                   onClick={() => onChangeTheme("light")}
-                  className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-bold transition-all ${
+                  className={`flex flex-1 items-center justify-center rounded-[8px] py-3 transition-all duration-200 ${
                     theme === "light"
-                      ? "text-link-hover-text bg-white shadow-sm"
-                      : "text-tertiary-text hover:text-primary-text"
+                      ? "bg-hover-bg text-primary-text"
+                      : "text-tertiary-text hover:bg-primary-bg hover:text-primary-text"
                   }`}
                 >
-                  <Sun size={14} />
-                  Light
+                  <Sun size={18} />
                 </button>
                 <button
+                  type="button"
                   onClick={() => onChangeTheme("dark")}
-                  className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-bold transition-all ${
+                  className={`flex flex-1 items-center justify-center rounded-[8px] py-3 transition-all duration-200 ${
                     theme === "dark"
-                      ? "text-link-hover-text bg-white shadow-sm"
-                      : "text-tertiary-text hover:text-primary-text"
+                      ? "bg-hover-bg text-primary-text"
+                      : "text-tertiary-text hover:bg-primary-bg hover:text-primary-text"
                   }`}
                 >
-                  <Moon size={14} />
-                  Dark
+                  <Moon size={18} />
                 </button>
               </div>
             </div>
@@ -288,7 +435,7 @@ export default function RightPanel({
               </div>
             ) : (
               <div className="flex h-[300px] flex-col items-center justify-center px-4 text-center">
-                <Sliders size={32} className="text-disabled-text mb-3" />
+                <Type size={32} className="text-disabled-text mb-3" />
                 <p className="text-primary-text text-sm font-semibold">
                   No section selected
                 </p>

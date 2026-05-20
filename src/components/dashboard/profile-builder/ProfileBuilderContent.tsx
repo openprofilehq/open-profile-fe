@@ -23,7 +23,9 @@ export default function ProfileBuilderContent() {
   const [bgColor, setBgColor] = useState("#FFFFFF");
   const [iconColor, setIconColor] = useState("#087583");
   const [spacing, setSpacing] = useState(20);
-  const [borderRadius] = useState<"sharp" | "medium" | "round">("medium");
+  const [borderRadius, setBorderRadius] = useState<
+    "sharp" | "medium" | "round"
+  >("medium");
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   // Sections State
@@ -99,7 +101,6 @@ export default function ProfileBuilderContent() {
           profile={profile}
         />
 
-        {/* Right Side: Inspector Panel (General & Component controls) */}
         <RightPanel
           font={font}
           onChangeFont={setFont}
@@ -111,6 +112,8 @@ export default function ProfileBuilderContent() {
           onChangeIconColor={setIconColor}
           spacing={spacing}
           onChangeSpacing={setSpacing}
+          borderRadius={borderRadius}
+          onChangeBorderRadius={setBorderRadius}
           theme={theme}
           onChangeTheme={setTheme}
           activeTab={activeTab}
