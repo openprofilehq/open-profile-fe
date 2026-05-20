@@ -339,8 +339,12 @@ export default function LeftSidebar({
       <div className="flex-1 overflow-y-auto pr-1">
         <Reorder.Group
           axis="y"
-          values={sections}
-          onReorder={onReorderSections}
+          values={searchQuery ? filteredSections : sections}
+          onReorder={(newOrder) => {
+            if (!searchQuery) {
+              onReorderSections(newOrder);
+            }
+          }}
           className="flex flex-col gap-3"
         >
           {filteredSections.map((section) => {
@@ -421,8 +425,24 @@ export default function LeftSidebar({
 
                 <div
                   onClick={(e) => e.stopPropagation()}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  className="border-tertiary-b bg-active-bg text-tertiary-text hover:bg-hover-bg flex cursor-grab items-center justify-center self-stretch border-l px-3.5 transition-colors active:cursor-grabbing"
+                  onPointerDown={(e) => {
+                    if (searchQuery) {
+                      e.stopPropagation();
+                      e.preventDefault();
+                    } else {
+                      e.stopPropagation();
+                    }
+                  }}
+                  className={`border-tertiary-b bg-active-bg text-tertiary-text flex items-center justify-center self-stretch border-l px-3.5 transition-colors ${
+                    searchQuery
+                      ? "cursor-not-allowed opacity-40"
+                      : "hover:bg-hover-bg cursor-grab active:cursor-grabbing"
+                  }`}
+                  title={
+                    searchQuery
+                      ? "Clear search to reorder sections"
+                      : "Drag to reorder"
+                  }
                 >
                   <GripVertical size={16} />
                 </div>

@@ -38,8 +38,6 @@ export default function ProfileBuilderContent() {
       title: "Bio",
       type: "bio",
       visible: true,
-      fullName: profile?.fullName ?? "",
-      bio: profile?.bio ?? "",
     },
     {
       id: "links",
@@ -53,8 +51,23 @@ export default function ProfileBuilderContent() {
       type: "projects",
       visible: true,
     },
-    { id: "cta", title: "CTA - Contact", type: "cta", visible: true },
+    {
+      id: "cta",
+      title: "CTA - Contact",
+      type: "experience",
+      visible: true,
+    },
   ]);
+
+  const resolvedSections = sections.map((section) =>
+    section.id === "bio"
+      ? {
+          ...section,
+          fullName: section.fullName ?? profile?.fullName ?? "",
+          bio: section.bio ?? profile?.bio ?? "",
+        }
+      : section
+  );
 
   const [activeTab, setActiveTab] = useState<"general" | "section">("general");
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
@@ -100,7 +113,7 @@ export default function ProfileBuilderContent() {
   };
 
   const selectedSection =
-    sections.find((s) => s.id === selectedSectionId) || null;
+    resolvedSections.find((s) => s.id === selectedSectionId) || null;
 
   return (
     <>
@@ -124,7 +137,7 @@ export default function ProfileBuilderContent() {
 
         <div className="flex flex-1 gap-2 overflow-hidden bg-[#F6F7F9] p-2 px-4">
           <LeftSidebar
-            sections={sections}
+            sections={resolvedSections}
             selectedSectionId={selectedSectionId}
             onSelectSection={handleSelectSection}
             onAddSection={handleAddSection}
@@ -143,7 +156,7 @@ export default function ProfileBuilderContent() {
             spacing={spacing}
             borderRadius={borderRadius}
             theme={theme}
-            sections={sections}
+            sections={resolvedSections}
             profile={profile}
           />
 

@@ -84,10 +84,6 @@ export default function BuilderHeader({ username }: BuilderHeaderProps) {
             <Search size={20} />
           </button>
 
-          <Button className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text h-10 rounded-[10px] border px-5 text-sm font-semibold shadow-none transition-all hover:bg-white active:scale-95">
-            Upgrade
-          </Button>
-
           <Button
             type="button"
             onClick={handlePublish}
