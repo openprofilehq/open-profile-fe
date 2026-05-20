@@ -41,12 +41,6 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
 
   const isSignup = mode === "signup";
 
-  const isValid: boolean = isSignup
-    ? name.trim().split(/\s+/).length >= 2 &&
-      EMAIL_RE.test(email) &&
-      allPasswordRulesMet(password)
-    : EMAIL_RE.test(email) && password.length > 0;
-
   const loginMutation = useMutation({
     ...loginOption,
     onSuccess: async (data) => {
@@ -95,6 +89,52 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
       toast.error("Something went wrong. Please try again.");
       return;
     }
+
+    let hasError = false;
+
+    if (isSignup) {
+      if (!name) {
+        setNameError("Full name is required");
+        hasError = true;
+      } else if (name.trim().split(/\s+/).length < 2) {
+        setNameError("Enter first and last name");
+        hasError = true;
+      }
+
+      if (!email) {
+        setEmailError("Email is required");
+        hasError = true;
+      } else if (!EMAIL_RE.test(email)) {
+        setEmailError("Incorrect email");
+        hasError = true;
+      }
+
+      if (!password) {
+        setPasswordError("Password is required");
+        hasError = true;
+      } else if (!allPasswordRulesMet(password)) {
+        setPasswordError("Password does not meet all requirements");
+        hasError = true;
+      }
+    } else {
+      if (!email) {
+        setEmailError("Email is required");
+        hasError = true;
+      } else if (!EMAIL_RE.test(email)) {
+        setEmailError("Incorrect email");
+        hasError = true;
+      }
+
+      if (!password) {
+        setPasswordError("Password is required");
+        hasError = true;
+      }
+    }
+
+    if (hasError) {
+      return;
+    }
+
     if (isSignup) {
       signupMutation.mutate({ fullName: name, email, password });
     } else {
@@ -136,9 +176,11 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
               }}
               onBlur={() =>
                 setNameError(
-                  name.trim().split(/\s+/).length < 2
-                    ? "Enter first and last name"
-                    : ""
+                  !name
+                    ? "Full name is required"
+                    : name.trim().split(/\s+/).length < 2
+                      ? "Enter first and last name"
+                      : ""
                 )
               }
               className={`${inputClass} ${nameError ? "border-red-400" : ""}`}
@@ -209,9 +251,9 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
 
         <Button
           type="submit"
-          disabled={pending || (isSignup && !isValid)}
+          disabled={pending || !email || !password}
           className={`mt-1 h-[52px] w-full rounded-[10px] text-[16px] font-medium shadow-none transition-colors ${
-            isSignup && !isValid
+            !email || !password
               ? "border-button-b text-label-text border bg-white"
               : "bg-brand-hover-bg border-0 text-[#FEFEFE] hover:bg-[#065E69]"
           }`}
