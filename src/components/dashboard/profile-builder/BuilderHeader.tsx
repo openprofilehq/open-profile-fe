@@ -4,9 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
-export default function BuilderHeader() {
+type BuilderHeaderProps = {
+  username?: string;
+};
+
+export default function BuilderHeader({ username }: BuilderHeaderProps) {
   const pathname = usePathname();
 
   const navLinks = [
@@ -15,9 +20,13 @@ export default function BuilderHeader() {
     { label: "Settings", href: "/dashboard/settings" },
   ];
 
+  function handlePublish() {
+    toast.success("Profile published successfully.");
+  }
+
   return (
     <header className="border-tertiary-b bg-card sticky top-0 z-40 w-full border-b px-6 py-2 select-none">
-      <div className="mx-auto flex items-center justify-between">
+      <div className="mx-auto flex items-center justify-between gap-6">
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard"
@@ -32,12 +41,24 @@ export default function BuilderHeader() {
               priority
             />
           </Link>
+
+          <div className="hidden items-center gap-2 lg:flex">
+            <span className="text-sm font-semibold text-[#050505]">
+              @{username ?? "username"}
+            </span>
+            <span className="rounded-full bg-[#E5F4F6] px-2.5 py-1 text-xs font-bold text-[#087583]">
+              Free
+            </span>
+          </div>
         </div>
 
-        {/* Center Nav Links */}
         <nav className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive =
+              pathname === link.href ||
+              (link.href === "/dashboard/profile-builder" &&
+                pathname === "/dashboard/canvas");
+
             return (
               <Link
                 key={link.label}
@@ -55,7 +76,6 @@ export default function BuilderHeader() {
           })}
         </nav>
 
-        {/* Right Action Controls */}
         <div className="flex items-center gap-4">
           <button
             className="text-primary-text hover:bg-hover-bg flex h-10 w-10 items-center justify-center rounded-full transition-colors active:scale-95"
@@ -64,11 +84,11 @@ export default function BuilderHeader() {
             <Search size={20} />
           </button>
 
-          <Button className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text h-10 rounded-[10px] border px-5 text-sm font-semibold shadow-none transition-all hover:bg-white active:scale-95">
-            Upgrade
-          </Button>
-
-          <Button className="bg-brand-hover-bg hover:bg-brand h-10 rounded-[10px] px-6 text-sm font-semibold text-white transition-all active:scale-95">
+          <Button
+            type="button"
+            onClick={handlePublish}
+            className="bg-brand-hover-bg hover:bg-brand h-10 rounded-[10px] px-6 text-sm font-semibold text-white transition-all active:scale-95"
+          >
             Publish
           </Button>
         </div>
