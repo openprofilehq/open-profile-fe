@@ -57,7 +57,7 @@ export default function MobileDashboardNav() {
           const isActive =
             item.href === ROUTES.dashboard
               ? pathname === ROUTES.dashboard
-              : pathname.startsWith(item.href);
+              : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
           return (
             <Link
