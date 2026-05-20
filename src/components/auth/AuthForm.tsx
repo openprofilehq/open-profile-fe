@@ -253,9 +253,9 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
           type="submit"
           disabled={pending || !email || !password}
           className={`mt-1 h-[52px] w-full rounded-[10px] text-[16px] font-medium shadow-none transition-colors ${
-            !email || !password
+            pending || !email || !password
               ? "border-button-b text-label-text border bg-white"
-              : "bg-brand-hover-bg border-0 text-[#FEFEFE] hover:bg-[#065E69]"
+              : "bg-brand-hover-bg hover:bg-brand border-0 text-white"
           }`}
         >
           {pending ? "Please wait…" : "Continue"}
