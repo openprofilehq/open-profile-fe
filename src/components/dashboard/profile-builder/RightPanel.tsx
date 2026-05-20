@@ -6,6 +6,7 @@ interface Section {
   id: string;
   title: string;
   type: string;
+  visible: boolean;
 }
 
 interface RightPanelProps {

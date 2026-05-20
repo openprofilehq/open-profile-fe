@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  Link2,
-  Folder,
-  Briefcase,
-  ExternalLink,
-  Eye,
-  Trash2,
-} from "lucide-react";
+import Image from "next/image";
+import { Link2, Folder, Briefcase, ExternalLink } from "lucide-react";
 import { getImageUrl } from "@/utils/profile";
 import type { ProjectItem } from "@/api/profile/project.type";
 
@@ -15,9 +9,7 @@ interface Section {
   id: string;
   title: string;
   type: string;
-  sectionTitle?: string;
-  projects?: ProjectItem[];
-  projectLayout?: "grid" | "wide" | "left" | "right";
+  visible: boolean;
 }
 
 interface PreviewCanvasProps {
@@ -47,7 +39,6 @@ export default function PreviewCanvas({
   sections,
   profile,
 }: PreviewCanvasProps) {
-  // Map fonts to real family names or styles
   const fontStyles: Record<string, string> = {
     Afacad: "font-afacad",
     Inter: "font-sans",
@@ -57,7 +48,6 @@ export default function PreviewCanvas({
 
   const selectedFontClass = fontStyles[font] || "font-afacad";
 
-  // Map border radii to pixels
   const radiusMap = {
     sharp: "0px",
     medium: "16px",
@@ -65,10 +55,8 @@ export default function PreviewCanvas({
   };
   const activeRadius = radiusMap[borderRadius] || "16px";
 
-  // Light/Dark Theme
   const isDark = theme === "dark";
 
-  // Custom Styles
   const cardStyle = {
     backgroundColor:
       bgColor === "#FFFFFF" && isDark
@@ -97,323 +85,11 @@ export default function PreviewCanvas({
       : "rgba(10, 146, 164, 0.08)",
   };
 
-  const renderProjectMedia = (project: ProjectItem) => {
-    const projectImageUrl = getImageUrl(project.imageUrl || "");
+  const visibleSections = sections.filter((section) => section.visible);
 
-    return projectImageUrl ? (
-      <div className="relative h-full min-h-[180px] w-full overflow-hidden rounded-[14px] bg-black/10">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={projectImageUrl}
-          alt={project.title || "Project image"}
-          className="h-full w-full object-cover"
-        />
-      </div>
-    ) : (
-      <div
-        className="flex h-full min-h-[180px] w-full items-center justify-center rounded-[14px] bg-[#F4F4F5] text-[#8A8A8A]"
-        style={{ backgroundColor: isDark ? "#2A2A2A" : "#F4F4F5" }}
-      >
-        <Folder size={32} className="opacity-20" />
-      </div>
-    );
-  };
-
-  const renderGridProjects = (section: Section) => {
-    const allProjects = section.projects || [];
-    const highlighted = allProjects.filter((p) => p.isHighlight);
-    const rest = allProjects.filter((p) => !p.isHighlight);
-
-    return (
-      <div className="flex flex-col gap-4">
-        {highlighted.map((project) => (
-          <div
-            key={project.id}
-            className="overflow-hidden rounded-[12px] border"
-            style={{ borderColor: isDark ? "#2D2D2D" : "#EDEDED" }}
-          >
-            {renderProjectMedia(project)}
-            <div className="p-4">
-              <p
-                className="mb-1 text-xs font-semibold"
-                style={{ color: iconColor || "#087583" }}
-              >
-                Highlight
-              </p>
-              <h4 className="text-base font-bold leading-snug">
-                {project.title || "Untitled Project"}
-              </h4>
-              {project.subtitle && (
-                <p className="mt-1.5 text-sm leading-relaxed opacity-70">
-                  {project.subtitle}
-                </p>
-              )}
-              {project.projectUrl && (
-                <a
-                  href={project.projectUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3 inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-80"
-                  style={{ borderColor: isDark ? "#3D3D3D" : "#E4E4E7" }}
-                >
-                  View project
-                  <ExternalLink size={13} />
-                </a>
-              )}
-            </div>
-          </div>
-        ))}
-
-        {rest.length > 0 && (
-          <div className="grid grid-cols-2 gap-3">
-            {rest.map((project) => (
-              <div
-                key={project.id}
-                className="flex flex-col overflow-hidden rounded-[12px] border"
-                style={{ borderColor: isDark ? "#2D2D2D" : "#EDEDED" }}
-              >
-                <div className="relative h-28 w-full overflow-hidden">
-                  {project.imageUrl ? (
-                    <>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={project.imageUrl}
-                        alt={project.title || "Project image"}
-                        className="h-full w-full object-cover"
-                      />
-                    </>
-                  ) : (
-                    <div
-                      className="flex h-28 w-full items-center justify-center"
-                      style={{ backgroundColor: isDark ? "#2A2A2A" : "#F4F4F5" }}
-                    >
-                      <Folder size={22} className="opacity-20" />
-                    </div>
-                  )}
-                </div>
-                <div className="p-3">
-                  <h4 className="truncate text-sm font-semibold">
-                    {project.title || "Untitled Project"}
-                  </h4>
-                  {project.subtitle && (
-                    <p className="mt-0.5 truncate text-xs opacity-60">
-                      {project.subtitle}
-                    </p>
-                  )}
-                  {project.projectUrl && (
-                    <ExternalLink
-                      size={12}
-                      className="mt-1.5 opacity-40"
-                    />
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const renderProjectListItem = (project: ProjectItem) => (
-    <div
-      key={project.id}
-      className="flex overflow-hidden rounded-[14px] border"
-      style={{ borderColor: isDark ? "#2D2D2D" : "#EDEDED" }}
-    >
-      <div className="relative h-24 w-24 shrink-0 overflow-hidden bg-black/10">
-        {project.imageUrl ? (
-          <img
-            src={getImageUrl(project.imageUrl || "")}
-            alt={project.title || "Project image"}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div
-            className="flex h-full w-full items-center justify-center"
-            style={{ backgroundColor: isDark ? "#2A2A2A" : "#F4F4F5" }}
-          >
-            <Folder size={24} className="opacity-20" />
-          </div>
-        )}
-      </div>
-      <div className="flex flex-1 flex-col justify-center gap-1 p-3">
-        <div className="flex items-center justify-between gap-2">
-          <span
-            className="text-[11px] font-semibold uppercase tracking-[0.16em]"
-            style={{ color: iconColor || "#087583" }}
-          >
-            {project.isHighlight ? "Highlight" : "Project"}
-          </span>
-          {project.projectUrl && (
-            <ExternalLink size={14} className="opacity-60" />
-          )}
-        </div>
-        <h4 className="truncate text-sm font-semibold">
-          {project.title || "Untitled Project"}
-        </h4>
-        {project.subtitle && (
-          <p className="truncate text-xs opacity-70">{project.subtitle}</p>
-        )}
-      </div>
-    </div>
+  const isBioVisible = visibleSections.some(
+    (section) => section.type === "bio"
   );
-
-  const renderFeaturedProjectLayout = (
-    section: Section,
-    side: "left" | "right"
-  ) => {
-    const allProjects = section.projects || [];
-    if (allProjects.length === 0) {
-      return (
-        <div className="border-tertiary-b flex items-center rounded-lg border border-dashed bg-black/5 p-4">
-          <p className="text-tertiary-text text-xs">
-            No projects yet — add one from the left panel
-          </p>
-        </div>
-      );
-    }
-
-    const featuredProject =
-      allProjects.find((p) => p.isHighlight) || allProjects[0];
-    const restProjects = allProjects.filter((project) => project.id !== featuredProject.id);
-
-    const featuredCard = (
-      <div
-        className="overflow-hidden rounded-[18px] border bg-transparent"
-        style={{ borderColor: isDark ? "#2D2D2D" : "#EDEDED" }}
-      >
-        {renderProjectMedia(featuredProject)}
-        <div className="p-5">
-          <p
-            className="mb-2 text-xs font-semibold uppercase"
-            style={{ color: iconColor || "#087583" }}
-          >
-            {featuredProject.isHighlight ? "Highlighted project" : "Featured project"}
-          </p>
-          <h4 className="text-2xl font-bold leading-snug">
-            {featuredProject.title || "Untitled Project"}
-          </h4>
-          {featuredProject.subtitle && (
-            <p className="mt-3 text-sm leading-relaxed opacity-80">
-              {featuredProject.subtitle}
-            </p>
-          )}
-          {featuredProject.projectUrl && (
-            <a
-              href={featuredProject.projectUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-5 inline-flex items-center gap-2 rounded-lg border px-4 py-3 text-sm font-semibold transition-opacity hover:opacity-80"
-              style={{ borderColor: isDark ? "#3D3D3D" : "#E4E4E7" }}
-            >
-              View project
-              <ExternalLink size={13} />
-            </a>
-          )}
-        </div>
-      </div>
-    );
-
-    const listColumn = (
-      <div className="flex flex-col gap-3">
-        {restProjects.length > 0 ? (
-          restProjects.map((project) => renderProjectListItem(project))
-        ) : (
-          <div className="rounded-[14px] border border-dashed border-neutral-300 bg-neutral-50 p-5 text-sm text-neutral-500">
-            No additional projects
-          </div>
-        )}
-      </div>
-    );
-
-    return (
-      <div className="grid gap-4 lg:grid-cols-[1.7fr_1fr]">
-        {side === "left" ? (
-          <>
-            {featuredCard}
-            {listColumn}
-          </>
-        ) : (
-          <>
-            {listColumn}
-            {featuredCard}
-          </>
-        )}
-      </div>
-    );
-  };
-
-  const renderProjectsSection = (section: Section) => {
-    const allProjects = section.projects || [];
-    if (allProjects.length === 0) {
-      return (
-        <div className="border-tertiary-b flex items-center rounded-lg border border-dashed bg-black/5 p-4">
-          <p className="text-tertiary-text text-xs">
-            No projects yet — add one from the left panel
-          </p>
-        </div>
-      );
-    }
-
-    const layout = section.projectLayout || "grid";
-
-    if (layout === "wide") {
-      return (
-        <div className="flex flex-col gap-4">
-          {allProjects.map((project) => (
-            <div
-              key={project.id}
-              className="overflow-hidden rounded-[14px] border"
-              style={{ borderColor: isDark ? "#2D2D2D" : "#EDEDED" }}
-            >
-              <div className="grid gap-4 p-4 sm:p-5 md:grid-cols-[1.5fr_1fr] md:items-center">
-                <div className="flex flex-col gap-4">
-                  <p
-                    className="text-xs font-semibold uppercase"
-                    style={{ color: iconColor || "#087583" }}
-                  >
-                    {project.isHighlight ? "Highlight" : "Project"}
-                  </p>
-                  <h4 className="text-xl font-bold leading-snug">
-                    {project.title || "Untitled Project"}
-                  </h4>
-                  {project.subtitle && (
-                    <p className="text-sm leading-relaxed opacity-75">
-                      {project.subtitle}
-                    </p>
-                  )}
-                  {project.projectUrl && (
-                    <a
-                      href={project.projectUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-semibold transition-opacity hover:opacity-80"
-                      style={{ borderColor: isDark ? "#3D3D3D" : "#E4E4E7" }}
-                    >
-                      View project
-                      <ExternalLink size={13} />
-                    </a>
-                  )}
-                </div>
-                <div>{renderProjectMedia(project)}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    if (layout === "left") {
-      return renderFeaturedProjectLayout(section, "left");
-    }
-
-    if (layout === "right") {
-      return renderFeaturedProjectLayout(section, "right");
-    }
-
-    return renderGridProjects(section);
-  };
 
   return (
     <div
@@ -425,60 +101,47 @@ export default function PreviewCanvas({
         <div
           className={`flex w-full flex-col transition-all duration-300 ${selectedFontClass}`}
         >
-          {/* 1. Main Bio Card */}
-          <div
-            style={cardStyle}
-            className="relative flex flex-col items-center gap-6 border p-6 shadow-sm transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
-          >
-            {/* Action buttons */}
-            <div className="absolute top-6 right-6 flex items-center gap-3 rounded-full border border-[#EDEDED] bg-white px-3.5 py-1.5 shadow-none select-none">
-              <button
-                className="text-[#3A3A3A] transition-opacity hover:opacity-80"
-                title="Toggle visibility"
-              >
-                <Eye size={18} strokeWidth={2} />
-              </button>
-              <button
-                className="text-[#9F2B2B] transition-opacity hover:opacity-80"
-                title="Delete section"
-              >
-                <Trash2 size={18} strokeWidth={2} />
-              </button>
-            </div>
+          {/* 1. Main Bio Card (Standard Profile Header) */}
+          {isBioVisible && (
+            <div
+              style={cardStyle}
+              className="relative flex flex-col items-center gap-6 border p-6 shadow-sm transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
+            >
+              {/* Avatar image */}
+              <div className="border-brand-b/20 bg-brand-light-subtle-bg relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-inner">
+                {getImageUrl(profile?.photoUrl) ? (
+                  <Image
+                    src={getImageUrl(profile?.photoUrl) || ""}
+                    alt={profile?.fullName ?? "Profile avatar"}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="text-brand-text text-3xl font-bold">
+                    {(profile?.fullName || "M").charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
 
-            {/* Avatar */}
-            <div className="border-brand-b/20 bg-brand-light-subtle-bg relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-inner">
-              {getImageUrl(profile?.photoUrl) ? (
-                <img
-                  src={getImageUrl(profile?.photoUrl) || ""}
-                  alt={profile?.fullName ?? "Profile avatar"}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <div className="text-brand-text text-3xl font-bold">
-                  {(profile?.fullName || "M").charAt(0).toUpperCase()}
-                </div>
-              )}
+              {/* Profile Info */}
+              <div className="flex-1 text-center sm:text-left">
+                <h2 className="text-2xl font-bold tracking-tight">
+                  {profile?.fullName || "Micaela Robinsonss"}
+                </h2>
+                <p
+                  style={textStyle}
+                  className="mt-3 text-[15px] leading-relaxed opacity-90 transition-colors"
+                >
+                  {profile?.bio ||
+                    "I'm a digital creator focusing on the intersection of design, technology, and intentional living. Sharing insights to help you build better products and habits."}
+                </p>
+              </div>
             </div>
+          )}
 
-            {/* Profile Info */}
-            <div className="flex-1 text-center sm:text-left">
-              <h2 className="text-2xl font-bold tracking-tight">
-                {profile?.fullName || "Micaela Robinsonss"}
-              </h2>
-              <p
-                style={textStyle}
-                className="mt-3 text-[15px] leading-relaxed opacity-90 transition-colors"
-              >
-                {profile?.bio ||
-                  "I'm a digital creator focusing on the intersection of design, technology, and intentional living. Sharing insights to help you build better products and habits."}
-              </p>
-            </div>
-          </div>
-
-          {/* 2. Dynamic Section Renderers */}
-          {sections.map((section) => {
-            if (section.type === "bio") return null;
+          {visibleSections.map((section) => {
+            if (section.type === "bio") return null; // Already rendered in main card
 
             return (
               <div
@@ -486,23 +149,6 @@ export default function PreviewCanvas({
                 style={cardStyle}
                 className="relative flex flex-col border p-6 shadow-sm transition-all duration-300"
               >
-                {/* Action buttons */}
-                <div className="absolute top-6 right-6 flex items-center gap-3 rounded-[10px] border border-[#EDEDED] bg-white px-6 py-3 shadow-none select-none">
-                  <button
-                    className="text-[#3A3A3A] transition-opacity hover:opacity-80"
-                    title="Toggle visibility"
-                  >
-                    <Eye size={18} strokeWidth={2} />
-                  </button>
-                  <button
-                    className="text-[#9F2B2B] transition-opacity hover:opacity-80"
-                    title="Delete section"
-                  >
-                    <Trash2 size={18} strokeWidth={2} />
-                  </button>
-                </div>
-
-                {/* Section Header */}
                 <div
                   className="mb-4 flex items-center justify-between border-b pr-24 pb-4"
                   style={{ borderColor: isDark ? "#2D2D2D" : "#F0F0F0" }}
