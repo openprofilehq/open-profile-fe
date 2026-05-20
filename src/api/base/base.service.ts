@@ -3,20 +3,16 @@ import { ApiResponse } from "@/api/base/base.type";
 import { env } from "@/env/client";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
-const baseURL = env.NEXT_PUBLIC_API_URL
-  ? `${env.NEXT_PUBLIC_API_URL.replace(/\/$/, "")}/api/v1`
-  : "/api/v1";
-
 export const api = axios.create({
-  baseURL,
+  baseURL: `${env.NEXT_PUBLIC_API_URL}/api/v1`,
   timeout: 60 * 1000,
   withCredentials: true,
 });
 
 function getApiErrorMessage(message?: unknown): string {
-  // Use a backend-provided error message when available, otherwise fall back to
-  // a generic client-facing error.
   if (typeof message === "string") return message;
+
+  // IF THIS ERROR HAPPENS, IT IS MOST LIKELY DUE TO VALIDATION ERRORS. THE MESSAGE CAN BE REFINED TILL IT IS RIGHT FOR THE USER.
   return "An error occurred. Please check your input and try again.";
 }
 
