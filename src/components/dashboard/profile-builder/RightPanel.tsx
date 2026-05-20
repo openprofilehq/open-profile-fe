@@ -12,6 +12,7 @@ interface Section {
   ctaSpacingBottom?: number;
   ctaSpacingGap?: number;
   ctaSpacingPadding?: number;
+  visible: boolean;
 }
 
 interface RightPanelProps {
