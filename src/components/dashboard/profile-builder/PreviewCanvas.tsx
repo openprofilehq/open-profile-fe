@@ -10,15 +10,8 @@ import {
 } from "lucide-react";
 import { getImageUrl } from "@/utils/profile";
 import type { ProjectItem } from "@/api/profile/project.type";
+import type { Section } from "./types";
 
-interface Section {
-  id: string;
-  title: string;
-  type: string;
-  sectionTitle?: string;
-  projects?: ProjectItem[];
-  projectLayout?: "grid" | "wide" | "left" | "right";
-}
 
 interface PreviewCanvasProps {
   font: string;
@@ -458,11 +451,11 @@ export default function PreviewCanvas({
               )}
             </div>
 
-              {/* Profile Info */}
-              <div className="flex-1 text-center sm:text-left">
-                <h2 className="text-2xl font-bold tracking-tight">
-                  {profile?.fullName || "Micaela Robinsonss"}
-                </h2>
+            {/* Profile Info */}
+            <div className="flex-1 text-center sm:text-left">
+              <h2 className="text-2xl font-bold tracking-tight">
+                {profile?.fullName || "Micaela Robinsonss"}
+              </h2>
                 <p
                   style={textStyle}
                   className="mt-3 text-[15px] leading-relaxed opacity-90 transition-colors"
@@ -472,7 +465,6 @@ export default function PreviewCanvas({
                 </p>
               </div>
             </div>
-          )}
 
           {/* 2. Dynamic Section Renderers */}
           {sections.map((section) => {

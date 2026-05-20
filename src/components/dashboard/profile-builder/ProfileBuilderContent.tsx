@@ -10,16 +10,8 @@ import RightPanel from "./RightPanel";
 import ProjectsForm from "./ProjectsForm";
 import ProjectDetailForm from "./ProjectDetailForm";
 import type { ProjectItem } from "@/api/profile/project.type";
+import type { Section } from "./types";
 import { LayoutList, Eye, SlidersHorizontal } from "lucide-react";
-
-interface Section {
-  id: string;
-  title: string;
-  type: string;
-  sectionTitle?: string;
-  projects?: ProjectItem[];
-  projectLayout?: "grid" | "wide" | "left" | "right";
-}
 
 type LeftPanelView =
   | { kind: "sidebar" }
@@ -117,6 +109,20 @@ export default function ProfileBuilderContent() {
 
   const handleUpdateSection = (id: string, updates: Partial<Section>) => {
     setSections(sections.map((s) => (s.id === id ? { ...s, ...updates } : s)));
+  };
+
+  const handleToggleSectionVisibility = (id: string) => {
+    setSections(
+      sections.map((section) =>
+        section.id === id
+          ? { ...section, visible: section.visible === false ? true : false }
+          : section
+      )
+    );
+  };
+
+  const handleReorderSections = (reorderedSections: Section[]) => {
+    setSections(reorderedSections);
   };
 
   // ── Project handlers ──
@@ -265,9 +271,13 @@ export default function ProfileBuilderContent() {
       <LeftSidebar
         sections={sections}
         selectedSectionId={selectedSectionId}
+        selectedSection={selectedSection}
         onSelectSection={handleSelectSection}
         onAddSection={handleAddSection}
         onRemoveSection={handleRemoveSection}
+        onToggleSectionVisibility={handleToggleSectionVisibility}
+        onReorderSections={handleReorderSections}
+        onUpdateSection={handleUpdateSection}
         profile={profile}
       />
     );

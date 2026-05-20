@@ -78,7 +78,6 @@ const LAYOUTS: { id: LayoutId; Component: FC }[] = [
 ];
 
 const MAX_PROJECTS = 20;
-const MAX_HIGHLIGHTS = 3;
 
 export default function ProjectsForm({
   sectionTitle,

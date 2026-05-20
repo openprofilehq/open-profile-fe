@@ -17,16 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import LinkSidebar, { type SavedLink } from "./LinkSidebar";
 
-interface Section {
-  id: string;
-  title: string;
-  type: string;
-  subtitle?: string;
-  links?: SavedLink[];
-  visible: boolean;
-  fullName?: string;
-  bio?: string;
-}
+import type { Section } from "./types";
 
 interface LeftSidebarProps {
   sections: Section[];

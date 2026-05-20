@@ -4,14 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
-type BuilderHeaderProps = {
-  username?: string;
-};
-
-export default function BuilderHeader({ username }: BuilderHeaderProps) {
+export default function BuilderHeader() {
   const pathname = usePathname();
 
   const navLinks = [
@@ -20,9 +15,6 @@ export default function BuilderHeader({ username }: BuilderHeaderProps) {
     { label: "Settings", href: "/dashboard/settings" },
   ];
 
-  function handlePublish() {
-    toast.success("Profile published successfully.");
-  }
 
   return (
     <header className="border-tertiary-b bg-white sticky top-0 z-40 w-full shrink-0 border-b px-4 py-2 select-none md:px-6">

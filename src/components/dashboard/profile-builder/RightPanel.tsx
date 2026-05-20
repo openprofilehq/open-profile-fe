@@ -1,13 +1,7 @@
 "use client";
 
 import { Sun, Moon, Type, ChevronDown } from "lucide-react";
-
-interface Section {
-  id: string;
-  title: string;
-  type: string;
-  visible: boolean;
-}
+import type { Section } from "./types";
 
 interface RightPanelProps {
   font: string;
