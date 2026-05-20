@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronLeft, Search, Plus, GripVertical, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -78,29 +79,14 @@ export default function LeftSidebar({
             onClick={() => handleSelectCard("Bio", "bio")}
             className="group border-tertiary-b hover:border-brand-b flex h-[140px] w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
           >
-            <div className="flex flex-1 items-center bg-white p-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1A1A1A] text-white">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                </div>
-                <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-                  <div className="h-1.5 w-[42px] rounded-full bg-[#A5A5A5]" />
-                  <div className="h-1.5 w-[28px] rounded-full bg-[#A5A5A5]" />
-                  <div className="h-1.5 w-[20px] rounded-full bg-[#1A1A1A]" />
-                </div>
-              </div>
+            <div className="flex flex-1 items-center bg-white p-2">
+              <Image
+                src="/profilebuilder_home/bio.png"
+                alt="Bio"
+                width={107}
+                height={32}
+                className="object-contain"
+              />
             </div>
             <div className="text-primary-text flex h-[36px] items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
               Bio
@@ -113,28 +99,14 @@ export default function LeftSidebar({
             onClick={() => handleSelectCard("Links", "links")}
             className="group border-tertiary-b hover:border-brand-b flex h-[140px] w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
           >
-            <div className="flex flex-1 items-center bg-white p-4">
-              <div className="flex items-center gap-2">
-                <div className="flex shrink-0 items-center justify-center text-[#A5A5A5]">
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                  </svg>
-                </div>
-                <div className="ml-1 flex min-w-0 flex-1 flex-col gap-1.5">
-                  <div className="h-1.5 w-[42px] rounded-full bg-[#A5A5A5]" />
-                  <div className="h-1.5 w-[24px] rounded-full bg-[#A5A5A5]" />
-                </div>
-              </div>
+            <div className="-mx-1 flex flex-1 items-center bg-white p-2">
+              <Image
+                src="/profilebuilder_home/links.png"
+                alt="Links"
+                width={84}
+                height={48}
+                className="object-contain"
+              />
             </div>
             <div className="text-primary-text flex h-[36px] items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
               Links
@@ -147,28 +119,14 @@ export default function LeftSidebar({
             onClick={() => handleSelectCard("Portfolio", "projects")}
             className="group border-tertiary-b hover:border-brand-b flex h-[140px] w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
           >
-            <div className="flex flex-1 flex-col justify-center bg-white p-4">
-              <div className="flex flex-col gap-2">
-                <svg
-                  className="text-[#A5A5A5]"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                  <circle cx="8.5" cy="8.5" r="1.5" />
-                  <polyline points="21 15 16 10 5 21" />
-                </svg>
-                <div className="mt-1 flex flex-col gap-1.5">
-                  <div className="h-1.5 w-[48px] rounded-full bg-[#A5A5A5]" />
-                  <div className="h-1.5 w-[24px] rounded-full bg-[#E5E7EB]" />
-                </div>
-              </div>
+            <div className="flex flex-1 items-center bg-white p-2">
+              <Image
+                src="/profilebuilder_home/portfolio.png"
+                alt="Portfolio"
+                width={46}
+                height={48}
+                className="object-contain"
+              />
             </div>
             <div className="text-primary-text flex h-[36px] items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
               Portfolio
@@ -181,14 +139,14 @@ export default function LeftSidebar({
             onClick={() => handleSelectCard("CTA", "experience")}
             className="group border-tertiary-b hover:border-brand-b flex h-[140px] w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
           >
-            <div className="flex flex-1 flex-col justify-center bg-white p-4">
-              <div className="flex flex-col gap-2">
-                <div className="h-7 w-7 rounded-full bg-[#A5A5A5]" />
-                <div className="mt-1 flex flex-col gap-1.5">
-                  <div className="h-1.5 w-[24px] rounded-full bg-[#E5E7EB]" />
-                  <div className="h-1.5 w-[48px] rounded-full bg-[#A5A5A5]" />
-                </div>
-              </div>
+            <div className="flex flex-1 items-center bg-white p-2">
+              <Image
+                src="/profilebuilder_home/cta.png"
+                alt="CTA"
+                width={48}
+                height={48}
+                className="object-contain"
+              />
             </div>
             <div className="text-primary-text flex h-[36px] items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
               CTA
