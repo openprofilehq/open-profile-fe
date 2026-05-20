@@ -3,7 +3,12 @@ export const ROUTES = {
     home: "/dashboard",
     profileBuilder: "/dashboard/profile-builder",
     canvas: "/dashboard/canvas",
-    help: "/dashboard/help",
+    help: {
+      home: "/dashboard/help",
+      howOpenProfileWorks: "/dashboard/help/how-open-profile-works",
+      settingUpYourProfile: "/dashboard/help/setting-up-your-profile",
+      profileDiscoverability: "/dashboard/help/profile-discoverability",
+    },
     settings: {
       home: "/dashboard/settings",
       email: "/dashboard/settings/email",

@@ -61,7 +61,7 @@ const guides = [
     description:
       "A comprehensive overview of the modular architecture and data-driven profiles.",
     icon: FileText,
-    href: `${ROUTES.dashboard.help}/how-open-profile-works`,
+    href: ROUTES.dashboard.help.howOpenProfileWorks,
     action: "Read the guide",
   },
   {
@@ -69,7 +69,7 @@ const guides = [
     description:
       "Step-by-step instructions for beginners to create a high-impact digital presence.",
     icon: Palette,
-    href: `${ROUTES.dashboard.help}/setting-up-your-profile`,
+    href: ROUTES.dashboard.help.settingUpYourProfile,
     action: "Start setup",
   },
   {
@@ -77,7 +77,7 @@ const guides = [
     description:
       "Advanced SEO and networking tips to ensure your profile reaches the right audience.",
     icon: Search,
-    href: `${ROUTES.dashboard.help}/profile-discoverability`,
+    href: ROUTES.dashboard.help.profileDiscoverability,
     action: "Learn more",
   },
 ];
@@ -146,7 +146,7 @@ export default function HelpSupportContent() {
                 return (
                   <Link
                     key={item.slug}
-                    href={`${ROUTES.dashboard.help}#${item.slug}`}
+                    href={`${ROUTES.dashboard.help.home}#${item.slug}`}
                     className="min-h-[150px] rounded-[8px] border border-[#EDEDED] bg-white p-6 text-[#050505]"
                   >
                     <Icon size={18} />

@@ -31,7 +31,7 @@ const navItems = [
   },
   {
     label: "Help and Support",
-    href: ROUTES.dashboard.help,
+    href: ROUTES.dashboard.help.home,
     icon: Headphones,
   },
 ];
