@@ -180,8 +180,8 @@ export default function ProfileBuilderContent() {
             theme={theme}
             sections={resolvedSections}
             profile={profile}
-            selectedSectionType={selectedSection?.type ?? null}
-            selectedSectionId={selectedSectionId}
+            onToggleSectionVisibility={handleToggleSectionVisibility}
+            onRemoveSection={handleRemoveSection}
           />
 
           <RightPanel

@@ -1,7 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { Folder, Briefcase, ExternalLink, Eye, Trash2 } from "lucide-react";
+import {
+  Folder,
+  Briefcase,
+  ExternalLink,
+  Eye,
+  EyeOff,
+  Trash2,
+} from "lucide-react";
 import { getImageUrl } from "@/utils/profile";
 import CtaSectionPreview from "../cta/CtaSectionPreview";
 import type { Section, ProfilePreview } from "./types";
@@ -18,6 +25,8 @@ interface PreviewCanvasProps {
   selectedSectionType: string | null;
   selectedSectionId: string | null;
   profile?: ProfilePreview | null;
+  onToggleSectionVisibility: (id: string) => void;
+  onRemoveSection: (id: string) => void;
 }
 
 export default function PreviewCanvas({
@@ -32,6 +41,8 @@ export default function PreviewCanvas({
   selectedSectionType,
   selectedSectionId,
   profile,
+  onToggleSectionVisibility,
+  onRemoveSection,
 }: PreviewCanvasProps) {
   const fontStyles: Record<string, string> = {
     Afacad: "font-afacad",
@@ -176,15 +187,27 @@ export default function PreviewCanvas({
                 className="relative flex flex-col border p-6 shadow-sm transition-all duration-300"
               >
                 {/* Action buttons (View/Delete) */}
-                <div className="border-tertiary-b bg-neutral-subtle-bg absolute top-6 right-6 flex items-center gap-3 rounded-[10px] border px-6 py-3 shadow-none select-none">
+                <div className="absolute top-6 right-6 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border border-[#EDEDED] bg-white p-3 shadow-none select-none">
                   <button
-                    className="text-preview-action-icon transition-opacity hover:opacity-80"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleSectionVisibility(section.id);
+                    }}
+                    className="text-[#3A3A3A] transition-opacity hover:opacity-80"
                     title="Toggle visibility"
                   >
-                    <Eye size={18} strokeWidth={2} />
+                    {section.visible ? (
+                      <Eye size={18} strokeWidth={2} />
+                    ) : (
+                      <EyeOff size={18} strokeWidth={2} />
+                    )}
                   </button>
                   <button
-                    className="text-preview-action-delete transition-opacity hover:opacity-80"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRemoveSection(section.id);
+                    }}
+                    className="text-[#9F2B2B] transition-opacity hover:opacity-80"
                     title="Delete section"
                   >
                     <Trash2 size={18} strokeWidth={2} />
