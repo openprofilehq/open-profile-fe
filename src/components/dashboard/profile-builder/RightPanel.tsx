@@ -51,6 +51,8 @@ export default function RightPanel({
   selectedSection,
   onUpdateSection,
 }: RightPanelProps) {
+  const isValidHex = (color: string) => /^#[0-9A-F]{6}$/i.test(color);
+
   return (
     <aside className="border-tertiary-b animate-in fade-in flex h-full w-[290px] shrink-0 flex-col overflow-hidden border bg-white shadow-sm duration-200 select-none">
       {/* Tabs Header */}
@@ -123,12 +125,16 @@ export default function RightPanel({
                   </span>
                   <label className="border-tertiary-b bg-hover-bg hover:bg-active-bg relative flex max-w-[145px] flex-1 cursor-pointer items-center gap-2 rounded-[12px] border p-1.5 transition-colors">
                     <div
-                      style={{ backgroundColor: textColor }}
+                      style={{
+                        backgroundColor: isValidHex(textColor)
+                          ? textColor
+                          : "#050505",
+                      }}
                       className="relative h-8 w-8 shrink-0 overflow-hidden rounded-[8px] border border-black/10 shadow-sm"
                     >
                       <input
                         type="color"
-                        value={textColor}
+                        value={isValidHex(textColor) ? textColor : "#050505"}
                         onChange={(e) => onChangeTextColor(e.target.value)}
                         className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                       />
@@ -149,12 +155,16 @@ export default function RightPanel({
                   </span>
                   <label className="border-tertiary-b bg-hover-bg hover:bg-active-bg relative flex max-w-[145px] flex-1 cursor-pointer items-center gap-2 rounded-[12px] border p-1.5 transition-colors">
                     <div
-                      style={{ backgroundColor: bgColor }}
+                      style={{
+                        backgroundColor: isValidHex(bgColor)
+                          ? bgColor
+                          : "#FFFFFF",
+                      }}
                       className="relative h-8 w-8 shrink-0 overflow-hidden rounded-[8px] border border-black/10 shadow-sm"
                     >
                       <input
                         type="color"
-                        value={bgColor}
+                        value={isValidHex(bgColor) ? bgColor : "#FFFFFF"}
                         onChange={(e) => onChangeBgColor(e.target.value)}
                         className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                       />
@@ -175,12 +185,16 @@ export default function RightPanel({
                   </span>
                   <label className="border-tertiary-b bg-hover-bg hover:bg-active-bg relative flex max-w-[145px] flex-1 cursor-pointer items-center gap-2 rounded-[12px] border p-1.5 transition-colors">
                     <div
-                      style={{ backgroundColor: iconColor }}
+                      style={{
+                        backgroundColor: isValidHex(iconColor)
+                          ? iconColor
+                          : "#087583",
+                      }}
                       className="relative h-8 w-8 shrink-0 overflow-hidden rounded-[8px] border border-black/10 shadow-sm"
                     >
                       <input
                         type="color"
-                        value={iconColor}
+                        value={isValidHex(iconColor) ? iconColor : "#087583"}
                         onChange={(e) => onChangeIconColor(e.target.value)}
                         className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                       />

@@ -73,9 +73,10 @@ export default function LeftSidebar({
         {/* Grid outline of Cards */}
         <div className="grid auto-rows-max grid-cols-2 gap-4 overflow-y-auto pr-1">
           {/* Card 1: Bio */}
-          <div
+          <button
+            type="button"
             onClick={() => handleSelectCard("Bio", "bio")}
-            className="group border-tertiary-b hover:border-brand-b flex h-[140px] cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white transition-all duration-200 hover:shadow-sm"
+            className="group border-tertiary-b hover:border-brand-b flex h-[140px] w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
           >
             <div className="flex flex-1 items-center bg-white p-4">
               <div className="flex items-center gap-3">
@@ -104,12 +105,13 @@ export default function LeftSidebar({
             <div className="text-primary-text flex h-[36px] items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
               Bio
             </div>
-          </div>
+          </button>
 
           {/* Card 2: Links */}
-          <div
+          <button
+            type="button"
             onClick={() => handleSelectCard("Links", "links")}
-            className="group border-tertiary-b hover:border-brand-b flex h-[140px] cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white transition-all duration-200 hover:shadow-sm"
+            className="group border-tertiary-b hover:border-brand-b flex h-[140px] w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
           >
             <div className="flex flex-1 items-center bg-white p-4">
               <div className="flex items-center gap-2">
@@ -137,12 +139,13 @@ export default function LeftSidebar({
             <div className="text-primary-text flex h-[36px] items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
               Links
             </div>
-          </div>
+          </button>
 
           {/* Card 3: Portfolio */}
-          <div
+          <button
+            type="button"
             onClick={() => handleSelectCard("Portfolio", "projects")}
-            className="group border-tertiary-b hover:border-brand-b flex h-[140px] cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white transition-all duration-200 hover:shadow-sm"
+            className="group border-tertiary-b hover:border-brand-b flex h-[140px] w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
           >
             <div className="flex flex-1 flex-col justify-center bg-white p-4">
               <div className="flex flex-col gap-2">
@@ -170,12 +173,13 @@ export default function LeftSidebar({
             <div className="text-primary-text flex h-[36px] items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
               Portfolio
             </div>
-          </div>
+          </button>
 
           {/* Card 4: CTA */}
-          <div
+          <button
+            type="button"
             onClick={() => handleSelectCard("CTA", "experience")}
-            className="group border-tertiary-b hover:border-brand-b flex h-[140px] cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white transition-all duration-200 hover:shadow-sm"
+            className="group border-tertiary-b hover:border-brand-b flex h-[140px] w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
           >
             <div className="flex flex-1 flex-col justify-center bg-white p-4">
               <div className="flex flex-col gap-2">
@@ -189,7 +193,7 @@ export default function LeftSidebar({
             <div className="text-primary-text flex h-[36px] items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
               CTA
             </div>
-          </div>
+          </button>
         </div>
       </aside>
     );
@@ -242,7 +246,15 @@ export default function LeftSidebar({
               <div
                 key={section.id}
                 onClick={() => onSelectSection(section.id)}
-                className={`group flex cursor-pointer items-center justify-between overflow-hidden rounded-xl border transition-all duration-200 ${
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onSelectSection(section.id);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                className={`group focus:ring-brand-b flex cursor-pointer items-center justify-between overflow-hidden rounded-xl border transition-all duration-200 focus:ring-2 focus:outline-none ${
                   isSelected
                     ? "border-brand-b bg-brand-light-subtle-bg shadow-sm"
                     : "border-tertiary-b hover:border-secondary-b hover:bg-primary-bg bg-white"
@@ -268,6 +280,7 @@ export default function LeftSidebar({
                     }}
                     className="hover:bg-hover-bg hover:text-negative-text ml-2 shrink-0 rounded-lg p-1.5 text-gray-400 opacity-0 transition-all group-hover:opacity-100"
                     title="Delete Section"
+                    aria-label={`Delete section ${section.title}`}
                   >
                     <Trash2 size={15} />
                   </button>
