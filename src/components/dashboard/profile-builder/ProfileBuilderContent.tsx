@@ -23,17 +23,12 @@ export default function ProfileBuilderContent() {
   const [bgColor, setBgColor] = useState("#FFFFFF");
   const [iconColor, setIconColor] = useState("#087583");
   const [spacing, setSpacing] = useState(20);
-  const [borderRadius, setBorderRadius] = useState<
-    "sharp" | "medium" | "round"
-  >("medium");
+  const [borderRadius] = useState<"sharp" | "medium" | "round">("medium");
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   // Sections State
   const [sections, setSections] = useState<Section[]>([
-    { id: "1", title: "Bio - Micaela Robinsonss", type: "bio" },
-    { id: "2", title: "My Projects", type: "projects" },
-    { id: "3", title: "Social Connects", type: "links" },
-    { id: "4", title: "Work Experience", type: "experience" },
+    { id: "1", title: "Bio - John Smith", type: "bio" },
   ]);
 
   // UI Selection State
@@ -88,6 +83,7 @@ export default function ProfileBuilderContent() {
           onSelectSection={handleSelectSection}
           onAddSection={handleAddSection}
           onRemoveSection={handleRemoveSection}
+          profile={profile}
         />
 
         {/* Center Canvas Preview: Real-time update device */}
@@ -115,8 +111,6 @@ export default function ProfileBuilderContent() {
           onChangeIconColor={setIconColor}
           spacing={spacing}
           onChangeSpacing={setSpacing}
-          borderRadius={borderRadius}
-          onChangeBorderRadius={setBorderRadius}
           theme={theme}
           onChangeTheme={setTheme}
           activeTab={activeTab}

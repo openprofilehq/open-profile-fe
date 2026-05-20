@@ -57,7 +57,7 @@ export default function PreviewCanvas({
 
   // Light/Dark Theme backgrounds
   const isDark = theme === "dark";
-  const canvasBg = isDark ? "bg-[#121212]" : "bg-[#FAFAFA]";
+  const canvasBg = "bg-background";
 
   // Custom Styles
   const cardStyle = {
@@ -73,10 +73,10 @@ export default function PreviewCanvas({
   };
 
   const iconStyle = {
-    color: iconColor || "#087583",
+    color: iconColor || "#0a92a4",
     backgroundColor: isDark
-      ? "rgba(8, 117, 131, 0.15)"
-      : "rgba(8, 117, 131, 0.08)",
+      ? "rgba(10, 146, 164, 0.15)"
+      : "rgba(10, 146, 164, 0.08)",
   };
 
   return (
@@ -85,15 +85,6 @@ export default function PreviewCanvas({
     >
       {/* Device wrapper */}
       <div className="flex w-full max-w-[640px] flex-col gap-6">
-        {/* Helper info bar */}
-        <div className="mb-2 flex items-center justify-between text-xs font-semibold tracking-wider text-[#747474] uppercase">
-          <span>Live Preview</span>
-          <span className="flex items-center gap-1">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-            Connected
-          </span>
-        </div>
-
         {/* Dynamic Card Container with settings applied */}
         <div
           className={`flex w-full flex-col transition-all duration-300 ${selectedFontClass}`}
@@ -104,7 +95,7 @@ export default function PreviewCanvas({
             className="flex flex-col items-center gap-6 border p-6 shadow-sm transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
           >
             {/* Avatar image */}
-            <div className="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[#087583]/20 bg-[#E5F4F6] shadow-inner">
+            <div className="border-brand-b/20 bg-brand-light-subtle-bg relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-inner">
               {getImageUrl(profile?.photoUrl) ? (
                 <Image
                   src={getImageUrl(profile?.photoUrl) || ""}
@@ -114,7 +105,7 @@ export default function PreviewCanvas({
                   unoptimized
                 />
               ) : (
-                <div className="text-3xl font-bold text-[#087583]">
+                <div className="text-brand-text text-3xl font-bold">
                   {(profile?.fullName || "M").charAt(0).toUpperCase()}
                 </div>
               )}
@@ -123,7 +114,7 @@ export default function PreviewCanvas({
             {/* Profile Info */}
             <div className="flex-1 text-center sm:text-left">
               <h2 className="text-2xl font-bold tracking-tight">
-                {profile?.fullName || "Micaela, Robinsonss"}
+                {profile?.fullName || "Micaela Robinsonss"}
               </h2>
               <p
                 style={textStyle}
@@ -161,7 +152,7 @@ export default function PreviewCanvas({
                     <h3 className="text-lg font-bold">{section.title}</h3>
                   </div>
 
-                  <span className="text-xs font-semibold tracking-wider text-[#A2A2A2] uppercase">
+                  <span className="text-disabled-text text-xs font-semibold tracking-wider uppercase">
                     {section.type}
                   </span>
                 </div>
@@ -169,16 +160,16 @@ export default function PreviewCanvas({
                 {/* Section-specific placeholders */}
                 {section.type === "projects" && (
                   <div className="grid grid-cols-1 gap-4">
-                    <div className="flex items-center justify-between rounded-lg border border-[#EDEDED] bg-black/5 p-4 dark:border-[#2D2D2D] dark:bg-white/5">
+                    <div className="border-tertiary-b flex items-center justify-between rounded-lg border bg-black/5 p-4 dark:border-[#2D2D2D] dark:bg-white/5">
                       <div>
                         <h4 className="text-sm font-semibold">
                           OpenProfile Platform
                         </h4>
-                        <p className="mt-1 text-xs text-[#747474]">
+                        <p className="text-tertiary-text mt-1 text-xs">
                           Open-source links-in-bio platform for modern creators.
                         </p>
                       </div>
-                      <ExternalLink size={16} className="text-[#A2A2A2]" />
+                      <ExternalLink size={16} className="text-disabled-text" />
                     </div>
                   </div>
                 )}
@@ -189,7 +180,7 @@ export default function PreviewCanvas({
                       (platform) => (
                         <span
                           key={platform}
-                          className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-[#EDEDED] px-3.5 py-1.5 text-xs font-semibold hover:bg-black/5 dark:border-[#2D2D2D] dark:hover:bg-white/5"
+                          className="border-tertiary-b inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold hover:bg-black/5 dark:border-[#2D2D2D] dark:hover:bg-white/5"
                         >
                           <Link2 size={12} />
                           {platform}
@@ -204,9 +195,9 @@ export default function PreviewCanvas({
                     <div className="flex items-start justify-between text-xs">
                       <div>
                         <p className="text-sm font-bold">Lead UI Architect</p>
-                        <p className="text-[#747474]">Stark Industries</p>
+                        <p className="text-tertiary-text">Stark Industries</p>
                       </div>
-                      <span className="text-[#A2A2A2]">2024 - Present</span>
+                      <span className="text-disabled-text">2024 - Present</span>
                     </div>
                   </div>
                 )}

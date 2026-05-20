@@ -19,8 +19,6 @@ interface RightPanelProps {
   onChangeIconColor: (color: string) => void;
   spacing: number;
   onChangeSpacing: (spacing: number) => void;
-  borderRadius: "sharp" | "medium" | "round";
-  onChangeBorderRadius: (radius: "sharp" | "medium" | "round") => void;
   theme: "light" | "dark";
   onChangeTheme: (theme: "light" | "dark") => void;
 
@@ -42,8 +40,6 @@ export default function RightPanel({
   onChangeIconColor,
   spacing,
   onChangeSpacing,
-  borderRadius,
-  onChangeBorderRadius,
   theme,
   onChangeTheme,
   activeTab,
@@ -52,33 +48,33 @@ export default function RightPanel({
   onUpdateSection,
 }: RightPanelProps) {
   return (
-    <aside className="flex h-full w-[360px] shrink-0 flex-col border-l border-[#EDEDED] bg-white select-none">
+    <aside className="border-tertiary-b bg-card flex h-full w-[360px] shrink-0 flex-col border-l select-none">
       {/* Tabs Header */}
-      <div className="flex border-b border-[#EDEDED] p-2">
+      <div className="border-tertiary-b flex border-b p-2">
         <button
           onClick={() => onChangeTab("general")}
           className={`relative flex-1 py-3 text-center text-sm font-bold transition-all ${
             activeTab === "general"
-              ? "text-[#087583]"
-              : "text-[#747474] hover:text-[#050505]"
+              ? "text-link-hover-text"
+              : "text-tertiary-text hover:text-primary-text"
           }`}
         >
           General
           {activeTab === "general" && (
-            <span className="absolute bottom-0 left-0 h-[2px] w-full bg-[#087583] transition-all" />
+            <span className="bg-link-hover-text absolute bottom-0 left-0 h-[2px] w-full transition-all" />
           )}
         </button>
         <button
           onClick={() => onChangeTab("section")}
           className={`relative flex-1 py-3 text-center text-sm font-bold transition-all ${
             activeTab === "section"
-              ? "text-[#087583]"
-              : "text-[#747474] hover:text-[#050505]"
+              ? "text-link-hover-text"
+              : "text-tertiary-text hover:text-primary-text"
           }`}
         >
           Section
           {activeTab === "section" && (
-            <span className="absolute bottom-0 left-0 h-[2px] w-full bg-[#087583] transition-all" />
+            <span className="bg-link-hover-text absolute bottom-0 left-0 h-[2px] w-full transition-all" />
           )}
         </button>
       </div>
@@ -89,14 +85,14 @@ export default function RightPanel({
           <div className="flex flex-col gap-6">
             {/* Font Selection */}
             <div>
-              <label className="mb-2 flex items-center gap-2 text-xs font-bold tracking-wider text-[#747474] uppercase">
+              <label className="text-tertiary-text mb-2 flex items-center gap-2 text-xs font-bold tracking-wider uppercase">
                 <Type size={14} />
                 Font
               </label>
               <select
                 value={font}
                 onChange={(e) => onChangeFont(e.target.value)}
-                className="w-full rounded-[10px] border border-[#EDEDED] bg-[#FAFAFA] px-4 py-3 text-sm font-semibold text-[#050505] transition-all outline-none focus:border-[#087583]"
+                className="border-tertiary-b bg-primary-bg text-primary-text focus:border-brand-b w-full rounded-[10px] border px-4 py-3 text-sm font-semibold transition-all outline-none"
               >
                 <option value="Afacad">Afacad</option>
                 <option value="Inter">Inter Sans</option>
@@ -107,18 +103,18 @@ export default function RightPanel({
 
             {/* Colors Selection */}
             <div>
-              <label className="mb-3 flex items-center gap-2 text-xs font-bold tracking-wider text-[#747474] uppercase">
+              <label className="text-tertiary-text mb-3 flex items-center gap-2 text-xs font-bold tracking-wider uppercase">
                 <Palette size={14} />
                 Colors
               </label>
 
-              <div className="flex flex-col gap-3 rounded-[12px] border border-[#EDEDED] bg-[#FAFAFA] p-4">
+              <div className="border-tertiary-b bg-primary-bg flex flex-col gap-3 rounded-[12px] border p-4">
                 {/* Text Color */}
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-[#747474]">
+                  <span className="text-tertiary-text text-xs font-semibold">
                     Text
                   </span>
-                  <div className="flex items-center gap-2 rounded-lg border border-[#EDEDED] bg-white px-2.5 py-1.5 shadow-sm">
+                  <div className="border-tertiary-b flex items-center gap-2 rounded-lg border bg-white px-2.5 py-1.5 shadow-sm">
                     <input
                       type="color"
                       value={textColor}
@@ -129,17 +125,17 @@ export default function RightPanel({
                       type="text"
                       value={textColor.toUpperCase()}
                       onChange={(e) => onChangeTextColor(e.target.value)}
-                      className="w-16 border-0 p-0 text-center text-xs font-bold text-[#050505] uppercase outline-none"
+                      className="text-primary-text w-16 border-0 p-0 text-center text-xs font-bold uppercase outline-none"
                     />
                   </div>
                 </div>
 
                 {/* Background Color */}
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-[#747474]">
+                  <span className="text-tertiary-text text-xs font-semibold">
                     Bg
                   </span>
-                  <div className="flex items-center gap-2 rounded-lg border border-[#EDEDED] bg-white px-2.5 py-1.5 shadow-sm">
+                  <div className="border-tertiary-b flex items-center gap-2 rounded-lg border bg-white px-2.5 py-1.5 shadow-sm">
                     <input
                       type="color"
                       value={bgColor}
@@ -150,17 +146,17 @@ export default function RightPanel({
                       type="text"
                       value={bgColor.toUpperCase()}
                       onChange={(e) => onChangeBgColor(e.target.value)}
-                      className="w-16 border-0 p-0 text-center text-xs font-bold text-[#050505] uppercase outline-none"
+                      className="text-primary-text w-16 border-0 p-0 text-center text-xs font-bold uppercase outline-none"
                     />
                   </div>
                 </div>
 
                 {/* Icon Color */}
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-[#747474]">
+                  <span className="text-tertiary-text text-xs font-semibold">
                     Icon
                   </span>
-                  <div className="flex items-center gap-2 rounded-lg border border-[#EDEDED] bg-white px-2.5 py-1.5 shadow-sm">
+                  <div className="border-tertiary-b flex items-center gap-2 rounded-lg border bg-white px-2.5 py-1.5 shadow-sm">
                     <input
                       type="color"
                       value={iconColor}
@@ -171,7 +167,7 @@ export default function RightPanel({
                       type="text"
                       value={iconColor.toUpperCase()}
                       onChange={(e) => onChangeIconColor(e.target.value)}
-                      className="w-16 border-0 p-0 text-center text-xs font-bold text-[#050505] uppercase outline-none"
+                      className="text-primary-text w-16 border-0 p-0 text-center text-xs font-bold uppercase outline-none"
                     />
                   </div>
                 </div>
@@ -181,11 +177,11 @@ export default function RightPanel({
             {/* Spacing Slider */}
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <label className="flex items-center gap-2 text-xs font-bold tracking-wider text-[#747474] uppercase">
+                <label className="text-tertiary-text flex items-center gap-2 text-xs font-bold tracking-wider uppercase">
                   <Sliders size={14} />
                   Spacing
                 </label>
-                <span className="rounded bg-gray-100 px-2 py-0.5 text-xs font-bold text-[#050505]">
+                <span className="bg-hover-bg text-primary-text rounded px-2 py-0.5 text-xs font-bold">
                   {spacing}px
                 </span>
               </div>
@@ -196,58 +192,23 @@ export default function RightPanel({
                   max="48"
                   value={spacing}
                   onChange={(e) => onChangeSpacing(Number(e.target.value))}
-                  className="h-1.5 flex-1 cursor-pointer appearance-none rounded-lg bg-[#EDEDED] accent-[#087583]"
+                  className="bg-active-bg accent-link-hover-text h-1.5 flex-1 cursor-pointer appearance-none rounded-lg"
                 />
-              </div>
-            </div>
-
-            {/* Border Radius Selectors */}
-            <div>
-              <label className="mb-3 block text-xs font-bold tracking-wider text-[#747474] uppercase">
-                Border Radius
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {(
-                  [
-                    { value: "sharp", label: "Sharp", style: "rounded-none" },
-                    { value: "medium", label: "Medium", style: "rounded-md" },
-                    { value: "round", label: "Round", style: "rounded-full" },
-                  ] as const
-                ).map((item) => (
-                  <button
-                    key={item.value}
-                    onClick={() => onChangeBorderRadius(item.value)}
-                    className={`flex flex-col items-center gap-2 rounded-xl border p-3 transition-all ${
-                      borderRadius === item.value
-                        ? "border-[#087583] bg-[#F1FDFE]"
-                        : "border-[#EDEDED] bg-[#FAFAFA] hover:bg-white"
-                    }`}
-                  >
-                    <span
-                      className={`h-6 w-6 border-2 border-current ${item.style} ${
-                        borderRadius === item.value
-                          ? "text-[#087583]"
-                          : "text-gray-400"
-                      }`}
-                    />
-                    <span className="text-xs font-semibold">{item.label}</span>
-                  </button>
-                ))}
               </div>
             </div>
 
             {/* Theme Selector */}
             <div>
-              <label className="mb-3 block text-xs font-bold tracking-wider text-[#747474] uppercase">
+              <label className="text-tertiary-text mb-3 block text-xs font-bold tracking-wider uppercase">
                 Theme
               </label>
-              <div className="flex rounded-xl border border-[#EDEDED] bg-[#FAFAFA] p-1.5">
+              <div className="border-tertiary-b bg-primary-bg flex rounded-xl border p-1.5">
                 <button
                   onClick={() => onChangeTheme("light")}
                   className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-bold transition-all ${
                     theme === "light"
-                      ? "bg-white text-[#087583] shadow-sm"
-                      : "text-[#747474] hover:text-[#050505]"
+                      ? "text-link-hover-text bg-white shadow-sm"
+                      : "text-tertiary-text hover:text-primary-text"
                   }`}
                 >
                   <Sun size={14} />
@@ -257,8 +218,8 @@ export default function RightPanel({
                   onClick={() => onChangeTheme("dark")}
                   className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-bold transition-all ${
                     theme === "dark"
-                      ? "bg-white text-[#087583] shadow-sm"
-                      : "text-[#747474] hover:text-[#050505]"
+                      ? "text-link-hover-text bg-white shadow-sm"
+                      : "text-tertiary-text hover:text-primary-text"
                   }`}
                 >
                   <Moon size={14} />
@@ -272,17 +233,17 @@ export default function RightPanel({
             {selectedSection ? (
               <div className="flex flex-col gap-6">
                 <div>
-                  <h3 className="text-base font-bold text-[#050505]">
+                  <h3 className="text-primary-text text-base font-bold">
                     Edit Section
                   </h3>
-                  <p className="text-xs text-[#747474]">
+                  <p className="text-tertiary-text text-xs">
                     Customize specific details for this component.
                   </p>
                 </div>
 
                 {/* Section Title */}
                 <div>
-                  <label className="mb-2 block text-xs font-bold tracking-wider text-[#747474] uppercase">
+                  <label className="text-tertiary-text mb-2 block text-xs font-bold tracking-wider uppercase">
                     Section Title
                   </label>
                   <input
@@ -293,13 +254,13 @@ export default function RightPanel({
                         title: e.target.value,
                       })
                     }
-                    className="w-full rounded-[10px] border border-[#EDEDED] bg-[#FAFAFA] px-4 py-3 text-sm font-semibold text-[#050505] transition-all outline-none focus:border-[#087583]"
+                    className="border-tertiary-b bg-primary-bg text-primary-text focus:border-brand-b w-full rounded-[10px] border px-4 py-3 text-sm font-semibold transition-all outline-none"
                   />
                 </div>
 
                 {/* Section Type Selector */}
                 <div>
-                  <label className="mb-2 block text-xs font-bold tracking-wider text-[#747474] uppercase">
+                  <label className="text-tertiary-text mb-2 block text-xs font-bold tracking-wider uppercase">
                     Component Type
                   </label>
                   <select
@@ -309,7 +270,7 @@ export default function RightPanel({
                         type: e.target.value,
                       })
                     }
-                    className="w-full rounded-[10px] border border-[#EDEDED] bg-[#FAFAFA] px-4 py-3 text-sm font-semibold text-[#050505] transition-all outline-none focus:border-[#087583]"
+                    className="border-tertiary-b bg-primary-bg text-primary-text focus:border-brand-b w-full rounded-[10px] border px-4 py-3 text-sm font-semibold transition-all outline-none"
                   >
                     <option value="bio">Bio / Header</option>
                     <option value="projects">Projects Showcase</option>
@@ -318,8 +279,8 @@ export default function RightPanel({
                   </select>
                 </div>
 
-                <div className="mt-4 rounded-xl border border-dashed border-gray-300 p-6 text-center">
-                  <p className="text-xs font-semibold text-[#747474]">
+                <div className="border-secondary-b mt-4 rounded-xl border border-dashed p-6 text-center">
+                  <p className="text-tertiary-text text-xs font-semibold">
                     Additional dynamic items editor will display here based on
                     chosen component.
                   </p>
@@ -327,11 +288,11 @@ export default function RightPanel({
               </div>
             ) : (
               <div className="flex h-[300px] flex-col items-center justify-center px-4 text-center">
-                <Sliders size={32} className="mb-3 text-[#A2A2A2]" />
-                <p className="text-sm font-semibold text-[#050505]">
+                <Sliders size={32} className="text-disabled-text mb-3" />
+                <p className="text-primary-text text-sm font-semibold">
                   No section selected
                 </p>
-                <p className="mt-1 max-w-[200px] text-xs text-[#747474]">
+                <p className="text-tertiary-text mt-1 max-w-[200px] text-xs">
                   Select a section from the left sidebar to customize its items
                   and content.
                 </p>

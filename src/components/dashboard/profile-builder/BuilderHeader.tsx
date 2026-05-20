@@ -16,7 +16,7 @@ export default function BuilderHeader() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[#EDEDED] bg-white px-6 py-4 select-none">
+    <header className="border-tertiary-b bg-card sticky top-0 z-40 w-full border-b px-6 py-4 select-none">
       <div className="mx-auto flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link
@@ -28,7 +28,7 @@ export default function BuilderHeader() {
               alt="Open Profile"
               width={40}
               height={40}
-              className="h-10 w-10 rounded-full border border-[#EDEDED] bg-white object-contain"
+              className="border-tertiary-b h-10 w-10 rounded-full border bg-white object-contain"
               priority
             />
           </Link>
@@ -42,13 +42,13 @@ export default function BuilderHeader() {
               <Link
                 key={link.label}
                 href={link.href}
-                className={`relative py-1 text-base font-medium transition-all duration-200 hover:text-[#087583] ${
-                  isActive ? "text-[#087583]" : "text-[#747474]"
+                className={`hover:text-link-hover-text relative py-1 text-base font-medium transition-all duration-200 ${
+                  isActive ? "text-link-hover-text" : "text-tertiary-text"
                 }`}
               >
                 {link.label}
                 {isActive && (
-                  <span className="absolute bottom-0 left-0 h-[2px] w-full rounded-full bg-[#087583]" />
+                  <span className="bg-link-hover-text absolute bottom-0 left-0 h-[2px] w-full rounded-full" />
                 )}
               </Link>
             );
@@ -58,7 +58,7 @@ export default function BuilderHeader() {
         {/* Right Action Controls */}
         <div className="flex items-center gap-4">
           <button
-            className="flex h-10 w-10 items-center justify-center rounded-full text-[#050505] transition-colors hover:bg-[#F5F5F5] active:scale-95"
+            className="text-primary-text hover:bg-hover-bg flex h-10 w-10 items-center justify-center rounded-full transition-colors active:scale-95"
             aria-label="Search"
           >
             <Search size={20} />
@@ -66,12 +66,12 @@ export default function BuilderHeader() {
 
           <Button
             variant="outline"
-            className="h-10 rounded-[10px] border-[#EDEDED] px-5 text-sm font-semibold text-[#050505] transition-all hover:bg-[#F5F5F5]"
+            className="border-tertiary-b text-primary-text hover:bg-hover-bg h-10 rounded-[10px] px-5 text-sm font-semibold transition-all"
           >
             Upgrade
           </Button>
 
-          <Button className="h-10 rounded-[10px] bg-[#087583] px-6 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#065e69] active:scale-95">
+          <Button className="bg-brand-hover-bg hover:bg-brand h-10 rounded-[10px] px-6 text-sm font-semibold text-white shadow-sm transition-all active:scale-95">
             Publish
           </Button>
         </div>
