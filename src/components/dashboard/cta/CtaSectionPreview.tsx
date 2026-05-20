@@ -108,10 +108,16 @@ export default function CtaSectionPreview({
         <div
           className={`absolute top-6 flex items-center gap-3 rounded-[10px] border border-[#EDEDED] bg-white px-6 py-3 select-none ${isRight ? "left-6" : "right-6"}`}
         >
-          <button className="text-[#3A3A3A] transition-opacity hover:opacity-80">
+          <button
+            aria-label="Preview section"
+            className="text-[#3A3A3A] transition-opacity hover:opacity-80"
+          >
             <Eye size={18} strokeWidth={2} />
           </button>
-          <button className="text-[#9F2B2B] transition-opacity hover:opacity-80">
+          <button
+            aria-label="Delete section"
+            className="text-[#9F2B2B] transition-opacity hover:opacity-80"
+          >
             <Trash2 size={18} strokeWidth={2} />
           </button>
         </div>
@@ -127,7 +133,7 @@ export default function CtaSectionPreview({
           style={{ gap: spacingGap }}
         >
           <div
-            className={`flex flex-col ${isRight ? "items-end" : isLeft ? "items-start" : "items-center"} }`}
+            className={`flex flex-col ${isRight ? "items-end" : isLeft ? "items-start" : "items-center"}`}
             style={{ gap: spacingGap }}
           >
             <div className="bg-neutral-subtle-bg flex h-16 w-16 items-center justify-center rounded-[16px] border">

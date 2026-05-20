@@ -66,8 +66,8 @@ export default function CtaRightPanel({
               <SelectItem className="cta-font-item" value="Afacad">
                 Afacad
               </SelectItem>
-              <SelectItem className="cta-font-item" value="Geoligica">
-                Geoligica
+              <SelectItem className="cta-font-item" value="Geologica">
+                Geologica
               </SelectItem>
               <SelectItem className="cta-font-item" value="Manrope">
                 Manrope
