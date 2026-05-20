@@ -3,13 +3,26 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronLeft, Search, Plus, GripVertical, Trash2 } from "lucide-react";
+import { Reorder } from "motion/react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  Plus,
+  GripVertical,
+  Trash2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Section {
   id: string;
   title: string;
   type: string;
+  visible: boolean;
+  fullName?: string;
+  bio?: string;
 }
 
 interface LeftSidebarProps {
@@ -18,6 +31,9 @@ interface LeftSidebarProps {
   onSelectSection: (id: string) => void;
   onAddSection: (title: string, type: string) => void;
   onRemoveSection: (id: string) => void;
+  onToggleSectionVisibility: (id: string) => void;
+  onReorderSections: (sections: Section[]) => void;
+  onUpdateSection: (id: string, updates: Partial<Section>) => void;
   profile?: {
     fullName?: string;
   } | null;
@@ -29,10 +45,33 @@ export default function LeftSidebar({
   onSelectSection,
   onAddSection,
   onRemoveSection,
+  onToggleSectionVisibility,
+  onReorderSections,
+  onUpdateSection,
   profile,
 }: LeftSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddingSection, setIsAddingSection] = useState(false);
+
+  const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
+
+  const editingSection =
+    sections.find((section) => section.id === editingSectionId) ?? null;
+
+  function getSectionDescriptor(section: Section) {
+    if (section.type === "bio") return "Add name";
+    if (section.type === "links") return "Add links";
+    if (section.type === "projects") return "Add projects";
+    if (section.type === "experience") return "Add CTA";
+    if (section.type === "cta") return "Add CTA";
+
+    return "Customize section";
+  }
+
+  function handleOpenSectionForm(sectionId: string) {
+    setEditingSectionId(sectionId);
+    onSelectSection(sectionId);
+  }
 
   const filteredSections = sections.filter((section) => {
     const displayTitle =
@@ -157,6 +196,107 @@ export default function LeftSidebar({
     );
   }
 
+  if (editingSection) {
+    return (
+      <aside className="border-tertiary-b animate-in fade-in flex h-full w-[290px] shrink-0 flex-col border bg-white p-6 shadow-sm duration-200 select-none">
+        <div className="mb-6">
+          <button
+            type="button"
+            onClick={() => setEditingSectionId(null)}
+            className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
+          >
+            <ChevronLeft size={20} />
+            <span>
+              {editingSection.type === "bio" ? "Bio" : editingSection.title}
+            </span>
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-5">
+          <div>
+            <label className="mb-2 block text-xs font-bold tracking-wider text-[#747474] uppercase">
+              Section title
+            </label>
+            <input
+              type="text"
+              value={editingSection.title}
+              onChange={(e) =>
+                onUpdateSection(editingSection.id, { title: e.target.value })
+              }
+              className="w-full rounded-[10px] border border-[#EDEDED] bg-white px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:border-[#087583]"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-xs font-bold tracking-wider text-[#747474] uppercase">
+              Component type
+            </label>
+            <select
+              value={editingSection.type}
+              onChange={(e) =>
+                onUpdateSection(editingSection.id, { type: e.target.value })
+              }
+              className="w-full rounded-[10px] border border-[#EDEDED] bg-white px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:border-[#087583]"
+            >
+              <option value="bio">Bio / Header</option>
+              <option value="links">Links</option>
+              <option value="projects">Projects / Portfolio</option>
+              <option value="experience">CTA / Experience</option>
+            </select>
+          </div>
+
+          {editingSection.type === "bio" && (
+            <div className="rounded-[12px] border border-dashed border-[#D0D5DD] p-4">
+              <label className="mb-2 block text-sm font-bold text-[#050505]">
+                Full name
+              </label>
+              <input
+                type="text"
+                value={editingSection.fullName ?? profile?.fullName ?? ""}
+                onChange={(e) =>
+                  onUpdateSection(editingSection.id, {
+                    fullName: e.target.value,
+                  })
+                }
+                placeholder="Enter full name"
+                className="w-full rounded-[10px] border border-[#EDEDED] bg-white px-4 py-3 text-sm text-[#050505] outline-none focus:border-[#087583]"
+              />
+
+              <label className="mt-4 mb-2 block text-sm font-bold text-[#050505]">
+                Bio
+              </label>
+              <textarea
+                value={editingSection.bio ?? ""}
+                onChange={(e) =>
+                  onUpdateSection(editingSection.id, {
+                    bio: e.target.value,
+                  })
+                }
+                rows={5}
+                maxLength={200}
+                placeholder="Placeholder text..."
+                className="w-full resize-none rounded-[10px] border border-[#EDEDED] bg-white px-4 py-3 text-sm text-[#050505] outline-none focus:border-[#087583]"
+              />
+
+              <p className="mt-1 text-right text-xs text-[#A2A2A2]">
+                {(editingSection.bio ?? "").length}/200
+              </p>
+            </div>
+          )}
+
+          {editingSection.type !== "bio" && (
+            <div className="rounded-[12px] border border-dashed border-[#D0D5DD] p-6 text-center">
+              <p className="text-xs font-semibold text-[#747474]">
+                Additional dynamic items editor will display here based on
+                chosen component.
+              </p>
+            </div>
+          )}
+        </div>
+      </aside>
+    );
+  }
+
   return (
     <aside className="border-tertiary-b animate-in fade-in flex h-full w-[290px] shrink-0 flex-col border bg-white p-6 shadow-sm duration-200 select-none">
       {/* Back Button */}
@@ -197,17 +337,23 @@ export default function LeftSidebar({
 
       {/* Sections List */}
       <div className="flex-1 overflow-y-auto pr-1">
-        <div className="flex flex-col gap-3">
+        <Reorder.Group
+          axis="y"
+          values={sections}
+          onReorder={onReorderSections}
+          className="flex flex-col gap-3"
+        >
           {filteredSections.map((section) => {
             const isSelected = selectedSectionId === section.id;
             return (
-              <div
+              <Reorder.Item
                 key={section.id}
-                onClick={() => onSelectSection(section.id)}
+                value={section}
+                onClick={() => handleOpenSectionForm(section.id)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
-                    onSelectSection(section.id);
+                    handleOpenSectionForm(section.id);
                   }
                 }}
                 role="button"
@@ -219,19 +365,48 @@ export default function LeftSidebar({
                 }`}
               >
                 <div className="flex min-w-0 flex-1 items-center justify-between px-4 py-3">
-                  <p
-                    className={`truncate text-sm font-semibold transition-colors ${
-                      isSelected ? "text-link-hover-text" : "text-primary-text"
-                    }`}
-                  >
-                    {section.type === "bio" &&
-                    section.title === "Bio - John Smith" &&
-                    profile?.fullName
-                      ? `Bio - ${profile.fullName}`
-                      : section.title}
-                  </p>
+                  <div className="min-w-0">
+                    <p
+                      className={`truncate text-sm font-semibold transition-colors ${
+                        !section.visible
+                          ? "text-tertiary-text opacity-50"
+                          : isSelected
+                            ? "text-link-hover-text"
+                            : "text-primary-text"
+                      }`}
+                    >
+                      {section.type === "bio" &&
+                      section.title === "Bio" &&
+                      profile?.fullName
+                        ? `Bio - ${profile.fullName}`
+                        : section.title}
+                    </p>
+
+                    <p className="mt-0.5 truncate text-xs text-[#747474]">
+                      {getSectionDescriptor(section)}
+                    </p>
+                  </div>
+
+                  <ChevronRight
+                    size={16}
+                    className="ml-2 shrink-0 text-[#747474]"
+                  />
 
                   <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleSectionVisibility(section.id);
+                    }}
+                    className="hover:bg-hover-bg ml-2 shrink-0 rounded-lg p-1.5 text-gray-400 opacity-0 transition-all group-hover:opacity-100"
+                    title={section.visible ? "Hide section" : "Show section"}
+                    aria-label={`${section.visible ? "Hide" : "Show"} section ${section.title}`}
+                  >
+                    {section.visible ? <Eye size={15} /> : <EyeOff size={15} />}
+                  </button>
+
+                  <button
+                    type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       onRemoveSection(section.id);
@@ -244,10 +419,14 @@ export default function LeftSidebar({
                   </button>
                 </div>
 
-                <div className="border-tertiary-b bg-active-bg text-tertiary-text hover:bg-hover-bg flex cursor-grab items-center justify-center self-stretch border-l px-3.5 transition-colors active:cursor-grabbing">
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  className="border-tertiary-b bg-active-bg text-tertiary-text hover:bg-hover-bg flex cursor-grab items-center justify-center self-stretch border-l px-3.5 transition-colors active:cursor-grabbing"
+                >
                   <GripVertical size={16} />
                 </div>
-              </div>
+              </Reorder.Item>
             );
           })}
 
@@ -256,7 +435,7 @@ export default function LeftSidebar({
               No sections found
             </p>
           )}
-        </div>
+        </Reorder.Group>
       </div>
     </aside>
   );
