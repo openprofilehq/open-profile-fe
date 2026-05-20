@@ -10,6 +10,23 @@ export interface SavedLink {
   imageSrc: string | null;
 }
 
+export interface ProjectItem {
+  id: string;
+  title: string;
+  description: string;
+  url?: string;
+  buttonText?: string;
+  imageSrc?: string | null;
+  highlighted?: boolean;
+}
+
+export interface ExperienceItem {
+  id: string;
+  role: string;
+  company: string;
+  duration: string;
+}
+
 export interface Section {
   id: string;
   title: string;
@@ -19,6 +36,8 @@ export interface Section {
   bio?: string;
   subtitle?: string;
   links?: SavedLink[];
+  projects?: ProjectItem[];
+  experience?: ExperienceItem[];
   font?: string;
   textColor?: string;
   bgColor?: string;
@@ -27,15 +46,13 @@ export interface Section {
   paddingBottom?: number;
   gap?: number;
   padding?: number;
-  ctaTitle?: string;
-  ctaSubtitle?: string;
-  ctaButton?: string;
-  ctaButtonLink?: string;
-  ctaLayout?: "center" | "left" | "right";
-  ctaSpacingTop?: number;
-  ctaSpacingBottom?: number;
-  ctaSpacingGap?: number;
-  ctaSpacingPadding?: number;
+  layout?: string; // "1" | "2" | "3" | "4"
+  highlightSection?: boolean;
+  iconId?: string | null;
+  iconLabel?: string | null;
+  iconSrc?: string | null;
+  buttonText?: string;
+  url?: string;
 }
 
 export interface ProfilePreview {

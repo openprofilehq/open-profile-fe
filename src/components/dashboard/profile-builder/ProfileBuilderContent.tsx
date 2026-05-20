@@ -7,7 +7,6 @@ import BuilderHeader from "./BuilderHeader";
 import LeftSidebar from "./LeftSidebar";
 import PreviewCanvas from "./PreviewCanvas";
 import RightPanel from "./RightPanel";
-import CtaLeftPanel from "../cta/CtaLeftPanel";
 import Link from "next/link";
 import type { Section } from "./types";
 
@@ -24,13 +23,46 @@ export default function ProfileBuilderContent() {
     "sharp" | "medium" | "round"
   >("medium");
   const [theme, setTheme] = useState<"light" | "dark">("light");
-
   const [sections, setSections] = useState<Section[]>([
     {
       id: "bio",
       title: "Bio",
       type: "bio",
       visible: true,
+    },
+    {
+      id: "links",
+      title: "Links - Featured Links",
+      type: "links",
+      visible: true,
+    },
+    {
+      id: "projects",
+      title: "Projects - Portfolio",
+      type: "projects",
+      visible: true,
+      projects: [
+        {
+          id: "default-project-1",
+          title: "OpenProfile Platform",
+          description: "Open-source links-in-bio platform for modern creators.",
+          url: "https://github.com",
+        },
+      ],
+    },
+    {
+      id: "cta",
+      title: "Let's build something",
+      type: "experience",
+      visible: true,
+      subtitle:
+        "I'm currently accepting new projects and consulting opportunities for Q3 2026.",
+      layout: "1",
+      buttonText: "Start a Conversation",
+      url: "",
+      iconId: "chat",
+      iconSrc: "/profilebuilder_home/icons/chat.svg",
+      iconLabel: "Chat",
     },
   ]);
   const resolvedSections = sections.map((section) =>
@@ -58,23 +90,20 @@ export default function ProfileBuilderContent() {
       id: Math.random().toString(36).substr(2, 9),
       title,
       type,
-      ...(type === "cta" && {
-        ctaTitle: "Let's build something.",
-        ctaSubtitle:
-          "I'm currently accepting new projects and consulting opportunities for Q3 2026.",
-        ctaButton: "Start a Conversation",
-        ctaButtonLink: "",
-        ctaLayout: "center",
-        ctaSpacingTop: 24,
-        ctaSpacingBottom: 24,
-        ctaSpacingGap: 20,
-        ctaSpacingPadding: 16,
-      }),
       visible: true,
-      subtitle: type === "links" ? "" : undefined,
+      subtitle: type === "links" ? "" : type === "experience" ? "" : undefined,
       links: type === "links" ? [] : undefined,
+      projects: type === "projects" ? [] : undefined,
+      layout: type === "experience" ? "1" : undefined,
+      buttonText: type === "experience" ? "Start a Conversation" : undefined,
+      url: type === "experience" ? "" : undefined,
+      iconId: type === "experience" ? "chat" : undefined,
+      iconSrc:
+        type === "experience"
+          ? "/profilebuilder_home/icons/chat.svg"
+          : undefined,
+      iconLabel: type === "experience" ? "Chat" : undefined,
     };
-
     setSections([...sections, newSection]);
     setSelectedSectionId(newSection.id);
     setActiveTab("section");
@@ -124,32 +153,18 @@ export default function ProfileBuilderContent() {
         <BuilderHeader />
 
         <div className="flex flex-1 gap-2 overflow-hidden bg-[#F6F7F9] p-2 px-4">
-          {selectedSection?.type === "cta" ? (
-            <CtaLeftPanel
-              section={selectedSection}
-              onBack={() => {
-                const firstSection = sections.find((s) => s.type !== "cta");
-                setSelectedSectionId(firstSection?.id ?? null);
-                setActiveTab("general");
-              }}
-              onUpdate={(updates) =>
-                handleUpdateSection(selectedSection.id, updates)
-              }
-            />
-          ) : (
-            <LeftSidebar
-              sections={resolvedSections}
-              selectedSectionId={selectedSectionId}
-              selectedSection={selectedSection}
-              onSelectSection={handleSelectSection}
-              onAddSection={handleAddSection}
-              onRemoveSection={handleRemoveSection}
-              onToggleSectionVisibility={handleToggleSectionVisibility}
-              onReorderSections={setSections}
-              onUpdateSection={handleUpdateSection}
-              profile={profile}
-            />
-          )}
+          <LeftSidebar
+            sections={resolvedSections}
+            selectedSectionId={selectedSectionId}
+            selectedSection={selectedSection}
+            onSelectSection={handleSelectSection}
+            onAddSection={handleAddSection}
+            onRemoveSection={handleRemoveSection}
+            onToggleSectionVisibility={handleToggleSectionVisibility}
+            onReorderSections={setSections}
+            onUpdateSection={handleUpdateSection}
+            profile={profile}
+          />
 
           <PreviewCanvas
             font={font}
@@ -161,8 +176,8 @@ export default function ProfileBuilderContent() {
             theme={theme}
             sections={resolvedSections}
             profile={profile}
-            selectedSectionType={selectedSection?.type ?? null}
-            selectedSectionId={selectedSectionId}
+            onToggleSectionVisibility={handleToggleSectionVisibility}
+            onRemoveSection={handleRemoveSection}
           />
 
           <RightPanel

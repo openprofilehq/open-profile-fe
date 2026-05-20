@@ -1,7 +1,6 @@
 "use client";
 
 import { Sun, Moon, Type } from "lucide-react";
-import CtaRightPanel from "../cta/CtaRightPanel";
 import type { Section } from "./types";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { isValidHex } from "@/utils/color";
@@ -96,7 +95,7 @@ export default function RightPanel({
       </div>
 
       {/* Settings Body */}
-      <div className="no-scrollbar flex-1 overflow-x-visible overflow-y-auto p-6">
+      <div className="flex-1 overflow-x-visible overflow-y-auto p-6">
         {activeTab === "general" ? (
           <div className="flex flex-col gap-6">
             {/* Font Selection */}
@@ -290,155 +289,134 @@ export default function RightPanel({
         ) : (
           <div className="flex h-full flex-col gap-6">
             {selectedSection ? (
-              selectedSection.type === "cta" ? (
-                <CtaRightPanel
-                  section={selectedSection}
-                  font={font}
-                  onChangeFont={onChangeFont}
-                  textColor={textColor}
-                  onChangeTextColor={onChangeTextColor}
-                  bgColor={bgColor}
-                  onChangeBgColor={onChangeBgColor}
-                  iconColor={iconColor}
-                  onChangeIconColor={onChangeIconColor}
-                  onUpdate={(updates) =>
-                    onUpdateSection(selectedSection.id, updates)
-                  }
-                />
-              ) : (
-                <div className="flex flex-col gap-6">
-                  {/* Font Selection */}
-                  <div>
-                    <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
-                      Font
-                    </label>
-                    <Select
-                      value={selectedSection.font ?? font}
-                      onValueChange={(val) =>
-                        onUpdateSection(selectedSection.id, { font: val })
+              <div className="flex flex-col gap-6">
+                {/* Font Selection */}
+                <div>
+                  <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
+                    Font
+                  </label>
+                  <Select
+                    value={selectedSection.font ?? font}
+                    onValueChange={(val) =>
+                      onUpdateSection(selectedSection.id, { font: val })
+                    }
+                  >
+                    <SelectTrigger className="border-tertiary-b rounded-[12px] border bg-white px-4 py-3.5 text-sm font-semibold">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FONT_OPTIONS.map((o) => (
+                        <SelectItem key={o.value} value={o.value}>
+                          {o.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Colors Selection */}
+                <div>
+                  <label className="text-primary-text mb-3 block text-xs font-bold tracking-wider uppercase">
+                    Color
+                  </label>
+
+                  <div className="border-tertiary-b flex flex-col gap-3 rounded-[16px] border bg-white p-4">
+                    <ColorPicker
+                      label="Text"
+                      color={
+                        isValidHex(selectedSection.textColor ?? textColor)
+                          ? (selectedSection.textColor ?? textColor)
+                          : "#050505"
                       }
-                    >
-                      <SelectTrigger className="border-tertiary-b rounded-[12px] border bg-white px-4 py-3.5 text-sm font-semibold">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {FONT_OPTIONS.map((o) => (
-                          <SelectItem key={o.value} value={o.value}>
-                            {o.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Colors Selection */}
-                  <div>
-                    <label className="text-primary-text mb-3 block text-xs font-bold tracking-wider uppercase">
-                      Color
-                    </label>
-
-                    <div className="border-tertiary-b flex flex-col gap-3 rounded-[16px] border bg-white p-4">
-                      <ColorPicker
-                        label="Text"
-                        color={
-                          isValidHex(selectedSection.textColor ?? textColor)
-                            ? (selectedSection.textColor ?? textColor)
-                            : "#050505"
-                        }
-                        onChange={(val) =>
-                          onUpdateSection(selectedSection.id, {
-                            textColor: val,
-                          })
-                        }
-                      />
-                      <ColorPicker
-                        label="Bg"
-                        color={
-                          isValidHex(selectedSection.bgColor ?? bgColor)
-                            ? (selectedSection.bgColor ?? bgColor)
-                            : "#FFFFFF"
-                        }
-                        onChange={(val) =>
-                          onUpdateSection(selectedSection.id, { bgColor: val })
-                        }
-                      />
-                      <ColorPicker
-                        label="Icon"
-                        color={
-                          isValidHex(selectedSection.iconColor ?? iconColor)
-                            ? (selectedSection.iconColor ?? iconColor)
-                            : "#087583"
-                        }
-                        onChange={(val) =>
-                          onUpdateSection(selectedSection.id, {
-                            iconColor: val,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-
-                  {/* Section Spacing */}
-                  <div>
-                    <label className="text-primary-text mb-4 block text-xs font-bold tracking-wider uppercase">
-                      Spacing
-                    </label>
-                    <div className="flex flex-col gap-4">
-                      {(
-                        [
-                          { label: "Top", key: "paddingTop", defaultVal: 24 },
-                          {
-                            label: "Bottom",
-                            key: "paddingBottom",
-                            defaultVal: 24,
-                          },
-                          { label: "Gap", key: "gap", defaultVal: 20 },
-                          { label: "Padding", key: "padding", defaultVal: 16 },
-                        ] as {
-                          label: string;
-                          key: keyof Pick<
-                            Section,
-                            "paddingTop" | "paddingBottom" | "gap" | "padding"
-                          >;
-                          defaultVal: number;
-                        }[]
-                      ).map((item) => {
-                        const val = Number(
-                          selectedSection[item.key] ?? item.defaultVal
-                        );
-                        return (
-                          <div key={item.label} className="flex flex-col gap-2">
-                            <span className="text-primary-text text-sm font-semibold">
-                              {item.label}
-                            </span>
-                            <div className="border-tertiary-b relative flex h-[48px] w-full items-center overflow-hidden rounded-[12px] border bg-white">
-                              <div
-                                className="bg-hover-bg pointer-events-none absolute top-0 bottom-0 left-0 transition-all duration-75"
-                                style={{ width: `${(val / 48) * 100}%` }}
-                              />
-                              <input
-                                type="range"
-                                min="0"
-                                max="48"
-                                value={val}
-                                onChange={(e) =>
-                                  onUpdateSection(selectedSection.id, {
-                                    [item.key]: Number(e.target.value),
-                                  })
-                                }
-                                className="custom-slider absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent px-4 outline-none focus:outline-none"
-                              />
-                              <div className="text-primary-text pointer-events-none absolute right-4 text-sm font-semibold select-none">
-                                {val}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                      onChange={(val) =>
+                        onUpdateSection(selectedSection.id, { textColor: val })
+                      }
+                    />
+                    <ColorPicker
+                      label="Bg"
+                      color={
+                        isValidHex(selectedSection.bgColor ?? bgColor)
+                          ? (selectedSection.bgColor ?? bgColor)
+                          : "#FFFFFF"
+                      }
+                      onChange={(val) =>
+                        onUpdateSection(selectedSection.id, { bgColor: val })
+                      }
+                    />
+                    <ColorPicker
+                      label="Icon"
+                      color={
+                        isValidHex(selectedSection.iconColor ?? iconColor)
+                          ? (selectedSection.iconColor ?? iconColor)
+                          : "#087583"
+                      }
+                      onChange={(val) =>
+                        onUpdateSection(selectedSection.id, { iconColor: val })
+                      }
+                    />
                   </div>
                 </div>
-              )
+
+                {/* Section Spacing */}
+                <div>
+                  <label className="text-primary-text mb-4 block text-xs font-bold tracking-wider uppercase">
+                    Spacing
+                  </label>
+                  <div className="flex flex-col gap-4">
+                    {(
+                      [
+                        { label: "Top", key: "paddingTop", defaultVal: 24 },
+                        {
+                          label: "Bottom",
+                          key: "paddingBottom",
+                          defaultVal: 24,
+                        },
+                        { label: "Gap", key: "gap", defaultVal: 20 },
+                        { label: "Padding", key: "padding", defaultVal: 16 },
+                      ] as {
+                        label: string;
+                        key: keyof Pick<
+                          Section,
+                          "paddingTop" | "paddingBottom" | "gap" | "padding"
+                        >;
+                        defaultVal: number;
+                      }[]
+                    ).map((item) => {
+                      const val = Number(
+                        selectedSection[item.key] ?? item.defaultVal
+                      );
+                      return (
+                        <div key={item.label} className="flex flex-col gap-2">
+                          <span className="text-primary-text text-sm font-semibold">
+                            {item.label}
+                          </span>
+                          <div className="border-tertiary-b relative flex h-[48px] w-full items-center overflow-hidden rounded-[12px] border bg-white">
+                            <div
+                              className="bg-hover-bg pointer-events-none absolute top-0 bottom-0 left-0 transition-all duration-75"
+                              style={{ width: `${(val / 48) * 100}%` }}
+                            />
+                            <input
+                              type="range"
+                              min="0"
+                              max="48"
+                              value={val}
+                              onChange={(e) =>
+                                onUpdateSection(selectedSection.id, {
+                                  [item.key]: Number(e.target.value),
+                                })
+                              }
+                              className="custom-slider absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent px-4 outline-none focus:outline-none"
+                            />
+                            <div className="text-primary-text pointer-events-none absolute right-4 text-sm font-semibold select-none">
+                              {val}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className="flex h-[300px] flex-col items-center justify-center px-4 text-center">
                 <Type size={32} className="text-disabled-text mb-3" />

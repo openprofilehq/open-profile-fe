@@ -28,11 +28,25 @@ const LinkSidebar = ({
   );
   const [links, setLinks] = useState<SavedLink[]>(section?.links ?? []);
   const [editingLink, setEditingLink] = useState<SavedLink | null>(null);
+  const [sectionTitle, setSectionTitle] = useState(section?.title || "Links");
+  const [sectionSubtitle, setSectionSubtitle] = useState(
+    section?.subtitle || ""
+  );
 
   const syncSection = (updates: Partial<LinkSection>) => {
     if (!section) return;
 
     onUpdateSection(section.id, updates);
+  };
+
+  const handleTitleChange = (value: string) => {
+    setSectionTitle(value);
+    syncSection({ title: value });
+  };
+
+  const handleSubtitleChange = (value: string) => {
+    setSectionSubtitle(value);
+    syncSection({ subtitle: value });
   };
 
   const handleLinksChange = (
@@ -94,7 +108,7 @@ const LinkSidebar = ({
   return (
     <aside className="border-tertiary-b animate-in fade-in flex h-full w-72.5 shrink-0 flex-col border bg-white shadow-sm duration-200 select-none">
       {/* Back Button */}
-      <div className="mb-6 p-3">
+      <div className="p-6 pb-4">
         <button
           onClick={returnTab}
           className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
@@ -105,24 +119,41 @@ const LinkSidebar = ({
       </div>
       {/* tabs */}
 
-      <div className="border-secondary-border flex border-b">
+      <div className="border-tertiary-b flex border-b">
         <button
           onClick={() => setSelectedTab("content")}
-          className={`-mb-px inline-flex flex-1 items-center justify-center gap-2 border-b py-3 text-base transition-all ${selectedTab === "content" ? "text-primary-text border-black" : "text-primary-text/30"} transform transition-transform duration-200`}
+          className={`relative flex-1 py-4 text-center text-sm font-bold transition-all ${
+            selectedTab === "content"
+              ? "text-primary-text"
+              : "text-tertiary-text hover:text-primary-text"
+          }`}
         >
           Content
+          {selectedTab === "content" && (
+            <span className="bg-primary-text absolute bottom-0 left-0 h-[2.5px] w-full transition-all" />
+          )}
         </button>
         <button
-          //   onClick={() => setSelectedTab("section")}
-          className={`-mb-px inline-flex flex-1 items-center justify-center gap-2 border-b py-3 text-base transition-all ${selectedTab === "section" ? "text-primary-text border-black" : "text-primary-text/30"} transform transition-transform duration-200`}
+          className={`relative flex-1 py-4 text-center text-sm font-bold transition-all ${
+            selectedTab === "section"
+              ? "text-primary-text"
+              : "text-tertiary-text hover:text-primary-text"
+          }`}
         >
           Section
+          {selectedTab === "section" && (
+            <span className="bg-primary-text absolute bottom-0 left-0 h-[2.5px] w-full transition-all" />
+          )}
         </button>
       </div>
 
       <div>
         {selectedTab === "content" ? (
           <ContentOption
+            title={sectionTitle}
+            subtitle={sectionSubtitle}
+            onTitleChange={handleTitleChange}
+            onSubtitleChange={handleSubtitleChange}
             links={links}
             onDeleteLink={handleDeleteLink}
             onEditLink={handleEditLink}
