@@ -17,6 +17,7 @@ import RightPanel from "./RightPanel";
 import Link from "next/link";
 import type { Section } from "./types";
 import { contentToSections, sectionsToContent } from "./builder.utils";
+import { ROUTES } from "@/constants/routes";
 
 export default function ProfileBuilderContent() {
   const queryClient = useQueryClient();
@@ -335,7 +336,7 @@ export default function ProfileBuilderContent() {
           Please use a desktop or large tablet to edit your profile layout.
         </p>
         <Link
-          href="/dashboard"
+          href={ROUTES.dashboard.home}
           className="mt-6 rounded-[8px] bg-[#087583] px-5 py-3 font-semibold text-white"
         >
           Back to dashboard
