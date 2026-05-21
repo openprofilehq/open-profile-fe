@@ -15,6 +15,9 @@ export interface ProjectItem {
   title: string;
   description: string;
   url?: string;
+  buttonText?: string;
+  imageSrc?: string | null;
+  highlighted?: boolean;
 }
 
 export interface ExperienceItem {
@@ -43,15 +46,8 @@ export interface Section {
   paddingBottom?: number;
   gap?: number;
   padding?: number;
-  ctaTitle?: string;
-  ctaSubtitle?: string;
-  ctaButton?: string;
-  ctaButtonLink?: string;
-  ctaLayout?: "center" | "left" | "right";
-  ctaSpacingTop?: number;
-  ctaSpacingBottom?: number;
-  ctaSpacingGap?: number;
-  ctaSpacingPadding?: number;
+  layout?: string; // "1" | "2" | "3" | "4"
+  highlightSection?: boolean;
 }
 
 export interface ProfilePreview {

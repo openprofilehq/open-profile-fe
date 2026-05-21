@@ -83,11 +83,25 @@ export default function PreviewCanvas({
         : textColor || (isDark ? "#E0E0E0" : "#454545"),
   };
 
+  const getRgbaColor = (hex: string, alpha: number) => {
+    if (!hex) return `rgba(10, 146, 164, ${alpha})`;
+    const cleanHex = hex.replace("#", "");
+    if (cleanHex.length === 3) {
+      const r = parseInt(cleanHex[0] + cleanHex[0], 16);
+      const g = parseInt(cleanHex[1] + cleanHex[1], 16);
+      const b = parseInt(cleanHex[2] + cleanHex[2], 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+    const num = parseInt(cleanHex, 16);
+    const r = (num >> 16) & 255;
+    const g = (num >> 8) & 255;
+    const b = num & 255;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
   const iconStyle = {
     color: iconColor || "#0a92a4",
-    backgroundColor: isDark
-      ? "rgba(10, 146, 164, 0.15)"
-      : "rgba(10, 146, 164, 0.08)",
+    backgroundColor: getRgbaColor(iconColor || "#0a92a4", isDark ? 0.15 : 0.08),
   };
 
   const visibleSections = sections.filter((section) => section.visible);
@@ -163,27 +177,21 @@ export default function PreviewCanvas({
           {visibleSections.map((section) => {
             if (section.type === "bio") return null; // Already rendered in main card
 
-            if (section.type === "cta") {
-              // CHANGED: only show CTA preview when it's the selected section
-              if (section.id !== selectedSectionId) return null;
-              return (
-                <CtaSectionPreview
-                  key={section.id}
-                  section={section}
-                  textColor={textColor}
-                  bgColor={bgColor}
-                  iconColor={iconColor}
-                  borderRadius={activeRadius}
-                  isDark={isDark}
-                  fontClass={selectedFontClass}
-                />
-              );
-            }
+            const isSectionHighlighted =
+              section.type === "projects" && section.highlightSection;
+            const currentCardStyle = isSectionHighlighted
+              ? {
+                  ...cardStyle,
+                  borderColor: iconColor || "#0a92a4",
+                  boxShadow: `0 0 16px ${iconColor || "#0a92a4"}25`,
+                  borderWidth: "2px",
+                }
+              : cardStyle;
 
             return (
               <div
                 key={section.id}
-                style={cardStyle}
+                style={currentCardStyle}
                 className="relative flex flex-col border p-6 shadow-sm transition-all duration-300"
               >
                 {/* Action buttons (View/Delete) */}
@@ -237,36 +245,220 @@ export default function PreviewCanvas({
 
                 {/* Section-specific placeholders */}
                 {section.type === "projects" && (
-                  <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    {section.subtitle && (
+                      <p className="text-tertiary-text mb-6 text-sm leading-relaxed">
+                        {section.subtitle}
+                      </p>
+                    )}
+
                     {section.projects && section.projects.length > 0 ? (
-                      section.projects.map((project) => (
-                        <div
-                          key={project.id}
-                          className="border-tertiary-b flex items-center justify-between rounded-lg border bg-black/5 p-4 dark:border-[#2D2D2D] dark:bg-white/5"
-                        >
-                          <div>
-                            <h4 className="text-sm font-semibold">
-                              {project.title}
-                            </h4>
-                            <p className="text-tertiary-text mt-1 text-xs">
-                              {project.description}
-                            </p>
-                          </div>
-                          {project.url && (
-                            <a
-                              href={project.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="hover:text-brand-hover-bg transition-colors"
-                            >
-                              <ExternalLink
-                                size={16}
-                                className="text-disabled-text"
-                              />
-                            </a>
-                          )}
-                        </div>
-                      ))
+                      <div
+                        className={
+                          section.layout === "1"
+                            ? "grid grid-cols-1 gap-4 sm:grid-cols-2"
+                            : "flex flex-col gap-4"
+                        }
+                      >
+                        {section.projects.map((project) => {
+                          const isHighlighted = project.highlighted;
+                          const projectCardStyle = {
+                            borderColor: isHighlighted
+                              ? iconColor || "#0a92a4"
+                              : isDark
+                                ? "#2D2D2D"
+                                : "#EDEDED",
+                            boxShadow: isHighlighted
+                              ? `0 4px 12px ${iconColor || "#0a92a4"}20`
+                              : undefined,
+                            borderWidth: isHighlighted ? "2px" : "1px",
+                            backgroundColor: "transparent",
+                          };
+
+                          // Render Layout 1: Grid Card
+                          if (!section.layout || section.layout === "1") {
+                            return (
+                              <div
+                                key={project.id}
+                                style={projectCardStyle}
+                                className="flex flex-col overflow-hidden rounded-xl border transition-all"
+                              >
+                                {project.imageSrc && (
+                                  <div className="relative aspect-video w-full shrink-0 bg-gray-100 dark:bg-zinc-800">
+                                    <Image
+                                      src={project.imageSrc}
+                                      alt={project.title}
+                                      fill
+                                      className="object-cover"
+                                      unoptimized
+                                    />
+                                  </div>
+                                )}
+                                <div className="flex flex-1 flex-col p-4">
+                                  <h4 className="truncate text-sm font-bold">
+                                    {project.title}
+                                  </h4>
+                                  <p className="text-tertiary-text mt-1 line-clamp-2 flex-1 text-xs">
+                                    {project.description}
+                                  </p>
+                                  {project.url && (
+                                    <a
+                                      href={project.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{
+                                        backgroundColor: iconColor || "#0a92a4",
+                                      }}
+                                      className="mt-4 flex h-9 w-full items-center justify-center rounded-lg px-4 text-center text-xs font-bold text-white transition-opacity hover:opacity-90"
+                                    >
+                                      {project.buttonText || "View project"}
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          // Render Layout 2: Full List Card (Image on top, full width)
+                          if (section.layout === "2") {
+                            return (
+                              <div
+                                key={project.id}
+                                style={projectCardStyle}
+                                className="flex flex-col overflow-hidden rounded-xl border transition-all"
+                              >
+                                {project.imageSrc && (
+                                  <div className="relative h-44 w-full shrink-0 bg-gray-100 dark:bg-zinc-800">
+                                    <Image
+                                      src={project.imageSrc}
+                                      alt={project.title}
+                                      fill
+                                      className="object-cover"
+                                      unoptimized
+                                    />
+                                  </div>
+                                )}
+                                <div className="flex flex-col p-5">
+                                  <h4 className="text-base font-bold">
+                                    {project.title}
+                                  </h4>
+                                  <p className="text-tertiary-text mt-2 text-xs leading-relaxed">
+                                    {project.description}
+                                  </p>
+                                  {project.url && (
+                                    <div className="mt-4 flex justify-start">
+                                      <a
+                                        href={project.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                          backgroundColor:
+                                            iconColor || "#0a92a4",
+                                        }}
+                                        className="flex h-9 items-center justify-center rounded-lg px-5 text-center text-xs font-bold text-white transition-opacity hover:opacity-90"
+                                      >
+                                        {project.buttonText || "View project"}
+                                      </a>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          // Render Layout 3: Image Left
+                          if (section.layout === "3") {
+                            return (
+                              <div
+                                key={project.id}
+                                style={projectCardStyle}
+                                className="flex items-center gap-4 rounded-xl border p-4 transition-all"
+                              >
+                                {project.imageSrc && (
+                                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
+                                    <Image
+                                      src={project.imageSrc}
+                                      alt={project.title}
+                                      fill
+                                      className="object-cover"
+                                      unoptimized
+                                    />
+                                  </div>
+                                )}
+                                <div className="min-w-0 flex-1">
+                                  <h4 className="truncate text-sm font-bold">
+                                    {project.title}
+                                  </h4>
+                                  <p className="text-tertiary-text mt-1 line-clamp-2 text-xs">
+                                    {project.description}
+                                  </p>
+                                  {project.url && (
+                                    <a
+                                      href={project.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{ color: iconColor || "#0a92a4" }}
+                                      className="mt-2 inline-flex items-center gap-1 text-xs font-bold hover:underline"
+                                    >
+                                      <span>
+                                        {project.buttonText || "View project"}
+                                      </span>
+                                      <ExternalLink size={12} />
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          // Render Layout 4: Image Right
+                          if (section.layout === "4") {
+                            return (
+                              <div
+                                key={project.id}
+                                style={projectCardStyle}
+                                className="flex items-center gap-4 rounded-xl border p-4 transition-all"
+                              >
+                                <div className="min-w-0 flex-1">
+                                  <h4 className="truncate text-sm font-bold">
+                                    {project.title}
+                                  </h4>
+                                  <p className="text-tertiary-text mt-1 line-clamp-2 text-xs">
+                                    {project.description}
+                                  </p>
+                                  {project.url && (
+                                    <a
+                                      href={project.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{ color: iconColor || "#0a92a4" }}
+                                      className="mt-2 inline-flex items-center gap-1 text-xs font-bold hover:underline"
+                                    >
+                                      <span>
+                                        {project.buttonText || "View project"}
+                                      </span>
+                                      <ExternalLink size={12} />
+                                    </a>
+                                  )}
+                                </div>
+                                {project.imageSrc && (
+                                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
+                                    <Image
+                                      src={project.imageSrc}
+                                      alt={project.title}
+                                      fill
+                                      className="object-cover"
+                                      unoptimized
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
+
+                          return null;
+                        })}
+                      </div>
                     ) : (
                       <p className="text-tertiary-text py-4 text-center text-xs">
                         No projects added yet.
