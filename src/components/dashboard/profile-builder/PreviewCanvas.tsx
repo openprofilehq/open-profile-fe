@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { Folder, ExternalLink, Eye, EyeOff, Trash2 } from "lucide-react";
 import { getImageUrl } from "@/utils/profile";
-import CtaSectionPreview from "../cta/CtaSectionPreview";
 import type { Section, ProfilePreview } from "./types";
 
 interface PreviewCanvasProps {
@@ -15,8 +14,6 @@ interface PreviewCanvasProps {
   borderRadius: "sharp" | "medium" | "round";
   theme: "light" | "dark";
   sections: Section[];
-  selectedSectionType: string | null;
-  selectedSectionId: string | null;
   profile?: ProfilePreview | null;
   onToggleSectionVisibility: (id: string) => void;
   onRemoveSection: (id: string) => void;
@@ -31,8 +28,6 @@ export default function PreviewCanvas({
   borderRadius,
   theme,
   sections,
-  selectedSectionType,
-  selectedSectionId,
   profile,
   onToggleSectionVisibility,
   onRemoveSection,
@@ -105,7 +100,7 @@ export default function PreviewCanvas({
 
   return (
     <div
-      className={`animate-in fade-in no-scrollbar flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-black-100-text" : "bg-transparent"}`}
+      className={`animate-in fade-in flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
     >
       {/* Device wrapper */}
       <div className="flex w-full max-w-195 flex-col gap-6">
@@ -114,26 +109,11 @@ export default function PreviewCanvas({
           className={`flex w-full flex-col transition-all duration-300 ${selectedFontClass}`}
         >
           {/* 1. Main Bio Card (Standard Profile Header) */}
-          {selectedSectionType !== "cta" && isBioVisible && (
+          {isBioVisible && (
             <div
               style={cardStyle}
               className="relative flex flex-col items-center gap-6 border p-6 shadow-sm transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
             >
-              {/* Action buttons (View/Delete) */}
-              <div className="border-tertiary-b bg-neutral-subtle-bg absolute top-6 right-6 flex items-center gap-3 rounded-full border px-3.5 py-1.5 shadow-none select-none">
-                <button
-                  className="text-preview-action-icon transition-opacity hover:opacity-80"
-                  title="Toggle visibility"
-                >
-                  <Eye size={18} strokeWidth={2} />
-                </button>
-                <button
-                  className="text-preview-action-delete transition-opacity hover:opacity-80"
-                  title="Delete section"
-                >
-                  <Trash2 size={18} strokeWidth={2} />
-                </button>
-              </div>
               {/* Avatar image */}
               <div className="border-brand-b/20 bg-brand-light-subtle-bg relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-inner">
                 {getImageUrl(profile?.photoUrl) ? (
@@ -158,7 +138,7 @@ export default function PreviewCanvas({
                 </h2>
                 <p
                   style={textStyle}
-                  className="mt-3 text-base leading-relaxed opacity-90 transition-colors"
+                  className="mt-3 text-[15px] leading-relaxed opacity-90 transition-colors"
                 >
                   {profile?.bio ||
                     "I'm a digital creator focusing on the intersection of design, technology, and intentional living. Sharing insights to help you build better products and habits."}

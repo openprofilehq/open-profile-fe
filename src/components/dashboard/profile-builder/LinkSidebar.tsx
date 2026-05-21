@@ -28,11 +28,25 @@ const LinkSidebar = ({
   );
   const [links, setLinks] = useState<SavedLink[]>(section?.links ?? []);
   const [editingLink, setEditingLink] = useState<SavedLink | null>(null);
+  const [sectionTitle, setSectionTitle] = useState(section?.title || "Links");
+  const [sectionSubtitle, setSectionSubtitle] = useState(
+    section?.subtitle || ""
+  );
 
   const syncSection = (updates: Partial<LinkSection>) => {
     if (!section) return;
 
     onUpdateSection(section.id, updates);
+  };
+
+  const handleTitleChange = (value: string) => {
+    setSectionTitle(value);
+    syncSection({ title: value });
+  };
+
+  const handleSubtitleChange = (value: string) => {
+    setSectionSubtitle(value);
+    syncSection({ subtitle: value });
   };
 
   const handleLinksChange = (
@@ -136,6 +150,10 @@ const LinkSidebar = ({
       <div>
         {selectedTab === "content" ? (
           <ContentOption
+            title={sectionTitle}
+            subtitle={sectionSubtitle}
+            onTitleChange={handleTitleChange}
+            onSubtitleChange={handleSubtitleChange}
             links={links}
             onDeleteLink={handleDeleteLink}
             onEditLink={handleEditLink}

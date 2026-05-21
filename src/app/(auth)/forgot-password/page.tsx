@@ -59,9 +59,7 @@ export default function ForgotPasswordPage() {
             onChange={(e) => setEmail(e.target.value)}
             onBlur={() =>
               setEmailError(
-                email && !EMAIL_RE.test(email)
-                  ? "Please enter a valid email address."
-                  : ""
+                email && !EMAIL_RE.test(email) ? "Incorrect email" : ""
               )
             }
             className={`border-input-b placeholder:text-input-text h-11 border bg-[#FAFAFA] shadow-none ${emailError ? "border-red-400" : ""}`}

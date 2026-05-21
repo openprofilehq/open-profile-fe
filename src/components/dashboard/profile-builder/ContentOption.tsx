@@ -3,12 +3,20 @@ import { GripVertical, Trash2 } from "lucide-react";
 import type { SavedLink } from "./LinkSidebar";
 
 export default function ContentOption({
+  title,
+  subtitle,
+  onTitleChange,
+  onSubtitleChange,
   links,
   onDeleteLink,
   onEditLink,
   switchTab,
   canAddLink,
 }: {
+  title: string;
+  subtitle: string;
+  onTitleChange: (value: string) => void;
+  onSubtitleChange: (value: string) => void;
   links: SavedLink[];
   onDeleteLink: (id: string) => void;
   onEditLink: (link: SavedLink) => void;
@@ -18,6 +26,33 @@ export default function ContentOption({
   return (
     <div className="p-3">
       <div className="flex flex-col gap-4">
+        <span className="flex w-full flex-col gap-2">
+          <label className="text-sm font-semibold" htmlFor="title">
+            Title
+          </label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            value={title}
+            onChange={(e) => onTitleChange(e.target.value)}
+            placeholder="Add title"
+            className="border-accent-foreground/30 focus:ring-accent rounded-md border p-2 focus:ring-2 focus:ring-offset-1 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          />
+        </span>
+        <span className="flex w-full flex-col gap-2">
+          <label className="text-sm font-semibold" htmlFor="subtitle">
+            Subtitle
+          </label>
+          <textarea
+            id="subtitle"
+            name="subtitle"
+            value={subtitle}
+            onChange={(e) => onSubtitleChange(e.target.value)}
+            placeholder="Add subtitle"
+            className="border-accent-foreground/30 focus:ring-accent rounded-md border p-2 focus:ring-2 focus:ring-offset-1 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          />
+        </span>
         <span className="flex w-full flex-col gap-2">
           <span className="flex items-center justify-between">
             <span className="text-sm font-semibold">Links</span>

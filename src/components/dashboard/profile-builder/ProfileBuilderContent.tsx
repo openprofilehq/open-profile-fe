@@ -7,7 +7,6 @@ import BuilderHeader from "./BuilderHeader";
 import LeftSidebar from "./LeftSidebar";
 import PreviewCanvas from "./PreviewCanvas";
 import RightPanel from "./RightPanel";
-import CtaLeftPanel from "../cta/CtaLeftPanel";
 import Link from "next/link";
 import type { Section } from "./types";
 
@@ -42,6 +41,17 @@ export default function ProfileBuilderContent() {
       title: "Projects - Portfolio",
       type: "projects",
       visible: true,
+<<<<<<< HEAD
+=======
+      projects: [
+        {
+          id: "default-project-1",
+          title: "OpenProfile Platform",
+          description: "Open-source links-in-bio platform for modern creators.",
+          url: "https://github.com",
+        },
+      ],
+>>>>>>> 3be84a4 (fix: undo merge)
     },
     {
       id: "cta",
@@ -49,7 +59,10 @@ export default function ProfileBuilderContent() {
       type: "experience",
       visible: true,
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 3be84a4 (fix: undo merge)
       subtitle:
         "I'm currently accepting new projects and consulting opportunities for Q3 2026.",
       layout: "1",
@@ -58,7 +71,10 @@ export default function ProfileBuilderContent() {
       iconId: "chat",
       iconSrc: "/profilebuilder_home/icons/chat.svg",
       iconLabel: "Chat",
+<<<<<<< HEAD
 >>>>>>> ab25465 (Feat(ProfileBuilder): Add cta section)
+=======
+>>>>>>> 3be84a4 (fix: undo merge)
     },
   ]);
   const resolvedSections = sections.map((section) =>
@@ -86,18 +102,6 @@ export default function ProfileBuilderContent() {
       id: Math.random().toString(36).substr(2, 9),
       title,
       type,
-      ...(type === "cta" && {
-        ctaTitle: "Let's build something.",
-        ctaSubtitle:
-          "I'm currently accepting new projects and consulting opportunities for Q3 2026.",
-        ctaButton: "Start a Conversation",
-        ctaButtonLink: "",
-        ctaLayout: "center",
-        ctaSpacingTop: 24,
-        ctaSpacingBottom: 24,
-        ctaSpacingGap: 20,
-        ctaSpacingPadding: 16,
-      }),
       visible: true,
       subtitle: type === "links" ? "" : type === "experience" ? "" : undefined,
       links: type === "links" ? [] : undefined,
@@ -112,7 +116,6 @@ export default function ProfileBuilderContent() {
           : undefined,
       iconLabel: type === "experience" ? "Chat" : undefined,
     };
-
     setSections([...sections, newSection]);
     setSelectedSectionId(newSection.id);
     setActiveTab("section");
@@ -162,32 +165,18 @@ export default function ProfileBuilderContent() {
         <BuilderHeader />
 
         <div className="flex flex-1 gap-2 overflow-hidden bg-[#F6F7F9] p-2 px-4">
-          {selectedSection?.type === "cta" ? (
-            <CtaLeftPanel
-              section={selectedSection}
-              onBack={() => {
-                const firstSection = sections.find((s) => s.type !== "cta");
-                setSelectedSectionId(firstSection?.id ?? null);
-                setActiveTab("general");
-              }}
-              onUpdate={(updates) =>
-                handleUpdateSection(selectedSection.id, updates)
-              }
-            />
-          ) : (
-            <LeftSidebar
-              sections={resolvedSections}
-              selectedSectionId={selectedSectionId}
-              selectedSection={selectedSection}
-              onSelectSection={handleSelectSection}
-              onAddSection={handleAddSection}
-              onRemoveSection={handleRemoveSection}
-              onToggleSectionVisibility={handleToggleSectionVisibility}
-              onReorderSections={setSections}
-              onUpdateSection={handleUpdateSection}
-              profile={profile}
-            />
-          )}
+          <LeftSidebar
+            sections={resolvedSections}
+            selectedSectionId={selectedSectionId}
+            selectedSection={selectedSection}
+            onSelectSection={handleSelectSection}
+            onAddSection={handleAddSection}
+            onRemoveSection={handleRemoveSection}
+            onToggleSectionVisibility={handleToggleSectionVisibility}
+            onReorderSections={setSections}
+            onUpdateSection={handleUpdateSection}
+            profile={profile}
+          />
 
           <PreviewCanvas
             font={font}

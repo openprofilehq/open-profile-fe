@@ -196,8 +196,8 @@ export default function LeftSidebar({
           {/* Card 4: CTA */}
           <button
             type="button"
-            onClick={() => handleSelectCard("CTA", "cta")}
-            className="group border-tertiary-b hover:border-brand-b flex h-[140px] w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
+            onClick={() => handleSelectCard("CTA", "experience")}
+            className="group border-tertiary-b hover:border-brand-b flex h-35 w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
           >
             <div className="flex flex-1 items-center bg-white p-2">
               <Image

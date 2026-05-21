@@ -27,10 +27,7 @@ export default function ResetPasswordPage() {
     ...resetPasswordOption,
     onSuccess: () => {
       sessionStorage.removeItem("resetToken");
-      const email = searchParams.get("email") ?? "";
-      router.push(
-        `/forgot-password/success${email ? `?email=${encodeURIComponent(email)}` : ""}`
-      );
+      router.push("/forgot-password/success");
     },
     onError: (err) =>
       toast.error(isApiError(err) ? err.message : "Password reset failed."),

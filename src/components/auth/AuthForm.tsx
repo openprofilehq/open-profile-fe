@@ -33,7 +33,7 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
   const returnTo = searchParams.get("returnTo");
 
   const [name, setName] = useState("");
-  const [email, setEmail] = useState(searchParams.get("email") ?? "");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -252,7 +252,7 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
         <Button
           type="submit"
           disabled={pending || !email || !password}
-          className={`mt-1 h-13 w-full rounded-[10px] text-[16px] font-medium shadow-none transition-colors ${
+          className={`mt-1 h-[52px] w-full rounded-[10px] text-[16px] font-medium shadow-none transition-colors ${
             pending || !email || !password
               ? "border-button-b text-label-text border bg-white"
               : "bg-brand-hover-bg hover:bg-brand border-0 text-white"
