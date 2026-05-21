@@ -11,6 +11,7 @@ export function getDisplayUrl(url: string) {
 
 export function getImageUrl(path?: string | null) {
   if (!path) return "";
+  if (path.includes("example.com")) return "";
 
   if (path.startsWith("http")) return path;
 

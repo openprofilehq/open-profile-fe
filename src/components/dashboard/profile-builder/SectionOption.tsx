@@ -3,6 +3,7 @@ import { ChevronDown, Trash2, Upload } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import type { SavedLink } from "./LinkSidebar";
+import { uploadImage } from "@/api/uploads/uploads.service";
 
 const presetIcons = [
   {
@@ -118,12 +119,15 @@ export default function SectionOption({
   const [uploadedImage, setUploadedImage] = useState<string | null>(
     editingLink?.imageSrc ?? null
   );
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const selectedIcon =
     presetIcons.find((icon) => icon.id === selectedIconId) ?? null;
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -136,6 +140,16 @@ export default function SectionOption({
     };
     reader.readAsDataURL(file);
     event.target.value = "";
+
+    try {
+      setUploading(true);
+      const { url } = await uploadImage(file, "profiles");
+      setUploadedImage(url);
+    } catch (err) {
+      console.error("Failed to upload link image:", err);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSaveLink = () => {
@@ -386,9 +400,13 @@ export default function SectionOption({
           type="submit"
           size="lg"
           variant="primary"
-          disabled={!editingLink?.title && !canAddMoreLinks}
+          disabled={uploading || (!editingLink?.title && !canAddMoreLinks)}
         >
-          {editingLink ? "Update Link" : "Save Link"}
+          {uploading
+            ? "Uploading..."
+            : editingLink
+              ? "Update Link"
+              : "Save Link"}
         </Button>
       </form>
     </div>

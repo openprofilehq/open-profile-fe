@@ -6,10 +6,11 @@ import type {
 import type { Section, SavedLink, ProjectItem } from "./types";
 
 export function contentToSections(
-  content: ProfileContentResponse,
+  rawContent: ProfileContentResponse,
   profile: DashboardProfileResponse
 ): Section[] {
-  const order = content.sectionOrder.length
+  const content = rawContent?.content;
+  const order = content?.sectionOrder?.length
     ? [...new Set(content.sectionOrder)]
     : ["bio"];
 
@@ -19,8 +20,8 @@ export function contentToSections(
         id: "bio",
         title: "Bio",
         type: "bio" as const,
-        visible: content.bio?.visible ?? true,
-        bio: content.bio?.content || profile.bio || "",
+        visible: content?.bio?.visible ?? true,
+        bio: content?.bio?.content || profile.bio || "",
         fullName: profile.fullName ?? "",
       };
     }
@@ -28,22 +29,22 @@ export function contentToSections(
     if (key === "links") {
       return {
         id: "links",
-        title: content.links?.sectionTitle || "Links - Featured Links",
+        title: content?.links?.sectionTitle || "Links - Featured Links",
         type: "links" as const,
-        visible: content.links?.visible ?? true,
-        subtitle: content.links?.sectionTitle ?? "",
-        links: (content.links?.items ?? []) as unknown as SavedLink[],
+        visible: content?.links?.visible ?? true,
+        subtitle: content?.links?.sectionTitle ?? "",
+        links: (content?.links?.items ?? []) as unknown as SavedLink[],
       };
     }
 
     if (key === "projects") {
       return {
         id: "projects",
-        title: content.projects?.sectionTitle || "Projects - Portfolio",
+        title: content?.projects?.sectionTitle || "Projects - Portfolio",
         type: "projects" as const,
-        visible: content.projects?.visible ?? true,
-        subtitle: content.projects?.sectionTitle ?? "",
-        projects: (content.projects?.items ?? []) as unknown as ProjectItem[],
+        visible: content?.projects?.visible ?? true,
+        subtitle: content?.projects?.sectionTitle ?? "",
+        projects: (content?.projects?.items ?? []) as unknown as ProjectItem[],
       };
     }
 
@@ -52,9 +53,9 @@ export function contentToSections(
       id: "cta",
       title: "Let's build something",
       type: "experience" as const,
-      visible: content.cta?.visible ?? true,
-      buttonText: content.cta?.label ?? "",
-      url: content.cta?.url ?? "",
+      visible: content?.cta?.visible ?? true,
+      buttonText: content?.cta?.label ?? "",
+      url: content?.cta?.url ?? "",
     };
   });
 }

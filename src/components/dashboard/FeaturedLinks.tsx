@@ -5,10 +5,11 @@ import Image from "next/image";
 import { ExternalLink, ImageIcon, ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { profileContentOption } from "@/api/profile/profile.options";
+import { getImageUrl } from "@/utils/profile";
 
 export default function FeaturedLinks() {
   const { data: content } = useQuery(profileContentOption());
-  const links = (content?.links?.items ?? []) as {
+  const links = (content?.content?.links?.items ?? []) as {
     id?: string;
     title?: string;
     url?: string;
@@ -40,9 +41,9 @@ export default function FeaturedLinks() {
             >
               <div className="flex items-center gap-5">
                 <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-[12px] border border-[#EDEDED]">
-                  {item.imageSrc ? (
+                  {getImageUrl(item.imageSrc) ? (
                     <Image
-                      src={item.imageSrc}
+                      src={getImageUrl(item.imageSrc)}
                       alt={item.title ?? "Link"}
                       width={56}
                       height={56}
@@ -55,6 +56,7 @@ export default function FeaturedLinks() {
                       alt={item.title ?? "Link"}
                       width={24}
                       height={24}
+                      unoptimized
                     />
                   ) : (
                     <ImageIcon className="text-[#A2A2A2]" size={24} />

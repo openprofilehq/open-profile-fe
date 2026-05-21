@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Reorder } from "motion/react";
@@ -56,6 +56,11 @@ export default function LeftSidebar({
   const [editingSectionId, setEditingSectionId] = useState<string | null>(
     initialEditingSectionId ?? null
   );
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setEditingSectionId(initialEditingSectionId ?? null);
+  }, [initialEditingSectionId]);
 
   const [newExpRole, setNewExpRole] = useState("");
   const [newExpCompany, setNewExpCompany] = useState("");

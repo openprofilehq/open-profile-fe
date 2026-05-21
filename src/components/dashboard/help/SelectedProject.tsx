@@ -5,10 +5,11 @@ import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { profileContentOption } from "@/api/profile/profile.options";
+import { getImageUrl } from "@/utils/profile";
 
 export default function SelectedProject() {
   const { data: content } = useQuery(profileContentOption());
-  const projects = (content?.projects?.items ?? []) as {
+  const projects = (content?.content?.projects?.items ?? []) as {
     id?: string;
     title?: string;
     description?: string;
@@ -36,9 +37,9 @@ export default function SelectedProject() {
             const card = (
               <div className="flex flex-col gap-4">
                 <div className="h-72.5 w-86 border">
-                  {project.imageSrc ? (
+                  {getImageUrl(project.imageSrc) ? (
                     <Image
-                      src={project.imageSrc}
+                      src={getImageUrl(project.imageSrc)}
                       alt={project.title ?? "Project"}
                       className="w-full object-cover"
                       width={300}

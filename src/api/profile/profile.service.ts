@@ -77,11 +77,22 @@ export function getDraftState(signal?: AbortSignal) {
   });
 }
 
-export function upsertDraft(data: UpsertDraftRequest) {
+export function upsertDraft(
+  data: UpsertDraftRequest,
+  _draftVersion?: string | null
+) {
+  const headers: Record<string, string> = {};
+  // Temporarily commented out due to staging server CORS preflight blocking x-draft-version header
+  /*
+  if (draftVersion) {
+    headers["X-Draft-Version"] = draftVersion;
+  }
+  */
   return callApi<UpsertDraftResponse>({
     url: "/profiles/content",
     method: "PUT",
     data,
+    headers: Object.keys(headers).length > 0 ? headers : undefined,
   });
 }
 

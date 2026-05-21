@@ -21,6 +21,16 @@ import { contentToSections, sectionsToContent } from "./builder.utils";
 export default function ProfileBuilderContent() {
   const queryClient = useQueryClient();
 
+  const searchParams = useSearchParams();
+  const sectionParam = searchParams.get("section"); // e.g. "links" | "projects"
+
+  const [activeTab, setActiveTab] = useState<"general" | "section">(
+    sectionParam ? "section" : "general"
+  );
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
+    sectionParam ?? "bio"
+  );
+
   const dashboardProfile = useQuery(dashboardProfileOption());
   const profileContent = useQuery(profileContentOption());
   const draftState = useQuery(draftStateOption());
@@ -58,6 +68,31 @@ export default function ProfileBuilderContent() {
       profileContent.data,
       dashboardProfile.data
     );
+
+    // Automatically initialize section if requested via URL search param and missing
+    if (sectionParam) {
+      const exists = loadedSections.some((s) => s.id === sectionParam);
+      if (!exists) {
+        const type = sectionParam;
+        const title =
+          type === "links"
+            ? "Links"
+            : type === "projects"
+              ? "Portfolio"
+              : "CTA";
+        const newSection: Section = {
+          id: type,
+          title,
+          type: type as any,
+          visible: true,
+          subtitle: type === "links" ? "" : undefined,
+          links: type === "links" ? [] : undefined,
+          projects: type === "projects" ? [] : undefined,
+        };
+        loadedSections.push(newSection);
+      }
+    }
+
     setSections(loadedSections);
     draftUpdatedAtRef.current = draftState.data.updatedAt ?? null;
   }, [
@@ -67,19 +102,61 @@ export default function ProfileBuilderContent() {
     draftState.data,
     dashboardProfile.isSuccess,
     dashboardProfile.data,
+    sectionParam,
   ]);
 
   const { mutate: saveDraft } = useMutation({
     mutationKey: ["profile", "draft", "upsert"],
-    mutationFn: upsertDraft,
+    mutationFn: (variables: {
+      data: Parameters<typeof upsertDraft>[0];
+      draftVersion: string | null;
+    }) => {
+      return upsertDraft(variables.data, variables.draftVersion);
+    },
     onSuccess(response) {
       const updatedAt = response?.data?.updatedAt;
       if (updatedAt) {
         draftUpdatedAtRef.current = updatedAt;
+      } else {
+        console.warn(
+          "[draft] Save succeeded but response did not contain an updatedAt timestamp."
+        );
       }
       queryClient.invalidateQueries({ queryKey: ["profile", "content"] });
     },
     onError(error: unknown) {
+      console.error("[draft] Save FAILED! Full error object:", error);
+      if (error instanceof Error) {
+        console.error(
+          "[draft] Error name:",
+          error.name,
+          "message:",
+          error.message,
+          "stack:",
+          error.stack
+        );
+      }
+      if (typeof error === "object" && error !== null) {
+        console.error(
+          "[draft] Error properties:",
+          Object.keys(error),
+          JSON.stringify(error)
+        );
+      }
+
+      if (
+        (error as any).status === 409 ||
+        (error as any).statusCode === 409 ||
+        (error as Error).message?.includes("409")
+      ) {
+        toast.error(
+          "Draft was modified in another session. Reloading latest changes...",
+          { duration: 5000 }
+        );
+        queryClient.invalidateQueries({ queryKey: ["profile", "content"] });
+        queryClient.invalidateQueries({ queryKey: ["profile", "draft-state"] });
+        return;
+      }
       const msg =
         error instanceof Error ? error.message : "Failed to save draft.";
       toast.error(msg);
@@ -98,25 +175,34 @@ export default function ProfileBuilderContent() {
       return;
     }
 
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+    }
 
     saveTimerRef.current = setTimeout(() => {
       const bioSection = sections.find((s) => s.type === "bio");
       const updatedAt = draftUpdatedAtRef.current;
-      if (!updatedAt) {
-        console.warn("[draft] skipping save — no updatedAt yet");
-        return;
-      }
       const payload = {
         bio: bioSection?.bio ?? null,
         content: sectionsToContent(sections),
-        updatedAt,
       };
-      saveDraftRef.current(payload);
+      saveDraftRef.current({ data: payload, draftVersion: updatedAt });
+      saveTimerRef.current = null;
     }, 1000);
 
     return () => {
-      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+        const bioSection = sections.find((s) => s.type === "bio");
+        const updatedAt = draftUpdatedAtRef.current;
+        const payload = {
+          bio: bioSection?.bio ?? null,
+          content: sectionsToContent(sections),
+        };
+        upsertDraft(payload, updatedAt).catch((err) => {
+          console.error("[draft] Cleanup direct save FAILED:", err);
+        });
+      }
     };
   }, [sections]);
 
@@ -148,13 +234,37 @@ export default function ProfileBuilderContent() {
       : section
   );
 
-  const searchParams = useSearchParams();
-  const sectionParam = searchParams.get("section"); // e.g. "links" | "projects"
+  useEffect(() => {
+    if (sectionParam) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSelectedSectionId(sectionParam);
+      setActiveTab("section");
 
-  const [activeTab, setActiveTab] = useState<"general" | "section">("general");
-  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
-    sectionParam ?? "bio"
-  );
+      setSections((curr) => {
+        const exists = curr.some((s) => s.id === sectionParam);
+        if (!exists && curr.length > 0) {
+          const type = sectionParam;
+          const title =
+            type === "links"
+              ? "Links"
+              : type === "projects"
+                ? "Portfolio"
+                : "CTA";
+          const newSection: Section = {
+            id: type,
+            title,
+            type: type as Section["type"],
+            visible: true,
+            subtitle: type === "links" ? "" : undefined,
+            links: type === "links" ? [] : undefined,
+            projects: type === "projects" ? [] : undefined,
+          };
+          return [...curr, newSection];
+        }
+        return curr;
+      });
+    }
+  }, [sectionParam]);
 
   const handleSelectSection = (id: string) => {
     setSelectedSectionId(id);

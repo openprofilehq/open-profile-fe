@@ -7,7 +7,7 @@ import { profileContentOption } from "@/api/profile/profile.options";
 
 export default function YourCTA() {
   const { data: content } = useQuery(profileContentOption());
-  const cta = content?.cta;
+  const cta = content?.content?.cta;
 
   return (
     <section className="w-full rounded-[12px] border border-[#EDEDED] bg-white p-16">
