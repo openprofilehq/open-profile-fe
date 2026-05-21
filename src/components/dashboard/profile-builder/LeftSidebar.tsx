@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import LinkSidebar from "./LinkSidebar";
 import BioSidebar from "./BioSidebar";
 import ProjectsSidebar from "./ProjectsSidebar";
+import CtaSidebar from "./CtaSidebar";
 import type { Section } from "./types";
 
 interface LeftSidebarProps {
@@ -241,6 +242,16 @@ export default function LeftSidebar({
     if (editingSection.type === "projects") {
       return (
         <ProjectsSidebar
+          returnTab={() => setEditingSectionId(null)}
+          section={editingSection}
+          onUpdateSection={onUpdateSection}
+        />
+      );
+    }
+
+    if (editingSection.type === "experience" || editingSection.type === "cta") {
+      return (
+        <CtaSidebar
           returnTab={() => setEditingSectionId(null)}
           section={editingSection}
           onUpdateSection={onUpdateSection}

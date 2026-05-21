@@ -1,14 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import {
-  Folder,
-  Briefcase,
-  ExternalLink,
-  Eye,
-  EyeOff,
-  Trash2,
-} from "lucide-react";
+import { Folder, ExternalLink, Eye, EyeOff, Trash2 } from "lucide-react";
 import { getImageUrl } from "@/utils/profile";
 import CtaSectionPreview from "../cta/CtaSectionPreview";
 import type { Section, ProfilePreview } from "./types";
@@ -221,7 +214,10 @@ export default function PreviewCanvas({
                     <Trash2 size={18} strokeWidth={2} />
                   </button>
                 </div>
-                {section.type !== "links" ? (
+                {section.type === "experience" ? null : section.type ===
+                  "links" ? (
+                  <h3 className="mb-4 text-3xl font-bold">{section.title}</h3>
+                ) : (
                   <div
                     className="mb-4 flex items-center justify-between border-b pr-24 pb-4"
                     style={{ borderColor: isDark ? "#2D2D2D" : "#F0F0F0" }}
@@ -232,15 +228,10 @@ export default function PreviewCanvas({
                         className="flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-300"
                       >
                         {section.type === "projects" && <Folder size={18} />}
-                        {section.type === "experience" && (
-                          <Briefcase size={18} />
-                        )}
                       </span>
                       <h3 className="text-lg font-bold">{section.title}</h3>
                     </div>
                   </div>
-                ) : (
-                  <h3 className="mb-4 text-3xl font-bold">{section.title}</h3>
                 )}
 
                 {/* Section-specific placeholders */}
@@ -528,26 +519,64 @@ export default function PreviewCanvas({
                 )}
 
                 {section.type === "experience" && (
-                  <div className="flex flex-col gap-4">
-                    {section.experience && section.experience.length > 0 ? (
-                      section.experience.map((exp) => (
-                        <div
-                          key={exp.id}
-                          className="flex items-start justify-between text-xs"
-                        >
-                          <div>
-                            <p className="text-sm font-bold">{exp.role}</p>
-                            <p className="text-tertiary-text">{exp.company}</p>
-                          </div>
-                          <span className="text-disabled-text">
-                            {exp.duration}
-                          </span>
+                  <div
+                    className={`flex flex-col py-4 ${
+                      section.layout === "2"
+                        ? "items-start text-left"
+                        : section.layout === "3"
+                          ? "items-end text-right"
+                          : "items-center text-center"
+                    }`}
+                  >
+                    {/* Icon card wrapper */}
+                    {section.iconSrc && (
+                      <div
+                        style={{
+                          borderColor: isDark ? "#2D2D2D" : "#EDEDED",
+                        }}
+                        className="mb-5 flex h-16 w-16 shrink-0 items-center justify-center rounded-[16px] border bg-white shadow-[0_2px_8px_rgba(0,0,0,0.03)] transition-all duration-300"
+                      >
+                        <div className="relative h-7 w-7">
+                          <Image
+                            src={section.iconSrc}
+                            alt={section.iconLabel || "CTA Icon"}
+                            fill
+                            className="object-contain filter dark:invert"
+                            unoptimized
+                          />
                         </div>
-                      ))
-                    ) : (
-                      <p className="text-tertiary-text py-4 text-center text-xs">
-                        No experience items added yet.
+                      </div>
+                    )}
+
+                    {/* Title */}
+                    <h4 className="text-[32px] leading-snug font-bold tracking-tight text-[#050505] dark:text-white">
+                      {section.title || "Let's build something"}
+                    </h4>
+
+                    {/* Subtitle */}
+                    {section.subtitle && (
+                      <p
+                        style={textStyle}
+                        className="text-tertiary-text mt-3 max-w-lg text-[15px] leading-relaxed font-medium"
+                      >
+                        {section.subtitle}
                       </p>
+                    )}
+
+                    {/* Action Button */}
+                    {section.buttonText && (
+                      <a
+                        href={section.url || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          backgroundColor: iconColor || "#0a92a4",
+                          borderRadius: activeRadius || "8px",
+                        }}
+                        className="mt-6 inline-flex h-11 items-center justify-center px-[32px] text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90 active:scale-95"
+                      >
+                        {section.buttonText}
+                      </a>
                     )}
                   </div>
                 )}

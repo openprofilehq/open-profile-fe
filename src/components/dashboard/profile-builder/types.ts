@@ -48,6 +48,11 @@ export interface Section {
   padding?: number;
   layout?: string; // "1" | "2" | "3" | "4"
   highlightSection?: boolean;
+  iconId?: string | null;
+  iconLabel?: string | null;
+  iconSrc?: string | null;
+  buttonText?: string;
+  url?: string;
 }
 
 export interface ProfilePreview {

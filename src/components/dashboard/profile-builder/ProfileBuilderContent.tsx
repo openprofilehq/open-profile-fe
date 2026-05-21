@@ -45,9 +45,20 @@ export default function ProfileBuilderContent() {
     },
     {
       id: "cta",
-      title: "CTA - Contact",
+      title: "Let's build something",
       type: "experience",
       visible: true,
+<<<<<<< HEAD
+=======
+      subtitle:
+        "I'm currently accepting new projects and consulting opportunities for Q3 2026.",
+      layout: "1",
+      buttonText: "Start a Conversation",
+      url: "",
+      iconId: "chat",
+      iconSrc: "/profilebuilder_home/icons/chat.svg",
+      iconLabel: "Chat",
+>>>>>>> ab25465 (Feat(ProfileBuilder): Add cta section)
     },
   ]);
   const resolvedSections = sections.map((section) =>
@@ -88,10 +99,18 @@ export default function ProfileBuilderContent() {
         ctaSpacingPadding: 16,
       }),
       visible: true,
-      subtitle: type === "links" ? "" : undefined,
+      subtitle: type === "links" ? "" : type === "experience" ? "" : undefined,
       links: type === "links" ? [] : undefined,
       projects: type === "projects" ? [] : undefined,
-      experience: type === "experience" ? [] : undefined,
+      layout: type === "experience" ? "1" : undefined,
+      buttonText: type === "experience" ? "Start a Conversation" : undefined,
+      url: type === "experience" ? "" : undefined,
+      iconId: type === "experience" ? "chat" : undefined,
+      iconSrc:
+        type === "experience"
+          ? "/profilebuilder_home/icons/chat.svg"
+          : undefined,
+      iconLabel: type === "experience" ? "Chat" : undefined,
     };
 
     setSections([...sections, newSection]);
