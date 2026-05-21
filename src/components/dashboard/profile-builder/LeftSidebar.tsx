@@ -50,6 +50,14 @@ export default function LeftSidebar({
 
   const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
 
+  const [newProjTitle, setNewProjTitle] = useState("");
+  const [newProjDesc, setNewProjDesc] = useState("");
+  const [newProjUrl, setNewProjUrl] = useState("");
+
+  const [newExpRole, setNewExpRole] = useState("");
+  const [newExpCompany, setNewExpCompany] = useState("");
+  const [newExpDuration, setNewExpDuration] = useState("");
+
   const editingSection =
     sections.find((section) => section.id === editingSectionId) ?? null;
 
@@ -212,6 +220,16 @@ export default function LeftSidebar({
   }
 
   if (editingSection) {
+    if (editingSection.type === "links") {
+      return (
+        <LinkSidebar
+          returnTab={() => setEditingSectionId(null)}
+          section={editingSection}
+          onUpdateSection={onUpdateSection}
+        />
+      );
+    }
+
     return (
       <aside className="border-tertiary-b animate-in fade-in flex h-full w-[290px] shrink-0 flex-col border bg-white p-6 shadow-sm duration-200 select-none">
         <div className="mb-6">
@@ -299,14 +317,220 @@ export default function LeftSidebar({
             </div>
           )}
 
-          {editingSection.type !== "bio" && (
-            <div className="rounded-[12px] border border-dashed border-[#D0D5DD] p-6 text-center">
-              <p className="text-xs font-semibold text-[#747474]">
-                Additional dynamic items editor will display here based on
-                chosen component.
-              </p>
+          {editingSection.type === "projects" && (
+            <div className="flex flex-col gap-4 rounded-[12px] border border-dashed border-[#D0D5DD] p-4">
+              <h4 className="text-sm font-bold text-[#050505]">
+                Projects List
+              </h4>
+
+              {/* Existing Projects */}
+              <div className="flex max-h-48 flex-col gap-2 overflow-y-auto">
+                {editingSection.projects &&
+                editingSection.projects.length > 0 ? (
+                  editingSection.projects.map((proj) => (
+                    <div
+                      key={proj.id}
+                      className="flex items-center justify-between rounded-lg border bg-gray-50 p-2"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-xs font-semibold">
+                          {proj.title}
+                        </p>
+                        <p className="truncate text-[10px] text-gray-500">
+                          {proj.description}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = (
+                            editingSection.projects || []
+                          ).filter((p) => p.id !== proj.id);
+                          onUpdateSection(editingSection.id, {
+                            projects: updated,
+                          });
+                        }}
+                        className="shrink-0 p-1 text-red-500 hover:text-red-700"
+                        title="Delete project"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="py-2 text-center text-xs text-gray-500 italic">
+                    No projects added yet.
+                  </p>
+                )}
+              </div>
+
+              {/* Add New Project Form */}
+              <div className="flex flex-col gap-2 border-t pt-3">
+                <h5 className="text-xs font-bold text-[#454545]">
+                  Add New Project
+                </h5>
+                <input
+                  type="text"
+                  placeholder="Project Title *"
+                  value={newProjTitle}
+                  onChange={(e) => setNewProjTitle(e.target.value)}
+                  className="w-full rounded-[8px] border border-[#EDEDED] px-3 py-2 text-xs outline-none focus:border-[#087583]"
+                />
+                <input
+                  type="text"
+                  placeholder="Project Description *"
+                  value={newProjDesc}
+                  onChange={(e) => setNewProjDesc(e.target.value)}
+                  className="w-full rounded-[8px] border border-[#EDEDED] px-3 py-2 text-xs outline-none focus:border-[#087583]"
+                />
+                <input
+                  type="text"
+                  placeholder="Link/URL (optional)"
+                  value={newProjUrl}
+                  onChange={(e) => setNewProjUrl(e.target.value)}
+                  className="w-full rounded-[8px] border border-[#EDEDED] px-3 py-2 text-xs outline-none focus:border-[#087583]"
+                />
+                <Button
+                  type="button"
+                  onClick={() => {
+                    if (!newProjTitle || !newProjDesc) return;
+                    const newItem = {
+                      id: Math.random().toString(36).substr(2, 9),
+                      title: newProjTitle,
+                      description: newProjDesc,
+                      url: newProjUrl || undefined,
+                    };
+                    const updated = [
+                      ...(editingSection.projects || []),
+                      newItem,
+                    ];
+                    onUpdateSection(editingSection.id, { projects: updated });
+                    setNewProjTitle("");
+                    setNewProjDesc("");
+                    setNewProjUrl("");
+                  }}
+                  disabled={!newProjTitle || !newProjDesc}
+                  className="h-8 w-full rounded-[6px] bg-[#087583] text-xs text-white hover:bg-[#065E69]"
+                >
+                  Add Project
+                </Button>
+              </div>
             </div>
           )}
+
+          {editingSection.type === "experience" && (
+            <div className="flex flex-col gap-4 rounded-[12px] border border-dashed border-[#D0D5DD] p-4">
+              <h4 className="text-sm font-bold text-[#050505]">
+                Experience / CTA List
+              </h4>
+
+              {/* Existing Experience Items */}
+              <div className="flex max-h-48 flex-col gap-2 overflow-y-auto">
+                {editingSection.experience &&
+                editingSection.experience.length > 0 ? (
+                  editingSection.experience.map((exp) => (
+                    <div
+                      key={exp.id}
+                      className="flex items-center justify-between rounded-lg border bg-gray-50 p-2"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-xs font-semibold">
+                          {exp.role} at {exp.company}
+                        </p>
+                        <p className="truncate text-[10px] text-gray-500">
+                          {exp.duration}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = (
+                            editingSection.experience || []
+                          ).filter((e) => e.id !== exp.id);
+                          onUpdateSection(editingSection.id, {
+                            experience: updated,
+                          });
+                        }}
+                        className="shrink-0 p-1 text-red-500 hover:text-red-700"
+                        title="Delete experience"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="py-2 text-center text-xs text-gray-500 italic">
+                    No items added yet.
+                  </p>
+                )}
+              </div>
+
+              {/* Add New Experience Form */}
+              <div className="flex flex-col gap-2 border-t pt-3">
+                <h5 className="text-xs font-bold text-[#454545]">
+                  Add New Experience
+                </h5>
+                <input
+                  type="text"
+                  placeholder="Role/Title * (e.g. Lead Designer)"
+                  value={newExpRole}
+                  onChange={(e) => setNewExpRole(e.target.value)}
+                  className="w-full rounded-[8px] border border-[#EDEDED] px-3 py-2 text-xs outline-none focus:border-[#087583]"
+                />
+                <input
+                  type="text"
+                  placeholder="Company Name * (e.g. Acme Corp)"
+                  value={newExpCompany}
+                  onChange={(e) => setNewExpCompany(e.target.value)}
+                  className="w-full rounded-[8px] border border-[#EDEDED] px-3 py-2 text-xs outline-none focus:border-[#087583]"
+                />
+                <input
+                  type="text"
+                  placeholder="Duration * (e.g. 2024 - Present)"
+                  value={newExpDuration}
+                  onChange={(e) => setNewExpDuration(e.target.value)}
+                  className="w-full rounded-[8px] border border-[#EDEDED] px-3 py-2 text-xs outline-none focus:border-[#087583]"
+                />
+                <Button
+                  type="button"
+                  onClick={() => {
+                    if (!newExpRole || !newExpCompany || !newExpDuration)
+                      return;
+                    const newItem = {
+                      id: Math.random().toString(36).substr(2, 9),
+                      role: newExpRole,
+                      company: newExpCompany,
+                      duration: newExpDuration,
+                    };
+                    const updated = [
+                      ...(editingSection.experience || []),
+                      newItem,
+                    ];
+                    onUpdateSection(editingSection.id, { experience: updated });
+                    setNewExpRole("");
+                    setNewExpCompany("");
+                    setNewExpDuration("");
+                  }}
+                  disabled={!newExpRole || !newExpCompany || !newExpDuration}
+                  className="h-8 w-full rounded-[6px] bg-[#087583] text-xs text-white hover:bg-[#065E69]"
+                >
+                  Add Experience
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {editingSection.type !== "bio" &&
+            editingSection.type !== "links" &&
+            editingSection.type !== "projects" &&
+            editingSection.type !== "experience" && (
+              <div className="rounded-[12px] border border-dashed border-[#D0D5DD] p-6 text-center">
+                <p className="text-xs font-semibold text-[#747474]">
+                  Additional dynamic items editor will display here based on
+                  chosen component.
+                </p>
+              </div>
+            )}
         </div>
       </aside>
     );

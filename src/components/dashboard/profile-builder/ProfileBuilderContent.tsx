@@ -24,12 +24,29 @@ export default function ProfileBuilderContent() {
     "sharp" | "medium" | "round"
   >("medium");
   const [theme, setTheme] = useState<"light" | "dark">("light");
-
   const [sections, setSections] = useState<Section[]>([
     {
       id: "bio",
       title: "Bio",
       type: "bio",
+      visible: true,
+    },
+    {
+      id: "links",
+      title: "Links - Featured Links",
+      type: "links",
+      visible: true,
+    },
+    {
+      id: "projects",
+      title: "Projects - Portfolio",
+      type: "projects",
+      visible: true,
+    },
+    {
+      id: "cta",
+      title: "CTA - Contact",
+      type: "experience",
       visible: true,
     },
   ]);
@@ -73,6 +90,8 @@ export default function ProfileBuilderContent() {
       visible: true,
       subtitle: type === "links" ? "" : undefined,
       links: type === "links" ? [] : undefined,
+      projects: type === "projects" ? [] : undefined,
+      experience: type === "experience" ? [] : undefined,
     };
 
     setSections([...sections, newSection]);

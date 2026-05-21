@@ -10,6 +10,20 @@ export interface SavedLink {
   imageSrc: string | null;
 }
 
+export interface ProjectItem {
+  id: string;
+  title: string;
+  description: string;
+  url?: string;
+}
+
+export interface ExperienceItem {
+  id: string;
+  role: string;
+  company: string;
+  duration: string;
+}
+
 export interface Section {
   id: string;
   title: string;
@@ -19,6 +33,8 @@ export interface Section {
   bio?: string;
   subtitle?: string;
   links?: SavedLink[];
+  projects?: ProjectItem[];
+  experience?: ExperienceItem[];
   font?: string;
   textColor?: string;
   bgColor?: string;

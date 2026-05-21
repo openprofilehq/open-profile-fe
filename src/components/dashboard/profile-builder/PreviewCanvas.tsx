@@ -215,17 +215,40 @@ export default function PreviewCanvas({
                 {/* Section-specific placeholders */}
                 {section.type === "projects" && (
                   <div className="grid grid-cols-1 gap-4">
-                    <div className="border-tertiary-b dark:border-dark-b flex items-center justify-between rounded-lg border bg-black/5 p-4 dark:bg-white/5">
-                      <div>
-                        <h4 className="text-sm font-semibold">
-                          OpenProfile Platform
-                        </h4>
-                        <p className="text-tertiary-text mt-1 text-xs">
-                          Open-source links-in-bio platform for modern creators.
-                        </p>
-                      </div>
-                      <ExternalLink size={16} className="text-disabled-text" />
-                    </div>
+                    {section.projects && section.projects.length > 0 ? (
+                      section.projects.map((project) => (
+                        <div
+                          key={project.id}
+                          className="border-tertiary-b flex items-center justify-between rounded-lg border bg-black/5 p-4 dark:border-[#2D2D2D] dark:bg-white/5"
+                        >
+                          <div>
+                            <h4 className="text-sm font-semibold">
+                              {project.title}
+                            </h4>
+                            <p className="text-tertiary-text mt-1 text-xs">
+                              {project.description}
+                            </p>
+                          </div>
+                          {project.url && (
+                            <a
+                              href={project.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="hover:text-brand-hover-bg transition-colors"
+                            >
+                              <ExternalLink
+                                size={16}
+                                className="text-disabled-text"
+                              />
+                            </a>
+                          )}
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-tertiary-text py-4 text-center text-xs">
+                        No projects added yet.
+                      </p>
+                    )}
                   </div>
                 )}
 
@@ -290,14 +313,27 @@ export default function PreviewCanvas({
                 )}
 
                 {section.type === "experience" && (
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-start justify-between text-xs">
-                      <div>
-                        <p className="text-sm font-bold">Lead UI Architect</p>
-                        <p className="text-tertiary-text">Stark Industries</p>
-                      </div>
-                      <span className="text-disabled-text">2024 - Present</span>
-                    </div>
+                  <div className="flex flex-col gap-4">
+                    {section.experience && section.experience.length > 0 ? (
+                      section.experience.map((exp) => (
+                        <div
+                          key={exp.id}
+                          className="flex items-start justify-between text-xs"
+                        >
+                          <div>
+                            <p className="text-sm font-bold">{exp.role}</p>
+                            <p className="text-tertiary-text">{exp.company}</p>
+                          </div>
+                          <span className="text-disabled-text">
+                            {exp.duration}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-tertiary-text py-4 text-center text-xs">
+                        No experience items added yet.
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
