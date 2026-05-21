@@ -6,14 +6,16 @@ import { usePathname } from "next/navigation";
 import { Menu, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+import { ROUTES } from "@/constants/routes";
+
 type DashboardTopbarProps = {
   onOpenSidebar: () => void;
 };
 
 const navLinks = [
-  { label: "Home", href: "/dashboard" },
-  { label: "Profile Builder", href: "/dashboard/profile-builder" },
-  { label: "Settings", href: "/dashboard/settings" },
+  { label: "Home", href: ROUTES.dashboard.home },
+  { label: "Profile Builder", href: ROUTES.dashboard.profileBuilder },
+  { label: "Settings", href: ROUTES.dashboard.settings.home },
 ];
 
 export default function DashboardTopbar({
@@ -46,8 +48,8 @@ export default function DashboardTopbar({
         <nav className="hidden items-center gap-4 lg:flex">
           {navLinks.map(({ label, href }) => {
             const isActive =
-              href === "/dashboard"
-                ? pathname === "/dashboard"
+              href === ROUTES.dashboard.home
+                ? pathname === ROUTES.dashboard.home
                 : pathname.startsWith(href);
             return (
               <Link

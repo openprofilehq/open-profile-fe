@@ -19,6 +19,62 @@ import type { Section } from "./types";
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { ROUTES } from "@/constants/routes";
 
+const createSection = (type: string, customTitle?: string): Section | null => {
+  const allowedTypes: Record<string, Section["type"]> = {
+    bio: "bio",
+    links: "links",
+    projects: "projects",
+    experience: "experience",
+    cta: "experience",
+  };
+
+  const resolvedType = allowedTypes[type];
+  if (!resolvedType) return null;
+
+  const stableIds: Record<string, string> = {
+    bio: "bio",
+    links: "links",
+    projects: "projects",
+    experience: "cta",
+    cta: "cta",
+  };
+
+  const title =
+    customTitle ||
+    (resolvedType === "links"
+      ? "Links"
+      : resolvedType === "projects"
+        ? "Portfolio"
+        : resolvedType === "bio"
+          ? "Profile"
+          : "CTA");
+
+  return {
+    id: stableIds[type] ?? Math.random().toString(36).substring(2, 11),
+    title,
+    type: resolvedType,
+    visible: true,
+    subtitle:
+      resolvedType === "links"
+        ? ""
+        : resolvedType === "experience"
+          ? ""
+          : undefined,
+    links: resolvedType === "links" ? [] : undefined,
+    projects: resolvedType === "projects" ? [] : undefined,
+    layout: resolvedType === "experience" ? "1" : undefined,
+    buttonText:
+      resolvedType === "experience" ? "Start a Conversation" : undefined,
+    url: resolvedType === "experience" ? "" : undefined,
+    iconId: resolvedType === "experience" ? "chat" : undefined,
+    iconSrc:
+      resolvedType === "experience"
+        ? "/profilebuilder_home/icons/chat.svg"
+        : undefined,
+    iconLabel: resolvedType === "experience" ? "Chat" : undefined,
+  };
+};
+
 export default function ProfileBuilderContent() {
   const queryClient = useQueryClient();
 
@@ -74,23 +130,10 @@ export default function ProfileBuilderContent() {
     if (sectionParam) {
       const exists = loadedSections.some((s) => s.id === sectionParam);
       if (!exists) {
-        const type = sectionParam;
-        const title =
-          type === "links"
-            ? "Links"
-            : type === "projects"
-              ? "Portfolio"
-              : "CTA";
-        const newSection: Section = {
-          id: type,
-          title,
-          type: type as any,
-          visible: true,
-          subtitle: type === "links" ? "" : undefined,
-          links: type === "links" ? [] : undefined,
-          projects: type === "projects" ? [] : undefined,
-        };
-        loadedSections.push(newSection);
+        const newSection = createSection(sectionParam);
+        if (newSection) {
+          loadedSections.push(newSection);
+        }
       }
     }
 
@@ -145,9 +188,10 @@ export default function ProfileBuilderContent() {
         );
       }
 
+      const errObj = error as Record<string, unknown>;
       if (
-        (error as any).status === 409 ||
-        (error as any).statusCode === 409 ||
+        errObj?.status === 409 ||
+        errObj?.statusCode === 409 ||
         (error as Error).message?.includes("409")
       ) {
         toast.error(
@@ -168,6 +212,11 @@ export default function ProfileBuilderContent() {
   useEffect(() => {
     saveDraftRef.current = saveDraft;
   });
+
+  const sectionsRef = useRef(sections);
+  useEffect(() => {
+    sectionsRef.current = sections;
+  }, [sections]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
@@ -194,18 +243,26 @@ export default function ProfileBuilderContent() {
     return () => {
       if (saveTimerRef.current) {
         clearTimeout(saveTimerRef.current);
-        const bioSection = sections.find((s) => s.type === "bio");
-        const updatedAt = draftUpdatedAtRef.current;
-        const payload = {
-          bio: bioSection?.bio ?? null,
-          content: sectionsToContent(sections),
-        };
-        upsertDraft(payload, updatedAt).catch((err) => {
-          console.error("[draft] Cleanup direct save FAILED:", err);
-        });
       }
     };
   }, [sections]);
+
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+        const bioSection = sectionsRef.current.find((s) => s.type === "bio");
+        const updatedAt = draftUpdatedAtRef.current;
+        const payload = {
+          bio: bioSection?.bio ?? null,
+          content: sectionsToContent(sectionsRef.current),
+        };
+        upsertDraft(payload, updatedAt).catch((err) => {
+          console.error("[draft] Unmount direct save FAILED:", err);
+        });
+      }
+    };
+  }, []);
 
   const { mutate: doPublish, isPending: isPublishing } = useMutation({
     mutationKey: ["profile", "publish"],
@@ -244,23 +301,10 @@ export default function ProfileBuilderContent() {
       setSections((curr) => {
         const exists = curr.some((s) => s.id === sectionParam);
         if (!exists && curr.length > 0) {
-          const type = sectionParam;
-          const title =
-            type === "links"
-              ? "Links"
-              : type === "projects"
-                ? "Portfolio"
-                : "CTA";
-          const newSection: Section = {
-            id: type,
-            title,
-            type: type as Section["type"],
-            visible: true,
-            subtitle: type === "links" ? "" : undefined,
-            links: type === "links" ? [] : undefined,
-            projects: type === "projects" ? [] : undefined,
-          };
-          return [...curr, newSection];
+          const newSection = createSection(sectionParam);
+          if (newSection) {
+            return [...curr, newSection];
+          }
         }
         return curr;
       });
@@ -273,32 +317,14 @@ export default function ProfileBuilderContent() {
   };
 
   const handleAddSection = (title: string, type: string) => {
-    const stableIds: Record<string, string> = {
-      bio: "bio",
-      links: "links",
-      projects: "projects",
-      experience: "cta",
-      cta: "cta",
-    };
-    const newSection: Section = {
-      id: stableIds[type] ?? Math.random().toString(36).substr(2, 9),
-      title,
-      type,
-      visible: true,
-      subtitle: type === "links" ? "" : type === "experience" ? "" : undefined,
-      links: type === "links" ? [] : undefined,
-      projects: type === "projects" ? [] : undefined,
-      layout: type === "experience" ? "1" : undefined,
-      buttonText: type === "experience" ? "Start a Conversation" : undefined,
-      url: type === "experience" ? "" : undefined,
-      iconId: type === "experience" ? "chat" : undefined,
-      iconSrc:
-        type === "experience"
-          ? "/profilebuilder_home/icons/chat.svg"
-          : undefined,
-      iconLabel: type === "experience" ? "Chat" : undefined,
-    };
-    setSections([...sections, newSection]);
+    const newSection = createSection(type, title);
+    if (!newSection) return;
+
+    setSections((prev) => {
+      const exists = prev.some((s) => s.id === newSection.id);
+      if (exists) return prev;
+      return [...prev, newSection];
+    });
     setSelectedSectionId(newSection.id);
     setActiveTab("section");
   };

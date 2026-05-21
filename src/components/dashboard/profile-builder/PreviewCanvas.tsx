@@ -96,8 +96,11 @@ export default function PreviewCanvas({
 
   const visibleSections = sections.filter((section) => section.visible);
 
+  const bioSection = sections.find((s) => s.type === "bio");
+  const bioSectionId = bioSection?.id ?? "bio";
+
   const isBioVisible =
-    (!selectedSectionId || selectedSectionId === "bio") &&
+    (!selectedSectionId || selectedSectionId === bioSectionId) &&
     visibleSections.some((section) => section.type === "bio");
 
   return (
@@ -155,7 +158,7 @@ export default function PreviewCanvas({
             // When a specific non-bio section is selected, only show that section
             if (
               selectedSectionId &&
-              selectedSectionId !== "bio" &&
+              selectedSectionId !== bioSectionId &&
               section.id !== selectedSectionId
             )
               return null;

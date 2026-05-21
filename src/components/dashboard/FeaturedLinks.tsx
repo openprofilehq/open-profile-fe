@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ExternalLink, ImageIcon, ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { profileContentOption } from "@/api/profile/profile.options";
-import { getImageUrl } from "@/utils/profile";
+import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 
 export default function FeaturedLinks() {
   const { data: content } = useQuery(profileContentOption());
@@ -34,7 +34,7 @@ export default function FeaturedLinks() {
           {links.map((item, index) => (
             <a
               key={item.id ?? index}
-              href={item.url ?? "#"}
+              href={sanitizeUrl(item.url)}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-between rounded-[18px] border border-[#EDEDED] p-4 no-underline"

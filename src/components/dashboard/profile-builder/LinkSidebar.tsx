@@ -52,9 +52,11 @@ const LinkSidebar = ({
   const handleLinksChange = (
     updateFn: (currentLinks: SavedLink[]) => SavedLink[]
   ) => {
-    const nextLinks = updateFn(links);
-    setLinks(nextLinks);
-    syncSection({ links: nextLinks });
+    setLinks((prevLinks) => {
+      const nextLinks = updateFn(prevLinks);
+      syncSection({ links: nextLinks });
+      return nextLinks;
+    });
   };
 
   const canAddMoreLinks = useMemo(

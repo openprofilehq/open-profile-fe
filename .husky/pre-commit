@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
 
-export PATH="/home/levi/Downloads/node-v22.14.0-linux-x64/bin:/home/levi/Downloads/node-v22.14.0-linux-x64/lib/node_modules/corepack/shims:$PATH"
 export CI="true"
 
 branch="$(git rev-parse --abbrev-ref HEAD)"
