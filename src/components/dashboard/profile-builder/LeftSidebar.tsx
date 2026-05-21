@@ -6,7 +6,6 @@ import Image from "next/image";
 import { Reorder } from "motion/react";
 import {
   ChevronLeft,
-  ChevronRight,
   Search,
   Plus,
   GripVertical,
@@ -651,11 +650,6 @@ export default function LeftSidebar({
                       {getSectionDescriptor(section)}
                     </p>
                   </div>
-
-                  <ChevronRight
-                    size={16}
-                    className="ml-2 shrink-0 text-[#747474]"
-                  />
 
                   <button
                     type="button"
