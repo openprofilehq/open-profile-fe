@@ -16,7 +16,7 @@ on:
 
   push:
     branches:
-       - features/ci-cd
+       - feat/ci-cd-pipeline
        - staging
        - production
 jobs:
