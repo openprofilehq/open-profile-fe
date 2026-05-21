@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LinkSidebar from "./LinkSidebar";
+import BioSidebar from "./BioSidebar";
 import type { Section } from "./types";
 
 interface LeftSidebarProps {
@@ -220,6 +221,17 @@ export default function LeftSidebar({
   }
 
   if (editingSection) {
+    if (editingSection.type === "bio") {
+      return (
+        <BioSidebar
+          returnTab={() => setEditingSectionId(null)}
+          section={editingSection}
+          onUpdateSection={onUpdateSection}
+          profile={profile}
+        />
+      );
+    }
+
     if (editingSection.type === "links") {
       return (
         <LinkSidebar
