@@ -1,5 +1,5 @@
 import ProfileBuilderContent from "@/components/dashboard/profile-builder/ProfileBuilderContent";
 
-export default function ProfileBuilderPage() {
+export default function CanvasPage() {
   return <ProfileBuilderContent />;
 }
