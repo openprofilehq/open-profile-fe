@@ -1,4 +1,5 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
+import type { UpsertDraftRequest } from "./profile.type";
 import {
   createProfile,
   checkUsername,
@@ -37,7 +38,7 @@ export function profileContentOption() {
   return queryOptions({
     queryKey: ["profile", "content"],
     queryFn: ({ signal }) => getProfileContent(signal),
-    staleTime: QueryStaleTime.fiveMins,
+    staleTime: 0,
   });
 }
 
@@ -51,7 +52,10 @@ export function draftStateOption() {
 
 export const upsertDraftOption = mutationOptions({
   mutationKey: ["profile", "draft", "upsert"],
-  mutationFn: upsertDraft,
+  mutationFn: (variables: {
+    data: UpsertDraftRequest;
+    draftVersion?: string | null;
+  }) => upsertDraft(variables.data, variables.draftVersion),
 });
 
 export const publishProfileOption = mutationOptions({

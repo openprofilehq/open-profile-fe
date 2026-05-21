@@ -63,13 +63,21 @@ export type ProfileContentSectionCta = {
   url: string | null;
 };
 
-export type ProfileContentResponse = {
-  source: "draft" | "published";
+export type ProfileContentDetails = {
   sectionOrder: string[];
   bio: ProfileContentSectionBio;
   links: ProfileContentSectionLinks;
   projects: ProfileContentSectionProjects;
   cta: ProfileContentSectionCta;
+};
+
+export type ProfileContentResponse = {
+  profileId: string;
+  bio: string | null;
+  photoUrl: string | null;
+  content: ProfileContentDetails | null;
+  source: "draft" | "published";
+  updatedAt: string;
 };
 
 export type UpsertDraftRequest = {
@@ -82,19 +90,12 @@ export type UpsertDraftRequest = {
     cta?: ProfileContentSectionCta;
     sectionOrder?: string[];
   };
-  updatedAt?: string;
 };
 
 export type UpsertDraftResponse = {
   status: string;
   message: string;
-  data: {
-    profileId: string;
-    bio: string | null;
-    photoUrl: string | null;
-    content: Omit<ProfileContentResponse, "source"> | null;
-    updatedAt: string;
-  };
+  data: ProfileContentResponse;
 };
 
 export type DraftStateResponse = {

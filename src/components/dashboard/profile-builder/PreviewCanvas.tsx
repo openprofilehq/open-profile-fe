@@ -15,6 +15,7 @@ interface PreviewCanvasProps {
   theme: "light" | "dark";
   sections: Section[];
   profile?: ProfilePreview | null;
+  selectedSectionId?: string | null;
   onToggleSectionVisibility: (id: string) => void;
   onRemoveSection: (id: string) => void;
 }
@@ -29,6 +30,7 @@ export default function PreviewCanvas({
   theme,
   sections,
   profile,
+  selectedSectionId,
   onToggleSectionVisibility,
   onRemoveSection,
 }: PreviewCanvasProps) {
@@ -94,9 +96,12 @@ export default function PreviewCanvas({
 
   const visibleSections = sections.filter((section) => section.visible);
 
-  const isBioVisible = visibleSections.some(
-    (section) => section.type === "bio"
-  );
+  const bioSection = sections.find((s) => s.type === "bio");
+  const bioSectionId = bioSection?.id ?? "bio";
+
+  const isBioVisible =
+    (!selectedSectionId || selectedSectionId === bioSectionId) &&
+    visibleSections.some((section) => section.type === "bio");
 
   return (
     <div
@@ -149,6 +154,14 @@ export default function PreviewCanvas({
 
           {visibleSections.map((section) => {
             if (section.type === "bio") return null; // Already rendered in main card
+
+            // When a specific non-bio section is selected, only show that section
+            if (
+              selectedSectionId &&
+              selectedSectionId !== bioSectionId &&
+              section.id !== selectedSectionId
+            )
+              return null;
 
             const isSectionHighlighted =
               section.type === "projects" && section.highlightSection;
@@ -254,10 +267,10 @@ export default function PreviewCanvas({
                                 style={projectCardStyle}
                                 className="flex flex-col overflow-hidden rounded-xl border transition-all"
                               >
-                                {project.imageSrc && (
+                                {getImageUrl(project.imageSrc) && (
                                   <div className="relative aspect-video w-full shrink-0 bg-gray-100 dark:bg-zinc-800">
                                     <Image
-                                      src={project.imageSrc}
+                                      src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
                                       fill
                                       className="object-cover"
@@ -298,10 +311,10 @@ export default function PreviewCanvas({
                                 style={projectCardStyle}
                                 className="flex flex-col overflow-hidden rounded-xl border transition-all"
                               >
-                                {project.imageSrc && (
+                                {getImageUrl(project.imageSrc) && (
                                   <div className="relative h-44 w-full shrink-0 bg-gray-100 dark:bg-zinc-800">
                                     <Image
-                                      src={project.imageSrc}
+                                      src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
                                       fill
                                       className="object-cover"
@@ -345,10 +358,10 @@ export default function PreviewCanvas({
                                 style={projectCardStyle}
                                 className="flex items-center gap-4 rounded-xl border p-4 transition-all"
                               >
-                                {project.imageSrc && (
+                                {getImageUrl(project.imageSrc) && (
                                   <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
                                     <Image
-                                      src={project.imageSrc}
+                                      src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
                                       fill
                                       className="object-cover"
@@ -412,10 +425,10 @@ export default function PreviewCanvas({
                                     </a>
                                   )}
                                 </div>
-                                {project.imageSrc && (
+                                {getImageUrl(project.imageSrc) && (
                                   <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
                                     <Image
-                                      src={project.imageSrc}
+                                      src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
                                       fill
                                       className="object-cover"
@@ -446,7 +459,7 @@ export default function PreviewCanvas({
                       </p>
                     )}
 
-                    {section.links && section.links.length > 0 && (
+                    {section.links && section.links.length > 0 ? (
                       <div className="grid grid-cols-1 gap-3">
                         {section.links.map((link) => (
                           <div
@@ -454,9 +467,9 @@ export default function PreviewCanvas({
                             className="border-tertiary-b flex items-center justify-between rounded-xl border bg-white/60 p-4 transition-colors hover:bg-black/5 dark:border-[#2D2D2D] dark:bg-white/5 dark:hover:bg-white/10"
                           >
                             <div className="flex min-w-0 items-center gap-3">
-                              {link.imageSrc ? (
+                              {getImageUrl(link.imageSrc) ? (
                                 <Image
-                                  src={link.imageSrc}
+                                  src={getImageUrl(link.imageSrc)}
                                   alt={link.title}
                                   width={40}
                                   height={40}
@@ -470,6 +483,7 @@ export default function PreviewCanvas({
                                     alt={link.iconLabel ?? link.title}
                                     width={24}
                                     height={24}
+                                    unoptimized
                                     className="shrink-0"
                                   />
                                 </span>
@@ -494,6 +508,10 @@ export default function PreviewCanvas({
                           </div>
                         ))}
                       </div>
+                    ) : (
+                      <p className="text-tertiary-text py-4 text-center text-xs">
+                        No links added yet.
+                      </p>
                     )}
                   </div>
                 )}

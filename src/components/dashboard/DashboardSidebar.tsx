@@ -2,36 +2,25 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { FileText, Headphones, House, LogOut, Settings, X } from "lucide-react";
+import { Headphones, House, LogOut, X } from "lucide-react";
 import type { CSSProperties, MouseEvent } from "react";
 import { logoutOption } from "@/api/auth/auth.options";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { isApiError } from "@/api/base";
 import { Button } from "../ui/button";
-import { ROUTES } from "@/constants/routes";
 
 const TOPBAR_HEIGHT = "76px";
 
 const navItems = [
   {
     label: "Home",
-    href: ROUTES.dashboard.home,
+    href: "/dashboard",
     icon: House,
   },
   {
-    label: "Profile Builder",
-    href: ROUTES.dashboard.profileBuilder,
-    icon: FileText,
-  },
-  {
-    label: "Settings",
-    href: ROUTES.dashboard.settings.home,
-    icon: Settings,
-  },
-  {
     label: "Help and Support",
-    href: ROUTES.dashboard.help.home,
+    href: "/dashboard/help",
     icon: Headphones,
   },
 ];
@@ -102,10 +91,9 @@ export default function DashboardSidebar({
             const Icon = item.icon;
 
             const isActive =
-              item.href === ROUTES.dashboard.home
-                ? pathname === ROUTES.dashboard.home
-                : pathname === item.href ||
-                  pathname.startsWith(`${item.href}/`);
+              item.href === "/dashboard"
+                ? pathname === "/dashboard"
+                : pathname.startsWith(item.href);
 
             return (
               <Link

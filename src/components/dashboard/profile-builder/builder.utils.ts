@@ -6,12 +6,21 @@ import type {
 import type { Section, SavedLink, ProjectItem } from "./types";
 
 export function contentToSections(
-  content: ProfileContentResponse,
+  rawContent: ProfileContentResponse,
   profile: DashboardProfileResponse
 ): Section[] {
-  const order = content.sectionOrder.length
-    ? content.sectionOrder
-    : ["bio", "links", "projects", "cta"];
+  const content = rawContent?.content;
+  let order = content?.sectionOrder?.length
+    ? [...new Set(content.sectionOrder)]
+    : ["bio"];
+
+  // Derive fallback order from existing keys in content if sectionOrder is missing to prevent data loss
+  if (!content?.sectionOrder?.length) {
+    if (content?.links) order.push("links");
+    if (content?.projects) order.push("projects");
+    if (content?.cta) order.push("cta");
+    order = [...new Set(order)];
+  }
 
   return order.map((key) => {
     if (key === "bio") {
@@ -19,8 +28,8 @@ export function contentToSections(
         id: "bio",
         title: "Bio",
         type: "bio" as const,
-        visible: content.bio.visible,
-        bio: content.bio.content || profile.bio || "",
+        visible: content?.bio?.visible ?? true,
+        bio: content?.bio?.content || profile.bio || "",
         fullName: profile.fullName ?? "",
       };
     }
@@ -28,22 +37,22 @@ export function contentToSections(
     if (key === "links") {
       return {
         id: "links",
-        title: content.links.sectionTitle || "Links - Featured Links",
+        title: content?.links?.sectionTitle || "Links - Featured Links",
         type: "links" as const,
-        visible: content.links.visible,
-        subtitle: content.links.sectionTitle,
-        links: content.links.items as unknown as SavedLink[],
+        visible: content?.links?.visible ?? true,
+        subtitle: content?.links?.sectionTitle ?? "",
+        links: (content?.links?.items ?? []) as unknown as SavedLink[],
       };
     }
 
     if (key === "projects") {
       return {
         id: "projects",
-        title: content.projects.sectionTitle || "Projects - Portfolio",
+        title: content?.projects?.sectionTitle || "Projects - Portfolio",
         type: "projects" as const,
-        visible: content.projects.visible,
-        subtitle: content.projects.sectionTitle,
-        projects: content.projects.items as unknown as ProjectItem[],
+        visible: content?.projects?.visible ?? true,
+        subtitle: content?.projects?.sectionTitle ?? "",
+        projects: (content?.projects?.items ?? []) as unknown as ProjectItem[],
       };
     }
 
@@ -52,12 +61,15 @@ export function contentToSections(
       id: "cta",
       title: "Let's build something",
       type: "experience" as const,
-      visible: content.cta.visible,
-      buttonText: content.cta.label,
-      url: content.cta.url ?? "",
+      visible: content?.cta?.visible ?? true,
+      buttonText: content?.cta?.label ?? "",
+      url: content?.cta?.url ?? "",
     };
   });
 }
+
+const isRemoteUrl = (src?: string | null) =>
+  !!src && (src.startsWith("http://") || src.startsWith("https://"));
 
 export function sectionsToContent(
   sections: Section[]
@@ -80,20 +92,20 @@ export function sectionsToContent(
       ? {
           visible: linksSection.visible,
           sectionTitle: linksSection.subtitle ?? "Links",
-          items: (linksSection.links ?? []) as unknown as Record<
-            string,
-            unknown
-          >[],
+          items: (linksSection.links ?? []).map((l) => ({
+            ...l,
+            imageSrc: isRemoteUrl(l.imageSrc) ? l.imageSrc : null,
+          })) as unknown as Record<string, unknown>[],
         }
       : undefined,
     projects: projectsSection
       ? {
           visible: projectsSection.visible,
           sectionTitle: projectsSection.subtitle ?? "Projects",
-          items: (projectsSection.projects ?? []) as unknown as Record<
-            string,
-            unknown
-          >[],
+          items: (projectsSection.projects ?? []).map((p) => ({
+            ...p,
+            imageSrc: isRemoteUrl(p.imageSrc) ? p.imageSrc : null,
+          })) as unknown as Record<string, unknown>[],
         }
       : undefined,
     cta: ctaSection
