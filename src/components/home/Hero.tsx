@@ -104,7 +104,7 @@ export function Hero() {
             {...fadeUp(0.2)}
             className="flex w-full max-w-[512px] flex-col items-stretch gap-[6.73px] sm:flex-row"
           >
-            <div className="flex h-[50px] flex-1 items-center rounded-[5.57px] border border-[#C9C9C9] bg-[#FAFAFA] px-[12px] focus-within:ring-2 focus-within:ring-[#087583]/40">
+            <div className="flex h-[56px] flex-1 items-center rounded-[5.57px] border border-[#C9C9C9] bg-[#FAFAFA] px-[12px] focus-within:ring-2 focus-within:ring-[#087583]/40 sm:h-[50px]">
               <span
                 className="shrink-0 text-[16px] leading-[24px] text-[#454545] select-none"
                 style={{ fontFamily: "'Afacad', sans-serif" }}

@@ -30,7 +30,7 @@ const SelectedProject = () => {
       <div>
         <h2 className="p-3 text-2xl font-bold">Selected Projects</h2>
       </div>
-      <div className="grid grid-cols-2">
+      <div className="grid grid-cols-1 overflow-hidden border-t border-[#EDEDED] sm:grid-cols-2">
         {data.map((item, index) => (
           <div key={index}>
             <ProjectCards

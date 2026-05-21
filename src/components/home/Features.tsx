@@ -137,7 +137,7 @@ export function Features() {
       >
         <Link
           href="/signup"
-          className="w-full cursor-pointer rounded-lg bg-white px-6 py-3.5 text-sm font-semibold text-teal-700 transition-all duration-200 hover:scale-105 hover:bg-teal-50 active:scale-95 sm:w-auto sm:px-8"
+          className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-white px-6 py-3.5 text-center text-sm font-semibold text-teal-700 transition-all duration-200 hover:scale-105 hover:bg-teal-50 active:scale-95 sm:w-auto sm:px-8"
           style={{ fontFamily: "'Inter', sans-serif" }}
         >
           Create Your Profile Now
