@@ -8,9 +8,15 @@ const nextConfig: NextConfig = {
     authInterrupts: true,
   },
   images: {
-    remotePatterns: apiHostname
-      ? [{ protocol: "https", hostname: apiHostname }]
-      : [],
+    remotePatterns: [
+      ...(apiHostname
+        ? [{ protocol: "https" as const, hostname: apiHostname }]
+        : []),
+      {
+        protocol: "https" as const,
+        hostname: "api.staging.open-profile.hng14.com",
+      },
+    ],
   },
 };
 

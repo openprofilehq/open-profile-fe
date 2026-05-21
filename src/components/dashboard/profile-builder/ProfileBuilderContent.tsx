@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -38,6 +39,7 @@ export default function ProfileBuilderContent() {
   const [sections, setSections] = useState<Section[]>([]);
 
   const contentLoadedRef = useRef(false);
+  const userEditedRef = useRef(false);
   const draftUpdatedAtRef = useRef<string | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -52,7 +54,11 @@ export default function ProfileBuilderContent() {
     }
 
     contentLoadedRef.current = true;
-    setSections(contentToSections(profileContent.data, dashboardProfile.data));
+    const loadedSections = contentToSections(
+      profileContent.data,
+      dashboardProfile.data
+    );
+    setSections(loadedSections);
     draftUpdatedAtRef.current = draftState.data.updatedAt ?? null;
   }, [
     profileContent.isSuccess,
@@ -67,37 +73,52 @@ export default function ProfileBuilderContent() {
     mutationKey: ["profile", "draft", "upsert"],
     mutationFn: upsertDraft,
     onSuccess(response) {
-      const raw = response as unknown as {
-        status?: string;
-        data?: { updatedAt?: string };
-      };
-      const updatedAt = raw?.data?.updatedAt;
+      const updatedAt = response?.data?.updatedAt;
       if (updatedAt) {
         draftUpdatedAtRef.current = updatedAt;
       }
+      queryClient.invalidateQueries({ queryKey: ["profile", "content"] });
     },
+    onError(error: unknown) {
+      const msg =
+        error instanceof Error ? error.message : "Failed to save draft.";
+      toast.error(msg);
+    },
+  });
+
+  const saveDraftRef = useRef(saveDraft);
+  useEffect(() => {
+    saveDraftRef.current = saveDraft;
   });
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
+    if (!userEditedRef.current) {
+      userEditedRef.current = true;
+      return;
+    }
 
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
 
     saveTimerRef.current = setTimeout(() => {
       const bioSection = sections.find((s) => s.type === "bio");
-      saveDraft({
+      const updatedAt = draftUpdatedAtRef.current;
+      if (!updatedAt) {
+        console.warn("[draft] skipping save — no updatedAt yet");
+        return;
+      }
+      const payload = {
         bio: bioSection?.bio ?? null,
         content: sectionsToContent(sections),
-        ...(draftUpdatedAtRef.current
-          ? { updatedAt: draftUpdatedAtRef.current }
-          : {}),
-      });
+        updatedAt,
+      };
+      saveDraftRef.current(payload);
     }, 1000);
 
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
-  }, [sections, saveDraft]);
+  }, [sections]);
 
   const { mutate: doPublish, isPending: isPublishing } = useMutation({
     mutationKey: ["profile", "publish"],
@@ -127,9 +148,12 @@ export default function ProfileBuilderContent() {
       : section
   );
 
+  const searchParams = useSearchParams();
+  const sectionParam = searchParams.get("section"); // e.g. "links" | "projects"
+
   const [activeTab, setActiveTab] = useState<"general" | "section">("general");
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
-    "bio"
+    sectionParam ?? "bio"
   );
 
   const handleSelectSection = (id: string) => {
@@ -138,8 +162,15 @@ export default function ProfileBuilderContent() {
   };
 
   const handleAddSection = (title: string, type: string) => {
+    const stableIds: Record<string, string> = {
+      bio: "bio",
+      links: "links",
+      projects: "projects",
+      experience: "cta",
+      cta: "cta",
+    };
     const newSection: Section = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: stableIds[type] ?? Math.random().toString(36).substr(2, 9),
       title,
       type,
       visible: true,
@@ -209,7 +240,9 @@ export default function ProfileBuilderContent() {
             sections={resolvedSections}
             selectedSectionId={selectedSectionId}
             selectedSection={selectedSection}
+            initialEditingSectionId={sectionParam}
             onSelectSection={handleSelectSection}
+            onDeselectSection={() => setSelectedSectionId(null)}
             onAddSection={handleAddSection}
             onRemoveSection={handleRemoveSection}
             onToggleSectionVisibility={handleToggleSectionVisibility}
@@ -228,6 +261,7 @@ export default function ProfileBuilderContent() {
             theme={theme}
             sections={resolvedSections}
             profile={profile}
+            selectedSectionId={selectedSectionId}
             onToggleSectionVisibility={handleToggleSectionVisibility}
             onRemoveSection={handleRemoveSection}
           />

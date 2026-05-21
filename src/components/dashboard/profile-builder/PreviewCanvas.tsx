@@ -15,6 +15,7 @@ interface PreviewCanvasProps {
   theme: "light" | "dark";
   sections: Section[];
   profile?: ProfilePreview | null;
+  selectedSectionId?: string | null;
   onToggleSectionVisibility: (id: string) => void;
   onRemoveSection: (id: string) => void;
 }
@@ -29,6 +30,7 @@ export default function PreviewCanvas({
   theme,
   sections,
   profile,
+  selectedSectionId,
   onToggleSectionVisibility,
   onRemoveSection,
 }: PreviewCanvasProps) {
@@ -94,9 +96,9 @@ export default function PreviewCanvas({
 
   const visibleSections = sections.filter((section) => section.visible);
 
-  const isBioVisible = visibleSections.some(
-    (section) => section.type === "bio"
-  );
+  const isBioVisible =
+    (!selectedSectionId || selectedSectionId === "bio") &&
+    visibleSections.some((section) => section.type === "bio");
 
   return (
     <div
@@ -149,6 +151,14 @@ export default function PreviewCanvas({
 
           {visibleSections.map((section) => {
             if (section.type === "bio") return null; // Already rendered in main card
+
+            // When a specific non-bio section is selected, only show that section
+            if (
+              selectedSectionId &&
+              selectedSectionId !== "bio" &&
+              section.id !== selectedSectionId
+            )
+              return null;
 
             const isSectionHighlighted =
               section.type === "projects" && section.highlightSection;

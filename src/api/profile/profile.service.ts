@@ -85,6 +85,17 @@ export function upsertDraft(data: UpsertDraftRequest) {
   });
 }
 
+export function updateProfile(
+  username: string,
+  data: { fullName?: string; bio?: string; photoUrl?: string }
+) {
+  return callApi<DashboardProfileResponse>({
+    url: `/profiles/${username}`,
+    method: "PATCH",
+    data,
+  });
+}
+
 export function publishProfile() {
   return callApi<PublishProfileResponse>({
     url: "/profiles/publish",

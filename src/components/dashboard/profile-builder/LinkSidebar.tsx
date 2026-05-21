@@ -52,11 +52,8 @@ const LinkSidebar = ({
   const handleLinksChange = (
     updateFn: (currentLinks: SavedLink[]) => SavedLink[]
   ) => {
-    let nextLinks;
-    setLinks((currentLinks) => {
-      nextLinks = updateFn(currentLinks);
-      return nextLinks;
-    });
+    const nextLinks = updateFn(links);
+    setLinks(nextLinks);
     syncSection({ links: nextLinks });
   };
 

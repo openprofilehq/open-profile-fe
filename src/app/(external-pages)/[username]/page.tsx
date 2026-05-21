@@ -14,9 +14,7 @@ export default async function UserProfilePage({ params }: Props) {
 
   const res = await fetch(
     `${serverEnv.API_BASE_URL}/api/v1/profiles/${encodeURIComponent(username)}`,
-    {
-      cache: "no-store",
-    }
+    { cache: "no-store" }
   );
 
   if (!res.ok) notFound();
@@ -31,7 +29,6 @@ export default async function UserProfilePage({ params }: Props) {
     .join("")
     .slice(0, 2)
     .toUpperCase();
-
   const photoSrc = profile.photoUrl
     ? profile.photoUrl.startsWith("http")
       ? profile.photoUrl
@@ -52,41 +49,21 @@ export default async function UserProfilePage({ params }: Props) {
         </Link>
       </div>
 
-      <div className="relative flex flex-1 items-center justify-center px-4 py-10">
-        <div className="absolute bottom-15 left-0 z-0 hidden lg:block">
-          <Image
-            src="/auth/left-img.png"
-            alt=""
-            width={270}
-            height={350}
-            className="object-contain"
-          />
-        </div>
-
-        <div className="relative z-10 flex w-full max-w-lg flex-col items-center gap-4 text-center">
-          <Avatar className="h-20 w-20">
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-10">
+        <div className="flex flex-col items-center gap-4 rounded-2xl border border-[#EDEDED] bg-white p-8 text-center shadow-sm sm:flex-row sm:text-left">
+          <Avatar className="h-20 w-20 shrink-0">
             <AvatarImage src={photoSrc} alt={name} />
             <AvatarFallback className="text-xl">{initials}</AvatarFallback>
           </Avatar>
           <div>
             <h1 className="text-xl font-bold text-[#050505]">{name}</h1>
             <p className="text-sm text-gray-500">@{profile.username}</p>
+            {profile.bio && (
+              <p className="mt-2 text-sm leading-relaxed text-[#454545]">
+                {profile.bio}
+              </p>
+            )}
           </div>
-          {profile.bio && (
-            <p className="text-justify text-sm leading-relaxed text-[#050505]">
-              {profile.bio}
-            </p>
-          )}
-        </div>
-
-        <div className="absolute top-15 right-0 z-0 hidden lg:block">
-          <Image
-            src="/auth/right-img.png"
-            alt=""
-            width={270}
-            height={350}
-            className="object-contain"
-          />
         </div>
       </div>
 
