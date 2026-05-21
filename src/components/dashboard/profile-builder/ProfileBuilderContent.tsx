@@ -41,8 +41,6 @@ export default function ProfileBuilderContent() {
       title: "Projects - Portfolio",
       type: "projects",
       visible: true,
-<<<<<<< HEAD
-=======
       projects: [
         {
           id: "default-project-1",
@@ -51,18 +49,12 @@ export default function ProfileBuilderContent() {
           url: "https://github.com",
         },
       ],
->>>>>>> 3be84a4 (fix: undo merge)
     },
     {
       id: "cta",
       title: "Let's build something",
       type: "experience",
       visible: true,
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 3be84a4 (fix: undo merge)
       subtitle:
         "I'm currently accepting new projects and consulting opportunities for Q3 2026.",
       layout: "1",
@@ -71,10 +63,6 @@ export default function ProfileBuilderContent() {
       iconId: "chat",
       iconSrc: "/profilebuilder_home/icons/chat.svg",
       iconLabel: "Chat",
-<<<<<<< HEAD
->>>>>>> ab25465 (Feat(ProfileBuilder): Add cta section)
-=======
->>>>>>> 3be84a4 (fix: undo merge)
     },
   ]);
   const resolvedSections = sections.map((section) =>
