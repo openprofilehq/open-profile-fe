@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronRight, MessageSquare } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { profileContentOption } from "@/api/profile/profile.options";
+import { sanitizeUrl } from "@/utils/profile";
 
 export default function YourCTA() {
   const { data: content } = useQuery(profileContentOption());
@@ -15,19 +16,19 @@ export default function YourCTA() {
         <span className="inline-flex items-center gap-2 rounded-md border p-2 text-sm font-medium">
           <MessageSquare size={12} />
         </span>
-        <h4 className="text-2xl font-bold">{cta?.label || "Your CTA"}</h4>
+        <h4 className="text-2xl font-bold">
+          {cta?.visible && cta?.label ? cta.label : "Your CTA"}
+        </h4>
 
-        {cta?.visible && cta?.label ? (
-          cta.url ? (
-            <a
-              href={cta.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-11 items-center rounded-xl bg-[#087583] px-8 text-sm font-bold text-white hover:bg-[#065e69]"
-            >
-              {cta.label}
-            </a>
-          ) : null
+        {cta?.visible && cta?.label && cta?.url ? (
+          <a
+            href={sanitizeUrl(cta.url)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-11 items-center rounded-xl bg-[#087583] px-8 text-sm font-bold text-white hover:bg-[#065e69]"
+          >
+            {cta.label}
+          </a>
         ) : (
           <Link
             href="/dashboard/profile-builder?section=cta"

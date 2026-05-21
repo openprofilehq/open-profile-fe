@@ -31,47 +31,51 @@ export default function FeaturedLinks() {
         </Link>
       ) : (
         <div className="mt-6 flex flex-col gap-4">
-          {links.map((item, index) => (
-            <a
-              key={item.id ?? index}
-              href={sanitizeUrl(item.url)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between rounded-[18px] border border-[#EDEDED] p-4 no-underline"
-            >
-              <div className="flex items-center gap-5">
-                <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-[12px] border border-[#EDEDED]">
-                  {getImageUrl(item.imageSrc) ? (
-                    <Image
-                      src={getImageUrl(item.imageSrc)}
-                      alt={item.title ?? "Link"}
-                      width={56}
-                      height={56}
-                      className="object-cover"
-                      unoptimized
-                    />
-                  ) : item.iconSrc ? (
-                    <Image
-                      src={item.iconSrc}
-                      alt={item.title ?? "Link"}
-                      width={24}
-                      height={24}
-                      unoptimized
-                    />
-                  ) : (
-                    <ImageIcon className="text-[#A2A2A2]" size={24} />
-                  )}
-                </span>
-                <div>
-                  <h3 className="font-bold text-[#050505]">{item.title}</h3>
-                  <p className="text-sm text-[#A2A2A2]">{item.url}</p>
+          {links.map((item, index) => {
+            const displayImg = getImageUrl(item.imageSrc);
+            return (
+              <a
+                key={item.id ?? index}
+                href={sanitizeUrl(item.url)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between rounded-[18px] border border-[#EDEDED] p-4 no-underline"
+              >
+                <div className="flex items-center gap-5">
+                  <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-[12px] border border-[#EDEDED]">
+                    {displayImg ? (
+                      <Image
+                        src={displayImg}
+                        alt={item.title ?? "Link"}
+                        width={56}
+                        height={56}
+                        className="object-cover"
+                        unoptimized
+                      />
+                    ) : item.iconSrc ? (
+                      // item.iconSrc is guaranteed to be a client preloaded, absolute local SVG asset path
+                      <Image
+                        src={item.iconSrc}
+                        alt={item.title ?? "Link"}
+                        width={24}
+                        height={24}
+                        unoptimized
+                      />
+                    ) : (
+                      <ImageIcon className="text-[#A2A2A2]" size={24} />
+                    )}
+                  </span>
+                  <div>
+                    <h3 className="font-bold text-[#050505]">{item.title}</h3>
+                    <p className="text-sm text-[#A2A2A2]">{item.url}</p>
+                  </div>
                 </div>
-              </div>
-              <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#EDEDED]">
-                <ExternalLink className="text-[#A2A2A2]" size={20} />
-              </span>
-            </a>
-          ))}
+                <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#EDEDED]">
+                  <ExternalLink className="text-[#A2A2A2]" size={20} />
+                </span>
+              </a>
+            );
+          })}
         </div>
       )}
     </section>

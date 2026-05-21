@@ -4,6 +4,7 @@ import { ChevronLeft, Trash2, Upload, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { getImageUrl } from "@/utils/profile";
 import { uploadImage } from "@/api/uploads/uploads.service";
 import { updateProfile } from "@/api/profile/profile.service";
@@ -44,6 +45,8 @@ export default function BioSidebar({
     if (file.size > 5 * 1024 * 1024) return;
     event.target.value = "";
 
+    const prevUploadedImage = uploadedImage;
+
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === "string") setUploadedImage(reader.result);
@@ -60,7 +63,9 @@ export default function BioSidebar({
         queryClient.invalidateQueries({ queryKey: ["profile", "dashboard"] });
       }
     } catch {
-      // preview stays but won't persist
+      // Rollback optimistic image on failure!
+      setUploadedImage(prevUploadedImage);
+      toast.error("Failed to upload profile photo.");
     } finally {
       setUploading(false);
     }
@@ -196,9 +201,22 @@ export default function BioSidebar({
                 <button
                   type="button"
                   disabled={uploading}
-                  onClick={() => {
+                  onClick={async () => {
                     if (displayImage) {
                       setUploadedImage(null);
+                      onUpdateSection(section.id, { photoUrl: null } as never);
+                      if (profile?.username) {
+                        try {
+                          await updateProfile(profile.username, {
+                            photoUrl: null,
+                          });
+                          queryClient.invalidateQueries({
+                            queryKey: ["profile", "dashboard"],
+                          });
+                        } catch {
+                          toast.error("Failed to remove profile photo.");
+                        }
+                      }
                     } else {
                       fileInputRef.current?.click();
                     }

@@ -1,7 +1,5 @@
 #!/usr/bin/env sh
 
-export CI="true"
-
 branch="$(git rev-parse --abbrev-ref HEAD)"
 protected_branches="main dev staging production prod"
 

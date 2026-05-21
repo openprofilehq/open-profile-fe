@@ -10,9 +10,17 @@ export function contentToSections(
   profile: DashboardProfileResponse
 ): Section[] {
   const content = rawContent?.content;
-  const order = content?.sectionOrder?.length
+  let order = content?.sectionOrder?.length
     ? [...new Set(content.sectionOrder)]
     : ["bio"];
+
+  // Derive fallback order from existing keys in content if sectionOrder is missing to prevent data loss
+  if (!content?.sectionOrder?.length) {
+    if (content?.links) order.push("links");
+    if (content?.projects) order.push("projects");
+    if (content?.cta) order.push("cta");
+    order = [...new Set(order)];
+  }
 
   return order.map((key) => {
     if (key === "bio") {
