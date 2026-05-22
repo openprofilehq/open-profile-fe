@@ -80,7 +80,7 @@ export default function DashboardSidebar({
             type="button"
             onClick={onClose}
             aria-label="Close dashboard menu"
-            className="rounded-[8px] border border-[#EDEDED] p-2"
+            className="cursor-pointer rounded-[8px] border border-[#EDEDED] p-2"
           >
             <X size={20} />
           </button>

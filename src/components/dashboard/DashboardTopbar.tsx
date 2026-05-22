@@ -34,18 +34,20 @@ export default function DashboardTopbar({
             type="button"
             onClick={onOpenSidebar}
             aria-label="Open dashboard menu"
-            className="rounded-[8px] border border-[#EDEDED] p-2 text-[#050505] lg:hidden"
+            className="cursor-pointer rounded-[8px] border border-[#EDEDED] p-2 text-[#050505] lg:hidden"
           >
             <Menu size={22} />
           </button>
 
-          <Image
-            src="/logo.svg"
-            alt="Open Profile"
-            width={180}
-            height={40}
-            className="h-auto w-36 shrink-0 sm:w-40"
-          />
+          <Link href="/">
+            <Image
+              src="/logo.svg"
+              alt="Open Profile"
+              width={180}
+              height={40}
+              className="h-auto w-36 shrink-0 cursor-pointer sm:w-40"
+            />
+          </Link>
         </div>
 
         <nav className="hidden items-center gap-4 lg:flex">
