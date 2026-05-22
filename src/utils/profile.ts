@@ -2,7 +2,11 @@ import { env } from "@/env/client";
 
 export function getProfileUrl(username?: string) {
   if (!username) return "";
-  return `${env.NEXT_PUBLIC_PROFILE_BASE_URL}/${username}`;
+  const base =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : env.NEXT_PUBLIC_PROFILE_BASE_URL;
+  return `${base}/${username}`;
 }
 
 export function getDisplayUrl(url: string) {

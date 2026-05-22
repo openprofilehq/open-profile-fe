@@ -99,10 +99,6 @@ export default function PreviewCanvas({
   const bioSection = sections.find((s) => s.type === "bio");
   const bioSectionId = bioSection?.id ?? "bio";
 
-  const isBioVisible =
-    (!selectedSectionId || selectedSectionId === bioSectionId) &&
-    visibleSections.some((section) => section.type === "bio");
-
   return (
     <div
       className={`animate-in fade-in flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
@@ -113,49 +109,51 @@ export default function PreviewCanvas({
         <div
           className={`flex w-full flex-col transition-all duration-300 ${selectedFontClass}`}
         >
-          {/* 1. Main Bio Card (Standard Profile Header) */}
-          {isBioVisible && (
-            <div
-              style={cardStyle}
-              className="relative flex flex-col items-center gap-6 border p-6 shadow-sm transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
-            >
-              {/* Avatar image */}
-              <div className="border-brand-b/20 bg-brand-light-subtle-bg relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-inner">
-                {getImageUrl(profile?.photoUrl) ? (
-                  <Image
-                    src={getImageUrl(profile?.photoUrl) || ""}
-                    alt={profile?.fullName ?? "Profile avatar"}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                ) : (
-                  <div className="text-brand-text text-3xl font-bold">
-                    {(profile?.fullName || "M").charAt(0).toUpperCase()}
-                  </div>
-                )}
-              </div>
-
-              {/* Profile Info */}
-              <div className="flex-1 text-center sm:text-left">
-                <h2 className="text-2xl font-bold tracking-tight">
-                  {profile?.fullName || "Micaela Robinsonss"}
-                </h2>
-                <p
-                  style={textStyle}
-                  className="mt-3 text-[15px] leading-relaxed opacity-90 transition-colors"
-                >
-                  {profile?.bio ||
-                    "I'm a digital creator focusing on the intersection of design, technology, and intentional living. Sharing insights to help you build better products and habits."}
-                </p>
-              </div>
-            </div>
-          )}
-
           {visibleSections.map((section) => {
-            if (section.type === "bio") return null; // Already rendered in main card
+            if (section.type === "bio") {
+              if (
+                selectedSectionId &&
+                selectedSectionId !== bioSectionId &&
+                section.id !== selectedSectionId
+              )
+                return null;
+              return (
+                <div
+                  key={section.id}
+                  style={cardStyle}
+                  className="relative flex flex-col items-center gap-6 border p-6 shadow-sm transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
+                >
+                  <div className="border-brand-b/20 bg-brand-light-subtle-bg relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-inner">
+                    {getImageUrl(profile?.photoUrl) ? (
+                      <Image
+                        src={getImageUrl(profile?.photoUrl) || ""}
+                        alt={profile?.fullName ?? "Profile avatar"}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="text-brand-text text-3xl font-bold">
+                        {(profile?.fullName || "M").charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 text-center sm:text-left">
+                    <h2 className="text-2xl font-bold tracking-tight">
+                      {profile?.fullName || "Micaela Robinsonss"}
+                    </h2>
+                    <p
+                      style={textStyle}
+                      className="mt-3 text-[15px] leading-relaxed opacity-90 transition-colors"
+                    >
+                      {profile?.bio ||
+                        "I'm a digital creator focusing on the intersection of design, technology, and intentional living. Sharing insights to help you build better products and habits."}
+                    </p>
+                  </div>
+                </div>
+              );
+            }
 
-            // When a specific non-bio section is selected, only show that section
             if (
               selectedSectionId &&
               selectedSectionId !== bioSectionId &&
