@@ -7,6 +7,7 @@ import { CircleCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
+import { getDisplayUrl } from "@/utils/profile";
 
 const profiles = [
   {
@@ -109,7 +110,7 @@ export function Hero() {
                 className="shrink-0 text-[16px] leading-[24px] text-[#454545] select-none"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               >
-                open.profile/
+                {getDisplayUrl(window.location.origin)}/
               </span>
               <input
                 type="text"

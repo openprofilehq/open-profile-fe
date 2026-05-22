@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Headphones, House, LogOut, X } from "lucide-react";
 import type { CSSProperties, MouseEvent } from "react";
-import { logoutOption } from "@/api/auth/auth.options";
+import { logoutOption, userQueryOptions } from "@/api/auth/auth.options";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { isApiError } from "@/api/base";
@@ -42,7 +42,7 @@ export default function DashboardSidebar({
     ...logoutOption,
     onSuccess: () => {
       sessionStorage.removeItem("resetToken");
-      queryClient.removeQueries({ queryKey: ["auth", "me"] });
+      queryClient.removeQueries({ queryKey: userQueryOptions.queryKey });
       router.push("/login");
     },
     onError: (err) =>
