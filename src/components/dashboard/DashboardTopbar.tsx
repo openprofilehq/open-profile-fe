@@ -3,7 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Search } from "lucide-react";
+import {
+  Menu,
+  // Search
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { ROUTES } from "@/constants/routes";
@@ -15,7 +18,7 @@ type DashboardTopbarProps = {
 const navLinks = [
   { label: "Home", href: ROUTES.dashboard.home },
   { label: "Profile Builder", href: ROUTES.dashboard.profileBuilder },
-  { label: "Settings", href: ROUTES.dashboard.settings.home },
+  // { label: "Settings", href: ROUTES.dashboard.settings.home },
 ];
 
 export default function DashboardTopbar({
@@ -68,13 +71,13 @@ export default function DashboardTopbar({
         </nav>
 
         <div className="flex shrink-0 items-center gap-3 md:gap-4">
-          <button className="text-[#050505]" aria-label="Search">
+          {/* <button className="text-[#050505]" aria-label="Search">
             <Search size={24} />
           </button>
 
           <Button className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text hidden h-10 rounded-[10px] border px-5 text-sm font-semibold shadow-none transition-all hover:bg-white active:scale-95 md:flex">
             Upgrade
-          </Button>
+          </Button> */}
 
           <Button className="bg-brand-hover-bg hover:bg-brand h-10 rounded-[10px] px-6 text-sm font-semibold text-white transition-all active:scale-95">
             Publish

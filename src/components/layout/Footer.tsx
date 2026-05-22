@@ -36,30 +36,30 @@ export default function Footer() {
             <div className="space-y-6">
               <h4 className="text-[14px] font-semibold text-white">Products</h4>
               <ul className="space-y-4">
-                <li>
+                {/* <li>
                   <Link
                     href="#"
                     className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
                   >
                     How it works
                   </Link>
-                </li>
-                <li>
+                </li> */}
+                {/* <li>
                   <Link
                     href="#"
                     className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
                   >
                     Features
                   </Link>
-                </li>
-                <li>
+                </li> */}
+                {/* <li>
                   <Link
                     href="#"
                     className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
                   >
                     Pricing
                   </Link>
-                </li>
+                </li> */}
                 <li>
                   <Link
                     href="/faq"
@@ -74,7 +74,7 @@ export default function Footer() {
             <div className="space-y-6">
               <h4 className="text-[14px] font-semibold text-white">Company</h4>
               <ul className="space-y-4">
-                <li>
+                {/* <li>
                   <Link
                     href="#"
                     className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
@@ -97,7 +97,7 @@ export default function Footer() {
                   >
                     Careers
                   </Link>
-                </li>
+                </li> */}
                 <li>
                   <Link
                     href="/contact"
