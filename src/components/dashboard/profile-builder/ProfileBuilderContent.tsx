@@ -214,9 +214,30 @@ export default function ProfileBuilderContent() {
   });
 
   const sectionsRef = useRef(sections);
+  const themeSettingsRef = useRef({
+    font,
+    textColor,
+    bgColor,
+    iconColor,
+    spacing,
+    borderRadius,
+    theme,
+  });
   useEffect(() => {
     sectionsRef.current = sections;
   }, [sections]);
+
+  useEffect(() => {
+    themeSettingsRef.current = {
+      font,
+      textColor,
+      bgColor,
+      iconColor,
+      spacing,
+      borderRadius,
+      theme,
+    };
+  }, [font, textColor, bgColor, iconColor, spacing, borderRadius, theme]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
@@ -245,7 +266,16 @@ export default function ProfileBuilderContent() {
         clearTimeout(saveTimerRef.current);
       }
     };
-  }, [sections]);
+  }, [
+    sections,
+    font,
+    textColor,
+    bgColor,
+    iconColor,
+    spacing,
+    borderRadius,
+    theme,
+  ]);
 
   useEffect(() => {
     return () => {

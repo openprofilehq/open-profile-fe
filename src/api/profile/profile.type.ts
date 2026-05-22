@@ -24,6 +24,9 @@ export type ProfileResponse = {
   bio: string | null;
   photoUrl: string | null;
   isPublished?: boolean;
+  templateType?: string | null;
+  themeSettings?: unknown | null;
+  content?: ProfileContentDetails | null;
 };
 
 export type DashboardProfileResponse = {
@@ -83,6 +86,7 @@ export type ProfileContentResponse = {
 export type UpsertDraftRequest = {
   bio?: string | null;
   photoUrl?: string | null;
+  themeSettings?: Record<string, unknown> | null;
   content?: {
     bio?: ProfileContentSectionBio;
     links?: ProfileContentSectionLinks;
