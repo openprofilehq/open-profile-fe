@@ -104,7 +104,7 @@ export function Hero() {
             {...fadeUp(0.2)}
             className="flex w-full max-w-[512px] flex-col items-stretch gap-[6.73px] sm:flex-row"
           >
-            <div className="flex h-[56px] flex-1 items-center rounded-[5.57px] border border-[#C9C9C9] bg-[#FAFAFA] px-[12px] focus-within:ring-2 focus-within:ring-[#087583]/40 sm:h-[50px]">
+            <div className="flex h-12 min-h-12 flex-1 items-center rounded-[5.57px] border border-[#C9C9C9] bg-[#FAFAFA] px-[14px] focus-within:ring-2 focus-within:ring-[#087583]/40 lg:h-[50px] lg:min-h-[50px]">
               <span
                 className="shrink-0 text-[16px] leading-[24px] text-[#454545] select-none"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
@@ -117,13 +117,13 @@ export function Hero() {
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 placeholder="username"
-                className="min-w-0 flex-1 bg-transparent text-[16px] leading-[24px] text-[#454545] outline-none placeholder:text-[#C9C9C9]"
+                className="h-full min-w-0 flex-1 bg-transparent text-[16px] leading-[24px] text-[#454545] outline-none placeholder:text-[#C9C9C9]"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               />
             </div>
             <Button
               onClick={handleSearch}
-              className="h-[56px] w-full rounded-[8px] bg-[#087583] px-[16px] text-[16px] leading-[24px] whitespace-nowrap text-white transition-colors hover:bg-[#065E69] sm:h-[50px] sm:w-auto"
+              className="h-12 w-full rounded-[8px] bg-[#087583] px-[16px] text-[16px] leading-[24px] whitespace-nowrap text-white transition-colors hover:bg-[#065E69] sm:w-auto lg:h-[50px]"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               Search a Profile
