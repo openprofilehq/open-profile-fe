@@ -24,7 +24,10 @@ export function getCurrentUser({ signal, token }: ApiOptions) {
     url: "/auth/me",
     method: "GET",
     signal,
-    ...(token ? { headers: { Authorization: `Bearer ${token}` } } : {}),
+    headers: {
+      "x-silent-auth": "true",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
   });
 }
 

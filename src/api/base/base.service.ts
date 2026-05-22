@@ -62,7 +62,10 @@ api.interceptors.response.use(
       return api(originalRequest);
     } catch (refreshError) {
       processQueue(refreshError);
-      if (typeof window !== "undefined") {
+
+      const isSilent = originalRequest.headers?.["x-silent-auth"] === "true";
+
+      if (typeof window !== "undefined" && !isSilent) {
         const returnTo = encodeURIComponent(
           window.location.pathname +
             window.location.search +
