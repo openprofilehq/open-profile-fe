@@ -13,8 +13,8 @@ const ProjectCards = ({
   projectDescription: string;
 }) => {
   return (
-    <div className="flex min-w-0 flex-col border-b border-[#EDEDED] sm:border-r">
-      <div className="flex aspect-[4/3] w-full items-center justify-center bg-[#F4F4F5]">
+    <div className="border-tertiary-b flex min-w-0 flex-col border-b sm:border-r">
+      <div className="bg-secondary-bg flex aspect-[4/3] w-full items-center justify-center">
         <Image
           src={img}
           alt={projectTitle}
