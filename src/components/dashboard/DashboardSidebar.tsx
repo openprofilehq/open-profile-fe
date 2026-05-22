@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Headphones, House, LogOut, X } from "lucide-react";
 import type { CSSProperties, MouseEvent } from "react";
 import { logoutOption } from "@/api/auth/auth.options";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { isApiError } from "@/api/base";
 import { Button } from "../ui/button";
@@ -36,11 +36,13 @@ export default function DashboardSidebar({
 }: DashboardSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const logoutMutation = useMutation({
     ...logoutOption,
     onSuccess: () => {
       sessionStorage.removeItem("resetToken");
+      queryClient.removeQueries({ queryKey: ["auth", "me"] });
       router.push("/login");
     },
     onError: (err) =>

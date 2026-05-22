@@ -1,7 +1,17 @@
 import { ApiError } from "@/api/base/base.error";
 import { ApiResponse } from "@/api/base/base.type";
 import { env } from "@/env/client";
-import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import axios, {
+  AxiosError,
+  AxiosRequestConfig,
+  InternalAxiosRequestConfig,
+} from "axios";
+
+declare module "axios" {
+  interface InternalAxiosRequestConfig {
+    silent?: boolean;
+  }
+}
 
 export const api = axios.create({
   baseURL: `${env.NEXT_PUBLIC_API_URL}/api/v1`,
@@ -30,10 +40,11 @@ api.interceptors.response.use(
 
     const originalRequest = error.config as AxiosRequestConfig & {
       _retry?: boolean;
+      silent?: boolean;
     };
 
     const isAuthEndpoint =
-      originalRequest.url?.includes("/auth/refresh") ||
+      originalRequest.url?.includes("/auth/refresh-token") ||
       originalRequest.url?.includes("/auth/logout");
 
     if (
@@ -57,13 +68,12 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      await api.post("/auth/refresh");
+      await api.post("/auth/refresh-token");
       processQueue(null);
       return api(originalRequest);
     } catch (refreshError) {
       processQueue(refreshError);
-
-      const isSilent = originalRequest.headers?.["x-silent-auth"] === "true";
+      const isSilent = originalRequest.silent === true;
 
       if (typeof window !== "undefined" && !isSilent) {
         const returnTo = encodeURIComponent(
@@ -94,6 +104,7 @@ export async function callApi<TResData>({
   params,
   headers,
   signal,
+  silent,
 }: {
   url: `/${string}`;
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
@@ -101,6 +112,7 @@ export async function callApi<TResData>({
   params?: Record<string, unknown>;
   headers?: AxiosRequestConfig["headers"];
   signal?: AbortSignal;
+  silent?: boolean;
 }) {
   try {
     const response = await api.request<ApiResponse<TResData>>({
@@ -115,7 +127,8 @@ export async function callApi<TResData>({
         ...headers,
       },
       signal,
-    });
+      silent,
+    } as InternalAxiosRequestConfig);
 
     return (response.data.data ?? response.data) as TResData;
   } catch (e) {

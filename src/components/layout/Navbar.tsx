@@ -2,23 +2,49 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUserOption } from "@/api/auth/auth.options";
 import { ROUTES } from "@/constants/routes";
 
+function getAuthCookie() {
+  return document.cookie.includes("auth=1");
+}
+
+function getAuthCookieServer() {
+  return false;
+}
+
+function subscribeToAuthCookie(callback: () => void) {
+  // cookies don't have a native event, but we can listen to focus
+  // to re-check when the user returns to the tab
+  window.addEventListener("focus", callback);
+  return () => window.removeEventListener("focus", callback);
+}
+
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { data: user } = useQuery(getCurrentUserOption());
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const hasAuthCookie = useSyncExternalStore(
+    subscribeToAuthCookie,
+    getAuthCookie,
+    getAuthCookieServer
+  );
+
+  const { data: user } = useQuery({
+    ...getCurrentUserOption(),
+    enabled: hasAuthCookie,
+    throwOnError: false,
+  });
 
   return (
     <>
