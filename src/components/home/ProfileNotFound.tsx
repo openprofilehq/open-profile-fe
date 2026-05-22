@@ -6,7 +6,7 @@ import { SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { getDisplayUrl } from "@/utils/profile";
+import { getBaseDisplayUrl } from "@/utils/profile";
 
 export function ProfileNotFound() {
   const pathname = usePathname();
@@ -50,7 +50,7 @@ export function ProfileNotFound() {
               className="text-label-text shrink-0 text-[16px] leading-6 select-none"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
-              {getDisplayUrl(window.location.origin)}/
+              {getBaseDisplayUrl()}/
             </span>
             <input
               type="text"

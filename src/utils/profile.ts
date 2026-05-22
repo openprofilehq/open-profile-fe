@@ -13,6 +13,14 @@ export function getDisplayUrl(url: string) {
   return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 }
 
+export function getBaseDisplayUrl() {
+  return getDisplayUrl(
+    typeof window !== "undefined"
+      ? window.location.origin
+      : env.NEXT_PUBLIC_PROFILE_BASE_URL
+  );
+}
+
 export function getImageUrl(path?: string | null) {
   if (!path) return "";
 
