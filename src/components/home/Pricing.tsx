@@ -1,8 +1,8 @@
 "use client";
 
 import { Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { motion, Variants } from "motion/react";
+import Link from "next/link";
 
 interface PricingPlan {
   name: string;
@@ -168,16 +168,16 @@ export function Pricing() {
                 </ul>
               </div>
 
-              <Button
-                variant="outline"
-                className={`h-auto w-full rounded-[8px] py-4 text-[14px] font-bold transition-all duration-300 ${
+              <Link
+                href="/coming-soon"
+                className={`flex h-auto w-full items-center justify-center rounded-[8px] py-4 text-[14px] font-bold transition-all duration-300 ${
                   plan.highlighted
-                    ? "text-link-hover-text border-transparent bg-white hover:bg-white/95"
-                    : "text-link-hover-text hover:bg-brand-hover-bg/5 border-[#087583] bg-white"
+                    ? "text-link-hover-text border border-transparent bg-white hover:bg-white/95"
+                    : "text-link-hover-text hover:bg-brand-hover-bg/5 border border-[#087583] bg-white"
                 }`}
               >
                 {plan.buttonText}
-              </Button>
+              </Link>
             </motion.div>
           ))}
         </motion.div>
