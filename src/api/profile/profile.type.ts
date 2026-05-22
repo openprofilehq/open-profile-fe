@@ -64,6 +64,12 @@ export type ProfileContentSectionCta = {
   visible: boolean;
   label: string;
   url: string | null;
+  title?: string;
+  subtitle?: string;
+  layout?: string;
+  iconId?: string | null;
+  iconSrc?: string | null;
+  iconLabel?: string | null;
 };
 
 export type ProfileContentDetails = {

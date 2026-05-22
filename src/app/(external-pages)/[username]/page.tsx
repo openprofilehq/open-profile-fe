@@ -568,17 +568,49 @@ export default async function UserProfilePage({ params }: Props) {
               paddingBottom: `${secProps.paddingBottom ?? 16}px`,
             };
 
+            const ctaLayout = secProps.layout || "1";
+            const ctaAlignClass =
+              ctaLayout === "2"
+                ? "items-start text-left"
+                : ctaLayout === "3"
+                  ? "items-end text-right"
+                  : "items-center text-center";
+
             return (
               <div
                 key="cta"
                 style={cardStyle}
                 className="relative flex flex-col border px-6 shadow-sm transition-all duration-300"
               >
-                <div className="flex flex-col items-center py-4 text-center">
+                <div className={`flex flex-col py-4 ${ctaAlignClass}`}>
+                  {secProps.iconSrc && (
+                    <div
+                      style={{ borderColor: isDark ? "#2D2D2D" : "#EDEDED" }}
+                      className="mb-5 flex h-16 w-16 shrink-0 items-center justify-center rounded-[16px] border bg-white shadow-[0_2px_8px_rgba(0,0,0,0.03)]"
+                    >
+                      <div className="relative h-7 w-7">
+                        <Image
+                          src={secProps.iconSrc}
+                          alt={secProps.iconLabel || "CTA Icon"}
+                          fill
+                          className="object-contain"
+                          unoptimized
+                        />
+                      </div>
+                    </div>
+                  )}
                   <h4 className="text-[32px] leading-snug font-bold tracking-tight">
                     {secProps.title || "Let's build something"}
                   </h4>
-                  {content.cta.label && (
+                  {secProps.subtitle && (
+                    <p
+                      style={{ color: secTextColor }}
+                      className="mt-3 max-w-lg text-[15px] leading-relaxed font-medium opacity-80"
+                    >
+                      {secProps.subtitle}
+                    </p>
+                  )}
+                  {(content.cta.label || content.cta.url) && (
                     <a
                       href={content.cta.url || "#"}
                       target="_blank"
@@ -589,7 +621,7 @@ export default async function UserProfilePage({ params }: Props) {
                       }}
                       className="mt-6 inline-flex h-11 items-center justify-center px-[32px] text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90 active:scale-95"
                     >
-                      {content.cta.label}
+                      {content.cta.label || "Visit"}
                     </a>
                   )}
                 </div>

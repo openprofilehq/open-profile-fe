@@ -59,11 +59,16 @@ export function contentToSections(
     // key === "cta"
     return {
       id: "cta",
-      title: "Let's build something",
+      title: content?.cta?.title || "Let's build something",
       type: "experience" as const,
       visible: content?.cta?.visible ?? true,
+      subtitle: content?.cta?.subtitle ?? "",
+      layout: content?.cta?.layout ?? "1",
       buttonText: content?.cta?.label ?? "",
       url: content?.cta?.url ?? "",
+      iconId: content?.cta?.iconId ?? null,
+      iconSrc: content?.cta?.iconSrc ?? null,
+      iconLabel: content?.cta?.iconLabel ?? null,
     };
   });
 }
@@ -113,6 +118,12 @@ export function sectionsToContent(
           visible: ctaSection.visible,
           label: ctaSection.buttonText ?? "",
           url: ctaSection.url || null,
+          title: ctaSection.title ?? "",
+          subtitle: ctaSection.subtitle ?? "",
+          layout: ctaSection.layout ?? "1",
+          iconId: ctaSection.iconId ?? null,
+          iconSrc: ctaSection.iconSrc ?? null,
+          iconLabel: ctaSection.iconLabel ?? null,
         }
       : undefined,
   };
