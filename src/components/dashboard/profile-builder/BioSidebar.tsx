@@ -3,7 +3,11 @@
 import { ChevronLeft, Trash2, Upload, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { getImageUrl } from "@/utils/profile";
+import { uploadImage } from "@/api/uploads/uploads.service";
+import { updateProfile } from "@/api/profile/profile.service";
 import type { Section, ProfilePreview } from "./types";
 
 interface BioSidebarProps {
@@ -19,33 +23,52 @@ export default function BioSidebar({
   onUpdateSection,
   profile,
 }: BioSidebarProps) {
+  const queryClient = useQueryClient();
   const [selectedTab, setSelectedTab] = useState<"content" | "section">(
     "content"
   );
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [buttonMenuOpen, setButtonMenuOpen] = useState(false);
 
   const fullName = section.fullName ?? profile?.fullName ?? "";
   const bio = section.bio ?? "";
   const profilePhotoUrl = getImageUrl(profile?.photoUrl);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) return;
+    event.target.value = "";
 
-    if (file.size > 5 * 1024 * 1024) return; // 5MB max
+    const prevUploadedImage = uploadedImage;
 
     const reader = new FileReader();
     reader.onload = () => {
-      const result = reader.result;
-      if (typeof result === "string") {
-        setUploadedImage(result);
-      }
+      if (typeof reader.result === "string") setUploadedImage(reader.result);
     };
     reader.readAsDataURL(file);
-    event.target.value = "";
+
+    try {
+      setUploading(true);
+      const { url } = await uploadImage(file, "profiles");
+      setUploadedImage(url);
+      onUpdateSection(section.id, { photoUrl: url } as never);
+      if (profile?.username) {
+        await updateProfile(profile.username, { photoUrl: url });
+        queryClient.invalidateQueries({ queryKey: ["profile", "dashboard"] });
+      }
+    } catch {
+      // Rollback optimistic image on failure!
+      setUploadedImage(prevUploadedImage);
+      toast.error("Failed to upload profile photo.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const displayImage = uploadedImage || profilePhotoUrl;
@@ -177,18 +200,40 @@ export default function BioSidebar({
                 {/* Right side — action button */}
                 <button
                   type="button"
-                  onClick={() => {
+                  disabled={uploading}
+                  onClick={async () => {
                     if (displayImage) {
                       setUploadedImage(null);
+                      onUpdateSection(section.id, { photoUrl: null } as never);
+                      if (profile?.username) {
+                        try {
+                          await updateProfile(profile.username, {
+                            photoUrl: null,
+                          });
+                          queryClient.invalidateQueries({
+                            queryKey: ["profile", "dashboard"],
+                          });
+                        } catch {
+                          toast.error("Failed to remove profile photo.");
+                        }
+                      }
                     } else {
                       fileInputRef.current?.click();
                     }
                   }}
-                  className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-[#F8FAFC]"
+                  className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-[#F8FAFC] disabled:opacity-50"
                   aria-label={displayImage ? "Remove image" : "Upload image"}
-                  title={displayImage ? "Remove image" : "Upload image"}
+                  title={
+                    uploading
+                      ? "Uploading..."
+                      : displayImage
+                        ? "Remove image"
+                        : "Upload image"
+                  }
                 >
-                  {displayImage ? (
+                  {uploading ? (
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#087583] border-t-transparent" />
+                  ) : displayImage ? (
                     <Trash2 size={16} className="text-[#9F2B2B]" />
                   ) : (
                     <Upload size={16} />
