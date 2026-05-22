@@ -63,6 +63,7 @@ export default function CreateProfileForm() {
         try {
           const { url } = await uploadImage(photoFile, "profiles");
           await updateProfile(username, { photoUrl: url });
+          setPhotoUrl(url);
         } catch {
           toast.error("Profile created but photo upload failed.");
         }

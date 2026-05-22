@@ -45,6 +45,7 @@ api.interceptors.response.use(
     }
 
     if (isRefreshing) {
+      originalRequest._retry = true;
       return new Promise<void>((resolve, reject) => {
         failedQueue.push({ resolve, reject });
       })
@@ -62,7 +63,11 @@ api.interceptors.response.use(
     } catch (refreshError) {
       processQueue(refreshError);
       if (typeof window !== "undefined") {
-        const returnTo = encodeURIComponent(window.location.pathname);
+        const returnTo = encodeURIComponent(
+          window.location.pathname +
+            window.location.search +
+            window.location.hash
+        );
         window.location.href = `/login?returnTo=${returnTo}`;
       }
       return Promise.reject(refreshError);
