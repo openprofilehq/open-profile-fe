@@ -15,7 +15,9 @@ import {
   createProfileOption,
   checkUsernameOption,
 } from "@/api/profile/profile.options";
-import { callApi, isApiError } from "@/api/base";
+import { isApiError } from "@/api/base";
+import { uploadImage } from "@/api/uploads/uploads.service";
+import { updateProfile } from "@/api/profile/profile.service";
 
 type UsernameStatus = "available" | "taken" | "error" | "checking" | "";
 
@@ -59,13 +61,8 @@ export default function CreateProfileForm() {
     onSuccess: async () => {
       if (photoFile) {
         try {
-          const form = new FormData();
-          form.append("photo", photoFile);
-          await callApi({
-            url: `/profiles/${username}`,
-            method: "PATCH",
-            data: form,
-          });
+          const { url } = await uploadImage(photoFile, "profiles");
+          await updateProfile(username, { photoUrl: url });
         } catch {
           toast.error("Profile created but photo upload failed.");
         }

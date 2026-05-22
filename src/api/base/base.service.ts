@@ -9,6 +9,69 @@ export const api = axios.create({
   withCredentials: true,
 });
 
+// ─── Silent token refresh ─────────────────────────────────────────────────────
+
+let isRefreshing = false;
+type QueueEntry = { resolve: () => void; reject: (err: unknown) => void };
+let failedQueue: QueueEntry[] = [];
+
+function processQueue(error: unknown) {
+  failedQueue.forEach((entry) => {
+    if (error) entry.reject(error);
+    else entry.resolve();
+  });
+  failedQueue = [];
+}
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error: unknown) => {
+    if (!(error instanceof AxiosError)) return Promise.reject(error);
+
+    const originalRequest = error.config as AxiosRequestConfig & {
+      _retry?: boolean;
+    };
+
+    const isAuthEndpoint =
+      originalRequest.url?.includes("/auth/refresh") ||
+      originalRequest.url?.includes("/auth/logout");
+
+    if (
+      error.response?.status !== 401 ||
+      originalRequest._retry ||
+      isAuthEndpoint
+    ) {
+      return Promise.reject(error);
+    }
+
+    if (isRefreshing) {
+      return new Promise<void>((resolve, reject) => {
+        failedQueue.push({ resolve, reject });
+      })
+        .then(() => api(originalRequest))
+        .catch((err) => Promise.reject(err));
+    }
+
+    originalRequest._retry = true;
+    isRefreshing = true;
+
+    try {
+      await api.post("/auth/refresh");
+      processQueue(null);
+      return api(originalRequest);
+    } catch (refreshError) {
+      processQueue(refreshError);
+      if (typeof window !== "undefined") {
+        const returnTo = encodeURIComponent(window.location.pathname);
+        window.location.href = `/login?returnTo=${returnTo}`;
+      }
+      return Promise.reject(refreshError);
+    } finally {
+      isRefreshing = false;
+    }
+  }
+);
+
 function getApiErrorMessage(message?: unknown): string {
   if (typeof message === "string") return message;
 
@@ -38,8 +101,9 @@ export async function callApi<TResData>({
       data,
       params,
       headers: {
-        "Content-Type":
-          data instanceof FormData ? "multipart/form-data" : "application/json",
+        ...(!(data instanceof FormData) && {
+          "Content-Type": "application/json",
+        }),
         ...headers,
       },
       signal,
