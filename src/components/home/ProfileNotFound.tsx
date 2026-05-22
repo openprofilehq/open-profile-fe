@@ -53,6 +53,7 @@ export function ProfileNotFound() {
             </span>
             <input
               type="text"
+              aria-label="Search username"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}

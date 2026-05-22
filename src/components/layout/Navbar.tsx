@@ -54,7 +54,7 @@ export function Navbar() {
         <nav className="mx-auto flex h-[76px] w-full max-w-[1440px] items-center justify-between gap-8 px-5 md:px-10 lg:px-[112px]">
           {/* Logo */}
           <Link
-            href="/#"
+            href="/"
             className="flex shrink-0 cursor-pointer items-center gap-1"
           >
             <Image
