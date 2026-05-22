@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { FileText, Headphones, House, LogOut, Settings, X } from "lucide-react";
+import { Headphones, House, LogOut, X } from "lucide-react";
 import type { CSSProperties, MouseEvent } from "react";
 import { logoutOption } from "@/api/auth/auth.options";
 import { useMutation } from "@tanstack/react-query";
@@ -17,16 +17,6 @@ const navItems = [
     label: "Home",
     href: "/dashboard",
     icon: House,
-  },
-  {
-    label: "Profile Builder",
-    href: "/dashboard/profile-builder",
-    icon: FileText,
-  },
-  {
-    label: "Settings",
-    href: "/dashboard/settings",
-    icon: Settings,
   },
   {
     label: "Help and Support",

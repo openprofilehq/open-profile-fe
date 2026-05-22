@@ -9,13 +9,13 @@ const actions = [
     title: "Manage links",
     description: "Update your links",
     icon: Link2,
-    href: "/dashboard/profile-builder",
+    href: "/dashboard/profile-builder?section=links",
   },
   {
     title: "Your portfolio",
     description: "Add your portfolio",
     icon: Link2,
-    href: "/dashboard/profile-builder",
+    href: "/dashboard/profile-builder?section=projects",
   },
   {
     title: "Customize your profile",
@@ -50,14 +50,22 @@ export default function ProfileOverviewCard({ profile }: Props) {
           </p>
 
           <div className="mt-6 flex gap-3">
-            <Button className="bg-[#087583] hover:bg-[#065e69]">
-              <Eye size={16} />
-              View Profile
+            <Button asChild className="bg-[#087583] hover:bg-[#065e69]">
+              <a
+                href={publicProfileUrl || "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Eye size={16} />
+                View Profile
+              </a>
             </Button>
 
-            <Button variant="outline">
-              <Pencil size={16} />
-              Edit
+            <Button asChild variant="outline">
+              <Link href="/dashboard/profile-builder">
+                <Pencil size={16} />
+                Edit
+              </Link>
             </Button>
           </div>
         </div>
@@ -95,11 +103,20 @@ export default function ProfileOverviewCard({ profile }: Props) {
 
           <div className="mt-4 flex justify-between text-sm">
             <span className="text-[#454545]">Public URL</span>
-            <span className="text-right break-all">
-              {publicProfileUrl
-                ? getDisplayUrl(publicProfileUrl)
-                : "Profile URL not available"}
-            </span>
+            {publicProfileUrl ? (
+              <a
+                href={publicProfileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-right break-all text-[#087583] hover:underline"
+              >
+                {getDisplayUrl(publicProfileUrl)}
+              </a>
+            ) : (
+              <span className="text-right break-all">
+                Profile URL not available
+              </span>
+            )}
           </div>
 
           <div className="mt-3 flex justify-between text-sm">

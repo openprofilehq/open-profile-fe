@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { ROUTES } from "@/constants/routes";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -153,7 +154,7 @@ export default function CreateProfileForm() {
             fullName={fullName}
             bio={bio}
             photoUrl={photoUrl || undefined}
-            onContinue={() => router.replace("/dashboard")}
+            onContinue={() => router.replace(ROUTES.dashboard.home)}
           />
         )}
       </form>

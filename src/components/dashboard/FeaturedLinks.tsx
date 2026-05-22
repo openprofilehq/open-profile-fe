@@ -1,57 +1,83 @@
-import { ExternalLink, ImageIcon } from "lucide-react";
+"use client";
 
-const links = [
-  {
-    id: 1,
-    title: "Portfolio",
-    url: "https://yourlink.com/portfolio",
-    subtitle: "yourlink.com/portfolio",
-  },
-  {
-    id: 2,
-    title: "Latest Project",
-    url: "https://yourlink.com/project",
-    subtitle: "yourlink.com/project",
-  },
-  {
-    id: 3,
-    title: "Book a Call",
-    url: "https://yourlink.com/book",
-    subtitle: "yourlink.com/book",
-  },
-];
+import Link from "next/link";
+import Image from "next/image";
+import { ExternalLink, ImageIcon, ChevronRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { profileContentOption } from "@/api/profile/profile.options";
+import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 
 export default function FeaturedLinks() {
+  const { data: content } = useQuery(profileContentOption());
+  const links = (content?.content?.links?.items ?? []) as {
+    id?: string;
+    title?: string;
+    url?: string;
+    iconSrc?: string | null;
+    imageSrc?: string | null;
+  }[];
+
   return (
     <section className="rounded-[12px] border border-[#EDEDED] bg-white p-6">
-      <h2 className="text-2xl font-bold">Featured Link</h2>
+      <h2 className="text-2xl font-bold">Featured Links</h2>
 
-      <div className="mt-6 flex flex-col gap-4">
-        {links.map((item) => (
-          <a
-            key={item.id}
-            href={item.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-between rounded-[18px] border border-[#EDEDED] p-4 no-underline"
-          >
-            <div className="flex items-center gap-5">
-              <span className="flex h-14 w-14 items-center justify-center rounded-[12px] border border-[#EDEDED]">
-                <ImageIcon className="text-[#A2A2A2]" size={24} />
-              </span>
-
-              <div>
-                <h3 className="font-bold text-[#050505]">{item.title}</h3>
-                <p className="text-[#A2A2A2]">{item.subtitle}</p>
-              </div>
-            </div>
-
-            <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#EDEDED]">
-              <ExternalLink className="text-[#A2A2A2]" size={20} />
-            </span>
-          </a>
-        ))}
-      </div>
+      {links.length === 0 ? (
+        <Link
+          href="/dashboard/profile-builder?section=links"
+          className="mt-4 flex items-center justify-between text-sm font-semibold text-[#087583] hover:underline"
+        >
+          Add your links
+          <ChevronRight size={16} />
+        </Link>
+      ) : (
+        <div className="mt-6 flex flex-col gap-4">
+          {links.map((item, index) => {
+            const displayImg = getImageUrl(item.imageSrc);
+            return (
+              <a
+                key={item.id ?? index}
+                href={sanitizeUrl(item.url)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between rounded-[18px] border border-[#EDEDED] p-4 no-underline"
+              >
+                <div className="flex items-center gap-5">
+                  <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-[12px] border border-[#EDEDED]">
+                    {displayImg ? (
+                      <Image
+                        src={displayImg}
+                        alt={item.title ?? "Link"}
+                        width={56}
+                        height={56}
+                        className="object-cover"
+                        unoptimized
+                      />
+                    ) : item.iconSrc ? (
+                      // item.iconSrc is guaranteed to be a client preloaded, absolute local SVG asset path
+                      <Image
+                        src={item.iconSrc}
+                        alt={item.title ?? "Link"}
+                        width={24}
+                        height={24}
+                        unoptimized
+                      />
+                    ) : (
+                      <ImageIcon className="text-[#A2A2A2]" size={24} />
+                    )}
+                  </span>
+                  <div>
+                    <h3 className="font-bold text-[#050505]">{item.title}</h3>
+                    <p className="text-sm text-[#A2A2A2]">{item.url}</p>
+                  </div>
+                </div>
+                <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#EDEDED]">
+                  <ExternalLink className="text-[#A2A2A2]" size={20} />
+                </span>
+              </a>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

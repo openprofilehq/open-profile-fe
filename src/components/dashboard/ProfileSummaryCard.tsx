@@ -19,6 +19,7 @@ export default function ProfileSummaryCard({ profile }: Props) {
           alt={profile?.fullName ?? "Profile avatar"}
           width={96}
           height={96}
+          unoptimized
           className="h-24 w-24 rounded-full object-cover"
         />
       ) : (

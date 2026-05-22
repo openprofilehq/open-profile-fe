@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ChevronLeft, GripVertical, Trash2, Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ProjectItem, Section } from "./types";
+import { uploadImage } from "@/api/uploads/uploads.service";
 
 interface ProjectsSidebarProps {
   returnTab: () => void;
@@ -48,6 +49,7 @@ export default function ProjectsSidebar({
   const [itemUrl, setItemUrl] = useState("");
   const [itemImage, setItemImage] = useState<string | null>(null);
   const [itemHighlighted, setItemHighlighted] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -108,7 +110,9 @@ export default function ProjectsSidebar({
     setSelectedTab("section");
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -120,6 +124,16 @@ export default function ProjectsSidebar({
     };
     reader.readAsDataURL(file);
     event.target.value = "";
+
+    try {
+      setUploading(true);
+      const { url } = await uploadImage(file, "projects");
+      setItemImage(url);
+    } catch (err) {
+      console.error("Failed to upload project image:", err);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSaveProject = (e: React.FormEvent) => {
@@ -491,10 +505,14 @@ export default function ProjectsSidebar({
               </Button>
               <Button
                 type="submit"
-                disabled={!itemTitle.trim() || !itemDesc.trim()}
+                disabled={uploading || !itemTitle.trim() || !itemDesc.trim()}
                 className="bg-brand-hover-bg hover:bg-brand h-[46px] flex-1 rounded-[10px] font-semibold text-white disabled:opacity-50"
               >
-                {editingProject ? "Update Project" : "Save Project"}
+                {uploading
+                  ? "Uploading..."
+                  : editingProject
+                    ? "Update Project"
+                    : "Save Project"}
               </Button>
             </div>
           </form>

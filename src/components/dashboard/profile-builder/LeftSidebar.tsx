@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Reorder } from "motion/react";
@@ -19,12 +19,15 @@ import BioSidebar from "./BioSidebar";
 import ProjectsSidebar from "./ProjectsSidebar";
 import CtaSidebar from "./CtaSidebar";
 import type { Section } from "./types";
+import { ROUTES } from "@/constants/routes";
 
 interface LeftSidebarProps {
   sections: Section[];
   selectedSectionId: string | null;
   selectedSection: Section | null;
+  initialEditingSectionId?: string | null;
   onSelectSection: (id: string) => void;
+  onDeselectSection: () => void;
   onAddSection: (title: string, type: string) => void;
   onRemoveSection: (id: string) => void;
   onToggleSectionVisibility: (id: string) => void;
@@ -38,8 +41,10 @@ interface LeftSidebarProps {
 export default function LeftSidebar({
   sections,
   selectedSectionId,
-  selectedSection,
+  selectedSection: _selectedSection,
+  initialEditingSectionId,
   onSelectSection,
+  onDeselectSection,
   onAddSection,
   onRemoveSection,
   onToggleSectionVisibility,
@@ -49,8 +54,14 @@ export default function LeftSidebar({
 }: LeftSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddingSection, setIsAddingSection] = useState(false);
+  const [editingSectionId, setEditingSectionId] = useState<string | null>(
+    initialEditingSectionId ?? null
+  );
 
-  const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setEditingSectionId(initialEditingSectionId ?? null);
+  }, [initialEditingSectionId]);
 
   const [newExpRole, setNewExpRole] = useState("");
   const [newExpCompany, setNewExpCompany] = useState("");
@@ -72,6 +83,11 @@ export default function LeftSidebar({
   function handleOpenSectionForm(sectionId: string) {
     setEditingSectionId(sectionId);
     onSelectSection(sectionId);
+  }
+
+  function handleReturnToList() {
+    setEditingSectionId(null);
+    onDeselectSection();
   }
   const [linkSidebarOpen, setLinkSidebarOpen] = useState(false);
 
@@ -221,7 +237,7 @@ export default function LeftSidebar({
     if (editingSection.type === "bio") {
       return (
         <BioSidebar
-          returnTab={() => setEditingSectionId(null)}
+          returnTab={handleReturnToList}
           section={editingSection}
           onUpdateSection={onUpdateSection}
           profile={profile}
@@ -232,7 +248,7 @@ export default function LeftSidebar({
     if (editingSection.type === "links") {
       return (
         <LinkSidebar
-          returnTab={() => setEditingSectionId(null)}
+          returnTab={handleReturnToList}
           section={editingSection}
           onUpdateSection={onUpdateSection}
         />
@@ -242,7 +258,7 @@ export default function LeftSidebar({
     if (editingSection.type === "projects") {
       return (
         <ProjectsSidebar
-          returnTab={() => setEditingSectionId(null)}
+          returnTab={handleReturnToList}
           section={editingSection}
           onUpdateSection={onUpdateSection}
         />
@@ -252,7 +268,7 @@ export default function LeftSidebar({
     if (editingSection.type === "experience" || editingSection.type === "cta") {
       return (
         <CtaSidebar
-          returnTab={() => setEditingSectionId(null)}
+          returnTab={handleReturnToList}
           section={editingSection}
           onUpdateSection={onUpdateSection}
         />
@@ -264,7 +280,7 @@ export default function LeftSidebar({
         <div className="mb-6">
           <button
             type="button"
-            onClick={() => setEditingSectionId(null)}
+            onClick={handleReturnToList}
             className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
           >
             <ChevronLeft size={20} />
@@ -465,10 +481,14 @@ export default function LeftSidebar({
   }
 
   if (linkSidebarOpen) {
+    const linksSection = sections.find((s) => s.type === "links") ?? null;
     return (
       <LinkSidebar
-        returnTab={() => setLinkSidebarOpen(false)}
-        section={selectedSection?.type === "links" ? selectedSection : null}
+        returnTab={() => {
+          setLinkSidebarOpen(false);
+          onDeselectSection();
+        }}
+        section={linksSection}
         onUpdateSection={onUpdateSection}
       />
     );
@@ -479,7 +499,7 @@ export default function LeftSidebar({
       {/* Back Button */}
       <div className="mb-6">
         <Link
-          href="/dashboard"
+          href={ROUTES.dashboard.home}
           className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
         >
           <ChevronLeft size={20} />

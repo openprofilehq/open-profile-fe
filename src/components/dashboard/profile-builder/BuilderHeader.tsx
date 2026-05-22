@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/constants/routes";
 
 interface BuilderHeaderProps {
   onPublish: () => void;
@@ -18,9 +19,9 @@ export default function BuilderHeader({
   const pathname = usePathname();
 
   const navLinks = [
-    { label: "Home", href: "/dashboard" },
-    { label: "Profile Builder", href: "/dashboard/profile-builder" },
-    { label: "Settings", href: "/dashboard/settings" },
+    { label: "Home", href: ROUTES.dashboard.home },
+    { label: "Profile Builder", href: ROUTES.dashboard.profileBuilder },
+    { label: "Settings", href: ROUTES.dashboard.settings.home },
   ];
 
   return (
@@ -28,7 +29,7 @@ export default function BuilderHeader({
       <div className="mx-auto flex items-center justify-between gap-6">
         <div className="flex items-center gap-3">
           <Link
-            href="/dashboard"
+            href={ROUTES.dashboard.home}
             className="flex items-center transition-transform active:scale-95"
           >
             <Image
@@ -46,8 +47,8 @@ export default function BuilderHeader({
           {navLinks.map((link) => {
             const isActive =
               pathname === link.href ||
-              (link.href === "/dashboard/profile-builder" &&
-                pathname === "/dashboard/canvas");
+              (link.href === ROUTES.dashboard.profileBuilder &&
+                pathname === ROUTES.dashboard.canvas);
 
             return (
               <Link
