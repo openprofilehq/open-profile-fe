@@ -2,17 +2,18 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { publishProfile } from "@/api/profile/profile.service";
-import { isApiError } from "@/api/base";
-import type { PublishProfileResponse } from "@/api/profile/profile.type";
-
-import { ROUTES } from "@/constants/routes";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { usePathname } from "next/navigation";
+import { Search, LogOut, X } from "lucide-react";
 import { useRef, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/constants/routes";
+import { userQueryOptions, logoutOption } from "@/api/auth/auth.options";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { toast } from "sonner";
+import { isApiError } from "@/api/base";
+import { publishProfile } from "@/api/profile/profile.service";
+import type { PublishProfileResponse } from "@/api/profile/profile.type";
 
 const navLinks = [
   { label: "Home", href: ROUTES.dashboard.home },
@@ -20,13 +21,27 @@ const navLinks = [
   { label: "Settings", href: ROUTES.dashboard.settings.home },
 ];
 
+function getInitials(fullName?: string | null, email?: string): string {
+  if (fullName) {
+    const parts = fullName.trim().split(/\s+/);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+  if (email) return email.slice(0, 2).toUpperCase();
+  return "??";
+}
+
 export default function DashboardTopbar() {
+  const pathname = usePathname();
+  const { data: user } = useQuery(userQueryOptions);
   const queryClient = useQueryClient();
 
-  const pathname = usePathname();
-  const router = useRouter();
   const draftUpdatedAtRef = useRef<string | null>(null);
-  const [openSidebar, setOpenSidebar] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const dropdownRef = useOutsideClick(() => setDropdownOpen(false));
+  const initials = getInitials(user?.fullName, user?.email);
 
   const { mutate: doPublish, isPending: isPublishing } = useMutation<
     PublishProfileResponse,
@@ -52,21 +67,30 @@ export default function DashboardTopbar() {
     },
   });
 
-  const handlePublish = () => doPublish();
+  // ── Logout mutation ──
+  const logoutMutation = useMutation({
+    ...logoutOption,
+    onSuccess: () => {
+      sessionStorage.removeItem("resetToken");
+      queryClient.clear();
+      window.location.href = "/login";
+    },
+    onError: (err) =>
+      toast.error(isApiError(err) ? err.message : "Logout failed."),
+  });
+
+  const isLogoutPending = logoutMutation.isPending;
+
+  const handleCloseModal = () => {
+    if (!isLogoutPending) setModalOpen(false);
+  };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#EDEDED] bg-white">
-      <div className="flex h-19 items-center justify-between gap-8 px-4 md:px-10 lg:px-8">
-        <div className="flex min-w-0 items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setOpenSidebar(!openSidebar)}
-            aria-label="Open dashboard menu"
-            className="cursor-pointer rounded-[8px] border border-[#EDEDED] p-2 text-[#050505] lg:hidden"
-          >
-            <Menu size={22} />
-          </button>
+    <>
+      <header className="bg-card border-tertiary-b sticky top-0 z-40 border-b">
+        <div className="relative flex h-19 items-center justify-between gap-8 px-4 md:px-10 lg:px-8">
 
+          {/* Logo */}
           <Link href="/">
             <Image
               src="/logo.svg"
@@ -76,53 +100,136 @@ export default function DashboardTopbar() {
               className="h-auto w-36 shrink-0 cursor-pointer sm:w-40"
             />
           </Link>
-        </div>
 
-        <nav className="hidden items-center gap-4 lg:flex">
-          {navLinks.map(({ label, href }) => {
-            const isActive =
-              href === ROUTES.dashboard.home
-                ? pathname === ROUTES.dashboard.home
-                : pathname.startsWith(href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={`relative pb-1 text-sm font-semibold transition-colors ${
-                  isActive
-                    ? "text-[#087583] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-[#087583]"
-                    : "text-[#050505] hover:text-[#087583]"
-                }`}
-              >
-                {label}
-              </Link>
-            );
-          })}
-        </nav>
+          {/* Center Nav */}
+          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-6 lg:flex">
+            {navLinks.map(({ label, href }) => {
+              const isActive =
+                href === ROUTES.dashboard.home
+                  ? pathname === ROUTES.dashboard.home
+                  : pathname.startsWith(href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`py-1 text-sm font-semibold transition-colors ${
+                    isActive
+                      ? "text-link-hover-text"
+                      : "text-primary-text hover:text-link-hover-text"
+                  }`}
+                >
+                  {label}
+                </Link>
+              );
+            })}
+          </nav>
 
-        <div className="flex min-w-75 shrink-0 items-center justify-end gap-3 md:gap-4">
-          {/* {/* <button className="text-[#050505]" aria-label="Search">
-            <Search size={24} />
-          </button> */}
-
-          <Button
-            onClick={() => router.push("/coming-soon")}
-            className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text hidden h-10 rounded-[10px] border px-5 text-sm font-semibold shadow-none transition-all hover:bg-white active:scale-95 md:flex"
-          >
-            Upgrade
-          </Button>
-          {pathname === ROUTES.dashboard.profileBuilder && (
-            <Button
-              type="button"
-              onClick={handlePublish}
-              disabled={isPublishing}
-              className="bg-brand-hover-bg hover:bg-brand h-10 rounded-[10px] px-6 text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-60"
+          {/* Right Actions */}
+          <div className="flex shrink-0 items-center gap-3 md:gap-4">
+            <button
+              className="text-primary-text hover:text-secondary-text transition-colors"
+              aria-label="Search"
             >
-              {isPublishing ? "Publishing…" : "Publish"}
+              <Search size={24} />
+            </button>
+
+            <Button className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text hidden h-10 rounded-[10px] border px-5 text-sm font-semibold shadow-none transition-all hover:bg-white active:scale-95 md:flex">
+              Upgrade
             </Button>
-          )}
+
+            {/* Publish — only on profile builder route, with real publish logic */}
+            {pathname === ROUTES.dashboard.profileBuilder && (
+              <Button
+                type="button"
+                onClick={() => doPublish()}
+                disabled={isPublishing}
+                className="bg-brand-hover-bg hover:bg-brand-active-bg h-10 rounded-[10px] px-6 text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-60"
+              >
+                {isPublishing ? "Publishing…" : "Publish"}
+              </Button>
+            )}
+
+            {/* Avatar + Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setDropdownOpen((o) => !o)}
+                aria-label="User menu"
+                className="bg-brand-hover-bg text-inverse-text flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold transition-opacity hover:opacity-90"
+              >
+                {initials}
+              </button>
+
+              {dropdownOpen && (
+                <div className="border-tertiary-b absolute right-0 top-full mt-2 w-44 overflow-hidden rounded-xl border bg-white py-1 shadow-lg">
+                  {user?.fullName && (
+                    <p className="border-tertiary-b text-tertiary-text truncate border-b px-4 py-2 text-xs">
+                      {user.fullName}
+                    </p>
+                  )}
+                  <button
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      setModalOpen(true);
+                    }}
+                    className="text-negative-text hover:bg-negative-subtle-bg flex w-full items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                  >
+                    <LogOut size={15} />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Logout Confirmation Modal */}
+      {modalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm"
+          onClick={handleCloseModal}
+        >
+          <div
+            className="bg-card w-full max-w-sm rounded-2xl p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-primary-text text-base font-semibold">
+                Log out
+              </h2>
+              <button
+                onClick={handleCloseModal}
+                disabled={isLogoutPending}
+                className="text-tertiary-text hover:bg-hover-bg rounded-full p-1 transition-colors disabled:pointer-events-none disabled:opacity-40"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <p className="text-secondary-text mb-6 text-sm">
+              Are you sure you want to log out of your account?
+            </p>
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="border-tertiary-b text-primary-text hover:bg-hover-bg flex-1 rounded-[10px] text-sm font-semibold"
+                onClick={handleCloseModal}
+                disabled={isLogoutPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-negative-bg hover:bg-negative-hover-bg flex-1 rounded-[10px] text-sm font-semibold text-white active:scale-95"
+                onClick={() => logoutMutation.mutate()}
+                disabled={isLogoutPending}
+              >
+                {isLogoutPending ? "Logging out…" : "Logout"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
