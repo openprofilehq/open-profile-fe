@@ -51,7 +51,7 @@ export function Navbar() {
           {/* Desktop nav links */}
           <div className="hidden items-center gap-6 md:flex lg:gap-8">
             <Link
-              href="/how-it-works"
+              href="/coming-soon"
               className="text-[17px] leading-[26px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
@@ -149,8 +149,8 @@ export function Navbar() {
 
             <div className="flex flex-1 flex-col gap-8 px-6 pt-8">
               {[
-                { label: "How it works", href: "/how-it-works" },
-                { label: "Pricing", href: "/pricing" },
+                { label: "How it works", href: "/coming-soon" },
+                { label: "Pricing", href: "/#pricing" },
                 { label: "FAQ", href: "/faq" },
               ].map((item) => (
                 <Link

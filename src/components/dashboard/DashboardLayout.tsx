@@ -1,7 +1,4 @@
-"use client";
-
 import { ReactNode } from "react";
-// import DashboardSidebar from "./DashboardSidebar";
 import DashboardTopbar from "./DashboardTopbar";
 
 type DashboardLayoutProps = {
@@ -12,14 +9,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
       <DashboardTopbar />
-
-      <div className="flex">
-        {/* <DashboardSidebar
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-        /> */}
-        <main className="min-w-0 flex-1 overflow-x-hidden p-3">{children}</main>
-      </div>
+      <main className="min-w-0 flex-1 overflow-x-hidden p-6 md:px-8 md:py-10 lg:px-10">
+        {children}
+      </main>
     </div>
   );
 }

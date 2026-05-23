@@ -4,6 +4,10 @@ import React from "react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { getCurrentUserOption } from "@/api/auth/auth.options";
+import { ROUTES } from "@/constants/routes";
+import { useAuthCookie } from "@/hooks/useAuthCookie";
 
 const features = [
   {
@@ -83,6 +87,13 @@ function FeatureCard({
 }
 
 export function Features() {
+  const hasAuthCookie = useAuthCookie();
+  const { data: user } = useQuery({
+    ...getCurrentUserOption(),
+    enabled: hasAuthCookie,
+    throwOnError: false,
+  });
+
   return (
     <section
       className="relative w-full overflow-hidden py-16 md:py-24"
@@ -136,11 +147,11 @@ export function Features() {
         className="mx-auto mt-12 flex max-w-7xl justify-center px-4 md:mt-20 md:px-8"
       >
         <Link
-          href="/signup"
+          href={user ? ROUTES.dashboard.home : "/signup"}
           className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-white px-6 py-3.5 text-center text-sm font-semibold text-teal-700 transition-all duration-200 hover:scale-105 hover:bg-teal-50 active:scale-95 sm:w-auto sm:px-8"
           style={{ fontFamily: "'Inter', sans-serif" }}
         >
-          Create Your Profile Now
+          {user ? "Go to Dashboard" : "Create Your Profile Now"}
         </Link>
       </motion.div>
     </section>
