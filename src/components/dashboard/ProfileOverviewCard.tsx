@@ -120,10 +120,10 @@ export default function ProfileOverviewCard({ profile }: Props) {
             )}
           </div>
 
-          <div className="mt-3 flex justify-between text-sm">
+          {/* <div className="mt-3 flex justify-between text-sm">
             <span className="text-[#454545]">Template</span>
             <span>Creator Template</span>
-          </div>
+          </div> */}
         </div>
       </section>
     </>
