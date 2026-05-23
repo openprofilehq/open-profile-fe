@@ -2,7 +2,6 @@
 
 import { Check } from "lucide-react";
 import { motion, Variants } from "motion/react";
-import Link from "next/link";
 
 interface PricingPlan {
   name: string;
@@ -168,16 +167,16 @@ export function Pricing() {
                 </ul>
               </div>
 
-              <Link
-                href="/signup"
-                className={`flex h-auto w-full items-center justify-center rounded-[8px] py-4 text-[14px] font-bold transition-all duration-300 ${
+              <button
+                disabled
+                className={`flex h-auto w-full items-center justify-center rounded-[8px] py-4 text-[14px] font-bold transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50 ${
                   plan.highlighted
-                    ? "text-link-hover-text border border-transparent bg-white hover:bg-white/95"
-                    : "text-link-hover-text hover:bg-brand-hover-bg/5 border border-[#087583] bg-white"
+                    ? "text-link-hover-text border border-transparent bg-white"
+                    : "text-link-hover-text border border-[#087583] bg-white"
                 }`}
               >
                 {plan.buttonText}
-              </Link>
+              </button>
             </motion.div>
           ))}
         </motion.div>

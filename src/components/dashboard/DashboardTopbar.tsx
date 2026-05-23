@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut, X } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -132,9 +133,9 @@ export default function DashboardTopbar() {
               <Search size={24} />
             </button> */}
 
-            <Button className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text hidden h-10 rounded-[10px] border px-5 text-sm font-semibold shadow-none transition-all hover:bg-white active:scale-95 md:flex">
-              Upgrade
-            </Button>
+            {/* <Button asChild className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text hidden h-10 rounded-[10px] border px-5 text-sm font-semibold shadow-none transition-all hover:bg-white active:scale-95 md:flex">
+              <Link href="/coming-soon">Upgrade</Link>
+            </Button> */}
 
             {/* Publish — only on profile builder route, with real publish logic */}
             {pathname === ROUTES.dashboard.profileBuilder && (
@@ -158,25 +159,33 @@ export default function DashboardTopbar() {
                 {initials}
               </button>
 
-              {dropdownOpen && (
-                <div className="border-tertiary-b absolute top-full right-0 mt-2 w-44 overflow-hidden rounded-xl border bg-white py-1 shadow-lg">
-                  {user?.fullName && (
-                    <p className="border-tertiary-b text-tertiary-text text-md truncate border-b px-4 py-2">
-                      {user.fullName}
-                    </p>
-                  )}
-                  <button
-                    onClick={() => {
-                      setDropdownOpen(false);
-                      setModalOpen(true);
-                    }}
-                    className="text-negative-text hover:bg-negative-subtle-bg flex w-full cursor-pointer items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors"
+              <AnimatePresence>
+                {dropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    className="border-tertiary-b absolute right-0 top-full mt-2 w-44 overflow-hidden rounded-xl border bg-white py-1 shadow-lg"
                   >
-                    <LogOut size={15} />
-                    Logout
-                  </button>
-                </div>
-              )}
+                    {user?.fullName && (
+                      <p className="border-tertiary-b text-tertiary-text text-md truncate border-b px-4 py-2">
+                        {user.fullName}
+                      </p>
+                    )}
+                    <button
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        setModalOpen(true);
+                      }}
+                      className="text-negative-text hover:bg-negative-subtle-bg flex w-full cursor-pointer items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                    >
+                      <LogOut size={15} />
+                      Logout
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>

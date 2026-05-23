@@ -3,11 +3,12 @@
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { CircleCheck } from "lucide-react";
+import { CircleCheck, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { getBaseDisplayUrl } from "@/utils/profile";
+import { getBaseDisplayUrl, getDisplayUrl } from "@/utils/profile";
+import { env } from "@/env/client";
 
 const profiles = [
   {
@@ -45,9 +46,12 @@ const fadeUp = (delay = 0) => ({
 export function Hero() {
   const [query, setQuery] = useState("");
   const [current, setCurrent] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [displayUrl, setDisplayUrl] = useState(() => getDisplayUrl(env.NEXT_PUBLIC_PROFILE_BASE_URL));
   const router = useRouter();
 
   useEffect(() => {
+    setDisplayUrl(getBaseDisplayUrl());
     const id = setInterval(
       () => setCurrent((c) => (c + 1) % profiles.length),
       3000
@@ -61,6 +65,7 @@ export function Hero() {
   function handleSearch() {
     const username = query.trim();
     if (!username) return;
+    setIsLoading(true);
     router.push(`/${encodeURIComponent(username)}`);
   }
 
@@ -110,24 +115,33 @@ export function Hero() {
                 className="shrink-0 text-[16px] leading-[24px] text-[#454545] select-none"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               >
-                {getBaseDisplayUrl()}/
+                {displayUrl}/
               </span>
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                onKeyDown={(e) => !isLoading && e.key === "Enter" && handleSearch()}
+                disabled={isLoading}
                 placeholder="username"
-                className="h-full min-w-0 flex-1 bg-transparent text-[16px] leading-[24px] text-[#454545] outline-none placeholder:text-[#C9C9C9]"
+                className="h-full min-w-0 flex-1 bg-transparent text-[16px] leading-[24px] text-[#454545] outline-none placeholder:text-[#C9C9C9] disabled:opacity-50"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               />
             </div>
             <Button
               onClick={handleSearch}
-              className="h-12 w-full rounded-[8px] bg-[#087583] px-[16px] text-[16px] leading-[24px] whitespace-nowrap text-white transition-colors hover:bg-[#065E69] sm:w-auto lg:h-[50px]"
+              disabled={isLoading}
+              className="h-12 w-full rounded-[8px] bg-[#087583] px-[16px] text-[16px] leading-[24px] whitespace-nowrap text-white transition-colors hover:bg-[#065E69] sm:w-auto lg:h-[50px] disabled:opacity-70 disabled:cursor-not-allowed"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
-              Search a Profile
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Searching...
+                </>
+              ) : (
+                "Search a Profile"
+              )}
             </Button>
           </motion.div>
 
