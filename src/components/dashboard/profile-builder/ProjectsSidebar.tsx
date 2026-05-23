@@ -33,9 +33,9 @@ export default function ProjectsSidebar({
     section?.subtitle || ""
   );
   const [layout, setLayout] = useState(section?.layout || "1");
-  const [highlightSection, setHighlightSection] = useState(
-    section?.highlightSection ?? false
-  );
+  // const [highlightSection, setHighlightSection] = useState(
+  //   section?.highlightSection ?? false
+  // );
 
   // State for single project editing
   const [editingProject, setEditingProject] = useState<ProjectItem | null>(
@@ -73,10 +73,10 @@ export default function ProjectsSidebar({
     syncSection({ layout: lay });
   };
 
-  const handleHighlightSectionToggle = (checked: boolean) => {
-    setHighlightSection(checked);
-    syncSection({ highlightSection: checked });
-  };
+  // const handleHighlightSectionToggle = (checked: boolean) => {
+  //   setHighlightSection(checked);
+  //   syncSection({ highlightSection: checked });
+  // };
 
   const handleProjectsChange = (updatedProjects: ProjectItem[]) => {
     setProjects(updatedProjects);
@@ -292,7 +292,7 @@ export default function ProjectsSidebar({
             </div>
 
             {/* Highlight Section Toggle */}
-            <div className="flex items-center justify-between rounded-[10px] border border-[#EDEDED] bg-white p-3.5">
+            {/* <div className="flex items-center justify-between rounded-[10px] border border-[#EDEDED] bg-white p-3.5">
               <span className="text-sm font-bold text-[#050505]">
                 Highlight
               </span>
@@ -307,7 +307,7 @@ export default function ProjectsSidebar({
                 />
                 <div className="peer peer-checked:bg-brand-hover-bg h-6 w-11 rounded-full bg-gray-200 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white" />
               </label>
-            </div>
+            </div> */}
 
             {/* Projects List */}
             <div className="flex flex-col gap-2.5">
@@ -475,7 +475,7 @@ export default function ProjectsSidebar({
             </div>
 
             {/* Project Item Highlight Toggle */}
-            <div className="flex items-center justify-between rounded-[10px] border border-[#EDEDED] bg-white p-3.5">
+            {/* <div className="flex items-center justify-between rounded-[10px] border border-[#EDEDED] bg-white p-3.5">
               <span className="text-sm font-bold text-[#050505]">
                 Highlight
               </span>
@@ -488,7 +488,7 @@ export default function ProjectsSidebar({
                 />
                 <div className="peer peer-checked:bg-brand-hover-bg h-6 w-11 rounded-full bg-gray-200 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white" />
               </label>
-            </div>
+            </div> */}
 
             {/* Action buttons */}
             <div className="flex gap-3 pt-2">

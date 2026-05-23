@@ -82,7 +82,7 @@ export function Pricing() {
   };
 
   return (
-    <section className="w-full bg-[#FAFAFA] py-16">
+    <section id="pricing" className="w-full bg-[#FAFAFA] py-16">
       <motion.div
         initial="hidden"
         whileInView="visible"

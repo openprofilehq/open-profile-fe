@@ -5,7 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { CTA } from "@/components/home/CTA";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+// import { Search } from "lucide-react";
 
 type SectionProp = {
   id: string;
@@ -24,7 +24,7 @@ type SectionContentProp = {
 
 export default function PrivacyPolicy() {
   const [activeSection, setActiveSection] = useState("1");
-  const [search, setSearch] = useState("");
+  // const [search, setSearch] = useState("");
   const sections: SectionProp = [
     { id: "1", title: "Introduction" },
     { id: "2", title: "User Accounts and Eligibility" },
@@ -139,7 +139,7 @@ export default function PrivacyPolicy() {
     <>
       <Navbar />
 
-      <section className="mx-auto mt-20 max-w-360">
+      <section className="mx-auto mt-20 w-full">
         <div className="bg-[#DBEFF2] px-5 py-12 md:px-28">
           <div className="mx-auto max-w-7xl">
             <div className="max-w-2xl">
@@ -151,7 +151,7 @@ export default function PrivacyPolicy() {
                 Last updated on the 10th of May 2026
               </p>
 
-              <form className="relative">
+              {/* <form className="relative">
                 <Search
                   className="absolute top-4 left-4"
                   size={20}
@@ -169,7 +169,7 @@ export default function PrivacyPolicy() {
                 <Button className="mt-2 w-full rounded-[5.57px] py-6 lg:mt-0 lg:ml-1 lg:w-auto">
                   Search
                 </Button>
-              </form>
+              </form> */}
             </div>
           </div>
         </div>

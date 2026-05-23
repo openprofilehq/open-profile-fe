@@ -21,7 +21,8 @@ const actions = [
     title: "Customize your profile",
     description: "Adjust font, color, spacing and appearance",
     icon: Palette,
-    href: "/dashboard/profile-builder",
+    // href: "/dashboard/profile-builder",
+    href: "/coming-soon",
   },
 ];
 

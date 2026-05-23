@@ -9,8 +9,8 @@ import {
   profileContentOption,
   draftStateOption,
 } from "@/api/profile/profile.options";
-import { upsertDraft, publishProfile } from "@/api/profile/profile.service";
-import BuilderHeader from "./BuilderHeader";
+import { upsertDraft } from "@/api/profile/profile.service";
+// import BuilderHeader from "./BuilderHeader";
 import LeftSidebar from "./LeftSidebar";
 import PreviewCanvas from "./PreviewCanvas";
 // import RightPanel from "./RightPanel";
@@ -294,23 +294,23 @@ export default function ProfileBuilderContent() {
     };
   }, []);
 
-  const { mutate: doPublish, isPending: isPublishing } = useMutation({
-    mutationKey: ["profile", "publish"],
-    mutationFn: publishProfile,
-    onSuccess() {
-      draftUpdatedAtRef.current = null;
-      queryClient.invalidateQueries({ queryKey: ["profile", "content"] });
-      queryClient.invalidateQueries({ queryKey: ["profile", "draft-state"] });
-      toast.success("Profile published successfully.");
-    },
-    onError(error: unknown) {
-      const msg =
-        error instanceof Error ? error.message : "Failed to publish profile.";
-      toast.error(msg);
-    },
-  });
+  // const { mutate: doPublish, isPending: isPublishing } = useMutation({
+  //   mutationKey: ["profile", "publish"],
+  //   mutationFn: publishProfile,
+  //   onSuccess() {
+  //     draftUpdatedAtRef.current = null;
+  //     queryClient.invalidateQueries({ queryKey: ["profile", "content"] });
+  //     queryClient.invalidateQueries({ queryKey: ["profile", "draft-state"] });
+  //     toast.success("Profile published successfully.");
+  //   },
+  //   onError(error: unknown) {
+  //     const msg =
+  //       error instanceof Error ? error.message : "Failed to publish profile.";
+  //     toast.error(msg);
+  //   },
+  // });
 
-  const handlePublish = () => doPublish(undefined as never);
+  // const handlePublish = () => doPublish(undefined as never);
 
   const resolvedSections = sections.map((section) =>
     section.id === "bio"
@@ -400,9 +400,9 @@ export default function ProfileBuilderContent() {
       </div>
 
       <div className="bg-primary-bg hidden h-screen w-screen flex-col overflow-hidden lg:flex">
-        <BuilderHeader onPublish={handlePublish} isPublishing={isPublishing} />
+        {/* <BuilderHeader onPublish={handlePublish} isPublishing={isPublishing} /> */}
 
-        <div className="flex flex-1 gap-2 overflow-hidden bg-[#F6F7F9] p-2 px-4">
+        <div className="flex flex-1 gap-2 overflow-hidden bg-[#FAFAFA] p-2 px-4">
           <LeftSidebar
             sections={resolvedSections}
             selectedSectionId={selectedSectionId}

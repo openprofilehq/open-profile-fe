@@ -23,4 +23,6 @@ export const ROUTES = {
   public: {
     faq: "/faq",
   },
+  comingSoon: "/coming-soon",
+  home: "/",
 } as const;
