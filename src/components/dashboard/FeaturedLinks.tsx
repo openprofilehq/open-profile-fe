@@ -21,9 +21,8 @@ export default function FeaturedLinks() {
       <h2 className="text-2xl font-bold">Featured Links</h2>
 
       {links.length === 0 ? (
-        <span className="mt-4 flex items-center justify-between text-sm font-semibold text-gray-500">
-          Add your links
-          {/* <ChevronRight size={16} /> */}
+        <span className="mt-4 flex items-center justify-between text-sm text-gray-500">
+          No links added yet
         </span>
       ) : (
         <div className="mt-6 flex flex-col gap-4">

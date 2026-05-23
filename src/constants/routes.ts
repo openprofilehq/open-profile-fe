@@ -24,4 +24,5 @@ export const ROUTES = {
     faq: "/faq",
   },
   comingSoon: "/coming-soon",
+  home: "/",
 } as const;

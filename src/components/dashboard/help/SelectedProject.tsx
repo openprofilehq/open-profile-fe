@@ -22,12 +22,8 @@ export default function SelectedProject() {
       <h2 className="p-4 text-2xl font-bold">Selected Projects</h2>
 
       {projects.length === 0 ? (
-        <span
-          // href="/dashboard/profile-builder?section=projects"
-          className="flex items-center justify-between p-4 text-sm font-semibold text-gray-500"
-        >
-          Add your projects
-          {/* <ChevronRight size={16} /> */}
+        <span className="flex items-center justify-between p-4 text-sm text-gray-500">
+          No projects added yet
         </span>
       ) : (
         <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2">

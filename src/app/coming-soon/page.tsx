@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/constants/routes";
 import { useRouter } from "next/navigation";
 
 export default function ComingSoonPage() {
@@ -20,7 +21,7 @@ export default function ComingSoonPage() {
         </p>
 
         <Button
-          onClick={() => router.back()}
+          onClick={() => router.push(ROUTES.dashboard.home)}
           className="bg-brand-hover-bg hover:bg-brand-active-bg mt-8 inline-flex h-12 items-center justify-center rounded-[8px] px-6 font-semibold text-white transition-colors"
         >
           Back to home

@@ -566,7 +566,7 @@ export default function LeftSidebar({
                 }`}
               >
                 <div className="flex min-w-0 flex-1 items-center justify-between px-4 py-3">
-                  <div className="max-w-20">
+                  <div className="w-20">
                     <p
                       className={`truncate text-sm font-semibold transition-colors ${
                         !section.visible

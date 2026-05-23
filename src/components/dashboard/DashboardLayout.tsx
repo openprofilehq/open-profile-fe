@@ -9,11 +9,9 @@ type DashboardLayoutProps = {
 };
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const setSidebarOpen = true;
-
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
-      <DashboardTopbar onOpenSidebar={() => setSidebarOpen} />
+      <DashboardTopbar />
 
       <div className="flex">
         {/* <DashboardSidebar

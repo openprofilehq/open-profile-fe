@@ -6,15 +6,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { publishProfile } from "@/api/profile/profile.service";
+import { isApiError } from "@/api/base";
+import type { PublishProfileResponse } from "@/api/profile/profile.type";
 
 import { ROUTES } from "@/constants/routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
-
-type DashboardTopbarProps = {
-  onOpenSidebar: () => void;
-};
 
 const navLinks = [
   { label: "Home", href: ROUTES.dashboard.home },
@@ -22,16 +20,19 @@ const navLinks = [
   { label: "Settings", href: ROUTES.dashboard.settings.home },
 ];
 
-export default function DashboardTopbar({
-  onOpenSidebar,
-}: DashboardTopbarProps) {
+export default function DashboardTopbar() {
   const queryClient = useQueryClient();
 
   const pathname = usePathname();
   const router = useRouter();
   const draftUpdatedAtRef = useRef<string | null>(null);
+  const [openSidebar, setOpenSidebar] = useState(false);
 
-  const { mutate: doPublish, isPending: isPublishing } = useMutation({
+  const { mutate: doPublish, isPending: isPublishing } = useMutation<
+    PublishProfileResponse,
+    unknown,
+    void
+  >({
     mutationKey: ["profile", "publish"],
     mutationFn: publishProfile,
     onSuccess() {
@@ -41,13 +42,17 @@ export default function DashboardTopbar({
       toast.success("Profile published successfully.");
     },
     onError(error: unknown) {
-      const msg =
-        error instanceof Error ? error.message : "Failed to publish profile.";
-      toast.error(msg);
+      toast.error(
+        isApiError(error)
+          ? error.message
+          : error instanceof Error
+            ? error.message
+            : "Failed to publish profile."
+      );
     },
   });
 
-  const handlePublish = () => doPublish(undefined as never);
+  const handlePublish = () => doPublish();
 
   return (
     <header className="sticky top-0 z-40 border-b border-[#EDEDED] bg-white">
@@ -55,7 +60,7 @@ export default function DashboardTopbar({
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
-            onClick={onOpenSidebar}
+            onClick={() => setOpenSidebar(!openSidebar)}
             aria-label="Open dashboard menu"
             className="cursor-pointer rounded-[8px] border border-[#EDEDED] p-2 text-[#050505] lg:hidden"
           >
@@ -95,7 +100,7 @@ export default function DashboardTopbar({
           })}
         </nav>
 
-        <div className="flex min-w-[300px] shrink-0 items-center justify-end gap-3 md:gap-4">
+        <div className="flex min-w-75 shrink-0 items-center justify-end gap-3 md:gap-4">
           {/* {/* <button className="text-[#050505]" aria-label="Search">
             <Search size={24} />
           </button> */}

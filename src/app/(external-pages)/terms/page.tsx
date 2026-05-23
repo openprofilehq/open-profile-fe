@@ -139,7 +139,7 @@ export default function PrivacyPolicy() {
     <>
       <Navbar />
 
-      <section className="mx-auto mt-20 w-screen">
+      <section className="mx-auto mt-20 w-full">
         <div className="bg-[#DBEFF2] px-5 py-12 md:px-28">
           <div className="mx-auto max-w-7xl">
             <div className="max-w-2xl">
