@@ -172,6 +172,7 @@ export default function ContactPage() {
                       key={s.label}
                       href={s.href}
                       aria-label={s.label}
+                      target="_blank"
                       className="text-[#5C5E64] transition-colors hover:text-[#065E69]"
                     >
                       {s.icon}

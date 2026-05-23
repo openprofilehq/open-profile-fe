@@ -3,11 +3,11 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="relative w-full overflow-hidden rounded-t-[24px] bg-[#25272B] px-4 pt-16 pb-10 md:px-8">
-      <div className="pointer-events-none absolute -bottom-25 -left-10 z-0 hidden h-75 w-70 select-none md:block md:h-112.5 md:w-85">
+    <footer className="relative w-full overflow-hidden rounded-t-3xl bg-slate-900 px-4 pt-16 pb-10 md:px-8">
+      <div className="pointer-events-none absolute -bottom-6 -left-10 z-0 hidden h-20 w-28 select-none md:block md:h-28 md:w-36">
         <Image
           src="/footer/footer.svg"
-          className="object-contain pt-20"
+          className="object-contain pt-5"
           alt=""
           fill
         />
@@ -17,45 +17,45 @@ export default function Footer() {
         <div className="flex flex-col justify-between gap-12 pb-16 md:flex-row md:gap-8">
           <div className="flex-1 md:pt-7">
             <div className="flex items-center">
-              <div className="relative h-10 w-50 md:h-12.5 md:w-62.5">
+              <div className="relative h-10 w-48 md:h-12 md:w-64">
                 <Image
                   src="/footer/logo.svg"
-                  className="h-full w-full object-contain object-bottom-left"
+                  className="h-full w-full object-contain object-bottom"
                   alt="OpenProfile logo"
                   fill
                 />
               </div>
             </div>
 
-            <p className="mt-3 max-w-62.5 text-[15px] leading-relaxed font-semibold text-[#E2E4E9] md:text-[16px]">
+            <p className="mt-3 max-w-md text-base leading-relaxed font-semibold text-slate-200 md:text-base">
               Your verified identity, discoverable everywhere.
             </p>
           </div>
 
-          <div className="grid flex-[1.5] grid-cols-2 gap-8 md:grid-cols-3 md:gap-16">
+          <div className="grid flex-1 grid-cols-2 gap-8 md:grid-cols-3 md:gap-16">
             <div className="space-y-6">
-              <h4 className="text-[14px] font-semibold text-white">Products</h4>
+              <h4 className="text-sm font-semibold text-white">Products</h4>
               <ul className="space-y-4">
                 <li>
                   <Link
                     href="/coming-soon"
-                    className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
+                    className="text-sm font-normal text-slate-200 transition-colors hover:text-white"
                   >
                     How it works
                   </Link>
                 </li>
-                {/* <li>
+                <li>
                   <Link
-                    href="#"
-                    className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
+                    href="/coming-soon"
+                    className="text-sm font-normal text-slate-200 transition-colors hover:text-white"
                   >
                     Features
                   </Link>
-                </li> */}
+                </li>
                 <li>
                   <Link
                     href="#pricing"
-                    className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
+                    className="text-sm font-normal text-slate-200 transition-colors hover:text-white"
                   >
                     Pricing
                   </Link>
@@ -63,7 +63,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/faq"
-                    className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
+                    className="text-sm font-normal text-slate-200 transition-colors hover:text-white"
                   >
                     FAQ
                   </Link>
@@ -72,36 +72,21 @@ export default function Footer() {
             </div>
 
             <div className="space-y-6">
-              <h4 className="text-[14px] font-semibold text-white">Company</h4>
+              <h4 className="text-sm font-semibold text-white">Company</h4>
               <ul className="space-y-4">
                 <li>
                   <Link
-                    href="#"
-                    className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
+                    href="/coming-soon"
+                    className="text-sm font-normal text-slate-200 transition-colors hover:text-white"
                   >
                     About
                   </Link>
                 </li>
-                {/* <li>
-                  <Link
-                    href="#"
-                    className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
-                  >
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
-                  >
-                    Careers
-                  </Link>
-                </li> */}
+
                 <li>
                   <Link
                     href="/contact"
-                    className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
+                    className="text-sm font-normal text-slate-200 transition-colors hover:text-white"
                   >
                     Contact
                   </Link>
@@ -110,12 +95,12 @@ export default function Footer() {
             </div>
 
             <div className="space-y-6">
-              <h4 className="text-[14px] font-semibold text-white">Legal</h4>
+              <h4 className="text-sm font-semibold text-white">Legal</h4>
               <ul className="space-y-4">
                 <li>
                   <Link
                     href="/privacy-policy"
-                    className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
+                    className="text-sm font-normal text-slate-200 transition-colors hover:text-white"
                   >
                     Privacy Policy
                   </Link>
@@ -123,7 +108,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/terms"
-                    className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
+                    className="text-sm font-normal text-slate-200 transition-colors hover:text-white"
                   >
                     Terms of Service
                   </Link>
@@ -133,8 +118,8 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="flex items-center justify-center border-t border-[#5C5E64] pt-8">
-          <p className="text-center text-[13px] font-light text-[#FEFEFE]">
+        <div className="flex items-center justify-center border-t border-gray-500 pt-8">
+          <p className="text-center text-sm font-light text-white">
             © {new Date().getFullYear()} Open Profile. All rights reserved.
           </p>
         </div>

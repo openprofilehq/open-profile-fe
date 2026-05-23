@@ -8,17 +8,24 @@ import { X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUserOption } from "@/api/auth/auth.options";
 import { ROUTES } from "@/constants/routes";
+import { useAuthCookie } from "@/hooks/useAuthCookie";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { data: user } = useQuery(getCurrentUserOption());
+  const hasAuthCookie = useAuthCookie();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const { data: user } = useQuery({
+    ...getCurrentUserOption(),
+    enabled: hasAuthCookie,
+    throwOnError: false,
+  });
 
   return (
     <>
@@ -27,7 +34,10 @@ export function Navbar() {
       >
         <nav className="mx-auto flex h-[76px] w-full max-w-[1440px] items-center justify-between gap-8 px-5 md:px-10 lg:px-[112px]">
           {/* Logo */}
-          <Link href="/#" className="flex shrink-0 items-center gap-1">
+          <Link
+            href="/"
+            className="flex shrink-0 cursor-pointer items-center gap-1"
+          >
             <Image
               src="/logo.svg"
               alt="Open Profile"
@@ -41,14 +51,14 @@ export function Navbar() {
           {/* Desktop nav links */}
           <div className="hidden items-center gap-6 md:flex lg:gap-8">
             <Link
-              href="/coming-soon"
+              href="/how-it-works"
               className="text-[17px] leading-[26px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               How it works
             </Link>
             <Link
-              href="#pricing"
+              href="/pricing"
               className="text-[16px] leading-[24px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
@@ -94,7 +104,7 @@ export function Navbar() {
           </div>
 
           <button
-            className="z-50 flex flex-col gap-1.5 p-2 md:hidden"
+            className="z-50 flex cursor-pointer flex-col gap-1.5 p-2 md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
@@ -130,7 +140,7 @@ export function Navbar() {
               </span>
               <button
                 onClick={() => setMobileOpen(false)}
-                className="p-2 text-[#050505]"
+                className="cursor-pointer p-2 text-[#050505]"
                 aria-label="Close menu"
               >
                 <X className="h-5 w-5" />
@@ -139,9 +149,9 @@ export function Navbar() {
 
             <div className="flex flex-1 flex-col gap-8 px-6 pt-8">
               {[
-                { label: "How it works", href: "#how-it-works" },
-                { label: "Pricing", href: "#pricing" },
-                { label: "FAQ", href: "#faq" },
+                { label: "How it works", href: "/how-it-works" },
+                { label: "Pricing", href: "/pricing" },
+                { label: "FAQ", href: "/faq" },
               ].map((item) => (
                 <Link
                   key={item.label}

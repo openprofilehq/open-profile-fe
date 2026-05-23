@@ -19,7 +19,7 @@ type DashboardTopbarProps = {
 const navLinks = [
   { label: "Home", href: ROUTES.dashboard.home },
   { label: "Profile Builder", href: ROUTES.dashboard.profileBuilder },
-  { label: "Settings", href: ROUTES.dashboard.settings.home },
+  // { label: "Settings", href: ROUTES.dashboard.settings.home },
 ];
 
 export default function DashboardTopbar({
@@ -57,18 +57,20 @@ export default function DashboardTopbar({
             type="button"
             onClick={onOpenSidebar}
             aria-label="Open dashboard menu"
-            className="rounded-[8px] border border-[#EDEDED] p-2 text-[#050505] lg:hidden"
+            className="cursor-pointer rounded-[8px] border border-[#EDEDED] p-2 text-[#050505] lg:hidden"
           >
             <Menu size={22} />
           </button>
 
-          <Image
-            src="/logo.svg"
-            alt="Open Profile"
-            width={180}
-            height={40}
-            className="h-auto w-36 shrink-0 sm:w-40"
-          />
+          <Link href="/">
+            <Image
+              src="/logo.svg"
+              alt="Open Profile"
+              width={180}
+              height={40}
+              className="h-auto w-36 shrink-0 cursor-pointer sm:w-40"
+            />
+          </Link>
         </div>
 
         <nav className="hidden items-center gap-4 lg:flex">
@@ -94,7 +96,7 @@ export default function DashboardTopbar({
         </nav>
 
         <div className="flex min-w-[300px] shrink-0 items-center justify-end gap-3 md:gap-4">
-          {/* <button className="text-[#050505]" aria-label="Search">
+          {/* {/* <button className="text-[#050505]" aria-label="Search">
             <Search size={24} />
           </button> */}
 
@@ -114,10 +116,6 @@ export default function DashboardTopbar({
               {isPublishing ? "Publishing…" : "Publish"}
             </Button>
           )}
-
-          {/* <Button className="bg-brand-hover-bg hover:bg-brand h-10 rounded-[10px] px-6 text-sm font-semibold text-white transition-all active:scale-95">
-            Publish
-          </Button> */}
         </div>
       </div>
     </header>
