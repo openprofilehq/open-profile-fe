@@ -21,7 +21,7 @@ export default function ComingSoonPage() {
         </p>
 
         <Button
-          onClick={() => router.push(ROUTES.dashboard.home)}
+          onClick={() => router.push(ROUTES.home)}
           className="bg-brand-hover-bg hover:bg-brand-active-bg mt-8 inline-flex h-12 items-center justify-center rounded-[8px] px-6 font-semibold text-white transition-colors"
         >
           Back to home
