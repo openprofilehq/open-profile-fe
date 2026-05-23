@@ -58,7 +58,7 @@ export function Navbar() {
               How it works
             </Link>
             <Link
-              href="/pricing"
+              href="/#pricing"
               className="text-[16px] leading-[24px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
