@@ -19,7 +19,7 @@ type DashboardTopbarProps = {
 const navLinks = [
   { label: "Home", href: ROUTES.dashboard.home },
   { label: "Profile Builder", href: ROUTES.dashboard.profileBuilder },
-  // { label: "Settings", href: ROUTES.dashboard.settings.home },
+  { label: "Settings", href: ROUTES.dashboard.settings.home },
 ];
 
 export default function DashboardTopbar({
