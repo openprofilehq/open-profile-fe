@@ -9,11 +9,11 @@ import {
   profileContentOption,
   draftStateOption,
 } from "@/api/profile/profile.options";
-import { upsertDraft, publishProfile } from "@/api/profile/profile.service";
-import BuilderHeader from "./BuilderHeader";
+import { upsertDraft } from "@/api/profile/profile.service";
+// import BuilderHeader from "./BuilderHeader";
 import LeftSidebar from "./LeftSidebar";
 import PreviewCanvas from "./PreviewCanvas";
-import RightPanel from "./RightPanel";
+// import RightPanel from "./RightPanel";
 import Link from "next/link";
 import type { Section } from "./types";
 import { contentToSections, sectionsToContent } from "./builder.utils";
@@ -81,7 +81,7 @@ export default function ProfileBuilderContent() {
   const searchParams = useSearchParams();
   const sectionParam = searchParams.get("section"); // e.g. "links" | "projects"
 
-  const [activeTab, setActiveTab] = useState<"general" | "section">(
+  const [_activeTab, setActiveTab] = useState<"general" | "section">(
     sectionParam ? "section" : "general"
   );
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
@@ -94,15 +94,15 @@ export default function ProfileBuilderContent() {
 
   const profile = dashboardProfile.data;
 
-  const [font, setFont] = useState("Afacad");
-  const [textColor, setTextColor] = useState("#050505");
-  const [bgColor, setBgColor] = useState("#FFFFFF");
-  const [iconColor, setIconColor] = useState("#087583");
-  const [spacing, setSpacing] = useState(20);
-  const [borderRadius, setBorderRadius] = useState<
+  const [font, _setFont] = useState("Afacad");
+  const [textColor, _setTextColor] = useState("#050505");
+  const [bgColor, _setBgColor] = useState("#FFFFFF");
+  const [iconColor, _setIconColor] = useState("#087583");
+  const [spacing, _setSpacing] = useState(20);
+  const [borderRadius, _setBorderRadius] = useState<
     "sharp" | "medium" | "round"
   >("medium");
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [theme, _setTheme] = useState<"light" | "dark">("light");
   const [sections, setSections] = useState<Section[]>([]);
 
   const contentLoadedRef = useRef(false);
@@ -214,30 +214,30 @@ export default function ProfileBuilderContent() {
   });
 
   const sectionsRef = useRef(sections);
-  const themeSettingsRef = useRef({
-    font,
-    textColor,
-    bgColor,
-    iconColor,
-    spacing,
-    borderRadius,
-    theme,
-  });
+  // const themeSettingsRef = useRef({
+  //   font,
+  //   textColor,
+  //   bgColor,
+  //   iconColor,
+  //   spacing,
+  //   borderRadius,
+  //   theme,
+  // });
   useEffect(() => {
     sectionsRef.current = sections;
   }, [sections]);
 
-  useEffect(() => {
-    themeSettingsRef.current = {
-      font,
-      textColor,
-      bgColor,
-      iconColor,
-      spacing,
-      borderRadius,
-      theme,
-    };
-  }, [font, textColor, bgColor, iconColor, spacing, borderRadius, theme]);
+  // useEffect(() => {
+  //   themeSettingsRef.current = {
+  //     font,
+  //     textColor,
+  //     bgColor,
+  //     iconColor,
+  //     spacing,
+  //     borderRadius,
+  //     theme,
+  //   };
+  // }, [font, textColor, bgColor, iconColor, spacing, borderRadius, theme]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
@@ -294,23 +294,23 @@ export default function ProfileBuilderContent() {
     };
   }, []);
 
-  const { mutate: doPublish, isPending: isPublishing } = useMutation({
-    mutationKey: ["profile", "publish"],
-    mutationFn: publishProfile,
-    onSuccess() {
-      draftUpdatedAtRef.current = null;
-      queryClient.invalidateQueries({ queryKey: ["profile", "content"] });
-      queryClient.invalidateQueries({ queryKey: ["profile", "draft-state"] });
-      toast.success("Profile published successfully.");
-    },
-    onError(error: unknown) {
-      const msg =
-        error instanceof Error ? error.message : "Failed to publish profile.";
-      toast.error(msg);
-    },
-  });
+  // const { mutate: doPublish, isPending: isPublishing } = useMutation({
+  //   mutationKey: ["profile", "publish"],
+  //   mutationFn: publishProfile,
+  //   onSuccess() {
+  //     draftUpdatedAtRef.current = null;
+  //     queryClient.invalidateQueries({ queryKey: ["profile", "content"] });
+  //     queryClient.invalidateQueries({ queryKey: ["profile", "draft-state"] });
+  //     toast.success("Profile published successfully.");
+  //   },
+  //   onError(error: unknown) {
+  //     const msg =
+  //       error instanceof Error ? error.message : "Failed to publish profile.";
+  //     toast.error(msg);
+  //   },
+  // });
 
-  const handlePublish = () => doPublish(undefined as never);
+  // const handlePublish = () => doPublish(undefined as never);
 
   const resolvedSections = sections.map((section) =>
     section.id === "bio"
@@ -400,9 +400,9 @@ export default function ProfileBuilderContent() {
       </div>
 
       <div className="bg-primary-bg hidden h-screen w-screen flex-col overflow-hidden lg:flex">
-        <BuilderHeader onPublish={handlePublish} isPublishing={isPublishing} />
+        {/* <BuilderHeader onPublish={handlePublish} isPublishing={isPublishing} /> */}
 
-        <div className="flex flex-1 gap-2 overflow-hidden bg-[#F6F7F9] p-2 px-4">
+        <div className="flex flex-1 gap-2 overflow-hidden bg-[#FAFAFA] p-2 px-4">
           <LeftSidebar
             sections={resolvedSections}
             selectedSectionId={selectedSectionId}
@@ -433,7 +433,7 @@ export default function ProfileBuilderContent() {
             onRemoveSection={handleRemoveSection}
           />
 
-          <RightPanel
+          {/* <RightPanel
             font={font}
             onChangeFont={setFont}
             textColor={textColor}
@@ -452,7 +452,7 @@ export default function ProfileBuilderContent() {
             onChangeTab={setActiveTab}
             selectedSection={selectedSection}
             onUpdateSection={handleUpdateSection}
-          />
+          /> */}
         </div>
       </div>
     </>
