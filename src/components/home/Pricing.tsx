@@ -169,7 +169,7 @@ export function Pricing() {
               </div>
 
               <Link
-                href="/coming-soon"
+                href="/signup"
                 className={`flex h-auto w-full items-center justify-center rounded-[8px] py-4 text-[14px] font-bold transition-all duration-300 ${
                   plan.highlighted
                     ? "text-link-hover-text border border-transparent bg-white hover:bg-white/95"

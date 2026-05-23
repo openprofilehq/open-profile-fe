@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, LogOut, X } from "lucide-react";
+import { LogOut, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ import type { PublishProfileResponse } from "@/api/profile/profile.type";
 const navLinks = [
   { label: "Home", href: ROUTES.dashboard.home },
   { label: "Profile Builder", href: ROUTES.dashboard.profileBuilder },
-  { label: "Settings", href: ROUTES.dashboard.settings.home },
+  // { label: "Settings", href: ROUTES.dashboard.settings.home },
 ];
 
 function getInitials(fullName?: string | null, email?: string): string {
@@ -89,7 +89,6 @@ export default function DashboardTopbar() {
     <>
       <header className="bg-card border-tertiary-b sticky top-0 z-40 border-b">
         <div className="relative flex h-19 items-center justify-between gap-8 px-4 md:px-10 lg:px-8">
-
           {/* Logo */}
           <Link href="/">
             <Image
@@ -126,12 +125,12 @@ export default function DashboardTopbar() {
 
           {/* Right Actions */}
           <div className="flex shrink-0 items-center gap-3 md:gap-4">
-            <button
+            {/* <button
               className="text-primary-text hover:text-secondary-text transition-colors"
               aria-label="Search"
             >
               <Search size={24} />
-            </button>
+            </button> */}
 
             <Button className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text hidden h-10 rounded-[10px] border px-5 text-sm font-semibold shadow-none transition-all hover:bg-white active:scale-95 md:flex">
               Upgrade
@@ -154,15 +153,15 @@ export default function DashboardTopbar() {
               <button
                 onClick={() => setDropdownOpen((o) => !o)}
                 aria-label="User menu"
-                className="bg-brand-hover-bg text-inverse-text flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold transition-opacity hover:opacity-90"
+                className="bg-brand-hover-bg text-inverse-text flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-xs font-bold transition-opacity hover:opacity-90"
               >
                 {initials}
               </button>
 
               {dropdownOpen && (
-                <div className="border-tertiary-b absolute right-0 top-full mt-2 w-44 overflow-hidden rounded-xl border bg-white py-1 shadow-lg">
+                <div className="border-tertiary-b absolute top-full right-0 mt-2 w-44 overflow-hidden rounded-xl border bg-white py-1 shadow-lg">
                   {user?.fullName && (
-                    <p className="border-tertiary-b text-tertiary-text truncate border-b px-4 py-2 text-xs">
+                    <p className="border-tertiary-b text-tertiary-text text-md truncate border-b px-4 py-2">
                       {user.fullName}
                     </p>
                   )}
@@ -171,7 +170,7 @@ export default function DashboardTopbar() {
                       setDropdownOpen(false);
                       setModalOpen(true);
                     }}
-                    className="text-negative-text hover:bg-negative-subtle-bg flex w-full items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                    className="text-negative-text hover:bg-negative-subtle-bg flex w-full cursor-pointer items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors"
                   >
                     <LogOut size={15} />
                     Logout
