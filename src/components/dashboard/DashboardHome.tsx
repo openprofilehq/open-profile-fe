@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import FeaturedLinks from "./FeaturedLinks";
 import SelectedProject from "./help/SelectedProject";
 import YourCTA from "./help/YourCTA";
-import HighlightCard from "./HighlightCard";
+// import HighlightCard from "./HighlightCard";
 import ProfileOverviewCard from "./ProfileOverviewCard";
 import ProfileSummaryCard from "./ProfileSummaryCard";
 
@@ -25,7 +25,7 @@ export default function DashboardHome() {
       <div className="flex flex-col gap-6">
         <ProfileSummaryCard profile={profile} />
         <FeaturedLinks />
-        <HighlightCard profile={profile} />
+        {/* <HighlightCard profile={profile} /> */}
         <SelectedProject />
         <YourCTA />
       </div>

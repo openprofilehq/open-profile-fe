@@ -41,7 +41,7 @@ export function Navbar() {
           {/* Desktop nav links */}
           <div className="hidden items-center gap-6 md:flex lg:gap-8">
             <Link
-              href="#how-it-works"
+              href="/coming-soon"
               className="text-[17px] leading-[26px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >

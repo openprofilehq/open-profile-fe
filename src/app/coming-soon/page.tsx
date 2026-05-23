@@ -1,9 +1,12 @@
-import Link from "next/link";
+"use client";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function ComingSoonPage() {
+  const router = useRouter();
   return (
     <main className="flex min-h-screen items-center justify-center bg-white px-6">
-      <section className="mx-auto max-w-[520px] text-center">
+      <section className="mx-auto max-w-130 text-center">
         <p className="text-link-hover-text text-sm font-semibold tracking-[0.2em] uppercase">
           Coming Soon
         </p>
@@ -16,12 +19,12 @@ export default function ComingSoonPage() {
           We are still working on this plan experience. Please check back later.
         </p>
 
-        <Link
-          href="/"
+        <Button
+          onClick={() => router.back()}
           className="bg-brand-hover-bg hover:bg-brand-active-bg mt-8 inline-flex h-12 items-center justify-center rounded-[8px] px-6 font-semibold text-white transition-colors"
         >
           Back to home
-        </Link>
+        </Button>
       </section>
     </main>
   );

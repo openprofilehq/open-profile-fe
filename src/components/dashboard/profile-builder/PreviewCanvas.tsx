@@ -104,7 +104,7 @@ export default function PreviewCanvas({
       className={`animate-in fade-in flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
     >
       {/* Device wrapper */}
-      <div className="flex w-full max-w-195 flex-col gap-6">
+      <div className="flex w-full max-w-full flex-col gap-6">
         {/* Dynamic Card Container with settings applied */}
         <div
           className={`flex w-full flex-col transition-all duration-300 ${selectedFontClass}`}
@@ -121,7 +121,7 @@ export default function PreviewCanvas({
                 <div
                   key={section.id}
                   style={cardStyle}
-                  className="relative flex flex-col items-center gap-6 border p-6 shadow-sm transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
+                  className="relative flex flex-col items-center gap-6 border p-6 transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
                 >
                   <div className="border-brand-b/20 bg-brand-light-subtle-bg relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-inner">
                     {getImageUrl(profile?.photoUrl) ? (
@@ -176,7 +176,7 @@ export default function PreviewCanvas({
               <div
                 key={section.id}
                 style={currentCardStyle}
-                className="relative flex flex-col border p-6 shadow-sm transition-all duration-300"
+                className="relative flex flex-col border p-6 transition-all duration-300"
               >
                 {/* Action buttons (View/Delete) */}
                 <div className="absolute top-6 right-6 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border border-[#EDEDED] bg-white p-3 shadow-none select-none">

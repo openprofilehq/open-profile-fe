@@ -38,23 +38,23 @@ export default function Footer() {
               <ul className="space-y-4">
                 <li>
                   <Link
-                    href="#"
+                    href="/coming-soon"
                     className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
                   >
                     How it works
                   </Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link
                     href="#"
                     className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
                   >
                     Features
                   </Link>
-                </li>
+                </li> */}
                 <li>
                   <Link
-                    href="#"
+                    href="#pricing"
                     className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
                   >
                     Pricing
@@ -82,7 +82,7 @@ export default function Footer() {
                     About
                   </Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link
                     href="#"
                     className="text-[13px] font-normal text-[#E2E4E9] transition-colors hover:text-white"
@@ -97,7 +97,7 @@ export default function Footer() {
                   >
                     Careers
                   </Link>
-                </li>
+                </li> */}
                 <li>
                   <Link
                     href="/contact"

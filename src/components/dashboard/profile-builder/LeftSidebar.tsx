@@ -566,7 +566,7 @@ export default function LeftSidebar({
                 }`}
               >
                 <div className="flex min-w-0 flex-1 items-center justify-between px-4 py-3">
-                  <div className="min-w-0">
+                  <div className="max-w-20">
                     <p
                       className={`truncate text-sm font-semibold transition-colors ${
                         !section.visible
@@ -587,32 +587,37 @@ export default function LeftSidebar({
                       {getSectionDescriptor(section)}
                     </p>
                   </div>
+                  <div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleSectionVisibility(section.id);
+                      }}
+                      className="hover:bg-hover-bg shrink-0 rounded-lg p-1.5 text-gray-400 opacity-0 transition-all group-hover:opacity-100"
+                      title={section.visible ? "Hide section" : "Show section"}
+                      aria-label={`${section.visible ? "Hide" : "Show"} section ${section.title}`}
+                    >
+                      {section.visible ? (
+                        <Eye size={15} />
+                      ) : (
+                        <EyeOff size={15} />
+                      )}
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onToggleSectionVisibility(section.id);
-                    }}
-                    className="hover:bg-hover-bg ml-2 shrink-0 rounded-lg p-1.5 text-gray-400 opacity-0 transition-all group-hover:opacity-100"
-                    title={section.visible ? "Hide section" : "Show section"}
-                    aria-label={`${section.visible ? "Hide" : "Show"} section ${section.title}`}
-                  >
-                    {section.visible ? <Eye size={15} /> : <EyeOff size={15} />}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onRemoveSection(section.id);
-                    }}
-                    className="hover:bg-hover-bg hover:text-negative-text ml-2 shrink-0 rounded-lg p-1.5 text-gray-400 opacity-0 transition-all group-hover:opacity-100"
-                    title="Delete Section"
-                    aria-label={`Delete section ${section.title}`}
-                  >
-                    <Trash2 size={15} />
-                  </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRemoveSection(section.id);
+                      }}
+                      className="hover:bg-hover-bg hover:text-negative-text shrink-0 rounded-lg p-1.5 text-gray-400 opacity-0 transition-all group-hover:opacity-100"
+                      title="Delete Section"
+                      aria-label={`Delete section ${section.title}`}
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
                 </div>
 
                 <div

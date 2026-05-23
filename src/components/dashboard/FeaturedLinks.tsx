@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
-import { ExternalLink, ImageIcon, ChevronRight } from "lucide-react";
+import { ExternalLink, ImageIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { profileContentOption } from "@/api/profile/profile.options";
 import { getImageUrl, sanitizeUrl } from "@/utils/profile";
@@ -22,13 +21,10 @@ export default function FeaturedLinks() {
       <h2 className="text-2xl font-bold">Featured Links</h2>
 
       {links.length === 0 ? (
-        <Link
-          href="/dashboard/profile-builder?section=links"
-          className="mt-4 flex items-center justify-between text-sm font-semibold text-[#087583] hover:underline"
-        >
+        <span className="mt-4 flex items-center justify-between text-sm font-semibold text-gray-500">
           Add your links
-          <ChevronRight size={16} />
-        </Link>
+          {/* <ChevronRight size={16} /> */}
+        </span>
       ) : (
         <div className="mt-6 flex flex-col gap-4">
           {links.map((item, index) => {
