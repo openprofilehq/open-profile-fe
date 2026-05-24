@@ -6,6 +6,7 @@ import { ChevronLeft, GripVertical, Trash2, Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ProjectItem, Section } from "./types";
 import { uploadImage } from "@/api/uploads/uploads.service";
+import { isValidUrl } from "./builder.utils";
 
 interface ProjectsSidebarProps {
   returnTab: () => void;
@@ -47,6 +48,7 @@ export default function ProjectsSidebar({
   const [itemDesc, setItemDesc] = useState("");
   const [itemButtonText, setItemButtonText] = useState("View project");
   const [itemUrl, setItemUrl] = useState("");
+  const [urlError, setUrlError] = useState("");
   const [itemImage, setItemImage] = useState<string | null>(null);
   const [itemHighlighted, setItemHighlighted] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -89,6 +91,7 @@ export default function ProjectsSidebar({
     setItemDesc(proj.description);
     setItemButtonText(proj.buttonText || "View project");
     setItemUrl(proj.url || "");
+    setUrlError("");
     setItemImage(proj.imageSrc || null);
     setItemHighlighted(proj.highlighted ?? false);
     setSelectedTab("section");
@@ -105,6 +108,7 @@ export default function ProjectsSidebar({
     setItemDesc("");
     setItemButtonText("View project");
     setItemUrl("");
+    setUrlError("");
     setItemImage(null);
     setItemHighlighted(false);
     setSelectedTab("section");
@@ -139,6 +143,12 @@ export default function ProjectsSidebar({
   const handleSaveProject = (e: React.FormEvent) => {
     e.preventDefault();
     if (!itemTitle.trim() || !itemDesc.trim()) return;
+
+    if (itemUrl.trim() && !isValidUrl(itemUrl.trim())) {
+      setUrlError("Please enter a valid link, email, or phone number (e.g., +1234567890)");
+      return;
+    }
+    setUrlError("");
 
     if (editingProject) {
       // Update existing project
@@ -468,10 +478,13 @@ export default function ProjectsSidebar({
                   type="text"
                   value={itemUrl}
                   onChange={(e) => setItemUrl(e.target.value)}
-                  placeholder="Search site or paste link ..."
-                  className="w-full px-4 py-3 text-sm text-gray-600 outline-none focus:bg-gray-50/30"
+                  placeholder="Paste link, email, or phone (e.g., +1234567890)..."
+                  className={`w-full px-4 py-3 text-sm outline-none focus:bg-gray-50/30 ${
+                    urlError ? "text-red-500" : "text-gray-600"
+                  }`}
                 />
               </div>
+              {urlError && <p className="text-xs text-red-500">{urlError}</p>}
             </div>
 
             {/* Project Item Highlight Toggle */}

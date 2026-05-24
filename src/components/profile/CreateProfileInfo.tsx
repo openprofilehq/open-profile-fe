@@ -7,9 +7,9 @@ import Image from "next/image";
 
 type CreateProfileInfoProps = {
   bio: string;
-  fullName: string;
+  displayName: string;
   onUpdateBio: (e: ChangeEvent<HTMLTextAreaElement>) => void;
-  onUpdateFullName: (e: ChangeEvent<HTMLInputElement>) => void;
+  onUpdateDisplayName: (e: ChangeEvent<HTMLInputElement>) => void;
   onUpdateStep: () => void;
   isPending?: boolean;
   photoUrl?: string;
@@ -20,9 +20,9 @@ type CreateProfileInfoProps = {
 
 export default function CreateProfileInfo({
   bio,
-  fullName,
+  displayName,
   onUpdateBio,
-  onUpdateFullName,
+  onUpdateDisplayName,
   onUpdateStep,
   isPending,
   photoUrl,
@@ -114,11 +114,11 @@ export default function CreateProfileInfo({
         <div className="mt-16 flex flex-col gap-1.5">
           <div className="mt-4">
             <label className="mb-1 inline-block font-bold text-[#454545]">
-              Full Name
+              Display Name
             </label>
             <Input
-              value={fullName}
-              onChange={onUpdateFullName}
+              value={displayName}
+              onChange={onUpdateDisplayName}
               placeholder="John Doe"
               className="border-2 border-[#ededed] bg-white shadow-none"
             />
@@ -139,7 +139,7 @@ export default function CreateProfileInfo({
 
           <Button
             type="button"
-            disabled={isPending || !fullName.trim()}
+            disabled={isPending || !displayName.trim()}
             className="mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-medium shadow-none transition-colors"
             onClick={onUpdateStep}
           >

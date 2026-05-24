@@ -4,6 +4,7 @@ import type {
   DashboardProfileResponse,
 } from "@/api/profile/profile.type";
 import type { Section, SavedLink, ProjectItem } from "./types";
+import { encodeUrlForBackend, decodeUrlForFrontend } from "@/utils/profile";
 
 export function contentToSections(
   rawContent: ProfileContentResponse,
@@ -41,7 +42,10 @@ export function contentToSections(
         type: "links" as const,
         visible: content?.links?.visible ?? true,
         subtitle: content?.links?.sectionTitle ?? "",
-        links: (content?.links?.items ?? []) as unknown as SavedLink[],
+        links: (content?.links?.items ?? []).map((l: any) => ({
+          ...l,
+          url: decodeUrlForFrontend(l.url),
+        })) as unknown as SavedLink[],
       };
     }
 
@@ -52,7 +56,10 @@ export function contentToSections(
         type: "projects" as const,
         visible: content?.projects?.visible ?? true,
         subtitle: content?.projects?.sectionTitle ?? "",
-        projects: (content?.projects?.items ?? []) as unknown as ProjectItem[],
+        projects: (content?.projects?.items ?? []).map((p: any) => ({
+          ...p,
+          url: decodeUrlForFrontend(p.url),
+        })) as unknown as ProjectItem[],
       };
     }
 
@@ -65,7 +72,7 @@ export function contentToSections(
       subtitle: content?.cta?.subtitle ?? "",
       layout: content?.cta?.layout ?? "1",
       buttonText: content?.cta?.label ?? "",
-      url: content?.cta?.url ?? "",
+      url: decodeUrlForFrontend(content?.cta?.url),
       iconId: content?.cta?.iconId ?? null,
       iconSrc: content?.cta?.iconSrc ?? null,
       iconLabel: content?.cta?.iconLabel ?? null,
@@ -75,6 +82,28 @@ export function contentToSections(
 
 const isRemoteUrl = (src?: string | null) =>
   !!src && (src.startsWith("http://") || src.startsWith("https://"));
+
+export const isValidUrl = (urlString: string) => {
+  if (!urlString) return true;
+  const trimmed = urlString.trim();
+
+  // Allow explicit protocols
+  if (/^(mailto:|tel:|whatsapp:|sms:)/i.test(trimmed)) return true;
+  
+  // Allow wa.me links
+  if (/^wa\.me\//i.test(trimmed)) return true;
+
+  // Allow plain phone numbers
+  if (/^\+?[0-9\s()-]{7,20}$/.test(trimmed)) return true;
+
+  // Allow email addresses
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return true;
+
+  // Allow social media usernames starting with @
+  if (/^@[\w.-]+$/.test(trimmed)) return true;
+
+  return /^(https?:\/\/|www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{2,10}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/i.test(trimmed);
+};
 
 export function sectionsToContent(
   sections: Section[]
@@ -99,6 +128,7 @@ export function sectionsToContent(
           sectionTitle: linksSection.subtitle ?? "Links",
           items: (linksSection.links ?? []).map((l) => ({
             ...l,
+            url: l.url ? encodeUrlForBackend(l.url, l.iconId) : "",
             imageSrc: isRemoteUrl(l.imageSrc) ? l.imageSrc : null,
           })) as unknown as Record<string, unknown>[],
         }
@@ -109,6 +139,7 @@ export function sectionsToContent(
           sectionTitle: projectsSection.subtitle ?? "Projects",
           items: (projectsSection.projects ?? []).map((p) => ({
             ...p,
+            url: p.url ? encodeUrlForBackend(p.url) : "",
             imageSrc: isRemoteUrl(p.imageSrc) ? p.imageSrc : null,
           })) as unknown as Record<string, unknown>[],
         }
@@ -117,7 +148,7 @@ export function sectionsToContent(
       ? {
           visible: ctaSection.visible,
           label: ctaSection.buttonText ?? "",
-          url: ctaSection.url || null,
+          url: ctaSection.url ? encodeUrlForBackend(ctaSection.url, ctaSection.iconId) : null,
           title: ctaSection.title ?? "",
           subtitle: ctaSection.subtitle ?? "",
           layout: ctaSection.layout ?? "1",

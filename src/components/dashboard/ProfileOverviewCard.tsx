@@ -3,6 +3,8 @@ import { ChevronRight, Eye, Link2, Pencil, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getDisplayUrl, getProfileUrl } from "@/utils/profile";
+import { useQuery } from "@tanstack/react-query";
+import { userQueryOptions } from "@/api/auth/auth.options";
 
 const actions = [
   {
@@ -35,6 +37,7 @@ type Props = {
 };
 
 export default function ProfileOverviewCard({ profile }: Props) {
+  const { data: user } = useQuery(userQueryOptions);
   const publicProfileUrl = getProfileUrl(profile?.username);
   return (
     <>
@@ -43,7 +46,7 @@ export default function ProfileOverviewCard({ profile }: Props) {
 
         <div className="mt-3 rounded-[10px] bg-[#FAFAFA] p-4">
           <h1 className="text-2xl font-bold">
-            Welcome, {profile?.fullName ?? "User"}
+            Welcome, {user?.fullName ?? "User"}
           </h1>
           <p className="mt-3 max-w-[390px] text-[#454545]">
             Your profile is live and ready to share. Manage your public page,

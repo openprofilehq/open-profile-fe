@@ -27,7 +27,7 @@ export default function CreateProfileForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoUrl, setPhotoUrl] = useState("");
   const debouncedUsername = useDebounce(username, 300);
@@ -92,7 +92,7 @@ export default function CreateProfileForm() {
 
     createProfile.mutate({
       username,
-      fullName,
+      fullName: displayName,
       bio,
       ...(photoUrl && photoUrl.startsWith("http") ? { photoUrl } : {}),
     });
@@ -134,9 +134,9 @@ export default function CreateProfileForm() {
         {currentStep === 2 && (
           <CreateProfileInfo
             bio={bio}
-            fullName={fullName}
+            displayName={displayName}
             onUpdateBio={(e) => setBio(e.target.value)}
-            onUpdateFullName={(e) => setFullName(e.target.value)}
+            onUpdateDisplayName={(e) => setDisplayName(e.target.value)}
             onUpdateStep={submitProfile}
             isPending={createProfile.isPending}
             photoUrl={photoUrl}
@@ -149,7 +149,7 @@ export default function CreateProfileForm() {
         {currentStep === 3 && (
           <ProfileLinkSuccess
             username={username}
-            fullName={fullName}
+            displayName={displayName}
             bio={bio}
             photoUrl={photoUrl || undefined}
             onContinue={() => router.replace(ROUTES.dashboard.home)}

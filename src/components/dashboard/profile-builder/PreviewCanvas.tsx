@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Folder, ExternalLink, Eye, EyeOff, Trash2 } from "lucide-react";
-import { getImageUrl } from "@/utils/profile";
+import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 import type { Section, ProfilePreview } from "./types";
 
 interface PreviewCanvasProps {
@@ -285,7 +285,7 @@ export default function PreviewCanvas({
                                   </p>
                                   {project.url && (
                                     <a
-                                      href={project.url}
+                                      href={sanitizeUrl(project.url)}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       style={{
@@ -330,7 +330,7 @@ export default function PreviewCanvas({
                                   {project.url && (
                                     <div className="mt-4 flex justify-start">
                                       <a
-                                        href={project.url}
+                                        href={sanitizeUrl(project.url)}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         style={{
@@ -376,7 +376,7 @@ export default function PreviewCanvas({
                                   </p>
                                   {project.url && (
                                     <a
-                                      href={project.url}
+                                      href={sanitizeUrl(project.url)}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       style={{ color: iconColor || "#0a92a4" }}
@@ -410,7 +410,7 @@ export default function PreviewCanvas({
                                   </p>
                                   {project.url && (
                                     <a
-                                      href={project.url}
+                                      href={sanitizeUrl(project.url)}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       style={{ color: iconColor || "#0a92a4" }}
@@ -562,7 +562,7 @@ export default function PreviewCanvas({
                     {/* Action Button */}
                     {section.buttonText && (
                       <a
-                        href={section.url || "#"}
+                        href={sanitizeUrl(section.url)}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
