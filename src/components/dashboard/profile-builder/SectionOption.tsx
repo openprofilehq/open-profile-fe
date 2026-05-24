@@ -158,7 +158,7 @@ export default function SectionOption({
     if (!title.trim() || !url.trim()) return;
 
     if (!isValidUrl(url.trim())) {
-      setUrlError("Please enter a valid link, email, or phone number (e.g., +1234567890)");
+      setUrlError("Please enter a valid link (e.g. yoursite.com)");
       return;
     }
     setUrlError("");
@@ -390,7 +390,7 @@ export default function SectionOption({
             name="url"
             value={url}
             onChange={(event) => setUrl(event.target.value)}
-            placeholder="Paste link, email, or phone (e.g., +1234567890)..."
+            placeholder="Paste link (e.g. yoursite.com)..."
             className={`rounded-md border p-2 focus:ring-2 focus:ring-offset-1 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
               urlError ? "border-red-500 focus:ring-red-500" : "border-accent-foreground/30 focus:ring-accent"
             }`}

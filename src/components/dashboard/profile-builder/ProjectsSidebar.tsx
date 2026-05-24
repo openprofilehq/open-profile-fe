@@ -145,7 +145,7 @@ export default function ProjectsSidebar({
     if (!itemTitle.trim() || !itemDesc.trim()) return;
 
     if (itemUrl.trim() && !isValidUrl(itemUrl.trim())) {
-      setUrlError("Please enter a valid link, email, or phone number (e.g., +1234567890)");
+      setUrlError("Please enter a valid link (e.g. yoursite.com)");
       return;
     }
     setUrlError("");
@@ -478,7 +478,7 @@ export default function ProjectsSidebar({
                   type="text"
                   value={itemUrl}
                   onChange={(e) => setItemUrl(e.target.value)}
-                  placeholder="Paste link, email, or phone (e.g., +1234567890)..."
+                  placeholder="Paste link (e.g. yoursite.com)..."
                   className={`w-full px-4 py-3 text-sm outline-none focus:bg-gray-50/30 ${
                     urlError ? "text-red-500" : "text-gray-600"
                   }`}

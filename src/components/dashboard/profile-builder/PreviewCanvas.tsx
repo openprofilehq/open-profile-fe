@@ -101,10 +101,10 @@ export default function PreviewCanvas({
 
   return (
     <div
-      className={`animate-in fade-in flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
+      className={`animate-in fade-in flex h-full min-h-0 flex-1 justify-center overflow-y-auto px-4 lg:px-12 transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
     >
       {/* Device wrapper */}
-      <div className="flex w-full max-w-full flex-col gap-6">
+      <div className="flex w-full max-w-3xl flex-col gap-6 pb-32">
         {/* Dynamic Card Container with settings applied */}
         <div
           className={`flex w-full flex-col transition-all duration-300 ${selectedFontClass}`}

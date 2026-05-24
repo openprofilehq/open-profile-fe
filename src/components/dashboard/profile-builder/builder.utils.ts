@@ -102,6 +102,9 @@ export const isValidUrl = (urlString: string) => {
   // Allow social media usernames starting with @
   if (/^@[\w.-]+$/.test(trimmed)) return true;
 
+  // Allow plain domains without http/www
+  if (/^[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{2,10}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/i.test(trimmed)) return true;
+
   return /^(https?:\/\/|www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{2,10}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/i.test(trimmed);
 };
 

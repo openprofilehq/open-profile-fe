@@ -10,10 +10,10 @@ import {
   draftStateOption,
 } from "@/api/profile/profile.options";
 import { upsertDraft } from "@/api/profile/profile.service";
-// import BuilderHeader from "./BuilderHeader";
+import BuilderHeader from "./BuilderHeader";
 import LeftSidebar from "./LeftSidebar";
 import PreviewCanvas from "./PreviewCanvas";
-// import RightPanel from "./RightPanel";
+import RightPanel from "./RightPanel";
 import Link from "next/link";
 import type { Section } from "./types";
 import { contentToSections, sectionsToContent } from "./builder.utils";
@@ -399,10 +399,10 @@ export default function ProfileBuilderContent() {
         </Link>
       </div>
 
-      <div className="bg-primary-bg hidden h-screen w-screen flex-col overflow-hidden lg:flex">
+      <div className="bg-primary-bg hidden h-screen w-full flex-col overflow-hidden lg:flex">
         {/* <BuilderHeader onPublish={handlePublish} isPublishing={isPublishing} /> */}
 
-        <div className="flex flex-1 gap-2 overflow-hidden bg-[#FAFAFA] p-2 px-4">
+        <div className="flex flex-1 gap-4 overflow-hidden bg-[#FAFAFA] p-4 lg:p-6 lg:px-8">
           <LeftSidebar
             sections={resolvedSections}
             selectedSectionId={selectedSectionId}
@@ -433,26 +433,26 @@ export default function ProfileBuilderContent() {
             onRemoveSection={handleRemoveSection}
           />
 
-          {/* <RightPanel
+          <RightPanel
             font={font}
-            onChangeFont={setFont}
+            onChangeFont={_setFont}
             textColor={textColor}
-            onChangeTextColor={setTextColor}
+            onChangeTextColor={_setTextColor}
             bgColor={bgColor}
-            onChangeBgColor={setBgColor}
+            onChangeBgColor={_setBgColor}
             iconColor={iconColor}
-            onChangeIconColor={setIconColor}
+            onChangeIconColor={_setIconColor}
             spacing={spacing}
-            onChangeSpacing={setSpacing}
+            onChangeSpacing={_setSpacing}
             borderRadius={borderRadius}
-            onChangeBorderRadius={setBorderRadius}
+            onChangeBorderRadius={_setBorderRadius}
             theme={theme}
-            onChangeTheme={setTheme}
-            activeTab={activeTab}
+            onChangeTheme={_setTheme}
+            activeTab={_activeTab}
             onChangeTab={setActiveTab}
             selectedSection={selectedSection}
             onUpdateSection={handleUpdateSection}
-          /> */}
+          />
         </div>
       </div>
     </>
