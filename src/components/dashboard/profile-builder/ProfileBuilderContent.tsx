@@ -9,7 +9,10 @@ import {
   profileContentOption,
   draftStateOption,
 } from "@/api/profile/profile.options";
-import { upsertDraft } from "@/api/profile/profile.service";
+import {
+  upsertDraft,
+  updateProfileAppearance,
+} from "@/api/profile/profile.service";
 import LeftSidebar from "./LeftSidebar";
 import PreviewCanvas from "./PreviewCanvas";
 import RightPanel from "./RightPanel";
@@ -93,21 +96,23 @@ export default function ProfileBuilderContent() {
 
   const profile = dashboardProfile.data;
 
-  const [font, _setFont] = useState("Afacad");
-  const [textColor, _setTextColor] = useState("#050505");
-  const [bgColor, _setBgColor] = useState("#FFFFFF");
-  const [iconColor, _setIconColor] = useState("#087583");
-  const [spacing, _setSpacing] = useState(20);
-  const [borderRadius, _setBorderRadius] = useState<
+  const [font, setFont] = useState("Afacad");
+  const [textColor, setTextColor] = useState("#050505");
+  const [bgColor, setBgColor] = useState("#FFFFFF");
+  const [iconColor, setIconColor] = useState("#087583");
+  const [spacing, setSpacing] = useState(20);
+  const [borderRadius, setBorderRadius] = useState<
     "sharp" | "medium" | "round"
   >("medium");
-  const [theme, _setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [sections, setSections] = useState<Section[]>([]);
 
   const contentLoadedRef = useRef(false);
   const userEditedRef = useRef(false);
   const draftUpdatedAtRef = useRef<string | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const appearanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (
@@ -124,17 +129,6 @@ export default function ProfileBuilderContent() {
       profileContent.data,
       dashboardProfile.data
     );
-
-    if (dashboardProfile.data?.themeSettings) {
-      const ts = dashboardProfile.data.themeSettings as any;
-      if (ts.font) _setFont(ts.font);
-      if (ts.textColor) _setTextColor(ts.textColor);
-      if (ts.bgColor) _setBgColor(ts.bgColor);
-      if (ts.iconColor) _setIconColor(ts.iconColor);
-      if (ts.spacing !== undefined) _setSpacing(ts.spacing);
-      if (ts.borderRadius) _setBorderRadius(ts.borderRadius);
-      if (ts.theme) _setTheme(ts.theme);
-    }
 
     // Automatically initialize section if requested via URL search param and missing
     if (sectionParam) {
@@ -158,6 +152,21 @@ export default function ProfileBuilderContent() {
     dashboardProfile.data,
     sectionParam,
   ]);
+
+  const { mutate: saveAppearance } = useMutation({
+    mutationKey: ["profile", "appearance", "update"],
+    mutationFn: updateProfileAppearance,
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: ["profile", "dashboard"] });
+    },
+    onError(error: unknown) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : "Failed to save appearance settings.";
+      toast.error(msg);
+    },
+  });
 
   const { mutate: saveDraft } = useMutation({
     mutationKey: ["profile", "draft", "upsert"],
@@ -237,6 +246,33 @@ export default function ProfileBuilderContent() {
   useEffect(() => {
     sectionsRef.current = sections;
   }, [sections]);
+
+  useEffect(() => {
+    if (!contentLoadedRef.current) return;
+
+    if (appearanceTimerRef.current) {
+      clearTimeout(appearanceTimerRef.current);
+    }
+
+    appearanceTimerRef.current = setTimeout(() => {
+      saveAppearance({
+        template: "professional",
+        accentColour: iconColor,
+        font,
+        cornerStyle: borderRadius,
+        spacing,
+        theme,
+      });
+
+      appearanceTimerRef.current = null;
+    }, 1000);
+
+    return () => {
+      if (appearanceTimerRef.current) {
+        clearTimeout(appearanceTimerRef.current);
+      }
+    };
+  }, [font, iconColor, spacing, borderRadius, theme, saveAppearance]);
 
   useEffect(() => {
     themeSettingsRef.current = {
@@ -448,19 +484,19 @@ export default function ProfileBuilderContent() {
 
           <RightPanel
             font={font}
-            onChangeFont={_setFont}
+            onChangeFont={setFont}
             textColor={textColor}
-            onChangeTextColor={_setTextColor}
+            onChangeTextColor={setTextColor}
             bgColor={bgColor}
-            onChangeBgColor={_setBgColor}
+            onChangeBgColor={setBgColor}
             iconColor={iconColor}
-            onChangeIconColor={_setIconColor}
+            onChangeIconColor={setIconColor}
             spacing={spacing}
-            onChangeSpacing={_setSpacing}
+            onChangeSpacing={setSpacing}
             borderRadius={borderRadius}
-            onChangeBorderRadius={_setBorderRadius}
+            onChangeBorderRadius={setBorderRadius}
             theme={theme}
-            onChangeTheme={_setTheme}
+            onChangeTheme={setTheme}
             activeTab={_activeTab}
             onChangeTab={setActiveTab}
             selectedSection={selectedSection}

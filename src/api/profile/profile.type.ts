@@ -124,3 +124,17 @@ export type PublishProfileResponse = {
     publishedAt: string;
   };
 };
+
+export type ProfileAppearanceRequest = {
+  template: string;
+  accentColour: string;
+  font: string;
+  cornerStyle: "sharp" | "medium" | "round";
+  spacing: number;
+  theme: "light" | "dark";
+};
+
+export type ProfileAppearanceResponse = {
+  status: string;
+  message: string;
+};

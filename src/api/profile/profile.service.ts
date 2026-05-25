@@ -10,6 +10,8 @@ import {
   UpsertDraftResponse,
   DraftStateResponse,
   PublishProfileResponse,
+  ProfileAppearanceRequest,
+  ProfileAppearanceResponse,
 } from "./profile.type";
 
 export function createProfile(data: CreateProfileRequest) {
@@ -119,5 +121,13 @@ export function publishProfile() {
   return callApi<PublishProfileResponse>({
     url: "/profiles/publish",
     method: "POST",
+  });
+}
+
+export function updateProfileAppearance(data: ProfileAppearanceRequest) {
+  return callApi<ProfileAppearanceResponse>({
+    url: "/profiles/appearance",
+    method: "PATCH",
+    data,
   });
 }
