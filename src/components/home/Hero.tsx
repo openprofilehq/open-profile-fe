@@ -7,6 +7,7 @@ import { CircleCheck, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
+import { getBaseDisplayUrl } from "@/utils/profile";
 
 const profiles = [
   {
@@ -46,6 +47,8 @@ export function Hero() {
   const [current, setCurrent] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  const displayUrl = getBaseDisplayUrl();
 
   useEffect(() => {
     const id = setInterval(
@@ -111,7 +114,7 @@ export function Hero() {
                 className="shrink-0 text-[16px] leading-[24px] text-[#454545] select-none"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               >
-                open.profile/
+                {displayUrl}/
               </span>
               <input
                 type="text"

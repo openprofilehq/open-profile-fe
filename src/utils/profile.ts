@@ -1,12 +1,10 @@
 import { env } from "@/env/client";
 
+const PROFILE_BASE_URL = env.NEXT_PUBLIC_PROFILE_BASE_URL;
+
 export function getProfileUrl(username?: string) {
   if (!username) return "";
-  const base =
-    typeof window !== "undefined"
-      ? window.location.origin
-      : env.NEXT_PUBLIC_PROFILE_BASE_URL;
-  return `${base}/${username}`;
+  return `${PROFILE_BASE_URL.replace(/\/$/, "")}/${username}`;
 }
 
 export function getDisplayUrl(url: string) {
@@ -14,11 +12,7 @@ export function getDisplayUrl(url: string) {
 }
 
 export function getBaseDisplayUrl() {
-  return getDisplayUrl(
-    typeof window !== "undefined"
-      ? window.location.origin
-      : env.NEXT_PUBLIC_PROFILE_BASE_URL
-  );
+  return getDisplayUrl(PROFILE_BASE_URL);
 }
 
 export function getImageUrl(path?: string | null) {
