@@ -7,8 +7,7 @@ import { CircleCheck, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { getBaseDisplayUrl, getDisplayUrl } from "@/utils/profile";
-import { env } from "@/env/client";
+import { getBaseDisplayUrl } from "@/utils/profile";
 
 const profiles = [
   {
@@ -49,7 +48,9 @@ export function Hero() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const displayUrl = getBaseDisplayUrl();
+  const [displayUrl, setDisplayUrl] = useState(() =>
+    getBaseDisplayUrl()
+  );
 
   useEffect(() => {
     const id = setInterval(

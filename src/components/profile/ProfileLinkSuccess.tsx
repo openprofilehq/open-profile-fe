@@ -7,13 +7,13 @@ import { toast } from "sonner";
 export default function ProfileLinkSuccess({
   username,
   bio,
-  fullName,
+  displayName,
   photoUrl,
   onContinue,
 }: {
   username: string;
   bio: string;
-  fullName: string;
+  displayName: string;
   photoUrl?: string;
   onContinue?: () => void;
 }) {
@@ -35,8 +35,8 @@ export default function ProfileLinkSuccess({
 
   const profileUrl = getProfileUrl();
 
-  const initials = fullName?.trim()
-    ? fullName
+  const initials = displayName?.trim()
+    ? displayName
         .trim()
         .split(/\s+/)
         .map((n) => n[0])
