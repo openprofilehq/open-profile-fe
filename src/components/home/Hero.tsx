@@ -7,8 +7,7 @@ import { CircleCheck, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { getBaseDisplayUrl, getDisplayUrl } from "@/utils/profile";
-import { env } from "@/env/client";
+import { getBaseDisplayUrl } from "@/utils/profile";
 
 const profiles = [
   {

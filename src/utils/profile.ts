@@ -80,8 +80,11 @@ export function sanitizeUrl(url?: string | null): string {
   }
 
   // Handle wa.me links explicitly
-  if (/^wa\.me\//i.test(trimmed)) {
-    return `https://${trimmed}`;
+  if (/wa\.me\//i.test(trimmed)) {
+    const extractedNumber = trimmed.split("wa.me/")[1];
+    if (extractedNumber && /^\d+$/.test(extractedNumber)) {
+      return `https://wa.me/${extractedNumber}`;
+    }
   }
 
   // Auto-format email addresses
@@ -106,8 +109,11 @@ export function encodeUrlForBackend(
   const trimmed = url.trim();
 
   // If it's a wa.me shortlink, ensure it has https://
-  if (/^wa\.me\//i.test(trimmed)) {
-    return `https://${trimmed}`;
+  if (/wa\.me\//i.test(trimmed)) {
+    const extractedNumber = trimmed.split("wa.me/")[1];
+    if (extractedNumber && /^\d+$/.test(extractedNumber)) {
+      return `https://wa.me/${extractedNumber}`;
+    }
   }
 
   // If it's an email address
@@ -157,7 +163,7 @@ export function encodeUrlForBackend(
   }
 
   // Ensure standard web links have a protocol
-  if (!/^https?:\/\//i.test(trimmed) && trimmed.length > 0) {
+  if (!trimmed.startsWith("http") && trimmed.length > 0) {
     const cleanUrl = trimmed.replace(/^@/, "");
     return `https://${cleanUrl}`;
   }

@@ -42,7 +42,7 @@ export function contentToSections(
         type: "links" as const,
         visible: content?.links?.visible ?? true,
         subtitle: content?.links?.sectionTitle ?? "",
-        links: (content?.links?.items ?? []).map((l: any) => ({
+        links: (content?.links?.items ?? []).map((l: Partial<SavedLink>) => ({
           ...l,
           url: decodeUrlForFrontend(l.url),
         })) as unknown as SavedLink[],
@@ -56,7 +56,7 @@ export function contentToSections(
         type: "projects" as const,
         visible: content?.projects?.visible ?? true,
         subtitle: content?.projects?.sectionTitle ?? "",
-        projects: (content?.projects?.items ?? []).map((p: any) => ({
+        projects: (content?.projects?.items ?? []).map((p: Partial<ProjectItem>) => ({
           ...p,
           url: decodeUrlForFrontend(p.url),
         })) as unknown as ProjectItem[],
@@ -91,7 +91,11 @@ export const isValidUrl = (urlString: string, iconId?: string | null) => {
   if (/^(mailto:|tel:|whatsapp:|sms:)/i.test(trimmed)) return true;
   
   // Allow wa.me links
-  if (/^wa\.me\//i.test(trimmed)) return true;
+  if (/wa\.me\//i.test(trimmed)) {
+    const extractedNumber = trimmed.split("wa.me/")[1];
+    if (extractedNumber && /^\d+$/.test(extractedNumber)) return true;
+    return false;
+  }
 
   // Allow plain phone numbers
   if (/^\+?[0-9\s()-]{7,20}$/.test(trimmed)) return true;
