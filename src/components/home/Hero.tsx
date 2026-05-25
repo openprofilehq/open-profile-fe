@@ -48,9 +48,7 @@ export function Hero() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const [displayUrl, setDisplayUrl] = useState(() =>
-    getBaseDisplayUrl()
-  );
+  const displayUrl = getBaseDisplayUrl();
 
   useEffect(() => {
     const id = setInterval(
@@ -134,7 +132,7 @@ export function Hero() {
             <Button
               onClick={handleSearch}
               disabled={isLoading}
-className="bg-link-hover-text hover:bg-button-brand-bg h-12 w-full rounded-[8px] px-4 text-[16px] leading-6 whitespace-nowrap text-white transition-colors disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto lg:h-12.5"
+              className="bg-link-hover-text hover:bg-button-brand-bg h-12 w-full rounded-[8px] px-4 text-[16px] leading-6 whitespace-nowrap text-white transition-colors disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto lg:h-12.5"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               {isLoading ? (
