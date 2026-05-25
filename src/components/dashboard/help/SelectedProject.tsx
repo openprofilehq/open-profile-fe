@@ -3,12 +3,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { profileContentOption } from "@/api/profile/profile.options";
 import { getImageUrl, sanitizeUrl } from "@/utils/profile";
+import { ProfileContentResponse } from "@/api/profile/profile.type";
 
-export default function SelectedProject() {
-  const { data: content, isPending } = useQuery(profileContentOption());
+type Props = {
+  content?: ProfileContentResponse;
+  isLoading?: boolean;
+};
+
+export default function SelectedProject({ content, isLoading }: Props) {
   const projects = (content?.content?.projects?.items ?? []) as {
     id?: string;
     title?: string;
@@ -21,7 +24,7 @@ export default function SelectedProject() {
     <section className="w-full rounded-[12px] border border-[#EDEDED] bg-white">
       <h2 className="p-4 text-2xl font-bold">Selected Projects</h2>
 
-      {isPending ? (
+      {isLoading ? (
         <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2">
           {Array.from({ length: 2 }).map((_, i) => (
             <div key={i} className="flex flex-col gap-4">

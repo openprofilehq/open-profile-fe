@@ -2,12 +2,17 @@
 
 import Image from "next/image";
 import { ExternalLink, ImageIcon } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { profileContentOption } from "@/api/profile/profile.options";
+// import { useQuery } from "@tanstack/react-query";
+// import { profileContentOption } from "@/api/profile/profile.options";
 import { getImageUrl, sanitizeUrl } from "@/utils/profile";
+import { ProfileContentResponse } from "@/api/profile/profile.type";
 
-export default function FeaturedLinks() {
-  const { data: content, isPending } = useQuery(profileContentOption());
+type Props = {
+  content?: ProfileContentResponse;
+  isLoading?: boolean;
+};
+
+export default function FeaturedLinks({ content, isLoading }: Props) {
   const links = (content?.content?.links?.items ?? []) as {
     id?: string;
     title?: string;
@@ -20,7 +25,7 @@ export default function FeaturedLinks() {
     <section className="rounded-[12px] border border-[#EDEDED] bg-white p-6">
       <h2 className="text-2xl font-bold">Featured Links</h2>
 
-      {isPending ? (
+      {isLoading ? (
         <div className="mt-6 flex flex-col gap-4">
           {Array.from({ length: 1 }).map((_, i) => (
             <div

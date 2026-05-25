@@ -2,17 +2,20 @@
 
 import Link from "next/link";
 import { ChevronRight, MessageSquare } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { profileContentOption } from "@/api/profile/profile.options";
 import { sanitizeUrl } from "@/utils/profile";
+import { ProfileContentResponse } from "@/api/profile/profile.type";
 
-export default function YourCTA() {
-  const { data: content, isPending } = useQuery(profileContentOption());
+type Props = {
+  content?: ProfileContentResponse;
+  isLoading?: boolean;
+};
+
+export default function YourCTA({ content, isLoading }: Props) {
   const cta = content?.content?.cta;
 
   return (
     <section className="w-full rounded-[12px] border border-[#EDEDED] bg-white p-16">
-      {isPending ? (
+      {isLoading ? (
         <div className="flex flex-col items-center gap-4">
           <span className="inline-flex items-center gap-2 rounded-md border p-2 text-sm font-medium">
             <MessageSquare size={12} />
