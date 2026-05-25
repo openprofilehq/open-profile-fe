@@ -77,6 +77,37 @@ const createSection = (type: string, customTitle?: string): Section | null => {
   };
 };
 
+const DEFAULT_TEMPLATE = "professional" as const;
+// Only the professional template is currently supported by the builder UI.
+
+type AppearanceThemeSettings = {
+  font?: unknown;
+  textColor?: unknown;
+  bgColor?: unknown;
+  iconColor?: unknown;
+  spacing?: unknown;
+  borderRadius?: unknown;
+  theme?: unknown;
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const isBorderRadius = (
+  value: unknown
+): value is "sharp" | "medium" | "round" =>
+  value === "sharp" || value === "medium" || value === "round";
+
+const isTheme = (value: unknown): value is "light" | "dark" =>
+  value === "light" || value === "dark";
+
+const getAppearanceSettings = (
+  value: unknown
+): AppearanceThemeSettings | null => {
+  if (!isRecord(value)) return null;
+  return value;
+};
+
 export default function ProfileBuilderContent() {
   const queryClient = useQueryClient();
 
@@ -129,6 +160,45 @@ export default function ProfileBuilderContent() {
       profileContent.data,
       dashboardProfile.data
     );
+
+    const appearanceSettings = getAppearanceSettings(
+      dashboardProfile.data.themeSettings
+    );
+
+    if (appearanceSettings) {
+      queueMicrotask(() => {
+        if (typeof appearanceSettings.font === "string") {
+          setFont(appearanceSettings.font);
+        }
+
+        if (typeof appearanceSettings.textColor === "string") {
+          setTextColor(appearanceSettings.textColor);
+        }
+
+        if (typeof appearanceSettings.bgColor === "string") {
+          setBgColor(appearanceSettings.bgColor);
+        }
+
+        if (typeof appearanceSettings.iconColor === "string") {
+          setIconColor(appearanceSettings.iconColor);
+        }
+
+        if (
+          typeof appearanceSettings.spacing === "number" &&
+          Number.isFinite(appearanceSettings.spacing)
+        ) {
+          setSpacing(appearanceSettings.spacing);
+        }
+
+        if (isBorderRadius(appearanceSettings.borderRadius)) {
+          setBorderRadius(appearanceSettings.borderRadius);
+        }
+
+        if (isTheme(appearanceSettings.theme)) {
+          setTheme(appearanceSettings.theme);
+        }
+      });
+    }
 
     // Automatically initialize section if requested via URL search param and missing
     if (sectionParam) {
@@ -233,15 +303,6 @@ export default function ProfileBuilderContent() {
   });
 
   const sectionsRef = useRef(sections);
-  const themeSettingsRef = useRef({
-    font,
-    textColor,
-    bgColor,
-    iconColor,
-    spacing,
-    borderRadius,
-    theme,
-  });
 
   useEffect(() => {
     sectionsRef.current = sections;
@@ -256,7 +317,7 @@ export default function ProfileBuilderContent() {
 
     appearanceTimerRef.current = setTimeout(() => {
       saveAppearance({
-        template: "professional",
+        template: DEFAULT_TEMPLATE,
         accentColour: iconColor,
         font,
         cornerStyle: borderRadius,
@@ -275,18 +336,6 @@ export default function ProfileBuilderContent() {
   }, [font, iconColor, spacing, borderRadius, theme, saveAppearance]);
 
   useEffect(() => {
-    themeSettingsRef.current = {
-      font,
-      textColor,
-      bgColor,
-      iconColor,
-      spacing,
-      borderRadius,
-      theme,
-    };
-  }, [font, textColor, bgColor, iconColor, spacing, borderRadius, theme]);
-
-  useEffect(() => {
     if (!contentLoadedRef.current) return;
     if (!userEditedRef.current) {
       userEditedRef.current = true;
@@ -300,10 +349,10 @@ export default function ProfileBuilderContent() {
     saveTimerRef.current = setTimeout(() => {
       const bioSection = sections.find((s) => s.type === "bio");
       const updatedAt = draftUpdatedAtRef.current;
+      // Appearance settings are persisted through updateProfileAppearance to avoid duplicate writes.
       const payload = {
         bio: bioSection?.bio ?? null,
         content: sectionsToContent(sections),
-        themeSettings: themeSettingsRef.current,
       };
       saveDraftRef.current({ data: payload, draftVersion: updatedAt });
       saveTimerRef.current = null;
@@ -331,10 +380,10 @@ export default function ProfileBuilderContent() {
         clearTimeout(saveTimerRef.current);
         const bioSection = sectionsRef.current.find((s) => s.type === "bio");
         const updatedAt = draftUpdatedAtRef.current;
+        // Appearance settings are persisted through updateProfileAppearance to avoid duplicate writes.
         const payload = {
           bio: bioSection?.bio ?? null,
           content: sectionsToContent(sectionsRef.current),
-          themeSettings: themeSettingsRef.current,
         };
         upsertDraft(payload, updatedAt).catch((err) => {
           console.error("[draft] Unmount direct save FAILED:", err);
