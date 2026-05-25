@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { getImageUrl } from "@/utils/profile";
+import { Skeleton } from "../ui/skeleton";
 
 type Props = {
   profile?: {
@@ -15,7 +16,7 @@ export default function ProfileSummaryCard({ profile, isLoading }: Props) {
   return (
     <section className="flex flex-col gap-5 rounded-[12px] border border-[#EDEDED] bg-white p-6 md:flex-row md:items-start">
       {isLoading ? (
-        <div className="h-24 w-24 shrink-0 animate-pulse rounded-full bg-gray-200" />
+        <Skeleton className="h-24 w-24 shrink-0 rounded-full" />
       ) : profileImageUrl ? (
         <Image
           src={profileImageUrl}
@@ -33,7 +34,7 @@ export default function ProfileSummaryCard({ profile, isLoading }: Props) {
 
       <div>
         {isLoading ? (
-          <div className="h-9 w-52 animate-pulse rounded bg-gray-200" />
+          <Skeleton className="h-9" />
         ) : (
           <h2 className="text-3xl font-bold">
             {profile?.fullName ?? "No Name"}
@@ -41,7 +42,7 @@ export default function ProfileSummaryCard({ profile, isLoading }: Props) {
         )}
 
         {isLoading ? (
-          <div className="mt-4 h-5 w-full animate-pulse rounded bg-gray-200" />
+          <Skeleton className="mt-4 h-5" />
         ) : (
           <p className="mt-4 max-w-[650px] text-xl leading-8 text-[#050505]">
             {profile?.bio ?? "No bio added yet."}

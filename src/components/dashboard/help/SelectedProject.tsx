@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 import { ProfileContentResponse } from "@/api/profile/profile.type";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Props = {
   content?: ProfileContentResponse;
@@ -28,11 +29,11 @@ export default function SelectedProject({ content, isLoading }: Props) {
         <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2">
           {Array.from({ length: 2 }).map((_, i) => (
             <div key={i} className="flex flex-col gap-4">
-              <div className="aspect-video w-full animate-pulse rounded-lg bg-gray-200" />
+              <Skeleton className="aspect-video" />
               <div className="flex flex-col gap-2">
-                <div className="h-5 w-3/4 animate-pulse rounded bg-gray-200" />
-                <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
-                <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
+                <Skeleton className="h-5 w-3/4" />
+                <Skeleton className="h-4" />
+                <Skeleton className="h-4 w-16" />
               </div>
             </div>
           ))}

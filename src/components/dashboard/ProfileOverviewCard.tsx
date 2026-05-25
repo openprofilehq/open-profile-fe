@@ -3,6 +3,7 @@ import { ChevronRight, Eye, Link2, Pencil, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getDisplayUrl, getProfileUrl } from "@/utils/profile";
+import { Skeleton } from "../ui/skeleton";
 
 const actions = [
   {
@@ -44,7 +45,7 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
 
         <div className="mt-3 rounded-[10px] bg-[#FAFAFA] p-4">
           {isLoading ? (
-            <div className="h-8 w-48 animate-pulse rounded bg-gray-200" />
+            <Skeleton className="h-8" />
           ) : (
             <h1 className="text-2xl font-bold">
               Welcome, {profile?.fullName ?? "User"}
@@ -110,7 +111,7 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
           <div className="mt-4 flex justify-between text-sm">
             <span className="text-[#454545]">Public URL</span>
             {isLoading ? (
-              <div className="h-4 w-40 animate-pulse rounded bg-gray-200" />
+              <Skeleton className="h-4 w-40" />
             ) : publicProfileUrl ? (
               <a
                 href={publicProfileUrl}

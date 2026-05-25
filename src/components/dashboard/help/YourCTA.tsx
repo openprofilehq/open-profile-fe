@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronRight, MessageSquare } from "lucide-react";
 import { sanitizeUrl } from "@/utils/profile";
 import { ProfileContentResponse } from "@/api/profile/profile.type";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Props = {
   content?: ProfileContentResponse;
@@ -20,8 +21,8 @@ export default function YourCTA({ content, isLoading }: Props) {
           <span className="inline-flex items-center gap-2 rounded-md border p-2 text-sm font-medium">
             <MessageSquare size={12} />
           </span>
-          <div className="h-7 w-32 animate-pulse rounded bg-gray-200" />
-          <div className="h-11 w-28 animate-pulse rounded-xl bg-gray-200" />
+          <Skeleton className="h-7 w-32" />
+          <Skeleton className="h-11 w-28 rounded-xl" />
         </div>
       ) : (
         <div className="flex flex-col items-center gap-4">
