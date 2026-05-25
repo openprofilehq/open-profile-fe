@@ -80,7 +80,7 @@ export function sanitizeUrl(url?: string | null): string {
   }
 
   // Handle wa.me links explicitly
-  if (/wa\.me\//i.test(trimmed)) {
+  if (/^(?:https?:\/\/)?wa\.me\//i.test(trimmed)) {
     const extractedNumber = trimmed.split("wa.me/")[1];
     if (extractedNumber && /^\d+$/.test(extractedNumber)) {
       return `https://wa.me/${extractedNumber}`;
@@ -109,7 +109,7 @@ export function encodeUrlForBackend(
   const trimmed = url.trim();
 
   // If it's a wa.me shortlink, ensure it has https://
-  if (/wa\.me\//i.test(trimmed)) {
+  if (/^(?:https?:\/\/)?wa\.me\//i.test(trimmed)) {
     const extractedNumber = trimmed.split("wa.me/")[1];
     if (extractedNumber && /^\d+$/.test(extractedNumber)) {
       return `https://wa.me/${extractedNumber}`;

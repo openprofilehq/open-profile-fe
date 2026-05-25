@@ -91,7 +91,7 @@ export const isValidUrl = (urlString: string, iconId?: string | null) => {
   if (/^(mailto:|tel:|whatsapp:|sms:)/i.test(trimmed)) return true;
   
   // Allow wa.me links
-  if (/wa\.me\//i.test(trimmed)) {
+  if (/^(?:https?:\/\/)?wa\.me\//i.test(trimmed)) {
     const extractedNumber = trimmed.split("wa.me/")[1];
     if (extractedNumber && /^\d+$/.test(extractedNumber)) return true;
     return false;
@@ -113,9 +113,9 @@ export const isValidUrl = (urlString: string, iconId?: string | null) => {
   }
 
   // Allow plain domains without http/www
-  if (/^[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{2,10}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/i.test(trimmed)) return true;
+  if (/^[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{2,63}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/i.test(trimmed)) return true;
 
-  return /^(https?:\/\/|www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{2,10}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/i.test(trimmed);
+  return /^(https?:\/\/|www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{2,63}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/i.test(trimmed);
 };
 
 export function sectionsToContent(

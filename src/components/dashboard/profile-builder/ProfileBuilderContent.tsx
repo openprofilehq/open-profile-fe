@@ -125,6 +125,17 @@ export default function ProfileBuilderContent() {
       dashboardProfile.data
     );
 
+    if (dashboardProfile.data?.themeSettings) {
+      const ts = dashboardProfile.data.themeSettings as any;
+      if (ts.font) _setFont(ts.font);
+      if (ts.textColor) _setTextColor(ts.textColor);
+      if (ts.bgColor) _setBgColor(ts.bgColor);
+      if (ts.iconColor) _setIconColor(ts.iconColor);
+      if (ts.spacing !== undefined) _setSpacing(ts.spacing);
+      if (ts.borderRadius) _setBorderRadius(ts.borderRadius);
+      if (ts.theme) _setTheme(ts.theme);
+    }
+
     // Automatically initialize section if requested via URL search param and missing
     if (sectionParam) {
       const exists = loadedSections.some((s) => s.id === sectionParam);
@@ -213,30 +224,31 @@ export default function ProfileBuilderContent() {
   });
 
   const sectionsRef = useRef(sections);
-  // const themeSettingsRef = useRef({
-  //   font,
-  //   textColor,
-  //   bgColor,
-  //   iconColor,
-  //   spacing,
-  //   borderRadius,
-  //   theme,
-  // });
+  const themeSettingsRef = useRef({
+    font,
+    textColor,
+    bgColor,
+    iconColor,
+    spacing,
+    borderRadius,
+    theme,
+  });
+
   useEffect(() => {
     sectionsRef.current = sections;
   }, [sections]);
 
-  // useEffect(() => {
-  //   themeSettingsRef.current = {
-  //     font,
-  //     textColor,
-  //     bgColor,
-  //     iconColor,
-  //     spacing,
-  //     borderRadius,
-  //     theme,
-  //   };
-  // }, [font, textColor, bgColor, iconColor, spacing, borderRadius, theme]);
+  useEffect(() => {
+    themeSettingsRef.current = {
+      font,
+      textColor,
+      bgColor,
+      iconColor,
+      spacing,
+      borderRadius,
+      theme,
+    };
+  }, [font, textColor, bgColor, iconColor, spacing, borderRadius, theme]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
@@ -255,6 +267,7 @@ export default function ProfileBuilderContent() {
       const payload = {
         bio: bioSection?.bio ?? null,
         content: sectionsToContent(sections),
+        themeSettings: themeSettingsRef.current,
       };
       saveDraftRef.current({ data: payload, draftVersion: updatedAt });
       saveTimerRef.current = null;
@@ -285,6 +298,7 @@ export default function ProfileBuilderContent() {
         const payload = {
           bio: bioSection?.bio ?? null,
           content: sectionsToContent(sectionsRef.current),
+          themeSettings: themeSettingsRef.current,
         };
         upsertDraft(payload, updatedAt).catch((err) => {
           console.error("[draft] Unmount direct save FAILED:", err);
