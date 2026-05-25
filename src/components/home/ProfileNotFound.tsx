@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { SearchX } from "lucide-react";
+import { Loader2, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,7 +11,7 @@ import { getBaseDisplayUrl } from "@/utils/profile";
 export function ProfileNotFound() {
   const pathname = usePathname();
   const [query, setQuery] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const raw = pathname?.split("/")[1] ?? "";
 
@@ -25,8 +25,8 @@ export function ProfileNotFound() {
 
   function handleSearch() {
     const username = query.trim();
-    if (!username || isSearching) return;
-    setIsSearching(true);
+    if (!username || isLoading) return;
+    setIsLoading(true);
     router.push(`/${encodeURIComponent(username)}`);
   }
 
@@ -44,8 +44,8 @@ export function ProfileNotFound() {
 
       <div className="flex h-full w-full flex-1 flex-col items-center justify-center gap-6">
         {/* Search bar */}
-        <div className="flex w-full max-w-[480px] flex-col gap-[6px] sm:flex-row">
-          <div className="border-secondary-b bg-primary-bg focus-within:ring-brand-hover-bg/40 flex h-12.5 flex-1 items-center rounded-[5.57px] border px-3 focus-within:ring-2">
+        <div className="flex w-full max-w-120 flex-col gap-1.5 sm:flex-row">
+          <div className="border-secondary-b bg-primary-bg focus-within:ring-link-hover-text/40 flex h-12 min-h-12 flex-1 items-center rounded-[5.57px] border px-3.5 focus-within:ring-2 lg:h-12.5 lg:min-h-12.5">
             <span
               className="text-label-text shrink-0 text-[16px] leading-6 select-none"
               style={{ fontFamily: "'Afacad', sans-serif" }}
@@ -59,17 +59,24 @@ export function ProfileNotFound() {
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               placeholder="username"
-              className="text-label-text placeholder:text-secondary-b min-w-0 flex-1 bg-transparent text-[16px] leading-6 outline-none"
+              className="placeholder:text-secondary-b text-label-text h-full min-w-0 flex-1 bg-transparent text-[16px] leading-6 outline-none disabled:opacity-50"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             />
           </div>
           <Button
             onClick={handleSearch}
-            disabled={isSearching}
-            className="bg-brand-hover-bg hover:bg-brand-active-bg h-14 w-full rounded-[8px] px-[16px] text-[16px] leading-6 whitespace-nowrap text-white transition-colors disabled:opacity-80 sm:h-12.5 sm:w-auto"
+            disabled={isLoading}
+            className="bg-link-hover-text hover:bg-button-brand-bg h-12 w-full rounded-[8px] px-4 text-[16px] leading-6 whitespace-nowrap text-white transition-colors disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto lg:h-12.5"
             style={{ fontFamily: "'Afacad', sans-serif" }}
           >
-            {isSearching ? "Searching..." : "Search a Profile"}
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                Searching...
+              </>
+            ) : (
+              "Search a Profile"
+            )}
           </Button>
         </div>
 

@@ -32,9 +32,10 @@ type Props = {
     fullName?: string;
     bio?: string | null;
   };
+  isLoading?: boolean;
 };
 
-export default function ProfileOverviewCard({ profile }: Props) {
+export default function ProfileOverviewCard({ profile, isLoading }: Props) {
   const publicProfileUrl = getProfileUrl(profile?.username);
   return (
     <>
@@ -42,9 +43,13 @@ export default function ProfileOverviewCard({ profile }: Props) {
         <p className="text-sm text-[#454545] uppercase">Profile Overview</p>
 
         <div className="mt-3 rounded-[10px] bg-[#FAFAFA] p-4">
-          <h1 className="text-2xl font-bold">
-            Welcome, {profile?.fullName ?? "User"}
-          </h1>
+          {isLoading ? (
+            <div className="h-8 w-48 animate-pulse rounded bg-gray-200" />
+          ) : (
+            <h1 className="text-2xl font-bold">
+              Welcome, {profile?.fullName ?? "User"}
+            </h1>
+          )}
           <p className="mt-3 max-w-[390px] text-[#454545]">
             Your profile is live and ready to share. Manage your public page,
             update key sections, and keep things current from one place
@@ -104,7 +109,9 @@ export default function ProfileOverviewCard({ profile }: Props) {
 
           <div className="mt-4 flex justify-between text-sm">
             <span className="text-[#454545]">Public URL</span>
-            {publicProfileUrl ? (
+            {isLoading ? (
+              <div className="h-4 w-40 animate-pulse rounded bg-gray-200" />
+            ) : publicProfileUrl ? (
               <a
                 href={publicProfileUrl}
                 target="_blank"

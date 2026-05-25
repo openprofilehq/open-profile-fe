@@ -7,8 +7,8 @@ import { CircleCheck, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { getBaseDisplayUrl, getDisplayUrl } from "@/utils/profile";
-import { env } from "@/env/client";
+import { getBaseDisplayUrl } from "@/utils/profile";
+// import { env } from "@/env/client";
 
 const profiles = [
   {
@@ -121,7 +121,9 @@ export function Hero() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => !isLoading && e.key === "Enter" && handleSearch()}
+                onKeyDown={(e) =>
+                  !isLoading && e.key === "Enter" && handleSearch()
+                }
                 disabled={isLoading}
                 placeholder="username"
                 className="h-full min-w-0 flex-1 bg-transparent text-[16px] leading-[24px] text-[#454545] outline-none placeholder:text-[#C9C9C9] disabled:opacity-50"
@@ -131,7 +133,7 @@ export function Hero() {
             <Button
               onClick={handleSearch}
               disabled={isLoading}
-              className="h-12 w-full rounded-[8px] bg-[#087583] px-[16px] text-[16px] leading-[24px] whitespace-nowrap text-white transition-colors hover:bg-[#065E69] sm:w-auto lg:h-[50px] disabled:opacity-70 disabled:cursor-not-allowed"
+              className="h-12 w-full rounded-[8px] bg-[#087583] px-[16px] text-[16px] leading-[24px] whitespace-nowrap text-white transition-colors hover:bg-[#065E69] disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto lg:h-[50px]"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               {isLoading ? (

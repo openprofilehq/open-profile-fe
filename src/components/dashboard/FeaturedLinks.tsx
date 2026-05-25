@@ -7,7 +7,7 @@ import { profileContentOption } from "@/api/profile/profile.options";
 import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 
 export default function FeaturedLinks() {
-  const { data: content } = useQuery(profileContentOption());
+  const { data: content, isPending } = useQuery(profileContentOption());
   const links = (content?.content?.links?.items ?? []) as {
     id?: string;
     title?: string;
@@ -20,7 +20,25 @@ export default function FeaturedLinks() {
     <section className="rounded-[12px] border border-[#EDEDED] bg-white p-6">
       <h2 className="text-2xl font-bold">Featured Links</h2>
 
-      {links.length === 0 ? (
+      {isPending ? (
+        <div className="mt-6 flex flex-col gap-4">
+          {Array.from({ length: 1 }).map((_, i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between rounded-[18px] border border-[#EDEDED] p-4"
+            >
+              <div className="flex items-center gap-5">
+                <div className="h-14 w-14 shrink-0 animate-pulse rounded-[12px] bg-gray-200" />
+                <div className="space-y-2">
+                  <div className="h-4 w-32 animate-pulse rounded bg-gray-200" />
+                  <div className="h-3 w-48 animate-pulse rounded bg-gray-200" />
+                </div>
+              </div>
+              <div className="h-10 w-10 shrink-0 animate-pulse rounded-full bg-gray-200" />
+            </div>
+          ))}
+        </div>
+      ) : links.length === 0 ? (
         <span className="mt-4 flex items-center justify-between text-sm text-gray-500">
           No links added yet
         </span>

@@ -100,6 +100,7 @@
   --color-positive-hover-bg: var(--positive-hover-bg);
   --color-button-bg: var(--button-bg);
   --color-button-bg-waitlist: var(--button-bg-waitlist);
+  --color-button-brand-bg: var(--button-brand-bg);
 
   /* border colors */
   --color-primary-b: var(--primary-b);
@@ -311,6 +312,7 @@
   --positive-hover-bg: #83efb2;
   --button-bg: #fafafa;
   --button-bg-waitlist: #262626;
+  --button-brand-bg: #065e69;
 
   /* border */
   --primary-b: #ababab;

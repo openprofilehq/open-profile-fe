@@ -8,7 +8,7 @@ import { profileContentOption } from "@/api/profile/profile.options";
 import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 
 export default function SelectedProject() {
-  const { data: content } = useQuery(profileContentOption());
+  const { data: content, isPending } = useQuery(profileContentOption());
   const projects = (content?.content?.projects?.items ?? []) as {
     id?: string;
     title?: string;
@@ -21,7 +21,20 @@ export default function SelectedProject() {
     <section className="w-full rounded-[12px] border border-[#EDEDED] bg-white">
       <h2 className="p-4 text-2xl font-bold">Selected Projects</h2>
 
-      {projects.length === 0 ? (
+      {isPending ? (
+        <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="flex flex-col gap-4">
+              <div className="aspect-video w-full animate-pulse rounded-lg bg-gray-200" />
+              <div className="flex flex-col gap-2">
+                <div className="h-5 w-3/4 animate-pulse rounded bg-gray-200" />
+                <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
+                <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : projects.length === 0 ? (
         <span className="flex items-center justify-between p-4 text-sm text-gray-500">
           No projects added yet
         </span>

@@ -15,15 +15,16 @@ export default function DashboardHome() {
   const dashboardProfile = useQuery(dashboardProfileOption());
 
   const profile = dashboardProfile.data;
+  const isLoading = dashboardProfile.isPending;
 
   return (
     <div className="mx-auto grid w-full max-w-[1180px] grid-cols-1 gap-6 overflow-x-hidden xl:grid-cols-[0.8fr_1.2fr]">
       <div className="flex flex-col gap-4">
-        <ProfileOverviewCard profile={profile} />
+        <ProfileOverviewCard profile={profile} isLoading={isLoading} />
       </div>
 
       <div className="flex flex-col gap-6">
-        <ProfileSummaryCard profile={profile} />
+        <ProfileSummaryCard profile={profile} isLoading={isLoading} />
         <FeaturedLinks />
         {/* <HighlightCard profile={profile} /> */}
         <SelectedProject />
