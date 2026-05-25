@@ -50,11 +50,10 @@ export function Hero() {
   const router = useRouter();
 
   const [displayUrl, setDisplayUrl] = useState(() =>
-    getDisplayUrl(env.NEXT_PUBLIC_PROFILE_BASE_URL)
+    getBaseDisplayUrl()
   );
 
   useEffect(() => {
-    setDisplayUrl(getBaseDisplayUrl());
     const id = setInterval(
       () => setCurrent((c) => (c + 1) % profiles.length),
       3000

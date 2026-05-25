@@ -83,7 +83,7 @@ export function contentToSections(
 const isRemoteUrl = (src?: string | null) =>
   !!src && (src.startsWith("http://") || src.startsWith("https://"));
 
-export const isValidUrl = (urlString: string) => {
+export const isValidUrl = (urlString: string, iconId?: string | null) => {
   if (!urlString) return true;
   const trimmed = urlString.trim();
 
@@ -100,7 +100,13 @@ export const isValidUrl = (urlString: string) => {
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return true;
 
   // Allow social media usernames starting with @
-  if (/^@[\w.-]+$/.test(trimmed)) return true;
+  if (/^@[\w.-]+$/.test(trimmed)) {
+    const supportedSocials = ["insta", "twitter", "linkedin", "github", "youtube", "tiktok", "behance", "flickr", "pinterest"];
+    if (iconId && supportedSocials.includes(iconId)) {
+      return true;
+    }
+    return false; // Context-aware rejection of handles for unsupported or global links
+  }
 
   // Allow plain domains without http/www
   if (/^[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{2,10}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/i.test(trimmed)) return true;

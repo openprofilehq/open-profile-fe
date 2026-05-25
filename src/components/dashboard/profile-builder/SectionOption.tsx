@@ -157,7 +157,7 @@ export default function SectionOption({
   const handleSaveLink = () => {
     if (!title.trim() || !url.trim()) return;
 
-    if (!isValidUrl(url.trim())) {
+    if (!isValidUrl(url.trim(), selectedIconId)) {
       setUrlError("Please enter a valid link (e.g. yoursite.com)");
       return;
     }

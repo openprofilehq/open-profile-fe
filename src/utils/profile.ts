@@ -158,7 +158,8 @@ export function encodeUrlForBackend(
 
   // Ensure standard web links have a protocol
   if (!/^https?:\/\//i.test(trimmed) && trimmed.length > 0) {
-    return `https://${trimmed}`;
+    const cleanUrl = trimmed.replace(/^@/, "");
+    return `https://${cleanUrl}`;
   }
 
   return trimmed;

@@ -10,7 +10,6 @@ import {
   draftStateOption,
 } from "@/api/profile/profile.options";
 import { upsertDraft } from "@/api/profile/profile.service";
-import BuilderHeader from "./BuilderHeader";
 import LeftSidebar from "./LeftSidebar";
 import PreviewCanvas from "./PreviewCanvas";
 import RightPanel from "./RightPanel";

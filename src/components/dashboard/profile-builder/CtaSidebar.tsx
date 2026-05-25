@@ -122,7 +122,7 @@ export default function CtaSidebar({
 
   const handleButtonUrlChange = (val: string) => {
     setButtonUrl(val);
-    if (!val.trim() || isValidUrl(val.trim())) {
+    if (!val.trim() || isValidUrl(val.trim(), selectedIconId)) {
       setUrlError("");
       syncSection({ url: val });
     } else {
