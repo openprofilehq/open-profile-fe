@@ -71,6 +71,8 @@
   --color-input-text: var(--input-text);
   --color-label-text: var(--label-text);
   --color-selected-text: var(--selected-text);
+  --color-span-text: var(--span-text);
+  --color-span-text-100: var(--span-text-100);
 
   /* bg colors */
   --color-primary-bg: var(--primary-bg);
@@ -283,6 +285,8 @@
   --label-text: #454545;
   --selected-text: #171717;
   --button-text: #171717;
+  --span-text: #fefefe;
+  --span-text-100: #e6e6e6;
 
   /* bg */
   --primary-bg: #fafafa;

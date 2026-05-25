@@ -44,8 +44,8 @@ export function ProfileNotFound() {
 
       <div className="flex h-full w-full flex-1 flex-col items-center justify-center gap-6">
         {/* Search bar */}
-        <div className="flex w-full max-w-120 flex-col gap-1.5 sm:flex-row">
-          <div className="border-secondary-b bg-primary-bg focus-within:ring-link-hover-text/40 flex h-12 min-h-12 flex-1 items-center rounded-[5.57px] border px-3.5 focus-within:ring-2 lg:h-12.5 lg:min-h-12.5">
+        <div className="flex w-full max-w-[512px] flex-col gap-1.75 sm:flex-row">
+          <div className="border-secondary-b bg-primary-bg focus-within:ring-brand-hover-bg/40 flex h-12 min-h-12 flex-1 items-center rounded-[5.57px] border px-3.5 focus-within:ring-2 lg:h-12.5 lg:min-h-12.5">
             <span
               className="text-label-text shrink-0 text-[16px] leading-6 select-none"
               style={{ fontFamily: "'Afacad', sans-serif" }}
