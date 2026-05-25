@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { getBaseDisplayUrl } from "@/utils/profile";
-// import { env } from "@/env/client";
 
 const profiles = [
   {
@@ -49,7 +48,9 @@ export function Hero() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const displayUrl = getBaseDisplayUrl();
+  const [displayUrl, setDisplayUrl] = useState(() =>
+    getBaseDisplayUrl()
+  );
 
   useEffect(() => {
     const id = setInterval(

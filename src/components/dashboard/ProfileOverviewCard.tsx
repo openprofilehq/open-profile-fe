@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getDisplayUrl, getProfileUrl } from "@/utils/profile";
 import { Skeleton } from "../ui/skeleton";
+import { useQuery } from "@tanstack/react-query";
+import { userQueryOptions } from "@/api/auth/auth.options";
 
 const actions = [
   {
@@ -37,6 +39,7 @@ type Props = {
 };
 
 export default function ProfileOverviewCard({ profile, isLoading }: Props) {
+  const { data: user } = useQuery(userQueryOptions);
   const publicProfileUrl = getProfileUrl(profile?.username);
   return (
     <>
@@ -48,7 +51,7 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
             <Skeleton className="h-8" />
           ) : (
             <h1 className="text-2xl font-bold">
-              Welcome, {profile?.fullName ?? "User"}
+              Welcome, {user?.fullName ?? "User"}
             </h1>
           )}
           <p className="mt-3 max-w-[390px] text-[#454545]">

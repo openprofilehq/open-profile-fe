@@ -63,7 +63,7 @@ export default function RightPanel({
   onUpdateSection,
 }: RightPanelProps) {
   return (
-    <aside className="border-tertiary-b animate-in fade-in hidden h-full w-[290px] shrink-0 flex-col border bg-white shadow-sm duration-200 select-none lg:flex">
+    <aside className="border-tertiary-b animate-in fade-in hidden h-full w-[290px] shrink-0 flex-col rounded-2xl border bg-white p-6 shadow-sm duration-200 select-none lg:flex">
       {/* Tabs Header */}
       <div className="border-tertiary-b flex border-b">
         <button
@@ -95,8 +95,8 @@ export default function RightPanel({
       </div>
 
       {/* Settings Body */}
-      <div className="relative flex-1 overflow-x-visible overflow-y-auto p-6">
-        <div className="opacity-15">
+      <div className="relative flex-1 overflow-x-visible overflow-y-auto py-6 pr-1">
+        <div>
           {activeTab === "general" ? (
             <div className="flex flex-col gap-6">
               {/* Font Selection */}
@@ -436,14 +436,6 @@ export default function RightPanel({
               )}
             </div>
           )}
-        </div>
-        {/* overlay content with coming soon placeholder */}
-
-        <div className="absolute top-0 right-0 z-20 flex h-full w-full flex-1 items-center justify-center text-black">
-          <div className="flex h-full w-full flex-col items-center gap-4 rounded-[12px] border border-[#EDEDED] bg-transparent pt-48 backdrop-blur-xs">
-            {/* <Type size={32} className="" /> */}
-            <p className="text-center text-2xl font-black">Coming soon!</p>
-          </div>
         </div>
       </div>
     </aside>
