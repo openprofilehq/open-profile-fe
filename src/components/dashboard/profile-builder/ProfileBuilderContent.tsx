@@ -8,11 +8,10 @@ import {
   dashboardProfileOption,
   profileContentOption,
   draftStateOption,
+  upsertDraftOption,
+  updateProfileAppearanceOption,
 } from "@/api/profile/profile.options";
-import {
-  upsertDraft,
-  updateProfileAppearance,
-} from "@/api/profile/profile.service";
+import { upsertDraft } from "@/api/profile/profile.service";
 import LeftSidebar from "./LeftSidebar";
 import PreviewCanvas from "./PreviewCanvas";
 import RightPanel from "./RightPanel";
@@ -224,8 +223,8 @@ export default function ProfileBuilderContent() {
   ]);
 
   const { mutate: saveAppearance } = useMutation({
-    mutationKey: ["profile", "appearance", "update"],
-    mutationFn: updateProfileAppearance,
+    mutationKey: updateProfileAppearanceOption.mutationKey,
+    mutationFn: updateProfileAppearanceOption.mutationFn,
     onSuccess() {
       queryClient.invalidateQueries({ queryKey: ["profile", "dashboard"] });
     },
@@ -239,13 +238,8 @@ export default function ProfileBuilderContent() {
   });
 
   const { mutate: saveDraft } = useMutation({
-    mutationKey: ["profile", "draft", "upsert"],
-    mutationFn: (variables: {
-      data: Parameters<typeof upsertDraft>[0];
-      draftVersion: string | null;
-    }) => {
-      return upsertDraft(variables.data, variables.draftVersion);
-    },
+    mutationKey: upsertDraftOption.mutationKey,
+    mutationFn: upsertDraftOption.mutationFn,
     onSuccess(response) {
       const updatedAt = response?.data?.updatedAt;
       if (updatedAt) {
@@ -259,29 +253,12 @@ export default function ProfileBuilderContent() {
     },
     onError(error: unknown) {
       console.error("[draft] Save FAILED! Full error object:", error);
-      if (error instanceof Error) {
-        console.error(
-          "[draft] Error name:",
-          error.name,
-          "message:",
-          error.message,
-          "stack:",
-          error.stack
-        );
-      }
-      if (typeof error === "object" && error !== null) {
-        console.error(
-          "[draft] Error properties:",
-          Object.keys(error),
-          JSON.stringify(error)
-        );
-      }
 
       const errObj = error as Record<string, unknown>;
       if (
         errObj?.status === 409 ||
         errObj?.statusCode === 409 ||
-        (error as Error).message?.includes("409")
+        (error instanceof Error && error.message?.includes("409"))
       ) {
         toast.error(
           "Draft was modified in another session. Reloading latest changes...",
@@ -291,12 +268,12 @@ export default function ProfileBuilderContent() {
         queryClient.invalidateQueries({ queryKey: ["profile", "draft-state"] });
         return;
       }
+
       const msg =
         error instanceof Error ? error.message : "Failed to save draft.";
       toast.error(msg);
     },
   });
-
   const saveDraftRef = useRef(saveDraft);
   useEffect(() => {
     saveDraftRef.current = saveDraft;
