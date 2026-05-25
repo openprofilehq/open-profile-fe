@@ -78,16 +78,16 @@ export function Hero() {
           {/* Heading */}
           <motion.h1
             {...fadeUp(0.05)}
-            className="text-[38px] leading-[1.12] font-semibold tracking-[-1px] text-[#050505] sm:text-[46px] md:text-[56px]"
+            className="text-primary-text text-[38px] leading-[1.12] font-semibold tracking-[-1px] sm:text-[46px] md:text-[56px]"
             style={{ fontFamily: "'Afacad', sans-serif" }}
           >
             Create{" "}
             <span className="relative mx-2 inline-block">
-              <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-xl leading-none tracking-wider whitespace-nowrap text-[#087583]">
+              <span className="text-link-hover-text absolute -top-5 left-1/2 -translate-x-1/2 text-xl leading-none tracking-wider whitespace-nowrap">
                 \ | /
               </span>
               <span
-                className="text-[#087583] italic"
+                className="text-link-hover-text italic"
                 style={{ fontFamily: "'Dancing Script', cursive" }}
               >
                 One
@@ -99,7 +99,7 @@ export function Hero() {
           {/* Subtext */}
           <motion.p
             {...fadeUp(0.12)}
-            className="max-w-[538px] text-[16px] leading-[26px] font-normal text-[#050505] md:text-[18px]"
+            className="text-primary-text max-w-[538px] text-[16px] leading-[26px] font-normal md:text-[18px]"
             style={{ fontFamily: "'Afacad', sans-serif" }}
           >
             Turn your scattered online presence into one searchable profile that
@@ -109,11 +109,11 @@ export function Hero() {
           {/* Search */}
           <motion.div
             {...fadeUp(0.2)}
-            className="flex w-full max-w-[512px] flex-col items-stretch gap-[6.73px] sm:flex-row"
+            className="flex w-full max-w-[512px] flex-col items-stretch gap-1.75 sm:flex-row"
           >
-            <div className="flex h-12 min-h-12 flex-1 items-center rounded-[5.57px] border border-[#C9C9C9] bg-[#FAFAFA] px-[14px] focus-within:ring-2 focus-within:ring-[#087583]/40 lg:h-[50px] lg:min-h-[50px]">
+            <div className="border-secondary-b bg-primary-bg focus-within:ring-brand-hover-bg/40 flex h-12 min-h-12 flex-1 items-center rounded-[5.57px] border px-3.5 focus-within:ring-2 lg:h-12.5 lg:min-h-12.5">
               <span
-                className="shrink-0 text-[16px] leading-[24px] text-[#454545] select-none"
+                className="text-label-text shrink-0 text-[16px] leading-6 select-none"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               >
                 {displayUrl}/
@@ -122,17 +122,19 @@ export function Hero() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => !isLoading && e.key === "Enter" && handleSearch()}
+                onKeyDown={(e) =>
+                  !isLoading && e.key === "Enter" && handleSearch()
+                }
                 disabled={isLoading}
                 placeholder="username"
-                className="h-full min-w-0 flex-1 bg-transparent text-[16px] leading-[24px] text-[#454545] outline-none placeholder:text-[#C9C9C9] disabled:opacity-50"
+                className="text-label-text placeholder:text-secondary-b h-full min-w-0 flex-1 bg-transparent text-[16px] leading-6 outline-none disabled:opacity-50"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               />
             </div>
             <Button
               onClick={handleSearch}
               disabled={isLoading}
-              className="h-12 w-full rounded-[8px] bg-[#087583] px-[16px] text-[16px] leading-[24px] whitespace-nowrap text-white transition-colors hover:bg-[#065E69] sm:w-auto lg:h-[50px] disabled:opacity-70 disabled:cursor-not-allowed"
+              className="bg-link-hover-text hover:bg-button-brand-bg h-12 w-full rounded-[8px] px-4 text-[16px] leading-6 whitespace-nowrap text-white transition-colors disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto lg:h-12.5"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               {isLoading ? (
@@ -177,7 +179,7 @@ export function Hero() {
               ))}
             </div>
             <p
-              className="text-[14px] leading-[24px] font-normal text-[#454545] md:text-[16px]"
+              className="text-secondary-text text-[14px] leading-[24px] font-normal md:text-[16px]"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               Join over Creators and freelancers that trusts us all over the
@@ -255,7 +257,7 @@ export function Hero() {
                       <div className="absolute bottom-0 left-0 z-10 flex flex-col gap-1 p-[15px_18px]">
                         <div className="flex items-center gap-1">
                           <span
-                            className="text-[20px] leading-[26px] font-bold text-[#FEFEFE]"
+                            className="text-span-text text-[20px] leading-[26px] font-bold"
                             style={{ fontFamily: "'Afacad', sans-serif" }}
                           >
                             {p.name}
@@ -266,7 +268,7 @@ export function Hero() {
                           />
                         </div>
                         <span
-                          className="text-[14px] leading-[24px] font-medium text-[#E6E6E6]"
+                          className="text-span-text-100 text-[14px] leading-[24px] font-medium"
                           style={{ fontFamily: "'Afacad', sans-serif" }}
                         >
                           {p.role}
@@ -352,7 +354,7 @@ export function Hero() {
                   <div className="absolute bottom-0 left-0 z-10 flex flex-col gap-0.5 p-[10px_12px]">
                     <div className="flex items-center gap-1">
                       <span
-                        className="text-[13px] leading-[18px] font-bold whitespace-nowrap text-[#FEFEFE]"
+                        className="text-span-text text-[13px] leading-[18px] font-bold whitespace-nowrap"
                         style={{ fontFamily: "'Afacad', sans-serif" }}
                       >
                         {p.name}
@@ -363,7 +365,7 @@ export function Hero() {
                       />
                     </div>
                     <span
-                      className="text-[11px] leading-[16px] font-medium whitespace-nowrap text-[#E6E6E6]"
+                      className="text-span-text-100 text-[11px] leading-[16px] font-medium whitespace-nowrap"
                       style={{ fontFamily: "'Afacad', sans-serif" }}
                     >
                       {p.role}
@@ -377,7 +379,7 @@ export function Hero() {
       </div>
 
       <div className="hidden px-[125px] pt-[40px] pb-[80px] lg:block">
-        <div className="border-t border-[#C9C9C9]" />
+        <div className="border-secondary-b border-t" />
       </div>
     </section>
   );
