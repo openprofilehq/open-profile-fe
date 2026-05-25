@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import type { SavedLink } from "./LinkSidebar";
 import { uploadImage } from "@/api/uploads/uploads.service";
+import { isValidUrl } from "./builder.utils";
 
 const presetIcons = [
   {
@@ -119,6 +120,7 @@ export default function SectionOption({
   const [uploadedImage, setUploadedImage] = useState<string | null>(
     editingLink?.imageSrc ?? null
   );
+  const [urlError, setUrlError] = useState("");
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -155,6 +157,12 @@ export default function SectionOption({
   const handleSaveLink = () => {
     if (!title.trim() || !url.trim()) return;
 
+    if (!isValidUrl(url.trim(), selectedIconId)) {
+      setUrlError("Please enter a valid link (e.g. yoursite.com)");
+      return;
+    }
+    setUrlError("");
+
     onSaveLink(
       {
         title: title.trim(),
@@ -169,6 +177,7 @@ export default function SectionOption({
 
     setTitle("");
     setUrl("");
+    setUrlError("");
     setSelectedIconId(null);
     setIsIconMenuOpen(false);
     setUploadedImage(null);
@@ -381,9 +390,12 @@ export default function SectionOption({
             name="url"
             value={url}
             onChange={(event) => setUrl(event.target.value)}
-            placeholder="Search site or paste link ...."
-            className="border-accent-foreground/30 focus:ring-accent rounded-md border p-2 focus:ring-2 focus:ring-offset-1 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            placeholder="Paste link (e.g. yoursite.com)..."
+            className={`rounded-md border p-2 focus:ring-2 focus:ring-offset-1 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
+              urlError ? "border-red-500 focus:ring-red-500" : "border-accent-foreground/30 focus:ring-accent"
+            }`}
           />
+          {urlError && <p className="text-xs text-red-500">{urlError}</p>}
         </span>
 
         <p className="text-muted-foreground text-xs font-medium">

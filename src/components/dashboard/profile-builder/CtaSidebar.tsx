@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { ChevronLeft, Trash2, Smile } from "lucide-react";
 import type { Section } from "./types";
+import { isValidUrl } from "./builder.utils";
 
 interface CtaSidebarProps {
   returnTab: () => void;
@@ -73,6 +74,7 @@ export default function CtaSidebar({
     section?.buttonText || "Start a Conversation"
   );
   const [buttonUrl, setButtonUrl] = useState(section?.url || "");
+  const [urlError, setUrlError] = useState("");
   const [selectedIconId, setSelectedIconId] = useState<string | null>(
     section?.iconId || "chat"
   );
@@ -120,7 +122,12 @@ export default function CtaSidebar({
 
   const handleButtonUrlChange = (val: string) => {
     setButtonUrl(val);
-    syncSection({ url: val });
+    if (!val.trim() || isValidUrl(val.trim(), selectedIconId)) {
+      setUrlError("");
+      syncSection({ url: val });
+    } else {
+      setUrlError("Please enter a valid link, email, or phone number (e.g., +1234567890)");
+    }
   };
 
   const handleSelectIcon = (iconId: string, iconSrc: string, label: string) => {
@@ -307,14 +314,17 @@ export default function CtaSidebar({
                   type="text"
                   value={buttonUrl}
                   onChange={(e) => handleButtonUrlChange(e.target.value)}
-                  placeholder="Search site or paste link"
-                  className="w-full px-4 py-3 pr-10 text-sm text-gray-600 outline-none focus:bg-gray-50/30"
+                  placeholder="Paste link, email, or phone (e.g., +1234567890)..."
+                  className={`w-full px-4 py-3 pr-10 text-sm outline-none focus:bg-gray-50/30 ${
+                    urlError ? "text-red-500" : "text-gray-600"
+                  }`}
                 />
                 <span className="absolute right-4 text-xs font-bold text-gray-400 select-none">
                   ...
                 </span>
               </div>
             </div>
+            {urlError && <p className="text-xs text-red-500">{urlError}</p>}
           </div>
         </div>
       </div>
