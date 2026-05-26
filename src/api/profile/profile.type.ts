@@ -125,16 +125,26 @@ export type PublishProfileResponse = {
   };
 };
 
-export type ProfileAppearanceRequest = {
+export type ProfileAppearanceSettings = {
   template: string;
   accentColour: string;
+  textColor?: string;
+  bgColor?: string;
   font: string;
   cornerStyle: "sharp" | "medium" | "round";
   spacing: number;
   theme: "light" | "dark";
 };
 
+export type ProfileAppearanceRequest = ProfileAppearanceSettings;
+
 export type ProfileAppearanceResponse = {
   status: string;
   message: string;
+};
+
+export type GetProfileAppearanceResponse = {
+  status: string;
+  message: string;
+  data?: ProfileAppearanceSettings | null;
 };

@@ -12,6 +12,7 @@ import {
   PublishProfileResponse,
   ProfileAppearanceRequest,
   ProfileAppearanceResponse,
+  GetProfileAppearanceResponse,
 } from "./profile.type";
 
 export function createProfile(data: CreateProfileRequest) {
@@ -129,5 +130,13 @@ export function updateProfileAppearance(data: ProfileAppearanceRequest) {
     url: "/profiles/appearance",
     method: "PATCH",
     data,
+  });
+}
+
+export function getProfileAppearance(signal?: AbortSignal) {
+  return callApi<GetProfileAppearanceResponse>({
+    url: "/profiles/appearance",
+    method: "GET",
+    signal,
   });
 }
