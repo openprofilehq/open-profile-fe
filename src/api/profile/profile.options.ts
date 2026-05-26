@@ -12,6 +12,7 @@ import {
   upsertDraft,
   publishProfile,
   updateProfileAppearance,
+  getProfileAppearance,
 } from "./profile.service";
 import { isQueryEnabled } from "@/api/base/base.util";
 import { QueryStaleTime } from "@/api/base/base.const";
@@ -66,6 +67,14 @@ export const publishProfileOption = mutationOptions({
   mutationKey: ["profile", "publish"],
   mutationFn: publishProfile,
 });
+
+export function profileAppearanceOption() {
+  return queryOptions({
+    queryKey: ["profile", "appearance"],
+    queryFn: ({ signal }) => getProfileAppearance(signal),
+    staleTime: QueryStaleTime.fiveMins,
+  });
+}
 
 export const updateProfileAppearanceOption = mutationOptions({
   mutationKey: ["profile", "appearance", "update"],
