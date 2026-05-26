@@ -226,7 +226,9 @@ export default function ProfileBuilderContent() {
     mutationKey: updateProfileAppearanceOption.mutationKey,
     mutationFn: updateProfileAppearanceOption.mutationFn,
     onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ["profile", "dashboard"] });
+      queryClient.invalidateQueries({
+        queryKey: dashboardProfileOption().queryKey,
+      });
     },
     onError(error: unknown) {
       const msg =
@@ -249,7 +251,9 @@ export default function ProfileBuilderContent() {
           "[draft] Save succeeded but response did not contain an updatedAt timestamp."
         );
       }
-      queryClient.invalidateQueries({ queryKey: ["profile", "content"] });
+      queryClient.invalidateQueries({
+        queryKey: profileContentOption().queryKey,
+      });
     },
     onError(error: unknown) {
       console.error("[draft] Save FAILED! Full error object:", error);
@@ -264,8 +268,12 @@ export default function ProfileBuilderContent() {
           "Draft was modified in another session. Reloading latest changes...",
           { duration: 5000 }
         );
-        queryClient.invalidateQueries({ queryKey: ["profile", "content"] });
-        queryClient.invalidateQueries({ queryKey: ["profile", "draft-state"] });
+        queryClient.invalidateQueries({
+          queryKey: profileContentOption().queryKey,
+        });
+        queryClient.invalidateQueries({
+          queryKey: draftStateOption().queryKey,
+        });
         return;
       }
 
