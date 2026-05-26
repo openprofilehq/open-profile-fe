@@ -146,5 +146,5 @@ export type ProfileAppearanceResponse = {
 export type GetProfileAppearanceResponse = {
   status: string;
   message: string;
-  data: ProfileAppearanceSettings;
+  data?: ProfileAppearanceSettings | null;
 };

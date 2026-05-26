@@ -297,6 +297,8 @@ export default function ProfileBuilderContent() {
       saveAppearance({
         template: DEFAULT_TEMPLATE,
         accentColour: iconColor,
+        textColor,
+        bgColor,
         font,
         cornerStyle: borderRadius,
         spacing,
@@ -311,7 +313,16 @@ export default function ProfileBuilderContent() {
         clearTimeout(appearanceTimerRef.current);
       }
     };
-  }, [font, iconColor, spacing, borderRadius, theme, saveAppearance]);
+  }, [
+    font,
+    textColor,
+    bgColor,
+    iconColor,
+    spacing,
+    borderRadius,
+    theme,
+    saveAppearance,
+  ]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
