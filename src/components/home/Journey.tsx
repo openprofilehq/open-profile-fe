@@ -11,8 +11,10 @@ interface Step {
   description: string;
   icon: string;
   ghostIcon: string;
+  mobileGhostClassName: string;
+  mobileIconBoxSize: number;
+  mobileIconImageSize: number;
 }
-
 const steps: Step[] = [
   {
     id: "create-profile",
@@ -22,6 +24,9 @@ const steps: Step[] = [
     description:
       "Sign up in seconds with email, Google, or LinkedIn. Craft your bio, and link your work.",
     icon: "/journey/User.svg",
+    mobileGhostClassName: "top-[-12px] right-[24px]",
+    mobileIconBoxSize: 45,
+    mobileIconImageSize: 45,
   },
   {
     id: "verify-identity",
@@ -31,6 +36,9 @@ const steps: Step[] = [
     description:
       "Verify your email and connect social accounts. Build credibility with verification badges.",
     icon: "/journey/check.svg",
+    mobileGhostClassName: "top-[-18px] right-[4px]",
+    mobileIconBoxSize: 75,
+    mobileIconImageSize: 75,
   },
   {
     id: "share-link",
@@ -40,6 +48,9 @@ const steps: Step[] = [
     description:
       "Share your link, appear in searches, and grow your network. Not found? Invite them to join.",
     icon: "/journey/cross.svg",
+    mobileGhostClassName: "top-[-18px] right-[24px]",
+    mobileIconBoxSize: 75,
+    mobileIconImageSize: 75,
   },
 ];
 
@@ -50,31 +61,45 @@ function MobileStepCard({ step }: { step: Step }) {
       <Image
         src={step.ghostIcon}
         alt="step number"
-        width={140}
-        height={140}
-        className="absolute top-[-30px] right-0 opacity-100"
+        width={96}
+        height={96}
+        className={`absolute opacity-100 ${step.mobileGhostClassName}`}
       />
 
       {/* Icon */}
-      <div className="relative z-20 mb-8">
+      <div
+        className="relative z-20 mb-4 flex items-center justify-center"
+        style={{
+          width: `${step.mobileIconBoxSize}px`,
+          height: `${step.mobileIconBoxSize}px`,
+        }}
+      >
         <Image
+          key={`${step.icon}-${step.mobileIconImageSize}`}
           src={step.icon}
           alt="step icon"
-          width={78}
-          height={78}
-          className="object-contain"
+          width={step.mobileIconImageSize}
+          height={step.mobileIconImageSize}
+          unoptimized
+          style={{
+            width: `${step.mobileIconImageSize}px`,
+            height: `${step.mobileIconImageSize}px`,
+            maxWidth: "none",
+          }}
+          className="shrink-0 object-contain"
         />
       </div>
-
       {/* Content */}
       <div className="relative z-10">
         <h3
-          className={`font-semisemibold pb-4 text-[32px] leading-[1.1] tracking-[-0.03em] ${step.titleColor === "teal" ? "text-[#00798C]" : "text-[#202020]"} `}
+          className={`font-semisemibold pb-4 text-[32px] leading-[1.1] tracking-[-0.03em] ${
+            step.titleColor === "teal" ? "text-[00798C_1]" : "text-[202020_1]"
+          }`}
         >
           {step.title}
         </h3>
 
-        <p className="mt-5 text-[17px] leading-[32px] text-[#6B7280]">
+        <p className="mt-5 text-[17px] leading-[32px] text-[6B7280_1]">
           {step.description}
         </p>
       </div>
