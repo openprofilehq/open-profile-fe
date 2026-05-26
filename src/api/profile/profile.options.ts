@@ -1,5 +1,8 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
-import type { UpsertDraftRequest } from "./profile.type";
+import type {
+  UpsertDraftRequest,
+  ProfileAppearanceRequest,
+} from "./profile.type";
 import {
   createProfile,
   checkUsername,
@@ -8,6 +11,7 @@ import {
   getDraftState,
   upsertDraft,
   publishProfile,
+  updateProfileAppearance,
 } from "./profile.service";
 import { isQueryEnabled } from "@/api/base/base.util";
 import { QueryStaleTime } from "@/api/base/base.const";
@@ -61,4 +65,9 @@ export const upsertDraftOption = mutationOptions({
 export const publishProfileOption = mutationOptions({
   mutationKey: ["profile", "publish"],
   mutationFn: publishProfile,
+});
+
+export const updateProfileAppearanceOption = mutationOptions({
+  mutationKey: ["profile", "appearance", "update"],
+  mutationFn: (data: ProfileAppearanceRequest) => updateProfileAppearance(data),
 });
