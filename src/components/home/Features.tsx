@@ -148,7 +148,7 @@ export function Features() {
       >
         <Link
           href={user ? ROUTES.dashboard.home : "/signup"}
-          className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-white px-6 py-3.5 text-center text-sm font-semibold text-teal-700 transition-all duration-200 hover:scale-105 hover:bg-teal-50 active:scale-95 sm:w-auto sm:px-8"
+          className="mx-auto inline-flex w-fit cursor-pointer items-center justify-center rounded-lg bg-white px-6 py-3.5 text-center text-sm font-semibold whitespace-nowrap text-teal-700 transition-all duration-200 hover:scale-105 hover:bg-teal-50 active:scale-95 sm:px-8"
           style={{ fontFamily: "'Inter', sans-serif" }}
         >
           {user ? "Go to Dashboard" : "Create Your Profile Now"}
