@@ -8,12 +8,13 @@ import {
   dashboardProfileOption,
   profileContentOption,
   draftStateOption,
+  upsertDraftOption,
+  updateProfileAppearanceOption,
 } from "@/api/profile/profile.options";
 import { upsertDraft } from "@/api/profile/profile.service";
-// import BuilderHeader from "./BuilderHeader";
 import LeftSidebar from "./LeftSidebar";
 import PreviewCanvas from "./PreviewCanvas";
-// import RightPanel from "./RightPanel";
+import RightPanel from "./RightPanel";
 import Link from "next/link";
 import type { Section } from "./types";
 import { contentToSections, sectionsToContent } from "./builder.utils";
@@ -75,6 +76,37 @@ const createSection = (type: string, customTitle?: string): Section | null => {
   };
 };
 
+const DEFAULT_TEMPLATE = "professional" as const;
+// Only the professional template is currently supported by the builder UI.
+
+type AppearanceThemeSettings = {
+  font?: unknown;
+  textColor?: unknown;
+  bgColor?: unknown;
+  iconColor?: unknown;
+  spacing?: unknown;
+  borderRadius?: unknown;
+  theme?: unknown;
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const isBorderRadius = (
+  value: unknown
+): value is "sharp" | "medium" | "round" =>
+  value === "sharp" || value === "medium" || value === "round";
+
+const isTheme = (value: unknown): value is "light" | "dark" =>
+  value === "light" || value === "dark";
+
+const getAppearanceSettings = (
+  value: unknown
+): AppearanceThemeSettings | null => {
+  if (!isRecord(value)) return null;
+  return value;
+};
+
 export default function ProfileBuilderContent() {
   const queryClient = useQueryClient();
 
@@ -94,21 +126,23 @@ export default function ProfileBuilderContent() {
 
   const profile = dashboardProfile.data;
 
-  const [font, _setFont] = useState("Afacad");
-  const [textColor, _setTextColor] = useState("#050505");
-  const [bgColor, _setBgColor] = useState("#FFFFFF");
-  const [iconColor, _setIconColor] = useState("#087583");
-  const [spacing, _setSpacing] = useState(20);
-  const [borderRadius, _setBorderRadius] = useState<
+  const [font, setFont] = useState("Afacad");
+  const [textColor, setTextColor] = useState("#050505");
+  const [bgColor, setBgColor] = useState("#FFFFFF");
+  const [iconColor, setIconColor] = useState("#087583");
+  const [spacing, setSpacing] = useState(20);
+  const [borderRadius, setBorderRadius] = useState<
     "sharp" | "medium" | "round"
   >("medium");
-  const [theme, _setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [sections, setSections] = useState<Section[]>([]);
 
   const contentLoadedRef = useRef(false);
   const userEditedRef = useRef(false);
   const draftUpdatedAtRef = useRef<string | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const appearanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (
@@ -125,6 +159,45 @@ export default function ProfileBuilderContent() {
       profileContent.data,
       dashboardProfile.data
     );
+
+    const appearanceSettings = getAppearanceSettings(
+      dashboardProfile.data.themeSettings
+    );
+
+    if (appearanceSettings) {
+      queueMicrotask(() => {
+        if (typeof appearanceSettings.font === "string") {
+          setFont(appearanceSettings.font);
+        }
+
+        if (typeof appearanceSettings.textColor === "string") {
+          setTextColor(appearanceSettings.textColor);
+        }
+
+        if (typeof appearanceSettings.bgColor === "string") {
+          setBgColor(appearanceSettings.bgColor);
+        }
+
+        if (typeof appearanceSettings.iconColor === "string") {
+          setIconColor(appearanceSettings.iconColor);
+        }
+
+        if (
+          typeof appearanceSettings.spacing === "number" &&
+          Number.isFinite(appearanceSettings.spacing)
+        ) {
+          setSpacing(appearanceSettings.spacing);
+        }
+
+        if (isBorderRadius(appearanceSettings.borderRadius)) {
+          setBorderRadius(appearanceSettings.borderRadius);
+        }
+
+        if (isTheme(appearanceSettings.theme)) {
+          setTheme(appearanceSettings.theme);
+        }
+      });
+    }
 
     // Automatically initialize section if requested via URL search param and missing
     if (sectionParam) {
@@ -149,14 +222,26 @@ export default function ProfileBuilderContent() {
     sectionParam,
   ]);
 
-  const { mutate: saveDraft } = useMutation({
-    mutationKey: ["profile", "draft", "upsert"],
-    mutationFn: (variables: {
-      data: Parameters<typeof upsertDraft>[0];
-      draftVersion: string | null;
-    }) => {
-      return upsertDraft(variables.data, variables.draftVersion);
+  const { mutate: saveAppearance } = useMutation({
+    mutationKey: updateProfileAppearanceOption.mutationKey,
+    mutationFn: updateProfileAppearanceOption.mutationFn,
+    onSuccess() {
+      queryClient.invalidateQueries({
+        queryKey: dashboardProfileOption().queryKey,
+      });
     },
+    onError(error: unknown) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : "Failed to save appearance settings.";
+      toast.error(msg);
+    },
+  });
+
+  const { mutate: saveDraft } = useMutation({
+    mutationKey: upsertDraftOption.mutationKey,
+    mutationFn: upsertDraftOption.mutationFn,
     onSuccess(response) {
       const updatedAt = response?.data?.updatedAt;
       if (updatedAt) {
@@ -166,78 +251,74 @@ export default function ProfileBuilderContent() {
           "[draft] Save succeeded but response did not contain an updatedAt timestamp."
         );
       }
-      queryClient.invalidateQueries({ queryKey: ["profile", "content"] });
+      queryClient.invalidateQueries({
+        queryKey: profileContentOption().queryKey,
+      });
     },
     onError(error: unknown) {
       console.error("[draft] Save FAILED! Full error object:", error);
-      if (error instanceof Error) {
-        console.error(
-          "[draft] Error name:",
-          error.name,
-          "message:",
-          error.message,
-          "stack:",
-          error.stack
-        );
-      }
-      if (typeof error === "object" && error !== null) {
-        console.error(
-          "[draft] Error properties:",
-          Object.keys(error),
-          JSON.stringify(error)
-        );
-      }
 
       const errObj = error as Record<string, unknown>;
       if (
         errObj?.status === 409 ||
         errObj?.statusCode === 409 ||
-        (error as Error).message?.includes("409")
+        (error instanceof Error && error.message?.includes("409"))
       ) {
         toast.error(
           "Draft was modified in another session. Reloading latest changes...",
           { duration: 5000 }
         );
-        queryClient.invalidateQueries({ queryKey: ["profile", "content"] });
-        queryClient.invalidateQueries({ queryKey: ["profile", "draft-state"] });
+        queryClient.invalidateQueries({
+          queryKey: profileContentOption().queryKey,
+        });
+        queryClient.invalidateQueries({
+          queryKey: draftStateOption().queryKey,
+        });
         return;
       }
+
       const msg =
         error instanceof Error ? error.message : "Failed to save draft.";
       toast.error(msg);
     },
   });
-
   const saveDraftRef = useRef(saveDraft);
   useEffect(() => {
     saveDraftRef.current = saveDraft;
   });
 
   const sectionsRef = useRef(sections);
-  // const themeSettingsRef = useRef({
-  //   font,
-  //   textColor,
-  //   bgColor,
-  //   iconColor,
-  //   spacing,
-  //   borderRadius,
-  //   theme,
-  // });
+
   useEffect(() => {
     sectionsRef.current = sections;
   }, [sections]);
 
-  // useEffect(() => {
-  //   themeSettingsRef.current = {
-  //     font,
-  //     textColor,
-  //     bgColor,
-  //     iconColor,
-  //     spacing,
-  //     borderRadius,
-  //     theme,
-  //   };
-  // }, [font, textColor, bgColor, iconColor, spacing, borderRadius, theme]);
+  useEffect(() => {
+    if (!contentLoadedRef.current) return;
+
+    if (appearanceTimerRef.current) {
+      clearTimeout(appearanceTimerRef.current);
+    }
+
+    appearanceTimerRef.current = setTimeout(() => {
+      saveAppearance({
+        template: DEFAULT_TEMPLATE,
+        accentColour: iconColor,
+        font,
+        cornerStyle: borderRadius,
+        spacing,
+        theme,
+      });
+
+      appearanceTimerRef.current = null;
+    }, 1000);
+
+    return () => {
+      if (appearanceTimerRef.current) {
+        clearTimeout(appearanceTimerRef.current);
+      }
+    };
+  }, [font, iconColor, spacing, borderRadius, theme, saveAppearance]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
@@ -253,6 +334,7 @@ export default function ProfileBuilderContent() {
     saveTimerRef.current = setTimeout(() => {
       const bioSection = sections.find((s) => s.type === "bio");
       const updatedAt = draftUpdatedAtRef.current;
+      // Appearance settings are persisted through updateProfileAppearance to avoid duplicate writes.
       const payload = {
         bio: bioSection?.bio ?? null,
         content: sectionsToContent(sections),
@@ -283,6 +365,7 @@ export default function ProfileBuilderContent() {
         clearTimeout(saveTimerRef.current);
         const bioSection = sectionsRef.current.find((s) => s.type === "bio");
         const updatedAt = draftUpdatedAtRef.current;
+        // Appearance settings are persisted through updateProfileAppearance to avoid duplicate writes.
         const payload = {
           bio: bioSection?.bio ?? null,
           content: sectionsToContent(sectionsRef.current),
@@ -399,10 +482,10 @@ export default function ProfileBuilderContent() {
         </Link>
       </div>
 
-      <div className="bg-primary-bg hidden h-screen w-screen flex-col overflow-hidden lg:flex">
+      <div className="bg-primary-bg hidden h-screen w-full flex-col overflow-hidden lg:flex">
         {/* <BuilderHeader onPublish={handlePublish} isPublishing={isPublishing} /> */}
 
-        <div className="flex flex-1 gap-2 overflow-hidden bg-[#FAFAFA] p-2 px-4">
+        <div className="flex flex-1 gap-4 overflow-hidden bg-[#FAFAFA] p-4 lg:p-6 lg:px-8">
           <LeftSidebar
             sections={resolvedSections}
             selectedSectionId={selectedSectionId}
@@ -433,7 +516,7 @@ export default function ProfileBuilderContent() {
             onRemoveSection={handleRemoveSection}
           />
 
-          {/* <RightPanel
+          <RightPanel
             font={font}
             onChangeFont={setFont}
             textColor={textColor}
@@ -448,11 +531,11 @@ export default function ProfileBuilderContent() {
             onChangeBorderRadius={setBorderRadius}
             theme={theme}
             onChangeTheme={setTheme}
-            activeTab={activeTab}
+            activeTab={_activeTab}
             onChangeTab={setActiveTab}
             selectedSection={selectedSection}
             onUpdateSection={handleUpdateSection}
-          /> */}
+          />
         </div>
       </div>
     </>

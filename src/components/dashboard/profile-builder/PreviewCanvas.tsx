@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Folder, ExternalLink, Eye, EyeOff, Trash2 } from "lucide-react";
-import { getImageUrl } from "@/utils/profile";
+import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 import type { Section, ProfilePreview } from "./types";
 
 interface PreviewCanvasProps {
@@ -101,10 +101,10 @@ export default function PreviewCanvas({
 
   return (
     <div
-      className={`animate-in fade-in flex flex-1 justify-center overflow-y-auto transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
+      className={`animate-in fade-in flex h-full min-h-0 flex-1 justify-center overflow-y-auto px-4 lg:px-12 transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
     >
       {/* Device wrapper */}
-      <div className="flex w-full max-w-full flex-col gap-6">
+      <div className="flex w-full max-w-3xl flex-col gap-6 pb-32">
         {/* Dynamic Card Container with settings applied */}
         <div
           className={`flex w-full flex-col transition-all duration-300 ${selectedFontClass}`}
@@ -285,7 +285,7 @@ export default function PreviewCanvas({
                                   </p>
                                   {project.url && (
                                     <a
-                                      href={project.url}
+                                      href={sanitizeUrl(project.url)}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       style={{
@@ -330,7 +330,7 @@ export default function PreviewCanvas({
                                   {project.url && (
                                     <div className="mt-4 flex justify-start">
                                       <a
-                                        href={project.url}
+                                        href={sanitizeUrl(project.url)}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         style={{
@@ -376,7 +376,7 @@ export default function PreviewCanvas({
                                   </p>
                                   {project.url && (
                                     <a
-                                      href={project.url}
+                                      href={sanitizeUrl(project.url)}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       style={{ color: iconColor || "#0a92a4" }}
@@ -410,7 +410,7 @@ export default function PreviewCanvas({
                                   </p>
                                   {project.url && (
                                     <a
-                                      href={project.url}
+                                      href={sanitizeUrl(project.url)}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       style={{ color: iconColor || "#0a92a4" }}
@@ -562,7 +562,7 @@ export default function PreviewCanvas({
                     {/* Action Button */}
                     {section.buttonText && (
                       <a
-                        href={section.url || "#"}
+                        href={sanitizeUrl(section.url)}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{

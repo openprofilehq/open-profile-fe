@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { getImageUrl } from "@/utils/profile";
+import { Skeleton } from "../ui/skeleton";
 
 type Props = {
   profile?: {
@@ -7,13 +8,16 @@ type Props = {
     bio?: string | null;
     photoUrl?: string | null;
   };
+  isLoading?: boolean;
 };
 
-export default function ProfileSummaryCard({ profile }: Props) {
+export default function ProfileSummaryCard({ profile, isLoading }: Props) {
   const profileImageUrl = getImageUrl(profile?.photoUrl);
   return (
     <section className="flex flex-col gap-5 rounded-[12px] border border-[#EDEDED] bg-white p-6 md:flex-row md:items-start">
-      {profileImageUrl ? (
+      {isLoading ? (
+        <Skeleton className="h-24 w-24 shrink-0 rounded-full" />
+      ) : profileImageUrl ? (
         <Image
           src={profileImageUrl}
           alt={profile?.fullName ?? "Profile avatar"}
@@ -29,11 +33,21 @@ export default function ProfileSummaryCard({ profile }: Props) {
       )}
 
       <div>
-        <h2 className="text-3xl font-bold">{profile?.fullName ?? "No Name"}</h2>
+        {isLoading ? (
+          <Skeleton className="h-9" />
+        ) : (
+          <h2 className="text-3xl font-bold">
+            {profile?.fullName ?? "No Name"}
+          </h2>
+        )}
 
-        <p className="mt-4 max-w-[650px] text-xl leading-8 text-[#050505]">
-          {profile?.bio ?? "No bio added yet."}
-        </p>
+        {isLoading ? (
+          <Skeleton className="mt-4 h-5" />
+        ) : (
+          <p className="mt-4 max-w-[650px] text-xl leading-8 text-[#050505]">
+            {profile?.bio ?? "No bio added yet."}
+          </p>
+        )}
       </div>
     </section>
   );
