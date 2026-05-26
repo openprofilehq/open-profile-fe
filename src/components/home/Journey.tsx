@@ -75,15 +75,13 @@ function MobileStepCard({ step }: { step: Step }) {
         }}
       >
         <Image
-          key={`${step.icon}-${step.mobileIconImageSize}`}
+          key={step.id}
           src={step.icon}
           alt="step icon"
           width={step.mobileIconImageSize}
           height={step.mobileIconImageSize}
           unoptimized
           style={{
-            width: `${step.mobileIconImageSize}px`,
-            height: `${step.mobileIconImageSize}px`,
             maxWidth: "none",
           }}
           className="shrink-0 object-contain"
@@ -92,14 +90,14 @@ function MobileStepCard({ step }: { step: Step }) {
       {/* Content */}
       <div className="relative z-10">
         <h3
-          className={`font-semisemibold pb-4 text-[32px] leading-[1.1] tracking-[-0.03em] ${
-            step.titleColor === "teal" ? "text-[00798C_1]" : "text-[202020_1]"
+          className={`pb-4 text-[32px] leading-[1.1] font-semibold tracking-[-0.03em] ${
+            step.titleColor === "teal" ? "text-[00798C]" : "text-[202020]"
           }`}
         >
           {step.title}
         </h3>
 
-        <p className="mt-5 text-[17px] leading-[32px] text-[6B7280_1]">
+        <p className="mt-5 text-[17px] leading-[32px] text-[6B7280]">
           {step.description}
         </p>
       </div>
