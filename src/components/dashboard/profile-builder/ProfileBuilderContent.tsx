@@ -10,6 +10,7 @@ import {
   draftStateOption,
   upsertDraftOption,
   updateProfileAppearanceOption,
+  profileAppearanceOption,
 } from "@/api/profile/profile.options";
 import { upsertDraft } from "@/api/profile/profile.service";
 import LeftSidebar from "./LeftSidebar";
@@ -79,19 +80,6 @@ const createSection = (type: string, customTitle?: string): Section | null => {
 const DEFAULT_TEMPLATE = "professional" as const;
 // Only the professional template is currently supported by the builder UI.
 
-type AppearanceThemeSettings = {
-  font?: unknown;
-  textColor?: unknown;
-  bgColor?: unknown;
-  iconColor?: unknown;
-  spacing?: unknown;
-  borderRadius?: unknown;
-  theme?: unknown;
-};
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null;
-
 const isBorderRadius = (
   value: unknown
 ): value is "sharp" | "medium" | "round" =>
@@ -99,13 +87,6 @@ const isBorderRadius = (
 
 const isTheme = (value: unknown): value is "light" | "dark" =>
   value === "light" || value === "dark";
-
-const getAppearanceSettings = (
-  value: unknown
-): AppearanceThemeSettings | null => {
-  if (!isRecord(value)) return null;
-  return value;
-};
 
 export default function ProfileBuilderContent() {
   const queryClient = useQueryClient();
@@ -123,6 +104,8 @@ export default function ProfileBuilderContent() {
   const dashboardProfile = useQuery(dashboardProfileOption());
   const profileContent = useQuery(profileContentOption());
   const draftState = useQuery(draftStateOption());
+
+  const profileAppearance = useQuery(profileAppearanceOption());
 
   const profile = dashboardProfile.data;
 
@@ -144,12 +127,18 @@ export default function ProfileBuilderContent() {
 
   const appearanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // const appearanceLoadedRef = useRef(false);
+
   useEffect(() => {
+    const isAppearanceReady =
+      profileAppearance.isSuccess || profileAppearance.isError;
+
     if (
       contentLoadedRef.current ||
       !profileContent.isSuccess ||
       !draftState.isSuccess ||
-      !dashboardProfile.isSuccess
+      !dashboardProfile.isSuccess ||
+      !isAppearanceReady
     ) {
       return;
     }
@@ -160,9 +149,7 @@ export default function ProfileBuilderContent() {
       dashboardProfile.data
     );
 
-    const appearanceSettings = getAppearanceSettings(
-      dashboardProfile.data.themeSettings
-    );
+    const appearanceSettings = profileAppearance.data?.data ?? null;
 
     if (appearanceSettings) {
       queueMicrotask(() => {
@@ -178,8 +165,8 @@ export default function ProfileBuilderContent() {
           setBgColor(appearanceSettings.bgColor);
         }
 
-        if (typeof appearanceSettings.iconColor === "string") {
-          setIconColor(appearanceSettings.iconColor);
+        if (typeof appearanceSettings.accentColour === "string") {
+          setIconColor(appearanceSettings.accentColour);
         }
 
         if (
@@ -189,8 +176,8 @@ export default function ProfileBuilderContent() {
           setSpacing(appearanceSettings.spacing);
         }
 
-        if (isBorderRadius(appearanceSettings.borderRadius)) {
-          setBorderRadius(appearanceSettings.borderRadius);
+        if (isBorderRadius(appearanceSettings.cornerStyle)) {
+          setBorderRadius(appearanceSettings.cornerStyle);
         }
 
         if (isTheme(appearanceSettings.theme)) {
@@ -219,6 +206,9 @@ export default function ProfileBuilderContent() {
     draftState.data,
     dashboardProfile.isSuccess,
     dashboardProfile.data,
+    profileAppearance.isSuccess,
+    profileAppearance.isError,
+    profileAppearance.data,
     sectionParam,
   ]);
 
@@ -228,6 +218,9 @@ export default function ProfileBuilderContent() {
     onSuccess() {
       queryClient.invalidateQueries({
         queryKey: dashboardProfileOption().queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: profileAppearanceOption().queryKey,
       });
     },
     onError(error: unknown) {
@@ -304,6 +297,8 @@ export default function ProfileBuilderContent() {
       saveAppearance({
         template: DEFAULT_TEMPLATE,
         accentColour: iconColor,
+        textColor,
+        bgColor,
         font,
         cornerStyle: borderRadius,
         spacing,
@@ -318,7 +313,16 @@ export default function ProfileBuilderContent() {
         clearTimeout(appearanceTimerRef.current);
       }
     };
-  }, [font, iconColor, spacing, borderRadius, theme, saveAppearance]);
+  }, [
+    font,
+    textColor,
+    bgColor,
+    iconColor,
+    spacing,
+    borderRadius,
+    theme,
+    saveAppearance,
+  ]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
