@@ -48,9 +48,7 @@ export function Hero() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const [displayUrl, setDisplayUrl] = useState(() =>
-    getBaseDisplayUrl()
-  );
+  const displayUrl = getBaseDisplayUrl();
 
   useEffect(() => {
     const id = setInterval(

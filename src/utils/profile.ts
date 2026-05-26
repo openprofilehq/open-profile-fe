@@ -1,12 +1,10 @@
 import { env } from "@/env/client";
 
+const APP_BASE_URL = env.NEXT_PUBLIC_APP_BASE_URL;
+
 export function getProfileUrl(username?: string) {
   if (!username) return "";
-  const base =
-    typeof window !== "undefined"
-      ? window.location.origin
-      : env.NEXT_PUBLIC_PROFILE_BASE_URL;
-  return `${base}/${username}`;
+  return `${APP_BASE_URL.replace(/\/$/, "")}/${username}`;
 }
 
 export function getDisplayUrl(url: string) {
@@ -14,11 +12,7 @@ export function getDisplayUrl(url: string) {
 }
 
 export function getBaseDisplayUrl() {
-  return getDisplayUrl(
-    typeof window !== "undefined"
-      ? window.location.origin
-      : env.NEXT_PUBLIC_PROFILE_BASE_URL
-  );
+  return getDisplayUrl(APP_BASE_URL);
 }
 
 export function getImageUrl(path?: string | null) {
@@ -75,7 +69,10 @@ export function sanitizeUrl(url?: string | null): string {
   }
 
   // Allow standard web links, mail links, and telephone numbers
-  if (trimmed.startsWith("/") || /^(https?:|mailto:|tel:|whatsapp:|sms:)/i.test(trimmed)) {
+  if (
+    trimmed.startsWith("/") ||
+    /^(https?:|mailto:|tel:|whatsapp:|sms:)/i.test(trimmed)
+  ) {
     return trimmed;
   }
 
@@ -120,7 +117,7 @@ export function encodeUrlForBackend(
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
     return `https://mailto.open-profile.com/${trimmed}`;
   }
-  
+
   // If it already explicitly starts with mailto:
   if (/^mailto:/i.test(trimmed)) {
     return `https://mailto.open-profile.com/${trimmed.substring(7)}`;
@@ -130,7 +127,7 @@ export function encodeUrlForBackend(
   if (/^\+?[0-9\s()-]{7,20}$/.test(trimmed)) {
     return `https://wa.me/${trimmed.replace(/[\s()+-]/g, "")}`;
   }
-  
+
   // If it explicitly starts with tel:
   if (/^tel:/i.test(trimmed)) {
     return `https://tel.open-profile.com/${trimmed.substring(4)}`;
@@ -139,7 +136,7 @@ export function encodeUrlForBackend(
   // Handle social media handles based on iconId
   if (iconId && !/^https?:\/\//i.test(trimmed)) {
     const handle = trimmed.replace(/^@/, ""); // remove leading @ if present
-    
+
     switch (iconId) {
       case "insta":
         return `https://instagram.com/${handle}`;
@@ -173,7 +170,9 @@ export function encodeUrlForBackend(
 
 export function decodeUrlForFrontend(url?: string | null): string {
   if (!url) return "";
-  if (url.startsWith("https://mailto.open-profile.com/")) return url.replace("https://mailto.open-profile.com/", "");
-  if (url.startsWith("https://tel.open-profile.com/")) return url.replace("https://tel.open-profile.com/", "");
+  if (url.startsWith("https://mailto.open-profile.com/"))
+    return url.replace("https://mailto.open-profile.com/", "");
+  if (url.startsWith("https://tel.open-profile.com/"))
+    return url.replace("https://tel.open-profile.com/", "");
   return url;
 }
