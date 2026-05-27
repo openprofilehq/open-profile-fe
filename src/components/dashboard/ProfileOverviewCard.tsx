@@ -4,8 +4,16 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getDisplayUrl, getProfileUrl } from "@/utils/profile";
 import { Skeleton } from "../ui/skeleton";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { userQueryOptions } from "@/api/auth/auth.options";
+import { useState } from "react";
+import { TemplateSelectionModal, TemplateType } from "./TemplateSelectionModal";
+import {
+  upsertDraft,
+  updateProfileAppearance,
+} from "@/api/profile/profile.service";
+import { toast } from "sonner";
+import { DashboardProfileResponse } from "@/api/profile/profile.type";
 
 const actions = [
   {
@@ -30,17 +38,96 @@ const actions = [
 ];
 
 type Props = {
-  profile?: {
-    username?: string;
-    fullName?: string;
-    bio?: string | null;
-  };
+  profile?: DashboardProfileResponse;
   isLoading?: boolean;
 };
 
 export default function ProfileOverviewCard({ profile, isLoading }: Props) {
   const { data: user } = useQuery(userQueryOptions);
   const publicProfileUrl = getProfileUrl(profile?.username);
+  const queryClient = useQueryClient();
+
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
+  const [selectedTemplateOverride, setSelectedTemplateOverride] =
+    useState<TemplateType | null>(null);
+
+  // Derive the active template from local override state, falling back to the profile's templateType
+  const activeTemplate: TemplateType =
+    selectedTemplateOverride ??
+    (profile?.templateType === "creator"
+      ? "Creator"
+      : profile?.templateType === "portfolio"
+        ? "Portfolio"
+        : "Professional");
+
+  const { mutate: doSaveTemplate, isPending: isSavingTemplate } = useMutation({
+    mutationFn: async (templateType: TemplateType) => {
+      const template = templateType.toLowerCase();
+
+      // Define cohesive appearance settings for each template variant to provide immediate, wow factor aesthetics
+      let accentColour = "#087583";
+      let font: "inter" | "lato" | "poppins" | "playfair" | "roboto" = "inter";
+      let cornerStyle: "sharp" | "rounded" | "pill" = "rounded";
+      let spacing = 20;
+      let theme: "light" | "dark" = "light";
+
+      if (template === "creator") {
+        accentColour = "#D97706";
+        font = "lato";
+        cornerStyle = "pill";
+        spacing = 24;
+        theme = "dark";
+      } else if (template === "portfolio") {
+        accentColour = "#4F46E5";
+        font = "inter";
+        cornerStyle = "sharp";
+        spacing = 16;
+        theme = "light";
+      }
+
+      // 1. Sync theme settings to the draft state
+      await upsertDraft({
+        themeSettings: {
+          template,
+          accentColour,
+          font,
+          borderRadius:
+            cornerStyle === "sharp" ? 0 : cornerStyle === "pill" ? 16 : 8,
+        },
+      });
+
+      const apiCornerStyle: "sharp" | "medium" | "round" =
+        cornerStyle === "sharp"
+          ? "sharp"
+          : cornerStyle === "pill"
+            ? "round"
+            : "medium";
+
+      // 2. Sync to active profile appearance
+      return updateProfileAppearance({
+        template,
+        accentColour,
+        font,
+        cornerStyle: apiCornerStyle,
+        spacing,
+        theme,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      toast.success("Template saved successfully.");
+      setIsTemplateModalOpen(false);
+    },
+    onError: () => {
+      toast.error("Failed to save template.");
+    },
+  });
+
+  const handleSelectTemplate = (template: TemplateType) => {
+    setSelectedTemplateOverride(template);
+    doSaveTemplate(template);
+  };
+
   return (
     <>
       <section className="rounded-[12px] border border-[#EDEDED] bg-white p-4">
@@ -59,7 +146,7 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
             update key sections, and keep things current from one place
           </p>
 
-          <div className="mt-6 flex gap-3">
+          <div className="mt-6 flex flex-wrap gap-3">
             <Button asChild className="bg-[#087583] hover:bg-[#065e69]">
               <a
                 href={publicProfileUrl || "#"}
@@ -77,9 +164,27 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
                 Edit
               </Link>
             </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => setIsTemplateModalOpen(true)}
+            >
+              <Palette size={16} className="mr-2" />
+              Choose Template
+            </Button>
           </div>
         </div>
       </section>
+
+      {isTemplateModalOpen && (
+        <TemplateSelectionModal
+          isOpen={isTemplateModalOpen}
+          onClose={() => setIsTemplateModalOpen(false)}
+          selectedTemplate={activeTemplate}
+          onSelectTemplate={handleSelectTemplate}
+          isSaving={isSavingTemplate}
+        />
+      )}
 
       {actions.map((item) => {
         const Icon = item.icon;
