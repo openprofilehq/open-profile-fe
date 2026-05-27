@@ -52,8 +52,8 @@ const LinkSidebar = ({
   const handleLinksChange = (
     updateFn: (currentLinks: SavedLink[]) => SavedLink[]
   ) => {
-    setLinks((prevLinks) => {
-      const nextLinks = updateFn(prevLinks);
+    setLinks((current) => {
+      const nextLinks = updateFn(current);
       syncSection({ links: nextLinks });
       return nextLinks;
     });
@@ -105,9 +105,9 @@ const LinkSidebar = ({
   };
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in flex h-full w-72.5 shrink-0 flex-col border bg-white shadow-sm duration-200 select-none">
+    <aside className="border-tertiary-b animate-in fade-in flex h-full w-72.5 shrink-0 flex-col rounded-2xl p-6 border bg-white shadow-sm duration-200 select-none">
       {/* Back Button */}
-      <div className="p-6 pb-4">
+      <div className="pb-4">
         <button
           onClick={returnTab}
           className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
@@ -146,7 +146,7 @@ const LinkSidebar = ({
         </button>
       </div>
 
-      <div>
+      <div className="flex-1 overflow-y-auto py-6 pr-1">
         {selectedTab === "content" ? (
           <ContentOption
             title={sectionTitle}

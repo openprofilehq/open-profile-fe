@@ -24,7 +24,7 @@ export default function ContentOption({
   canAddLink: boolean;
 }) {
   return (
-    <div className="p-3">
+    <div>
       <div className="flex flex-col gap-4">
         <span className="flex w-full flex-col gap-2">
           <label className="text-sm font-semibold" htmlFor="title">

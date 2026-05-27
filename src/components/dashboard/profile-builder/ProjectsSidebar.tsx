@@ -190,9 +190,9 @@ export default function ProjectsSidebar({
   }, [projects]);
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in flex h-full w-72.5 shrink-0 flex-col border bg-white shadow-sm duration-200 select-none">
+    <aside className="border-tertiary-b animate-in fade-in flex h-full w-72.5 shrink-0 flex-col rounded-2xl p-6 border bg-white shadow-sm duration-200 select-none">
       {/* Back Button */}
-      <div className="p-6 pb-4">
+      <div className="pb-4">
         <button
           onClick={returnTab}
           className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
@@ -242,7 +242,7 @@ export default function ProjectsSidebar({
       </div>
 
       {/* Sidebar Content */}
-      <div className="flex-1 overflow-y-auto p-4 pr-3.5">
+      <div className="flex-1 overflow-y-auto py-6 pr-1">
         {selectedTab === "content" ? (
           <div className="flex flex-col gap-6">
             {/* Layout Section */}
@@ -477,7 +477,23 @@ export default function ProjectsSidebar({
                 <input
                   type="text"
                   value={itemUrl}
-                  onChange={(e) => setItemUrl(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setItemUrl(val);
+                    if (urlError) {
+                      if (!val.trim() || isValidUrl(val.trim())) {
+                        setUrlError("");
+                      }
+                    }
+                  }}
+                  onBlur={(e) => {
+                    const val = e.target.value;
+                    if (val.trim() && !isValidUrl(val.trim())) {
+                      setUrlError("Please enter a valid link (e.g. yoursite.com)");
+                    } else {
+                      setUrlError("");
+                    }
+                  }}
                   placeholder="Paste link (e.g. yoursite.com)..."
                   className={`w-full px-4 py-3 text-sm outline-none focus:bg-gray-50/30 ${
                     urlError ? "text-red-500" : "text-gray-600"

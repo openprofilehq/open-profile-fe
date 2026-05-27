@@ -185,7 +185,7 @@ export default function SectionOption({
   };
 
   return (
-    <div className="p-3">
+    <div>
       <form
         className="flex flex-col gap-4"
         onSubmit={(event) => {
@@ -389,7 +389,23 @@ export default function SectionOption({
             id="url"
             name="url"
             value={url}
-            onChange={(event) => setUrl(event.target.value)}
+            onChange={(event) => {
+              const val = event.target.value;
+              setUrl(val);
+              if (urlError) {
+                if (!val.trim() || isValidUrl(val.trim(), selectedIconId)) {
+                  setUrlError("");
+                }
+              }
+            }}
+            onBlur={(event) => {
+              const val = event.target.value;
+              if (val.trim() && !isValidUrl(val.trim(), selectedIconId)) {
+                setUrlError("Please enter a valid link (e.g. yoursite.com)");
+              } else {
+                setUrlError("");
+              }
+            }}
             placeholder="Paste link (e.g. yoursite.com)..."
             className={`rounded-md border p-2 focus:ring-2 focus:ring-offset-1 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
               urlError ? "border-red-500 focus:ring-red-500" : "border-accent-foreground/30 focus:ring-accent"

@@ -45,6 +45,12 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
     ...loginOption,
     onSuccess: async (data) => {
       document.cookie = "auth=1; path=/; SameSite=Lax";
+      
+      const accessToken = data?.accessToken || data?.data?.accessToken;
+      const refreshToken = data?.refreshToken || data?.data?.refreshToken;
+      if (accessToken) localStorage.setItem("accessToken", accessToken);
+      if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+
       await queryClient.resetQueries({ queryKey: userQueryOptions.queryKey });
       const onboardingComplete = data?.user?.onboardingComplete;
       const destination = onboardingComplete ? "/dashboard" : "/create-profile";

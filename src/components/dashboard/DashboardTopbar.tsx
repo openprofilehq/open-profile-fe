@@ -73,6 +73,8 @@ export default function DashboardTopbar() {
     ...logoutOption,
     onSuccess: () => {
       sessionStorage.removeItem("resetToken");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
       queryClient.clear();
       window.location.href = "/login";
     },
