@@ -194,6 +194,7 @@ export default function ProfileBuilderContent() {
 
   const contentLoadedRef = useRef(false);
   const userEditedRef = useRef(false);
+  const appearanceHydratingRef = useRef(false);
   const appearanceEditedRef = useRef(false);
   const draftUpdatedAtRef = useRef<string | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -223,6 +224,8 @@ export default function ProfileBuilderContent() {
     const appearanceSettings = profileAppearance.data?.data ?? null;
 
     if (appearanceSettings) {
+      appearanceHydratingRef.current = true;
+
       queueMicrotask(() => {
         if (typeof appearanceSettings.font === "string") {
           setFont(mapFontFromApi(appearanceSettings.font));
@@ -256,6 +259,11 @@ export default function ProfileBuilderContent() {
         if (isTheme(appearanceSettings.theme)) {
           setTheme(appearanceSettings.theme);
         }
+
+        queueMicrotask(() => {
+          appearanceHydratingRef.current = false;
+          appearanceEditedRef.current = true;
+        });
       });
     }
 
@@ -361,6 +369,8 @@ export default function ProfileBuilderContent() {
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
+
+    if (appearanceHydratingRef.current) return;
 
     if (!appearanceEditedRef.current) {
       appearanceEditedRef.current = true;
