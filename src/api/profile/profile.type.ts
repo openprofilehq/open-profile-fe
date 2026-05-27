@@ -125,18 +125,35 @@ export type PublishProfileResponse = {
   };
 };
 
+export type ProfileAppearanceFont =
+  | "afacad"
+  | "inter"
+  | "serif"
+  | "mono"
+  | "geologica"
+  | "manrope";
+
+export type ProfileAppearanceCornerStyle = "sharp" | "rounded" | "pill";
+
 export type ProfileAppearanceSettings = {
   template: string;
   accentColour: string;
   textColor?: string;
   bgColor?: string;
-  font: string;
-  cornerStyle: "sharp" | "medium" | "round";
+  font: ProfileAppearanceFont;
+  cornerStyle: ProfileAppearanceCornerStyle;
   spacing: number;
   theme: "light" | "dark";
 };
 
-export type ProfileAppearanceRequest = ProfileAppearanceSettings;
+export type ProfileAppearanceRequest = {
+  template: string;
+  accentColour: string;
+  font: ProfileAppearanceFont;
+  cornerStyle: ProfileAppearanceCornerStyle;
+  spacing: number;
+  theme: "light" | "dark";
+};
 
 export type ProfileAppearanceResponse = {
   status: string;

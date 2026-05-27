@@ -18,6 +18,10 @@ import PreviewCanvas from "./PreviewCanvas";
 import RightPanel from "./RightPanel";
 import Link from "next/link";
 import type { Section } from "./types";
+import type {
+  ProfileAppearanceCornerStyle,
+  ProfileAppearanceFont,
+} from "@/api/profile/profile.type";
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { ROUTES } from "@/constants/routes";
 
@@ -80,10 +84,78 @@ const createSection = (type: string, customTitle?: string): Section | null => {
 const DEFAULT_TEMPLATE = "professional" as const;
 // Only the professional template is currently supported by the builder UI.
 
-const isBorderRadius = (
-  value: unknown
-): value is "sharp" | "medium" | "round" =>
-  value === "sharp" || value === "medium" || value === "round";
+const normalizeColorForApi = (color: string) => {
+  if (!color) return "#087583";
+
+  if (color.startsWith("#")) return color;
+
+  const hex = color.split("_")[0];
+
+  return `#${hex}`;
+};
+
+const mapFontToApi = (font: string): ProfileAppearanceFont => {
+  const fontMap: Record<string, ProfileAppearanceFont> = {
+    Afacad: "afacad",
+    Inter: "inter",
+    "Inter Sans": "inter",
+    Serif: "serif",
+    "Playfair Serif": "serif",
+    Mono: "mono",
+    "Roboto Mono": "mono",
+    Geologica: "geologica",
+    Manrope: "manrope",
+  };
+
+  return fontMap[font] ?? "afacad";
+};
+
+const mapCornerStyleToApi = (
+  borderRadius: "sharp" | "medium" | "round"
+): ProfileAppearanceCornerStyle => {
+  const cornerStyleMap: Record<
+    "sharp" | "medium" | "round",
+    ProfileAppearanceCornerStyle
+  > = {
+    sharp: "sharp",
+    medium: "rounded",
+    round: "pill",
+  };
+
+  return cornerStyleMap[borderRadius];
+};
+
+const clampSpacingForApi = (spacing: number) => {
+  return Math.min(Math.max(spacing, 0), 40);
+};
+
+const mapFontFromApi = (font: string) => {
+  const fontMap: Record<ProfileAppearanceFont, string> = {
+    afacad: "Afacad",
+    inter: "Inter",
+    serif: "Serif",
+    mono: "Mono",
+    geologica: "Geologica",
+    manrope: "Manrope",
+  };
+
+  return fontMap[font as ProfileAppearanceFont] ?? "Afacad";
+};
+
+const mapCornerStyleFromApi = (cornerStyle: string) => {
+  const cornerStyleMap: Record<
+    ProfileAppearanceCornerStyle,
+    "sharp" | "medium" | "round"
+  > = {
+    sharp: "sharp",
+    rounded: "medium",
+    pill: "round",
+  };
+
+  return (
+    cornerStyleMap[cornerStyle as ProfileAppearanceCornerStyle] ?? "medium"
+  );
+};
 
 const isTheme = (value: unknown): value is "light" | "dark" =>
   value === "light" || value === "dark";
@@ -122,12 +194,12 @@ export default function ProfileBuilderContent() {
 
   const contentLoadedRef = useRef(false);
   const userEditedRef = useRef(false);
+  const appearanceHydratingRef = useRef(false);
+  const appearanceEditedRef = useRef(false);
   const draftUpdatedAtRef = useRef<string | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const appearanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // const appearanceLoadedRef = useRef(false);
 
   useEffect(() => {
     const isAppearanceReady =
@@ -152,9 +224,11 @@ export default function ProfileBuilderContent() {
     const appearanceSettings = profileAppearance.data?.data ?? null;
 
     if (appearanceSettings) {
+      appearanceHydratingRef.current = true;
+
       queueMicrotask(() => {
         if (typeof appearanceSettings.font === "string") {
-          setFont(appearanceSettings.font);
+          setFont(mapFontFromApi(appearanceSettings.font));
         }
 
         if (typeof appearanceSettings.textColor === "string") {
@@ -176,13 +250,20 @@ export default function ProfileBuilderContent() {
           setSpacing(appearanceSettings.spacing);
         }
 
-        if (isBorderRadius(appearanceSettings.cornerStyle)) {
-          setBorderRadius(appearanceSettings.cornerStyle);
+        if (typeof appearanceSettings.cornerStyle === "string") {
+          setBorderRadius(
+            mapCornerStyleFromApi(appearanceSettings.cornerStyle)
+          );
         }
 
         if (isTheme(appearanceSettings.theme)) {
           setTheme(appearanceSettings.theme);
         }
+
+        queueMicrotask(() => {
+          appearanceHydratingRef.current = false;
+          appearanceEditedRef.current = true;
+        });
       });
     }
 
@@ -289,6 +370,13 @@ export default function ProfileBuilderContent() {
   useEffect(() => {
     if (!contentLoadedRef.current) return;
 
+    if (appearanceHydratingRef.current) return;
+
+    if (!appearanceEditedRef.current) {
+      appearanceEditedRef.current = true;
+      return;
+    }
+
     if (appearanceTimerRef.current) {
       clearTimeout(appearanceTimerRef.current);
     }
@@ -296,15 +384,12 @@ export default function ProfileBuilderContent() {
     appearanceTimerRef.current = setTimeout(() => {
       saveAppearance({
         template: DEFAULT_TEMPLATE,
-        accentColour: iconColor,
-        textColor,
-        bgColor,
-        font,
-        cornerStyle: borderRadius,
-        spacing,
+        accentColour: normalizeColorForApi(iconColor),
+        font: mapFontToApi(font),
+        cornerStyle: mapCornerStyleToApi(borderRadius),
+        spacing: clampSpacingForApi(spacing),
         theme,
       });
-
       appearanceTimerRef.current = null;
     }, 1000);
 
@@ -313,16 +398,7 @@ export default function ProfileBuilderContent() {
         clearTimeout(appearanceTimerRef.current);
       }
     };
-  }, [
-    font,
-    textColor,
-    bgColor,
-    iconColor,
-    spacing,
-    borderRadius,
-    theme,
-    saveAppearance,
-  ]);
+  }, [font, iconColor, spacing, borderRadius, theme, saveAppearance]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
@@ -352,16 +428,7 @@ export default function ProfileBuilderContent() {
         clearTimeout(saveTimerRef.current);
       }
     };
-  }, [
-    sections,
-    font,
-    textColor,
-    bgColor,
-    iconColor,
-    spacing,
-    borderRadius,
-    theme,
-  ]);
+  }, [sections]);
 
   useEffect(() => {
     return () => {

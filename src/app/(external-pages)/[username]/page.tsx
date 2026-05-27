@@ -75,17 +75,28 @@ export default async function UserProfilePage({ params }: Props) {
     (content as any)?.themeSettings ||
     {}) as Record<string, any>;
 
+  const globalFont = themeSettings?.font || "afacad";
+  const globalFontNormalized = globalFont.toString().toLowerCase();
+
   const fontStyles: Record<string, string> = {
+    afacad: "font-afacad",
+    inter: "font-sans",
+    serif: "font-serif",
+    mono: "font-mono",
+    geologica: "font-sans",
+    manrope: "font-sans",
+
+    // Legacy/display labels fallback
     Afacad: "font-afacad",
     Inter: "font-sans",
     Serif: "font-serif",
     Mono: "font-mono",
-    Geoligica: "font-geoligica",
-    Manrope: "font-manrope",
+    Geologica: "font-sans",
+    Manrope: "font-sans",
   };
 
-  const globalFont = themeSettings.font || "Afacad";
-  const selectedFontClass = fontStyles[globalFont] || "font-afacad";
+  const selectedFontClass =
+    fontStyles[globalFontNormalized] || fontStyles[globalFont] || "font-afacad";
 
   const isDark = themeSettings.theme === "dark";
   const globalBgColor =
