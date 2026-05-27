@@ -119,8 +119,10 @@ export const saveTemplateOption = mutationOptions({
     const appearanceRes = await updateProfileAppearance({
       template,
       accentColour,
-      font,
-      cornerStyle: apiCornerStyle,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      font: font as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cornerStyle: apiCornerStyle as any,
       spacing,
       theme,
     });
