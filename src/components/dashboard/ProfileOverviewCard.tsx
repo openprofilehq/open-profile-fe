@@ -6,8 +6,8 @@ import { getDisplayUrl, getProfileUrl } from "@/utils/profile";
 import { Skeleton } from "../ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/api/auth/auth.options";
-import { TemplateSelectionModal, TemplateType } from "./TemplateSelectionModal";
-import { DashboardProfileResponse } from "@/api/profile/profile.type";
+import { TemplateSelectionModal } from "./TemplateSelectionModal";
+import { DashboardProfileResponse, TemplateType } from "@/api/profile/profile.type";
 
 const actions = [
   {
@@ -67,7 +67,7 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
-            <Button asChild className="bg-brand-hover-bg hover:bg-[#065e69]">
+            <Button asChild className="bg-brand-hover-bg hover:bg-button-brand-bg">
               <a
                 href={publicProfileUrl || "#"}
                 target="_blank"

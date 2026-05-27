@@ -69,7 +69,7 @@ export default function SelectedProject({ content, isLoading }: Props) {
                   <h5 className="text-xl font-bold text-primary-text">
                     {project.title}
                   </h5>
-                  <p className="text-[#64748B]">{project.description}</p>
+                  <p className="text-secondary-text">{project.description}</p>
                   <span className="mt-2 flex items-center gap-1 text-sm font-semibold text-brand-hover-bg">
                     {hasUrl ? "View project" : "Edit project"}
                     <ChevronRight size={16} />

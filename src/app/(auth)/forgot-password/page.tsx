@@ -64,7 +64,7 @@ export default function ForgotPasswordPage() {
                   : ""
               )
             }
-            className={`border-input-b placeholder:text-input-text h-11 border bg-[#FAFAFA] shadow-none ${emailError ? "border-red-400" : ""}`}
+            className={`border-input-b placeholder:text-input-text h-11 border bg-primary-bg shadow-none ${emailError ? "border-red-400" : ""}`}
           />
           {emailError && <p className="text-xs text-red-500">{emailError}</p>}
         </div>
@@ -72,7 +72,7 @@ export default function ForgotPasswordPage() {
         <Button
           type="submit"
           disabled={!isValid || forgotMutation.isPending}
-          className="bg-brand h-11 w-full rounded-lg border-0 font-semibold text-white shadow-none transition-opacity hover:bg-[#065E69] disabled:opacity-50"
+          className="bg-brand h-11 w-full rounded-lg border-0 font-semibold text-white shadow-none transition-opacity hover:bg-button-brand-bg disabled:opacity-50"
         >
           {forgotMutation.isPending ? "Sending…" : "Continue"}
         </Button>

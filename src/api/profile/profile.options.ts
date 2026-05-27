@@ -2,6 +2,7 @@ import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import type {
   UpsertDraftRequest,
   ProfileAppearanceRequest,
+  TemplateType,
 } from "./profile.type";
 import {
   createProfile,
@@ -17,7 +18,7 @@ import {
 import { isQueryEnabled } from "@/api/base/base.util";
 import { QueryStaleTime } from "@/api/base/base.const";
 import { QueryBaseKeys } from "@/constants/query-keys";
-import { TemplateType } from "@/components/dashboard/TemplateSelectionModal";
+import { THEME_DEFAULTS } from "@/constants/theme";
 
 export const createProfileOption = mutationOptions({
   mutationKey: [QueryBaseKeys.profile, "create"],
@@ -89,20 +90,20 @@ export const saveTemplateOption = mutationOptions({
     const template = templateType.toLowerCase();
 
     // Define cohesive appearance settings for each template variant to provide immediate, wow factor aesthetics
-    let accentColour = "#087583";
+    let accentColour: string = THEME_DEFAULTS.ACCENT_COLORS.DEFAULT;
     let font: "inter" | "lato" | "poppins" | "playfair" | "roboto" = "inter";
     let cornerStyle: "sharp" | "rounded" | "pill" = "rounded";
     let spacing = 20;
     let theme: "light" | "dark" = "light";
 
     if (template === "creator") {
-      accentColour = "#D97706";
+      accentColour = THEME_DEFAULTS.ACCENT_COLORS.AMBER;
       font = "lato";
       cornerStyle = "pill";
       spacing = 24;
       theme = "dark";
     } else if (template === "portfolio") {
-      accentColour = "#4F46E5";
+      accentColour = THEME_DEFAULTS.ACCENT_COLORS.INDIGO;
       font = "inter";
       cornerStyle = "sharp";
       spacing = 16;

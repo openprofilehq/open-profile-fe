@@ -41,7 +41,7 @@ export default function YourCTA({ content, isLoading }: Props) {
                 href={sanitizeUrl(cta.url)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-11 items-center rounded-xl bg-brand-hover-bg px-8 text-sm font-bold text-white hover:bg-[#065e69]"
+                className="inline-flex h-11 items-center rounded-xl bg-brand-hover-bg px-8 text-sm font-bold text-white hover:bg-button-brand-bg"
               >
                 {cta.label || "Visit"}
               </a>

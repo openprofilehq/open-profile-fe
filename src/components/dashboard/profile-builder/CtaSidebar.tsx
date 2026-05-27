@@ -256,7 +256,7 @@ export default function CtaSidebar({
               <button
                 type="button"
                 onClick={handleClearIcon}
-                className="flex w-[50px] shrink-0 items-center justify-center border-l border-border text-secondary-text transition-colors hover:bg-secondary-bg hover:text-red-600"
+                className="flex w-[50px] shrink-0 items-center justify-center border-l border-border text-secondary-text transition-colors hover:bg-secondary-bg hover:text-negative-text"
                 title="Remove Icon"
               >
                 <Trash2 size={16} />
@@ -280,7 +280,7 @@ export default function CtaSidebar({
                       className={`flex h-11 items-center justify-center rounded-lg border transition-all ${
                         selectedIconId === ico.id
                           ? "border-brand-b bg-brand-light-subtle-bg/30"
-                          : "border-gray-100 hover:border-border hover:bg-secondary-bg"
+                          : "border-tertiary-b hover:border-border hover:bg-secondary-bg"
                       }`}
                     >
                       <div className="relative h-6 w-6">
@@ -316,7 +316,7 @@ export default function CtaSidebar({
                   onChange={(e) => handleButtonUrlChange(e.target.value)}
                   placeholder="Paste link, email, or phone (e.g., +1234567890)..."
                   className={`w-full px-4 py-3 pr-10 text-sm outline-none focus:bg-secondary-bg/30 ${
-                    urlError ? "text-red-500" : "text-gray-600"
+                    urlError ? "text-negative-text" : "text-secondary-text"
                   }`}
                 />
                 <span className="absolute right-4 text-xs font-bold text-secondary-text select-none">
@@ -324,7 +324,7 @@ export default function CtaSidebar({
                 </span>
               </div>
             </div>
-            {urlError && <p className="text-xs text-red-500">{urlError}</p>}
+            {urlError && <p className="text-xs text-negative-text">{urlError}</p>}
           </div>
         </div>
       </div>

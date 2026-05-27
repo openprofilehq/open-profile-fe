@@ -4,6 +4,7 @@ import { Sun, Moon, Type } from "lucide-react";
 import type { Section } from "./types";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { isValidHex } from "@/utils/color";
+import { THEME_DEFAULTS } from "@/constants/theme";
 import {
   Select,
   SelectContent,
@@ -327,7 +328,7 @@ export default function RightPanel({
                         color={
                           isValidHex(selectedSection.textColor ?? textColor)
                             ? (selectedSection.textColor ?? textColor)
-                            : "#050505"
+                            : THEME_DEFAULTS.TEXT_COLOR
                         }
                         onChange={(val) =>
                           onUpdateSection(selectedSection.id, {
@@ -340,7 +341,7 @@ export default function RightPanel({
                         color={
                           isValidHex(selectedSection.bgColor ?? bgColor)
                             ? (selectedSection.bgColor ?? bgColor)
-                            : "#FFFFFF"
+                            : THEME_DEFAULTS.BG_COLOR
                         }
                         onChange={(val) =>
                           onUpdateSection(selectedSection.id, { bgColor: val })
@@ -351,7 +352,7 @@ export default function RightPanel({
                         color={
                           isValidHex(selectedSection.iconColor ?? iconColor)
                             ? (selectedSection.iconColor ?? iconColor)
-                            : "#087583"
+                            : THEME_DEFAULTS.ACCENT_COLORS.DEFAULT
                         }
                         onChange={(val) =>
                           onUpdateSection(selectedSection.id, {

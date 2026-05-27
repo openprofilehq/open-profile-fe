@@ -48,16 +48,37 @@ export type ProfileContentSectionBio = {
   content: string;
 };
 
+export type TemplateType = "Professional" | "Creator" | "Portfolio";
+
+export type LinkItem = {
+  id: string | number;
+  url?: string;
+  title?: string;
+  imageSrc?: string;
+  iconSrc?: string;
+  iconLabel?: string;
+};
+
+export type ProjectItem = {
+  id: string | number;
+  title?: string;
+  description?: string;
+  url?: string;
+  buttonText?: string;
+  imageSrc?: string;
+  highlighted?: boolean;
+};
+
 export type ProfileContentSectionLinks = {
   visible: boolean;
   sectionTitle: string;
-  items: Record<string, unknown>[];
+  items: LinkItem[];
 };
 
 export type ProfileContentSectionProjects = {
   visible: boolean;
   sectionTitle: string;
-  items: Record<string, unknown>[];
+  items: ProjectItem[];
 };
 
 export type ProfileContentSectionCta = {

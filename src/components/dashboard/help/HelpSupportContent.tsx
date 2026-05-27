@@ -199,7 +199,7 @@ export default function HelpSupportContent() {
                 href={item.href}
                 className="grid grid-cols-1 overflow-hidden rounded-[8px] border border-border bg-background text-primary-text md:grid-cols-[210px_1fr]"
               >
-                <div className="flex min-h-[110px] items-center justify-center bg-[#DFF3F6] text-brand-hover-bg">
+                <div className="flex min-h-[110px] items-center justify-center bg-brand-subtle-bg text-brand-hover-bg">
                   <Icon size={34} />
                 </div>
 

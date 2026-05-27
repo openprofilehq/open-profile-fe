@@ -174,7 +174,7 @@ export default function BioSidebar({
                 <button
                   type="button"
                   onClick={() => !displayImage && fileInputRef.current?.click()}
-                  className="flex min-w-0 flex-1 items-center gap-3 p-1 text-left transition-colors hover:bg-[#F8FAFC]"
+                  className="flex min-w-0 flex-1 items-center gap-3 p-1 text-left transition-colors hover:bg-secondary-bg"
                 >
                   {displayImage ? (
                     <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
@@ -221,7 +221,7 @@ export default function BioSidebar({
                       fileInputRef.current?.click();
                     }
                   }}
-                  className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-[#F8FAFC] disabled:opacity-50"
+                  className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-secondary-bg disabled:opacity-50"
                   aria-label={displayImage ? "Remove image" : "Upload image"}
                   title={
                     uploading
@@ -234,7 +234,7 @@ export default function BioSidebar({
                   {uploading ? (
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-hover-bg border-t-transparent" />
                   ) : displayImage ? (
-                    <Trash2 size={16} className="text-[#9F2B2B]" />
+                    <Trash2 size={16} className="text-negative-text" />
                   ) : (
                     <Upload size={16} />
                   )}
@@ -268,7 +268,7 @@ export default function BioSidebar({
                   <input
                     type="text"
                     placeholder="Search site or paste link"
-                    className="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm text-primary-text placeholder-[#A2A2A2] outline-none"
+                    className="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm text-primary-text placeholder-disabled-text outline-none"
                     readOnly
                   />
                   <button

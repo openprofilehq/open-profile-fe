@@ -217,7 +217,7 @@ export default function SettingsContent() {
             <div className="mt-4 rounded-[8px] bg-secondary-bg p-3">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-secondary-text uppercase">Current Plan</p>
-                <span className="rounded-full bg-[#E9FFE9] px-2 py-1 text-[10px] text-[#087A32]">
+                <span className="rounded-full bg-positive-subtle-bg px-2 py-1 text-[10px] text-positive-bold-text">
                   {planName}
                 </span>
               </div>
@@ -242,7 +242,7 @@ export default function SettingsContent() {
             </h2>
 
             <div className="mt-4 flex items-start gap-3">
-              <LogOut className="mt-1 text-[#D92D20]" size={22} />
+              <LogOut className="mt-1 text-negative-text" size={22} />
               <div>
                 <p className="font-bold text-primary-text">Log Out</p>
                 <p className="text-xs text-secondary-text">
@@ -255,7 +255,7 @@ export default function SettingsContent() {
               type="button"
               disabled={isPending}
               onClick={handleLogout}
-              className="mx-auto mt-4 block h-10 w-full rounded-[8px] border border-[#F04438] text-[#D92D20] disabled:cursor-not-allowed disabled:opacity-60 md:max-w-[260px]"
+              className="mx-auto mt-4 block h-10 w-full rounded-[8px] border border-warning-b text-negative-text disabled:cursor-not-allowed disabled:opacity-60 md:max-w-[260px]"
             >
               {isPending ? "Logging out..." : "Log out"}
             </button>

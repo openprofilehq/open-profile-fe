@@ -53,7 +53,7 @@ export function PasswordField({
             setFocused(false);
             onBlur?.(e);
           }}
-          className={`border-input-b placeholder:text-input-text h-11 border bg-[#FAFAFA] pr-10 shadow-none transition-all duration-200 hover:border-[#ABABAB] hover:bg-white hover:shadow-sm ${error ? "border-red-400" : ""}`}
+          className={`border-input-b placeholder:text-input-text h-11 border bg-primary-bg pr-10 shadow-none transition-all duration-200 hover:border-primary-b hover:bg-white hover:shadow-sm ${error ? "border-red-400" : ""}`}
         />
         <Button
           type="button"

@@ -6,7 +6,7 @@
 const PrivacyHero = () => {
   // const [query, setQuery] = useState<string>("");
   return (
-    <div className="h-80 w-screen bg-[#DBEFF2] pt-20 lg:pt-36">
+    <div className="h-80 w-screen bg-brand-subtle-bg pt-20 lg:pt-36">
       <div className="mx-auto flex max-w-[70%] flex-col gap-3 p-3">
         <div>
           <h3 className="text-4xl font-bold">Privacy Policy</h3>
@@ -15,7 +15,7 @@ const PrivacyHero = () => {
           </p>
         </div>
         {/* <div className="flex flex-col gap-2 lg:flex-row">
-          <span className="flex w-full items-center gap-2 rounded-[5.57px] border border-[#C9C9C9] bg-[#FAFAFA] px-3 sm:w-auto">
+          <span className="flex w-full items-center gap-2 rounded-[5.57px] border border-secondary-b bg-primary-bg px-3 sm:w-auto">
             <Search size={18} className="text-label-text" />
             <input
               type="text"

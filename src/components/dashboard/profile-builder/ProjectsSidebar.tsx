@@ -480,7 +480,7 @@ export default function ProjectsSidebar({
                   onChange={(e) => setItemUrl(e.target.value)}
                   placeholder="Paste link (e.g. yoursite.com)..."
                   className={`w-full px-4 py-3 text-sm outline-none focus:bg-secondary-bg/30 ${
-                    urlError ? "text-red-500" : "text-gray-600"
+                    urlError ? "text-negative-text" : "text-secondary-text"
                   }`}
                 />
               </div>

@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, X, Eye } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { saveTemplateOption } from "@/api/profile/profile.options";
+import { saveTemplateOption, dashboardProfileOption } from "@/api/profile/profile.options";
 import { toast } from "sonner";
-
-export type TemplateType = "Professional" | "Creator" | "Portfolio";
+import { TemplateType } from "@/api/profile/profile.type";
 
 type Props = {
   initialTemplate: TemplateType;
@@ -42,7 +41,7 @@ export function TemplateSelectionModal({
   const { mutate: doSaveTemplate, isPending: isSaving } = useMutation({
     ...saveTemplateOption,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: saveTemplateOption.mutationKey });
+      queryClient.invalidateQueries({ queryKey: dashboardProfileOption().queryKey });
       toast.success("Template saved successfully.");
       setIsOpen(false);
     },
@@ -87,6 +86,7 @@ export function TemplateSelectionModal({
             <button
               onClick={handleClose}
               disabled={isSaving}
+              aria-label="Close template modal"
               className="text-tertiary-text hover:bg-hover-bg rounded-full p-2 transition-colors disabled:pointer-events-none disabled:opacity-40"
             >
               <X size={20} />

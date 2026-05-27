@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
-import { type ProfileResponse } from "@/api/profile/profile.type";
+import { type ProfileResponse, type LinkItem, type ProjectItem } from "@/api/profile/profile.type";
 import { env as serverEnv } from "@/env/server";
 import { Folder, ExternalLink } from "lucide-react";
+import { THEME_DEFAULTS } from "@/constants/theme";
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -97,10 +97,10 @@ export default async function UserProfilePage({ params }: Props) {
 
   const isDark = themeSettings.theme === "dark";
   const globalBgColor =
-    themeSettings.bgColor || (isDark ? "#1E1E1E" : "#FFFFFF");
+    themeSettings.bgColor || (isDark ? THEME_DEFAULTS.DARK_MODE.BG_COLOR : THEME_DEFAULTS.BG_COLOR);
   const globalTextColor =
-    themeSettings.textColor || (isDark ? "#FAFAFA" : "#050505");
-  const globalIconColor = themeSettings.iconColor || "#0a92a4";
+    themeSettings.textColor || (isDark ? THEME_DEFAULTS.DARK_MODE.TEXT_COLOR : THEME_DEFAULTS.TEXT_COLOR);
+  const globalIconColor = themeSettings.iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT;
   const globalSpacing =
     typeof themeSettings.spacing === "number" ? themeSettings.spacing : 20;
 
@@ -116,20 +116,20 @@ export default async function UserProfilePage({ params }: Props) {
     backgroundColor: globalBgColor,
     borderRadius: activeRadius,
     color: globalTextColor,
-    borderColor: isDark ? "#2D2D2D" : "#EDEDED",
+    borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
     marginBottom: `${globalSpacing}px`,
   };
 
   const textStyle = {
     color:
-      globalTextColor === "#050505" && isDark
-        ? "#E0E0E0"
-        : globalTextColor || (isDark ? "#E0E0E0" : "#454545"),
+      globalTextColor === THEME_DEFAULTS.TEXT_COLOR && isDark
+        ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT
+        : globalTextColor || (isDark ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT : THEME_DEFAULTS.LIGHT_MODE.MUTED_TEXT),
   };
 
   return (
     <div
-      className={`flex min-h-screen flex-col transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-[#FAFAFA]"}`}
+      className={`flex min-h-screen flex-col transition-colors duration-200 ${isDark ? "bg-inverse-bg" : "bg-primary-bg"}`}
     >
       <div className="flex justify-center pt-6">
         <Link href="/">
@@ -191,8 +191,8 @@ export default async function UserProfilePage({ params }: Props) {
                     <p
                       style={{
                         color:
-                          secTextColor === "#050505" && isDark
-                            ? "#E0E0E0"
+                          secTextColor === THEME_DEFAULTS.TEXT_COLOR && isDark
+                            ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT
                             : secTextColor || textStyle.color,
                       }}
                       className="mt-3 text-[15px] leading-relaxed whitespace-pre-wrap opacity-90 transition-colors"
@@ -207,8 +207,7 @@ export default async function UserProfilePage({ params }: Props) {
 
           if (sectionId === "links" && content?.links) {
             if (!content.links.visible) return null;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const links = (content.links.items || []) as any[];
+            const links = (content.links.items || []) as LinkItem[];
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const secProps = content.links as any;
             const secBgColor = secProps.bgColor || globalBgColor;
@@ -233,14 +232,14 @@ export default async function UserProfilePage({ params }: Props) {
                 <div className="flex flex-col gap-4">
                   {links.length > 0 ? (
                     <div className="grid grid-cols-1 gap-3">
-                      {links.map((link: { id: string | number; url?: string; title?: string; imageSrc?: string; iconSrc?: string; iconLabel?: string }) => (
+                      {links.map((link: LinkItem) => (
                         <a
                           key={link.id}
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{
-                            borderColor: isDark ? "#2D2D2D" : "#EDEDED",
+                            borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
                             backgroundColor: isDark
                               ? "rgba(255,255,255,0.05)"
                               : "rgba(255,255,255,0.6)",
@@ -261,7 +260,7 @@ export default async function UserProfilePage({ params }: Props) {
                               <span
                                 className="rounded-md border p-2"
                                 style={{
-                                  borderColor: isDark ? "#2D2D2D" : "#EDEDED",
+                                  borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
                                 }}
                               >
                                 <Image
@@ -292,7 +291,7 @@ export default async function UserProfilePage({ params }: Props) {
                           <span
                             className="cursor-pointer rounded-full border p-2 opacity-70"
                             style={{
-                              borderColor: isDark ? "#2D2D2D" : "#EDEDED",
+                              borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
                             }}
                           >
                             <ExternalLink size={14} className="shrink-0" />
@@ -312,8 +311,7 @@ export default async function UserProfilePage({ params }: Props) {
 
           if (sectionId === "projects" && content?.projects) {
             if (!content.projects.visible) return null;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const projects = (content.projects.items || []) as any[];
+            const projects = (content.projects.items || []) as ProjectItem[];
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const secProps = content.projects as any;
             const secBgColor = secProps.bgColor || globalBgColor;
@@ -340,7 +338,7 @@ export default async function UserProfilePage({ params }: Props) {
               >
                 <div
                   className="mb-4 flex items-center justify-between border-b pb-4"
-                  style={{ borderColor: isDark ? "#2D2D2D" : "#F0F0F0" }}
+                  style={{ borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_LIGHT }}
                 >
                   <div className="flex items-center gap-3">
                     <span
@@ -363,14 +361,14 @@ export default async function UserProfilePage({ params }: Props) {
                           : "flex flex-col gap-4"
                       }
                     >
-                      {projects.map((project: { id: string | number; title?: string; description?: string; url?: string; buttonText?: string; imageSrc?: string; highlighted?: boolean }) => {
+                      {projects.map((project: ProjectItem) => {
                         const isHighlighted = project.highlighted;
                         const projectCardStyle = {
                           borderColor: isHighlighted
                             ? secIconColor
                             : isDark
-                              ? "#2D2D2D"
-                              : "#EDEDED",
+                              ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR
+                              : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
                           boxShadow: isHighlighted
                             ? `0 4px 12px ${secIconColor}20`
                             : undefined,
@@ -595,7 +593,7 @@ export default async function UserProfilePage({ params }: Props) {
                 <div className={`flex flex-col py-4 ${ctaAlignClass}`}>
                   {secProps.iconSrc && (
                     <div
-                      style={{ borderColor: isDark ? "#2D2D2D" : "#EDEDED" }}
+                      style={{ borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR }}
                       className="mb-5 flex h-16 w-16 shrink-0 items-center justify-center rounded-[16px] border bg-white shadow-[0_2px_8px_rgba(0,0,0,0.03)]"
                     >
                       <div className="relative h-7 w-7">

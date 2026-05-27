@@ -94,7 +94,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="selection:bg-brand min-h-screen overflow-hidden bg-white font-sans text-[#050505] selection:text-white">
+    <div className="selection:bg-brand min-h-screen overflow-hidden bg-white font-sans text-primary-text selection:text-white">
       <Navbar />
       <div className="pt-[76px]">
         <main className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24">
@@ -103,7 +103,7 @@ export default function ContactPage() {
             <h1 className="mb-3 text-[32px] font-semibold tracking-tight md:text-[40px]">
               Get in Touch With Us
             </h1>
-            <p className="text-[14px] text-[#6B7280] md:text-[15px]">
+            <p className="text-[14px] text-secondary-text md:text-[15px]">
               No matter where you are, Open Profile brings solutions closer to
               you.
             </p>
@@ -122,10 +122,10 @@ export default function ContactPage() {
                       className="text-link-hover-text mt-0.5 shrink-0"
                     />
                     <div>
-                      <p className="text-[13px] font-medium text-[#050505]">
+                      <p className="text-[13px] font-medium text-primary-text">
                         Email Address
                       </p>
-                      <p className="text-[13px] text-[#5C5E64]">
+                      <p className="text-[13px] text-secondary-text">
                         openprofile@email.com
                       </p>
                     </div>
@@ -136,10 +136,10 @@ export default function ContactPage() {
                       className="text-link-hover-text mt-0.5 shrink-0"
                     />
                     <div>
-                      <p className="text-[13px] font-medium text-[#050505]">
+                      <p className="text-[13px] font-medium text-primary-text">
                         Phone number
                       </p>
-                      <p className="text-[13px] text-[#5C5E64]">
+                      <p className="text-[13px] text-secondary-text">
                         +1 234 567 8900
                       </p>
                     </div>
@@ -150,10 +150,10 @@ export default function ContactPage() {
                       className="text-link-hover-text mt-0.5 shrink-0"
                     />
                     <div>
-                      <p className="text-[13px] font-medium text-[#050505]">
+                      <p className="text-[13px] font-medium text-primary-text">
                         Our Office Address
                       </p>
-                      <p className="text-[13px] text-[#5C5E64]">
+                      <p className="text-[13px] text-secondary-text">
                         New York, USA
                       </p>
                     </div>
@@ -163,7 +163,7 @@ export default function ContactPage() {
 
               {/* Socials */}
               <div>
-                <p className="mb-4 text-[20px] font-medium text-[#050505]">
+                <p className="mb-4 text-[20px] font-medium text-primary-text">
                   Follow us on our social media accounts
                 </p>
                 <div className="flex items-center gap-4">
@@ -173,7 +173,7 @@ export default function ContactPage() {
                       href={s.href}
                       aria-label={s.label}
                       target="_blank"
-                      className="text-[#5C5E64] transition-colors hover:text-[#065E69]"
+                      className="text-secondary-text transition-colors hover:text-button-brand-bg"
                     >
                       {s.icon}
                     </a>
@@ -188,13 +188,13 @@ export default function ContactPage() {
 
               {success ? (
                 <div className="flex flex-col items-center justify-center gap-4 py-12 text-center">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#E6F4F5]">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-subtle-bg">
                     <Mail size={24} style={{ color: "#065E69" }} />
                   </div>
-                  <h3 className="text-[17px] font-semibold text-[#050505]">
+                  <h3 className="text-[17px] font-semibold text-primary-text">
                     Message Sent!
                   </h3>
-                  <p className="max-w-xs text-[13px] text-[#5C5E64]">
+                  <p className="max-w-xs text-[13px] text-secondary-text">
                     Thanks for reaching out. We&apos;ll get back to you as soon
                     as possible.
                   </p>
@@ -212,7 +212,7 @@ export default function ContactPage() {
                   <div className="space-y-1.5">
                     <label
                       htmlFor="name"
-                      className="text-[13px] font-medium text-[#050505]"
+                      className="text-[13px] font-medium text-primary-text"
                     >
                       Name <span className="text-red-500">*</span>
                     </label>
@@ -223,14 +223,14 @@ export default function ContactPage() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Shukuneh Itouer"
-                      className="w-full rounded-[8px] border border-[#E5E7EB] px-4 py-3 text-[13px] transition placeholder:text-[#D1D5DB] focus:border-transparent focus:ring-2 focus:ring-[#065E69] focus:outline-none"
+                      className="w-full rounded-[8px] border border-tertiary-b px-4 py-3 text-[13px] transition placeholder:text-secondary-b focus:border-transparent focus:ring-2 focus:ring-button-brand-bg focus:outline-none"
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <label
                       htmlFor="email"
-                      className="text-[13px] font-medium text-[#050505]"
+                      className="text-[13px] font-medium text-primary-text"
                     >
                       Email <span className="text-red-500">*</span>
                     </label>
@@ -241,36 +241,36 @@ export default function ContactPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="shukuneh025@gmail.com"
-                      className="w-full rounded-[8px] border border-[#E5E7EB] px-4 py-3 text-[13px] transition placeholder:text-[#D1D5DB] focus:border-transparent focus:ring-2 focus:ring-[#065E69] focus:outline-none"
+                      className="w-full rounded-[8px] border border-tertiary-b px-4 py-3 text-[13px] transition placeholder:text-secondary-b focus:border-transparent focus:ring-2 focus:ring-button-brand-bg focus:outline-none"
                     />
                   </div>
 
                   {/* Custom industry dropdown */}
                   <div className="space-y-1.5">
-                    <label className="text-[13px] font-medium text-[#050505]">
+                    <label className="text-[13px] font-medium text-primary-text">
                       Industry
                     </label>
                     <div className="relative" ref={dropdownRef}>
                       <Button
                         type="button"
                         onClick={() => setOpen((o) => !o)}
-                        className="flex w-full items-center justify-between rounded-[8px] border border-[#E5E7EB] bg-white px-4 py-3 text-[13px] transition focus:ring-2 focus:ring-[#065E69] focus:outline-none"
+                        className="flex w-full items-center justify-between rounded-[8px] border border-tertiary-b bg-white px-4 py-3 text-[13px] transition focus:ring-2 focus:ring-button-brand-bg focus:outline-none"
                       >
                         <span
                           className={
-                            industry ? "text-[#050505]" : "text-[#9CA3AF]"
+                            industry ? "text-primary-text" : "text-disabled-text"
                           }
                         >
                           {industry || "Select..."}
                         </span>
                         <ChevronDown
                           size={16}
-                          className={`text-[#9CA3AF] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+                          className={`text-disabled-text transition-transform duration-200 ${open ? "rotate-180" : ""}`}
                         />
                       </Button>
 
                       <div
-                        className={`absolute z-10 mt-1 w-full origin-top overflow-hidden rounded-[8px] border border-[#E5E7EB] bg-white shadow-lg transition-all duration-200 ${
+                        className={`absolute z-10 mt-1 w-full origin-top overflow-hidden rounded-[8px] border border-tertiary-b bg-white shadow-lg transition-all duration-200 ${
                           open
                             ? "scale-y-100 opacity-100"
                             : "pointer-events-none scale-y-0 opacity-0"
@@ -285,10 +285,10 @@ export default function ContactPage() {
                               setIndustry(i);
                               setOpen(false);
                             }}
-                            className={`w-full px-4 py-2.5 text-left text-[13px] transition-colors hover:bg-[#F0FAFB] ${
+                            className={`w-full px-4 py-2.5 text-left text-[13px] transition-colors hover:bg-brand-light-subtle-bg ${
                               industry === i
-                                ? "font-medium text-[#065E69]"
-                                : "text-[#050505]"
+                                ? "font-medium text-button-brand-bg"
+                                : "text-primary-text"
                             }`}
                           >
                             {i}
@@ -301,7 +301,7 @@ export default function ContactPage() {
                   <div className="space-y-1.5">
                     <label
                       htmlFor="message"
-                      className="text-[13px] font-medium text-[#050505]"
+                      className="text-[13px] font-medium text-primary-text"
                     >
                       Message <span className="text-red-500">*</span>
                     </label>
@@ -312,7 +312,7 @@ export default function ContactPage() {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Type your messages"
-                      className="w-full resize-none rounded-[8px] border border-[#E5E7EB] px-4 py-3 text-[13px] transition placeholder:text-[#D1D5DB] focus:border-transparent focus:ring-2 focus:ring-[#065E69] focus:outline-none"
+                      className="w-full resize-none rounded-[8px] border border-tertiary-b px-4 py-3 text-[13px] transition placeholder:text-secondary-b focus:border-transparent focus:ring-2 focus:ring-button-brand-bg focus:outline-none"
                     />
                   </div>
 
@@ -320,7 +320,7 @@ export default function ContactPage() {
                     type="submit"
                     size="lg"
                     disabled={!isValid || pending}
-                    className="w-full rounded-[8px] bg-[#065E69] py-3.5 text-[14px] font-medium text-white transition-all hover:enabled:bg-[#054f59] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="w-full rounded-[8px] bg-button-brand-bg py-3.5 text-[14px] font-medium text-white transition-all hover:enabled:bg-brand-active-bg disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {pending ? "Sending…" : "Continue"}
                   </Button>

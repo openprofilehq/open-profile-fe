@@ -153,7 +153,7 @@ export default function LeftSidebar({
                 className="object-contain"
               />
             </div>
-            <div className="text-primary-text flex h-9 items-center bg-secondary-bg px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
+            <div className="text-primary-text flex h-9 items-center bg-secondary-bg px-4 text-[13px] font-medium transition-colors group-hover:bg-hover-bg">
               Bio
             </div>
           </button>
@@ -184,7 +184,7 @@ export default function LeftSidebar({
                 />
               )}
             </div>
-            <div className="text-primary-text flex h-9 items-center bg-secondary-bg px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
+            <div className="text-primary-text flex h-9 items-center bg-secondary-bg px-4 text-[13px] font-medium transition-colors group-hover:bg-hover-bg">
               Links
             </div>
           </button>
@@ -204,7 +204,7 @@ export default function LeftSidebar({
                 className="object-contain"
               />
             </div>
-            <div className="text-primary-text flex h-9 items-center bg-secondary-bg px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
+            <div className="text-primary-text flex h-9 items-center bg-secondary-bg px-4 text-[13px] font-medium transition-colors group-hover:bg-hover-bg">
               Portfolio
             </div>
           </button>
@@ -224,7 +224,7 @@ export default function LeftSidebar({
                 className="object-contain"
               />
             </div>
-            <div className="text-primary-text flex h-9 items-center bg-secondary-bg px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
+            <div className="text-primary-text flex h-9 items-center bg-secondary-bg px-4 text-[13px] font-medium transition-colors group-hover:bg-hover-bg">
               CTA
             </div>
           </button>
@@ -324,7 +324,7 @@ export default function LeftSidebar({
           </div>
 
           {editingSection.type === "bio" && (
-            <div className="rounded-[12px] border border-dashed border-[#D0D5DD] p-4">
+            <div className="rounded-[12px] border border-dashed border-secondary-b p-4">
               <label className="mb-2 block text-sm font-bold text-primary-text">
                 Full name
               </label>
@@ -363,7 +363,7 @@ export default function LeftSidebar({
           )}
 
           {editingSection.type === "experience" && (
-            <div className="flex flex-col gap-4 rounded-[12px] border border-dashed border-[#D0D5DD] p-4">
+            <div className="flex flex-col gap-4 rounded-[12px] border border-dashed border-secondary-b p-4">
               <h4 className="text-sm font-bold text-primary-text">
                 Experience / CTA List
               </h4>
@@ -456,7 +456,7 @@ export default function LeftSidebar({
                     setNewExpDuration("");
                   }}
                   disabled={!newExpRole || !newExpCompany || !newExpDuration}
-                  className="h-8 w-full rounded-[6px] bg-brand-hover-bg text-xs text-white hover:bg-[#065E69]"
+                  className="h-8 w-full rounded-[6px] bg-brand-hover-bg text-xs text-white hover:bg-button-brand-bg"
                 >
                   Add Experience
                 </Button>
@@ -468,7 +468,7 @@ export default function LeftSidebar({
             editingSection.type !== "links" &&
             editingSection.type !== "projects" &&
             editingSection.type !== "experience" && (
-              <div className="rounded-[12px] border border-dashed border-[#D0D5DD] p-6 text-center">
+              <div className="rounded-[12px] border border-dashed border-secondary-b p-6 text-center">
                 <p className="text-xs font-semibold text-secondary-text">
                   Additional dynamic items editor will display here based on
                   chosen component.

@@ -217,7 +217,7 @@ export default function SectionOption({
               <button
                 type="button"
                 onClick={() => setIsIconMenuOpen((current) => !current)}
-                className="flex min-w-0 flex-1 items-center gap-3 p-3 text-left transition-colors hover:bg-[#F8FAFC]"
+                className="flex min-w-0 flex-1 items-center gap-3 p-3 text-left transition-colors hover:bg-secondary-bg"
                 aria-haspopup="listbox"
                 aria-expanded={isIconMenuOpen}
               >
@@ -254,7 +254,7 @@ export default function SectionOption({
 
                   setIsIconMenuOpen((current) => !current);
                 }}
-                className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-[#F8FAFC]"
+                className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-secondary-bg"
                 aria-label={
                   selectedIcon ? "Remove selected icon" : "Open icon list"
                 }
@@ -285,7 +285,7 @@ export default function SectionOption({
                           setSelectedIconId(icon.id);
                           setIsIconMenuOpen(false);
                         }}
-                        className={`flex flex-col items-center gap-2 rounded-md border p-2 transition-all ${isActive ? "border-brand-b bg-brand-light-subtle-bg" : "hover:border-tertiary-b border-transparent hover:bg-[#F8FAFC]"}`}
+                        className={`flex flex-col items-center gap-2 rounded-md border p-2 transition-all ${isActive ? "border-brand-b bg-brand-light-subtle-bg" : "hover:border-tertiary-b border-transparent hover:bg-secondary-bg"}`}
                         aria-label={icon.label}
                       >
                         <Image
@@ -333,7 +333,7 @@ export default function SectionOption({
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex min-w-0 flex-1 items-center gap-3 p-3 text-left transition-colors hover:bg-[#F8FAFC]"
+                className="flex min-w-0 flex-1 items-center gap-3 p-3 text-left transition-colors hover:bg-secondary-bg"
               >
                 {uploadedImage ? (
                   <Image
@@ -368,7 +368,7 @@ export default function SectionOption({
 
                   fileInputRef.current?.click();
                 }}
-                className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-[#F8FAFC]"
+                className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-secondary-bg"
                 aria-label={
                   uploadedImage ? "Remove uploaded image" : "Upload image"
                 }

@@ -2,6 +2,8 @@ import type {
   ProfileContentResponse,
   UpsertDraftRequest,
   DashboardProfileResponse,
+  LinkItem,
+  ProjectItem as ApiProjectItem,
 } from "@/api/profile/profile.type";
 import type { Section, SavedLink, ProjectItem } from "./types";
 import { encodeUrlForBackend, decodeUrlForFrontend } from "@/utils/profile";
@@ -42,7 +44,7 @@ export function contentToSections(
         type: "links" as const,
         visible: content?.links?.visible ?? true,
         subtitle: content?.links?.sectionTitle ?? "",
-        links: (content?.links?.items ?? []).map((l: Partial<SavedLink>) => ({
+        links: (content?.links?.items ?? []).map((l) => ({
           ...l,
           url: decodeUrlForFrontend(l.url),
         })) as unknown as SavedLink[],
@@ -56,7 +58,7 @@ export function contentToSections(
         type: "projects" as const,
         visible: content?.projects?.visible ?? true,
         subtitle: content?.projects?.sectionTitle ?? "",
-        projects: (content?.projects?.items ?? []).map((p: Partial<ProjectItem>) => ({
+        projects: (content?.projects?.items ?? []).map((p) => ({
           ...p,
           url: decodeUrlForFrontend(p.url),
         })) as unknown as ProjectItem[],
@@ -143,7 +145,7 @@ export function sectionsToContent(
             ...l,
             url: l.url ? encodeUrlForBackend(l.url, l.iconId) : "",
             imageSrc: isRemoteUrl(l.imageSrc) ? l.imageSrc : null,
-          })) as unknown as Record<string, unknown>[],
+          })) as unknown as LinkItem[],
         }
       : undefined,
     projects: projectsSection
@@ -154,7 +156,7 @@ export function sectionsToContent(
             ...p,
             url: p.url ? encodeUrlForBackend(p.url) : "",
             imageSrc: isRemoteUrl(p.imageSrc) ? p.imageSrc : null,
-          })) as unknown as Record<string, unknown>[],
+          })) as unknown as ApiProjectItem[],
         }
       : undefined,
     cta: ctaSection

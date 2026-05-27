@@ -18,8 +18,10 @@ import PreviewCanvas from "./PreviewCanvas";
 import RightPanel from "./RightPanel";
 import Link from "next/link";
 import type { Section } from "./types";
+import { THEME_DEFAULTS } from "@/constants/theme";
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { ROUTES } from "@/constants/routes";
+import type { UpsertDraftResponse } from "@/api/profile/profile.type";
 
 const createSection = (type: string, customTitle?: string): Section | null => {
   const allowedTypes: Record<string, Section["type"]> = {
@@ -110,9 +112,9 @@ export default function ProfileBuilderContent() {
   const profile = dashboardProfile.data;
 
   const [font, setFont] = useState("Afacad");
-  const [textColor, setTextColor] = useState("#050505");
-  const [bgColor, setBgColor] = useState("#FFFFFF");
-  const [iconColor, setIconColor] = useState("#087583");
+  const [textColor, setTextColor] = useState<string>(THEME_DEFAULTS.TEXT_COLOR);
+  const [bgColor, setBgColor] = useState<string>(THEME_DEFAULTS.BG_COLOR);
+  const [iconColor, setIconColor] = useState<string>(THEME_DEFAULTS.ACCENT_COLORS.DEFAULT);
   const [spacing, setSpacing] = useState(20);
   const [borderRadius, setBorderRadius] = useState<
     "sharp" | "medium" | "round"
@@ -235,7 +237,7 @@ export default function ProfileBuilderContent() {
   const { mutate: saveDraft } = useMutation({
     mutationKey: upsertDraftOption.mutationKey,
     mutationFn: upsertDraftOption.mutationFn,
-    onSuccess(response: any) {
+    onSuccess(response: UpsertDraftResponse) {
       const updatedAt = response?.data?.updatedAt;
       if (updatedAt) {
         draftUpdatedAtRef.current = updatedAt;
