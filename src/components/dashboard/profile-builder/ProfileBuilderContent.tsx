@@ -22,10 +22,10 @@ import { THEME_DEFAULTS } from "@/constants/theme";
 import type {
   ProfileAppearanceCornerStyle,
   ProfileAppearanceFont,
+  UpsertDraftResponse,
 } from "@/api/profile/profile.type";
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { ROUTES } from "@/constants/routes";
-import type { UpsertDraftResponse } from "@/api/profile/profile.type";
 
 const createSection = (type: string, customTitle?: string): Section | null => {
   const allowedTypes: Record<string, Section["type"]> = {
@@ -186,7 +186,9 @@ export default function ProfileBuilderContent() {
   const [font, setFont] = useState("Afacad");
   const [textColor, setTextColor] = useState<string>(THEME_DEFAULTS.TEXT_COLOR);
   const [bgColor, setBgColor] = useState<string>(THEME_DEFAULTS.BG_COLOR);
-  const [iconColor, setIconColor] = useState<string>(THEME_DEFAULTS.ACCENT_COLORS.DEFAULT);
+  const [iconColor, setIconColor] = useState<string>(
+    THEME_DEFAULTS.ACCENT_COLORS.DEFAULT
+  );
   const [spacing, setSpacing] = useState(20);
   const [borderRadius, setBorderRadius] = useState<
     "sharp" | "medium" | "round"
@@ -540,16 +542,16 @@ export default function ProfileBuilderContent() {
 
   return (
     <>
-      <div className="flex min-h-screen flex-col items-center justify-center bg-secondary-bg px-6 text-center lg:hidden">
-        <h1 className="text-2xl font-bold text-primary-text">
+      <div className="bg-secondary-bg flex min-h-screen flex-col items-center justify-center px-6 text-center lg:hidden">
+        <h1 className="text-primary-text text-2xl font-bold">
           Profile editor works best on desktop
         </h1>
-        <p className="mt-3 max-w-[420px] text-secondary-text">
+        <p className="text-secondary-text mt-3 max-w-[420px]">
           Please use a desktop or large tablet to edit your profile layout.
         </p>
         <Link
           href={ROUTES.dashboard.home}
-          className="mt-6 rounded-[8px] bg-brand-hover-bg px-5 py-3 font-semibold text-white"
+          className="bg-brand-hover-bg mt-6 rounded-[8px] px-5 py-3 font-semibold text-white"
         >
           Back to dashboard
         </Link>
@@ -558,7 +560,7 @@ export default function ProfileBuilderContent() {
       <div className="bg-primary-bg hidden h-screen w-full flex-col overflow-hidden lg:flex">
         {/* <BuilderHeader onPublish={handlePublish} isPublishing={isPublishing} /> */}
 
-        <div className="flex flex-1 gap-4 overflow-hidden bg-secondary-bg p-4 lg:p-6 lg:px-8">
+        <div className="bg-secondary-bg flex flex-1 gap-4 overflow-hidden p-4 lg:p-6 lg:px-8">
           <LeftSidebar
             sections={resolvedSections}
             selectedSectionId={selectedSectionId}
