@@ -72,8 +72,9 @@ export default async function UserProfilePage({ params }: Props) {
   }
 
   const themeSettings = (profile.themeSettings ||
-    (content as any)?.themeSettings ||
-    {}) as Record<string, any>;
+    (content as { themeSettings?: Record<string, string | number> })
+      ?.themeSettings ||
+    {}) as Record<string, string | number>;
 
   const fontStyles: Record<string, string> = {
     Afacad: "font-afacad",
@@ -224,72 +225,83 @@ export default async function UserProfilePage({ params }: Props) {
                 <div className="flex flex-col gap-4">
                   {links.length > 0 ? (
                     <div className="grid grid-cols-1 gap-3">
-                      {links.map((link: Record<string, any>) => (
-                        <a
-                          key={link.id}
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            borderColor: isDark ? "#2D2D2D" : "#EDEDED",
-                            backgroundColor: isDark
-                              ? "rgba(255,255,255,0.05)"
-                              : "rgba(255,255,255,0.6)",
-                          }}
-                          className="flex items-center justify-between rounded-xl border p-4 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
-                        >
-                          <div className="flex min-w-0 items-center gap-3">
-                            {link.imageSrc ? (
-                              <Image
-                                src={getImageUrl(link.imageSrc)!}
-                                alt={link.title}
-                                width={40}
-                                height={40}
-                                unoptimized
-                                className="h-10 w-10 shrink-0 rounded-md object-cover"
-                              />
-                            ) : link.iconSrc ? (
-                              <span
-                                className="rounded-md border p-2"
-                                style={{
-                                  borderColor: isDark ? "#2D2D2D" : "#EDEDED",
-                                }}
-                              >
-                                <Image
-                                  src={link.iconSrc}
-                                  alt={link.iconLabel ?? link.title}
-                                  width={24}
-                                  height={24}
-                                  unoptimized
-                                  className="shrink-0"
-                                />
-                              </span>
-                            ) : (
-                              <span className="bg-brand-light-subtle-bg text-brand-text flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-sm font-bold">
-                                {(link.title || "L").charAt(0).toUpperCase()}
-                              </span>
-                            )}
-                            <div className="min-w-0">
-                              <p className="truncate text-sm font-semibold">
-                                {link.title}
-                              </p>
-                              {link.url && (
-                                <p className="truncate text-xs opacity-60">
-                                  {link.url}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                          <span
-                            className="cursor-pointer rounded-full border p-2 opacity-70"
+                      {links.map(
+                        (link: {
+                          id?: string;
+                          url?: string;
+                          imageSrc?: string;
+                          iconSrc?: string;
+                          title?: string;
+                          iconLabel?: string;
+                        }) => (
+                          <a
+                            key={link.id}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             style={{
                               borderColor: isDark ? "#2D2D2D" : "#EDEDED",
+                              backgroundColor: isDark
+                                ? "rgba(255,255,255,0.05)"
+                                : "rgba(255,255,255,0.6)",
                             }}
+                            className="flex items-center justify-between rounded-xl border p-4 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
                           >
-                            <ExternalLink size={14} className="shrink-0" />
-                          </span>
-                        </a>
-                      ))}
+                            <div className="flex min-w-0 items-center gap-3">
+                              {link.imageSrc ? (
+                                <Image
+                                  src={getImageUrl(link.imageSrc as string)!}
+                                  alt={link.title as string}
+                                  width={40}
+                                  height={40}
+                                  unoptimized
+                                  className="h-10 w-10 shrink-0 rounded-md object-cover"
+                                />
+                              ) : link.iconSrc ? (
+                                <span
+                                  className="rounded-md border p-2"
+                                  style={{
+                                    borderColor: isDark ? "#2D2D2D" : "#EDEDED",
+                                  }}
+                                >
+                                  <Image
+                                    src={link.iconSrc as string}
+                                    alt={
+                                      (link.iconLabel ?? link.title) as string
+                                    }
+                                    width={24}
+                                    height={24}
+                                    unoptimized
+                                    className="shrink-0"
+                                  />
+                                </span>
+                              ) : (
+                                <span className="bg-brand-light-subtle-bg text-brand-text flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-sm font-bold">
+                                  {(link.title || "L").charAt(0).toUpperCase()}
+                                </span>
+                              )}
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-semibold">
+                                  {link.title}
+                                </p>
+                                {link.url && (
+                                  <p className="truncate text-xs opacity-60">
+                                    {link.url}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <span
+                              className="cursor-pointer rounded-full border p-2 opacity-70"
+                              style={{
+                                borderColor: isDark ? "#2D2D2D" : "#EDEDED",
+                              }}
+                            >
+                              <ExternalLink size={14} className="shrink-0" />
+                            </span>
+                          </a>
+                        )
+                      )}
                     </div>
                   ) : (
                     <p className="py-4 text-center text-xs opacity-60">
@@ -353,195 +365,215 @@ export default async function UserProfilePage({ params }: Props) {
                           : "flex flex-col gap-4"
                       }
                     >
-                      {projects.map((project: Record<string, any>) => {
-                        const isHighlighted = project.highlighted;
-                        const projectCardStyle = {
-                          borderColor: isHighlighted
-                            ? secIconColor
-                            : isDark
-                              ? "#2D2D2D"
-                              : "#EDEDED",
-                          boxShadow: isHighlighted
-                            ? `0 4px 12px ${secIconColor}20`
-                            : undefined,
-                          borderWidth: isHighlighted ? "2px" : "1px",
-                          backgroundColor: "transparent",
-                        };
+                      {projects.map(
+                        (project: {
+                          id?: string;
+                          imageSrc?: string;
+                          title?: string;
+                          description?: string;
+                          url?: string;
+                          buttonText?: string;
+                          highlighted?: boolean;
+                        }) => {
+                          const isHighlighted = project.highlighted;
+                          const projectCardStyle = {
+                            borderColor: isHighlighted
+                              ? secIconColor
+                              : isDark
+                                ? "#2D2D2D"
+                                : "#EDEDED",
+                            boxShadow: isHighlighted
+                              ? `0 4px 12px ${secIconColor}20`
+                              : undefined,
+                            borderWidth: isHighlighted ? "2px" : "1px",
+                            backgroundColor: "transparent",
+                          };
 
-                        if (!secProps.layout || secProps.layout === "1") {
-                          return (
-                            <div
-                              key={project.id}
-                              style={projectCardStyle}
-                              className="flex flex-col overflow-hidden rounded-xl border transition-all"
-                            >
-                              {project.imageSrc && (
-                                <div className="relative aspect-video w-full shrink-0 bg-gray-100 dark:bg-zinc-800">
-                                  <Image
-                                    src={getImageUrl(project.imageSrc)!}
-                                    alt={project.title}
-                                    fill
-                                    className="object-cover"
-                                    unoptimized
-                                  />
-                                </div>
-                              )}
-                              <div className="flex flex-1 flex-col p-4">
-                                <h4 className="truncate text-sm font-bold">
-                                  {project.title}
-                                </h4>
-                                <p className="mt-1 line-clamp-2 flex-1 text-xs opacity-70">
-                                  {project.description}
-                                </p>
-                                {project.url && (
-                                  <a
-                                    href={project.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{ backgroundColor: secIconColor }}
-                                    className="mt-4 flex h-9 w-full items-center justify-center rounded-lg px-4 text-center text-xs font-bold text-white transition-opacity hover:opacity-90"
-                                  >
-                                    {project.buttonText || "View project"}
-                                  </a>
+                          if (!secProps.layout || secProps.layout === "1") {
+                            return (
+                              <div
+                                key={project.id}
+                                style={projectCardStyle}
+                                className="flex flex-col overflow-hidden rounded-xl border transition-all"
+                              >
+                                {project.imageSrc && (
+                                  <div className="relative aspect-video w-full shrink-0 bg-gray-100 dark:bg-zinc-800">
+                                    <Image
+                                      src={
+                                        getImageUrl(project.imageSrc as string)!
+                                      }
+                                      alt={project.title as string}
+                                      fill
+                                      className="object-cover"
+                                      unoptimized
+                                    />
+                                  </div>
                                 )}
-                              </div>
-                            </div>
-                          );
-                        }
-
-                        if (secProps.layout === "2") {
-                          return (
-                            <div
-                              key={project.id}
-                              style={projectCardStyle}
-                              className="flex flex-col overflow-hidden rounded-xl border transition-all"
-                            >
-                              {project.imageSrc && (
-                                <div className="relative h-44 w-full shrink-0 bg-gray-100 dark:bg-zinc-800">
-                                  <Image
-                                    src={getImageUrl(project.imageSrc)!}
-                                    alt={project.title}
-                                    fill
-                                    className="object-cover"
-                                    unoptimized
-                                  />
-                                </div>
-                              )}
-                              <div className="flex flex-col p-5">
-                                <h4 className="text-base font-bold">
-                                  {project.title}
-                                </h4>
-                                <p className="mt-2 text-xs leading-relaxed opacity-70">
-                                  {project.description}
-                                </p>
-                                {project.url && (
-                                  <div className="mt-4 flex justify-start">
+                                <div className="flex flex-1 flex-col p-4">
+                                  <h4 className="truncate text-sm font-bold">
+                                    {project.title}
+                                  </h4>
+                                  <p className="mt-1 line-clamp-2 flex-1 text-xs opacity-70">
+                                    {project.description}
+                                  </p>
+                                  {project.url && (
                                     <a
                                       href={project.url}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       style={{ backgroundColor: secIconColor }}
-                                      className="flex h-9 items-center justify-center rounded-lg px-5 text-center text-xs font-bold text-white transition-opacity hover:opacity-90"
+                                      className="mt-4 flex h-9 w-full items-center justify-center rounded-lg px-4 text-center text-xs font-bold text-white transition-opacity hover:opacity-90"
                                     >
                                       {project.buttonText || "View project"}
                                     </a>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          if (secProps.layout === "2") {
+                            return (
+                              <div
+                                key={project.id}
+                                style={projectCardStyle}
+                                className="flex flex-col overflow-hidden rounded-xl border transition-all"
+                              >
+                                {project.imageSrc && (
+                                  <div className="relative h-44 w-full shrink-0 bg-gray-100 dark:bg-zinc-800">
+                                    <Image
+                                      src={
+                                        getImageUrl(project.imageSrc as string)!
+                                      }
+                                      alt={project.title as string}
+                                      fill
+                                      className="object-cover"
+                                      unoptimized
+                                    />
+                                  </div>
+                                )}
+                                <div className="flex flex-col p-5">
+                                  <h4 className="text-base font-bold">
+                                    {project.title}
+                                  </h4>
+                                  <p className="mt-2 text-xs leading-relaxed opacity-70">
+                                    {project.description}
+                                  </p>
+                                  {project.url && (
+                                    <div className="mt-4 flex justify-start">
+                                      <a
+                                        href={project.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                          backgroundColor: secIconColor,
+                                        }}
+                                        className="flex h-9 items-center justify-center rounded-lg px-5 text-center text-xs font-bold text-white transition-opacity hover:opacity-90"
+                                      >
+                                        {project.buttonText || "View project"}
+                                      </a>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          if (secProps.layout === "3") {
+                            return (
+                              <div
+                                key={project.id}
+                                style={projectCardStyle}
+                                className="flex items-center gap-4 rounded-xl border p-4 transition-all"
+                              >
+                                {project.imageSrc && (
+                                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
+                                    <Image
+                                      src={
+                                        getImageUrl(project.imageSrc as string)!
+                                      }
+                                      alt={project.title as string}
+                                      fill
+                                      className="object-cover"
+                                      unoptimized
+                                    />
+                                  </div>
+                                )}
+                                <div className="min-w-0 flex-1">
+                                  <h4 className="truncate text-sm font-bold">
+                                    {project.title}
+                                  </h4>
+                                  <p className="mt-1 line-clamp-2 text-xs opacity-70">
+                                    {project.description}
+                                  </p>
+                                  {project.url && (
+                                    <a
+                                      href={project.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{ color: secIconColor }}
+                                      className="mt-2 inline-flex items-center gap-1 text-xs font-bold hover:underline"
+                                    >
+                                      <span>
+                                        {project.buttonText || "View project"}
+                                      </span>
+                                      <ExternalLink size={12} />
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          if (secProps.layout === "4") {
+                            return (
+                              <div
+                                key={project.id}
+                                style={projectCardStyle}
+                                className="flex items-center gap-4 rounded-xl border p-4 transition-all"
+                              >
+                                <div className="min-w-0 flex-1">
+                                  <h4 className="truncate text-sm font-bold">
+                                    {project.title}
+                                  </h4>
+                                  <p className="mt-1 line-clamp-2 text-xs opacity-70">
+                                    {project.description}
+                                  </p>
+                                  {project.url && (
+                                    <a
+                                      href={project.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{ color: secIconColor }}
+                                      className="mt-2 inline-flex items-center gap-1 text-xs font-bold hover:underline"
+                                    >
+                                      <span>
+                                        {project.buttonText || "View project"}
+                                      </span>
+                                      <ExternalLink size={12} />
+                                    </a>
+                                  )}
+                                </div>
+                                {project.imageSrc && (
+                                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
+                                    <Image
+                                      src={
+                                        getImageUrl(project.imageSrc as string)!
+                                      }
+                                      alt={project.title as string}
+                                      fill
+                                      className="object-cover"
+                                      unoptimized
+                                    />
                                   </div>
                                 )}
                               </div>
-                            </div>
-                          );
-                        }
+                            );
+                          }
 
-                        if (secProps.layout === "3") {
-                          return (
-                            <div
-                              key={project.id}
-                              style={projectCardStyle}
-                              className="flex items-center gap-4 rounded-xl border p-4 transition-all"
-                            >
-                              {project.imageSrc && (
-                                <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
-                                  <Image
-                                    src={getImageUrl(project.imageSrc)!}
-                                    alt={project.title}
-                                    fill
-                                    className="object-cover"
-                                    unoptimized
-                                  />
-                                </div>
-                              )}
-                              <div className="min-w-0 flex-1">
-                                <h4 className="truncate text-sm font-bold">
-                                  {project.title}
-                                </h4>
-                                <p className="mt-1 line-clamp-2 text-xs opacity-70">
-                                  {project.description}
-                                </p>
-                                {project.url && (
-                                  <a
-                                    href={project.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{ color: secIconColor }}
-                                    className="mt-2 inline-flex items-center gap-1 text-xs font-bold hover:underline"
-                                  >
-                                    <span>
-                                      {project.buttonText || "View project"}
-                                    </span>
-                                    <ExternalLink size={12} />
-                                  </a>
-                                )}
-                              </div>
-                            </div>
-                          );
+                          return null;
                         }
-
-                        if (secProps.layout === "4") {
-                          return (
-                            <div
-                              key={project.id}
-                              style={projectCardStyle}
-                              className="flex items-center gap-4 rounded-xl border p-4 transition-all"
-                            >
-                              <div className="min-w-0 flex-1">
-                                <h4 className="truncate text-sm font-bold">
-                                  {project.title}
-                                </h4>
-                                <p className="mt-1 line-clamp-2 text-xs opacity-70">
-                                  {project.description}
-                                </p>
-                                {project.url && (
-                                  <a
-                                    href={project.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{ color: secIconColor }}
-                                    className="mt-2 inline-flex items-center gap-1 text-xs font-bold hover:underline"
-                                  >
-                                    <span>
-                                      {project.buttonText || "View project"}
-                                    </span>
-                                    <ExternalLink size={12} />
-                                  </a>
-                                )}
-                              </div>
-                              {project.imageSrc && (
-                                <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
-                                  <Image
-                                    src={getImageUrl(project.imageSrc)!}
-                                    alt={project.title}
-                                    fill
-                                    className="object-cover"
-                                    unoptimized
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          );
-                        }
-
-                        return null;
-                      })}
+                      )}
                     </div>
                   ) : (
                     <p className="py-4 text-center text-xs opacity-60">

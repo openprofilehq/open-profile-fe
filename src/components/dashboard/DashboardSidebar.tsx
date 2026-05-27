@@ -73,7 +73,7 @@ export default function DashboardSidebar({
             "--topbar-height": TOPBAR_HEIGHT,
           } as CSSProperties
         }
-        className={`fixed top-0 bottom-0 left-0 z-50 flex w-[210px] shrink-0 flex-col border-r border-[#EDEDED] bg-white transition-transform duration-300 sm:w-70 lg:sticky lg:top-[var(--topbar-height)] lg:z-30 lg:h-[calc(100vh-var(--topbar-height))] lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 flex w-[210px] shrink-0 flex-col border-r border-[#EDEDED] bg-white transition-transform duration-300 sm:w-70 lg:sticky lg:top-(--topbar-height) lg:z-30 lg:h-[calc(100vh-var(--topbar-height))] lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

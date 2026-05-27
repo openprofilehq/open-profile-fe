@@ -72,25 +72,39 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      console.log("[Interceptor] Attempting to refresh token...");
-      const refreshToken = typeof window !== "undefined" ? localStorage.getItem("refreshToken") : undefined;
-      const refreshRes = await api.post("/auth/refresh-token", refreshToken ? { refreshToken } : {});
-      console.log("[Interceptor] Refresh successful", refreshRes.status);
+      const refreshToken =
+        typeof window !== "undefined"
+          ? localStorage.getItem("refreshToken")
+          : undefined;
+      const refreshRes = await api.post(
+        "/auth/refresh-token",
+        refreshToken ? { refreshToken } : {}
+      );
       processQueue(null);
-      
+
       // Update access token in localStorage if returned
       if (refreshRes.data?.accessToken || refreshRes.data?.data?.accessToken) {
-        const newAccessToken = refreshRes.data?.accessToken || refreshRes.data?.data?.accessToken;
+        const newAccessToken =
+          refreshRes.data?.accessToken || refreshRes.data?.data?.accessToken;
         localStorage.setItem("accessToken", newAccessToken);
       }
-      if (refreshRes.data?.refreshToken || refreshRes.data?.data?.refreshToken) {
-        const newRefreshToken = refreshRes.data?.refreshToken || refreshRes.data?.data?.refreshToken;
+      if (
+        refreshRes.data?.refreshToken ||
+        refreshRes.data?.data?.refreshToken
+      ) {
+        const newRefreshToken =
+          refreshRes.data?.refreshToken || refreshRes.data?.data?.refreshToken;
         localStorage.setItem("refreshToken", newRefreshToken);
       }
 
       return await api(originalRequest);
-    } catch (refreshError: any) {
-      console.error("[Interceptor] Refresh failed!", refreshError?.response?.status, refreshError?.response?.data);
+    } catch (refreshError: unknown) {
+      const err = refreshError as AxiosError;
+      console.error(
+        "[Interceptor] Refresh failed!",
+        err?.response?.status,
+        err?.response?.data
+      );
       processQueue(refreshError);
       const isSilent = originalRequest.silent === true;
 
@@ -114,7 +128,8 @@ function getApiErrorMessage(message?: unknown): string {
   if (Array.isArray(message) && message.length > 0) {
     const first = message[0];
     if (typeof first === "string") return first;
-    if (first && typeof first === "object" && "message" in first) return String(first.message);
+    if (first && typeof first === "object" && "message" in first)
+      return String(first.message);
   }
   if (message && typeof message === "object" && "message" in message) {
     return String((message as Record<string, unknown>).message);
@@ -160,9 +175,24 @@ export async function callApi<TResData>({
     if (e instanceof AxiosError) {
       if (e.code === "ERR_CANCELED") throw e; // silently propagate aborts
       if (process.env.NODE_ENV === "development") {
-        console.error("[callApi] error", e.response?.status, JSON.stringify(e.response?.data), "code:", e.code, "msg:", e.message);
+        console.error(
+          "[callApi] error",
+          e.response?.status,
+          JSON.stringify(e.response?.data),
+          "code:",
+          e.code,
+          "msg:",
+          e.message
+        );
       } else {
-        console.error("[callApi] error", e.response?.status, "code:", e.code, "msg:", e.message);
+        console.error(
+          "[callApi] error",
+          e.response?.status,
+          "code:",
+          e.code,
+          "msg:",
+          e.message
+        );
       }
       throw new ApiError(
         e.response ? getApiErrorMessage(e.response.data?.message) : e.message,
