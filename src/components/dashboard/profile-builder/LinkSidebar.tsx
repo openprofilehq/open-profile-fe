@@ -105,7 +105,7 @@ const LinkSidebar = ({
   };
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in flex h-full w-72.5 shrink-0 flex-col border bg-white shadow-sm duration-200 select-none">
+    <aside className="border-tertiary-b animate-in fade-in flex h-full w-72.5 shrink-0 flex-col border bg-background shadow-sm duration-200 select-none">
       {/* Back Button */}
       <div className="p-6 pb-4">
         <button

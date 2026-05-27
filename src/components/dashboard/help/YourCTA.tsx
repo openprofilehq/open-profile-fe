@@ -15,7 +15,7 @@ export default function YourCTA({ content, isLoading }: Props) {
   const cta = content?.content?.cta;
 
   return (
-    <section className="w-full rounded-[12px] border border-[#EDEDED] bg-white p-16">
+    <section className="w-full rounded-[12px] border border-border bg-background p-16">
       {isLoading ? (
         <div className="flex flex-col items-center gap-4">
           <span className="inline-flex items-center gap-2 rounded-md border p-2 text-sm font-medium">
@@ -41,19 +41,19 @@ export default function YourCTA({ content, isLoading }: Props) {
                 href={sanitizeUrl(cta.url)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-11 items-center rounded-xl bg-[#087583] px-8 text-sm font-bold text-white hover:bg-[#065e69]"
+                className="inline-flex h-11 items-center rounded-xl bg-brand-hover-bg px-8 text-sm font-bold text-white hover:bg-[#065e69]"
               >
                 {cta.label || "Visit"}
               </a>
             ) : (
-              <span className="inline-flex h-11 cursor-not-allowed items-center rounded-xl bg-[#087583] px-8 text-sm font-bold text-white opacity-60">
+              <span className="inline-flex h-11 cursor-not-allowed items-center rounded-xl bg-brand-hover-bg px-8 text-sm font-bold text-white opacity-60">
                 {cta.label}
               </span>
             )
           ) : (
             <Link
               href="/dashboard/profile-builder?section=cta"
-              className="flex items-center gap-1 text-sm font-semibold text-[#087583] hover:underline"
+              className="flex items-center gap-1 text-sm font-semibold text-brand-hover-bg hover:underline"
             >
               Add your CTA <ChevronRight size={14} />
             </Link>

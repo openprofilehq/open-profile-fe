@@ -179,7 +179,7 @@ export default function PreviewCanvas({
                 className="relative flex flex-col border p-6 transition-all duration-300"
               >
                 {/* Action buttons (View/Delete) */}
-                <div className="absolute top-6 right-6 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border border-[#EDEDED] bg-white p-3 shadow-none select-none">
+                <div className="absolute top-6 right-6 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border border-border bg-background p-3 shadow-none select-none">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -266,7 +266,7 @@ export default function PreviewCanvas({
                                 className="flex flex-col overflow-hidden rounded-xl border transition-all"
                               >
                                 {getImageUrl(project.imageSrc) && (
-                                  <div className="relative aspect-video w-full shrink-0 bg-gray-100 dark:bg-zinc-800">
+                                  <div className="relative aspect-video w-full shrink-0 bg-secondary-bg dark:bg-zinc-800">
                                     <Image
                                       src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
@@ -310,7 +310,7 @@ export default function PreviewCanvas({
                                 className="flex flex-col overflow-hidden rounded-xl border transition-all"
                               >
                                 {getImageUrl(project.imageSrc) && (
-                                  <div className="relative h-44 w-full shrink-0 bg-gray-100 dark:bg-zinc-800">
+                                  <div className="relative h-44 w-full shrink-0 bg-secondary-bg dark:bg-zinc-800">
                                     <Image
                                       src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
@@ -357,7 +357,7 @@ export default function PreviewCanvas({
                                 className="flex items-center gap-4 rounded-xl border p-4 transition-all"
                               >
                                 {getImageUrl(project.imageSrc) && (
-                                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
+                                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-secondary-bg dark:bg-zinc-800">
                                     <Image
                                       src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
@@ -424,7 +424,7 @@ export default function PreviewCanvas({
                                   )}
                                 </div>
                                 {getImageUrl(project.imageSrc) && (
-                                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
+                                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-secondary-bg dark:bg-zinc-800">
                                     <Image
                                       src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
@@ -462,7 +462,7 @@ export default function PreviewCanvas({
                         {section.links.map((link) => (
                           <div
                             key={link.id}
-                            className="border-tertiary-b flex items-center justify-between rounded-xl border bg-white/60 p-4 transition-colors hover:bg-black/5 dark:border-[#2D2D2D] dark:bg-white/5 dark:hover:bg-white/10"
+                            className="border-tertiary-b flex items-center justify-between rounded-xl border bg-background/60 p-4 transition-colors hover:bg-black/5 dark:border-[#2D2D2D] dark:bg-background/5 dark:hover:bg-background/10"
                           >
                             <div className="flex min-w-0 items-center gap-3">
                               {getImageUrl(link.imageSrc) ? (
@@ -495,7 +495,7 @@ export default function PreviewCanvas({
                                 <p className="truncate text-sm font-semibold">
                                   {link.title}
                                 </p>
-                                <p className="truncate text-xs text-gray-500">
+                                <p className="truncate text-xs text-secondary-text">
                                   {link.url}
                                 </p>
                               </div>
@@ -530,7 +530,7 @@ export default function PreviewCanvas({
                         style={{
                           borderColor: isDark ? "#2D2D2D" : "#EDEDED",
                         }}
-                        className="mb-5 flex h-16 w-16 shrink-0 items-center justify-center rounded-[16px] border bg-white shadow-[0_2px_8px_rgba(0,0,0,0.03)] transition-all duration-300"
+                        className="mb-5 flex h-16 w-16 shrink-0 items-center justify-center rounded-[16px] border bg-background shadow-[0_2px_8px_rgba(0,0,0,0.03)] transition-all duration-300"
                       >
                         <div className="relative h-7 w-7">
                           <Image
@@ -545,7 +545,7 @@ export default function PreviewCanvas({
                     )}
 
                     {/* Title */}
-                    <h4 className="text-[32px] leading-snug font-bold tracking-tight text-[#050505] dark:text-white">
+                    <h4 className="text-[32px] leading-snug font-bold tracking-tight text-primary-text dark:text-white">
                       {section.title || "Let's build something"}
                     </h4>
 

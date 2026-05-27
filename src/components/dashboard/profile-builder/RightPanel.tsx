@@ -63,7 +63,7 @@ export default function RightPanel({
   onUpdateSection,
 }: RightPanelProps) {
   return (
-    <aside className="border-tertiary-b animate-in fade-in hidden h-full w-[290px] shrink-0 flex-col rounded-2xl border bg-white p-6 shadow-sm duration-200 select-none lg:flex">
+    <aside className="border-tertiary-b animate-in fade-in hidden h-full w-[290px] shrink-0 flex-col rounded-2xl border bg-background p-6 shadow-sm duration-200 select-none lg:flex">
       {/* Tabs Header */}
       <div className="border-tertiary-b flex border-b">
         <button
@@ -105,7 +105,7 @@ export default function RightPanel({
                   Font
                 </label>
                 <Select value={font} onValueChange={onChangeFont}>
-                  <SelectTrigger className="border-tertiary-b rounded-[12px] border bg-white px-4 py-3.5 text-sm font-semibold">
+                  <SelectTrigger className="border-tertiary-b rounded-[12px] border bg-background px-4 py-3.5 text-sm font-semibold">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -124,7 +124,7 @@ export default function RightPanel({
                   Colors
                 </label>
 
-                <div className="border-tertiary-b flex flex-col gap-3 rounded-[16px] border bg-white p-4">
+                <div className="border-tertiary-b flex flex-col gap-3 rounded-[16px] border bg-background p-4">
                   <ColorPicker
                     label="Text"
                     color={textColor}
@@ -148,7 +148,7 @@ export default function RightPanel({
                 <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
                   Spacing
                 </label>
-                <div className="border-tertiary-b relative flex h-[48px] w-full items-center overflow-hidden rounded-[12px] border bg-white">
+                <div className="border-tertiary-b relative flex h-[48px] w-full items-center overflow-hidden rounded-[12px] border bg-background">
                   {/* Left background fill block up to the active value */}
                   <div
                     className="bg-hover-bg pointer-events-none absolute top-0 bottom-0 left-0 transition-all duration-75"
@@ -177,7 +177,7 @@ export default function RightPanel({
                 <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
                   Border Radius
                 </label>
-                <div className="border-tertiary-b flex gap-1 rounded-[12px] border bg-white p-1">
+                <div className="border-tertiary-b flex gap-1 rounded-[12px] border bg-background p-1">
                   <button
                     type="button"
                     onClick={() => onChangeBorderRadius("medium")}
@@ -261,7 +261,7 @@ export default function RightPanel({
                 <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
                   Theme
                 </label>
-                <div className="border-tertiary-b flex gap-1 rounded-[12px] border bg-white p-1">
+                <div className="border-tertiary-b flex gap-1 rounded-[12px] border bg-background p-1">
                   <button
                     type="button"
                     onClick={() => onChangeTheme("light")}
@@ -302,7 +302,7 @@ export default function RightPanel({
                         onUpdateSection(selectedSection.id, { font: val })
                       }
                     >
-                      <SelectTrigger className="border-tertiary-b rounded-[12px] border bg-white px-4 py-3.5 text-sm font-semibold">
+                      <SelectTrigger className="border-tertiary-b rounded-[12px] border bg-background px-4 py-3.5 text-sm font-semibold">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -321,7 +321,7 @@ export default function RightPanel({
                       Color
                     </label>
 
-                    <div className="border-tertiary-b flex flex-col gap-3 rounded-[16px] border bg-white p-4">
+                    <div className="border-tertiary-b flex flex-col gap-3 rounded-[16px] border bg-background p-4">
                       <ColorPicker
                         label="Text"
                         color={
@@ -395,7 +395,7 @@ export default function RightPanel({
                             <span className="text-primary-text text-sm font-semibold">
                               {item.label}
                             </span>
-                            <div className="border-tertiary-b relative flex h-[48px] w-full items-center overflow-hidden rounded-[12px] border bg-white">
+                            <div className="border-tertiary-b relative flex h-[48px] w-full items-center overflow-hidden rounded-[12px] border bg-background">
                               <div
                                 className="bg-hover-bg pointer-events-none absolute top-0 bottom-0 left-0 transition-all duration-75"
                                 style={{ width: `${(val / 48) * 100}%` }}

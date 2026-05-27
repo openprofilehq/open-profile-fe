@@ -235,7 +235,7 @@ export default function ProfileBuilderContent() {
   const { mutate: saveDraft } = useMutation({
     mutationKey: upsertDraftOption.mutationKey,
     mutationFn: upsertDraftOption.mutationFn,
-    onSuccess(response) {
+    onSuccess(response: any) {
       const updatedAt = response?.data?.updatedAt;
       if (updatedAt) {
         draftUpdatedAtRef.current = updatedAt;
@@ -471,16 +471,16 @@ export default function ProfileBuilderContent() {
 
   return (
     <>
-      <div className="flex min-h-screen flex-col items-center justify-center bg-[#FAFAFA] px-6 text-center lg:hidden">
-        <h1 className="text-2xl font-bold text-[#050505]">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-secondary-bg px-6 text-center lg:hidden">
+        <h1 className="text-2xl font-bold text-primary-text">
           Profile editor works best on desktop
         </h1>
-        <p className="mt-3 max-w-[420px] text-[#747474]">
+        <p className="mt-3 max-w-[420px] text-secondary-text">
           Please use a desktop or large tablet to edit your profile layout.
         </p>
         <Link
           href={ROUTES.dashboard.home}
-          className="mt-6 rounded-[8px] bg-[#087583] px-5 py-3 font-semibold text-white"
+          className="mt-6 rounded-[8px] bg-brand-hover-bg px-5 py-3 font-semibold text-white"
         >
           Back to dashboard
         </Link>
@@ -489,7 +489,7 @@ export default function ProfileBuilderContent() {
       <div className="bg-primary-bg hidden h-screen w-full flex-col overflow-hidden lg:flex">
         {/* <BuilderHeader onPublish={handlePublish} isPublishing={isPublishing} /> */}
 
-        <div className="flex flex-1 gap-4 overflow-hidden bg-[#FAFAFA] p-4 lg:p-6 lg:px-8">
+        <div className="flex flex-1 gap-4 overflow-hidden bg-secondary-bg p-4 lg:p-6 lg:px-8">
           <LeftSidebar
             sections={resolvedSections}
             selectedSectionId={selectedSectionId}

@@ -23,7 +23,7 @@ export default function FeaturedLinks({ content, isLoading }: Props) {
   }[];
 
   return (
-    <section className="rounded-[12px] border border-[#EDEDED] bg-white p-6">
+    <section className="rounded-[12px] border border-border bg-background p-6">
       <h2 className="text-2xl font-bold">Featured Links</h2>
 
       {isLoading ? (
@@ -31,7 +31,7 @@ export default function FeaturedLinks({ content, isLoading }: Props) {
           {Array.from({ length: 1 }).map((_, i) => (
             <div
               key={i}
-              className="flex items-center justify-between rounded-[18px] border border-[#EDEDED] p-4"
+              className="flex items-center justify-between rounded-[18px] border border-border p-4"
             >
               <div className="flex items-center gap-5">
                 <Skeleton className="h-14 w-14 shrink-0 rounded-[12px]" />
@@ -45,7 +45,7 @@ export default function FeaturedLinks({ content, isLoading }: Props) {
           ))}
         </div>
       ) : links.length === 0 ? (
-        <span className="mt-4 flex items-center justify-between text-sm text-gray-500">
+        <span className="mt-4 flex items-center justify-between text-sm text-secondary-text">
           No links added yet
         </span>
       ) : (
@@ -58,10 +58,10 @@ export default function FeaturedLinks({ content, isLoading }: Props) {
                 href={sanitizeUrl(item.url)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between rounded-[18px] border border-[#EDEDED] p-4 no-underline"
+                className="flex items-center justify-between rounded-[18px] border border-border p-4 no-underline"
               >
                 <div className="flex items-center gap-5">
-                  <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-[12px] border border-[#EDEDED]">
+                  <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-[12px] border border-border">
                     {displayImg ? (
                       <Image
                         src={displayImg}
@@ -81,16 +81,16 @@ export default function FeaturedLinks({ content, isLoading }: Props) {
                         unoptimized
                       />
                     ) : (
-                      <ImageIcon className="text-[#A2A2A2]" size={24} />
+                      <ImageIcon className="text-tertiary-text" size={24} />
                     )}
                   </span>
                   <div>
-                    <h3 className="font-bold text-[#050505]">{item.title}</h3>
-                    <p className="text-sm text-[#A2A2A2]">{item.url}</p>
+                    <h3 className="font-bold text-primary-text">{item.title}</h3>
+                    <p className="text-sm text-tertiary-text">{item.url}</p>
                   </div>
                 </div>
-                <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#EDEDED]">
-                  <ExternalLink className="text-[#A2A2A2]" size={20} />
+                <span className="flex h-10 w-10 items-center justify-center rounded-full border border-border">
+                  <ExternalLink className="text-tertiary-text" size={20} />
                 </span>
               </a>
             );

@@ -213,7 +213,7 @@ export default function SectionOption({
             Icon
           </label>
           <div className="relative">
-            <div className="border-tertiary-b flex overflow-hidden rounded-md border bg-white">
+            <div className="border-tertiary-b flex overflow-hidden rounded-md border bg-background">
               <button
                 type="button"
                 onClick={() => setIsIconMenuOpen((current) => !current)}
@@ -269,8 +269,8 @@ export default function SectionOption({
             </div>
 
             {isIconMenuOpen && (
-              <div className="border-tertiary-b absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-xl border bg-white p-2 shadow-lg">
-                <div className="mb-2 px-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+              <div className="border-tertiary-b absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-xl border bg-background p-2 shadow-lg">
+                <div className="mb-2 px-2 text-xs font-semibold tracking-wide text-secondary-text uppercase">
                   Preset icons
                 </div>
                 <div className="grid grid-cols-4 gap-2">
@@ -329,7 +329,7 @@ export default function SectionOption({
               aria-hidden
             />
 
-            <div className="border-tertiary-b flex overflow-hidden rounded-md border bg-white">
+            <div className="border-tertiary-b flex overflow-hidden rounded-md border bg-background">
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}

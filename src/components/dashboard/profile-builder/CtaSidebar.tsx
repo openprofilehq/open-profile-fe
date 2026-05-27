@@ -145,7 +145,7 @@ export default function CtaSidebar({
   const currentIcon = PRESET_ICONS.find((i) => i.id === selectedIconId);
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in flex h-full w-72.5 shrink-0 flex-col border bg-white shadow-sm duration-200 select-none">
+    <aside className="border-tertiary-b animate-in fade-in flex h-full w-72.5 shrink-0 flex-col border bg-background shadow-sm duration-200 select-none">
       {/* Back Button */}
       <div className="p-6 pb-4">
         <button
@@ -173,7 +173,7 @@ export default function CtaSidebar({
         <div className="flex flex-col gap-6">
           {/* Layout Section */}
           <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold text-[#050505]">Layout</label>
+            <label className="text-xs font-bold text-primary-text">Layout</label>
             <div className="grid grid-cols-3 gap-2">
               {["1", "2", "3"].map((lay) => (
                 <button
@@ -182,8 +182,8 @@ export default function CtaSidebar({
                   onClick={() => handleLayoutChange(lay)}
                   className={`group relative aspect-square overflow-hidden rounded-xl border transition-all duration-200 outline-none focus:outline-none ${
                     layout === lay
-                      ? "border-[#E4E4E7] bg-[#F4F4F5]"
-                      : "border-[#EDEDED] bg-white hover:border-gray-300"
+                      ? "border-border bg-secondary-bg"
+                      : "border-border bg-background hover:border-border"
                   }`}
                 >
                   <Image
@@ -199,40 +199,40 @@ export default function CtaSidebar({
 
           {/* Title Section */}
           <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold text-[#050505]">Title</label>
+            <label className="text-xs font-bold text-primary-text">Title</label>
             <input
               type="text"
               value={sectionTitle}
               onChange={(e) => handleTitleChange(e.target.value)}
               placeholder="Let's build something"
-              className="focus:border-brand-b focus:ring-brand-b w-full rounded-[10px] border border-[#EDEDED] px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:ring-1"
+              className="focus:border-brand-b focus:ring-brand-b w-full rounded-[10px] border border-border px-4 py-3 text-sm font-semibold text-primary-text outline-none focus:ring-1"
             />
           </div>
 
           {/* Subtitle Section */}
           <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold text-[#050505]">Subtitle</label>
+            <label className="text-xs font-bold text-primary-text">Subtitle</label>
             <textarea
               value={sectionSubtitle}
               onChange={(e) => handleSubtitleChange(e.target.value)}
               maxLength={200}
               placeholder="I'm currently accepting new projects and consulting opportunities..."
               rows={4}
-              className="focus:border-brand-b focus:ring-brand-b w-full resize-none rounded-[10px] border border-[#EDEDED] px-4 py-3 text-sm text-[#050505] outline-none focus:ring-1"
+              className="focus:border-brand-b focus:ring-brand-b w-full resize-none rounded-[10px] border border-border px-4 py-3 text-sm text-primary-text outline-none focus:ring-1"
             />
-            <p className="text-right text-[11px] text-[#A2A2A2]">
+            <p className="text-right text-[11px] text-tertiary-text">
               {sectionSubtitle.length}/200
             </p>
           </div>
 
           {/* Icon Selector Section */}
           <div className="relative flex flex-col gap-2" ref={iconSelectorRef}>
-            <label className="text-xs font-bold text-[#050505]">Icon</label>
-            <div className="flex h-[50px] overflow-hidden rounded-[8px] border border-[#EDEDED] bg-white">
+            <label className="text-xs font-bold text-primary-text">Icon</label>
+            <div className="flex h-[50px] overflow-hidden rounded-[8px] border border-border bg-background">
               <button
                 type="button"
                 onClick={() => setIsIconSelectorOpen(!isIconSelectorOpen)}
-                className="flex min-w-0 flex-1 items-center gap-3 px-4 text-left transition-colors hover:bg-gray-50"
+                className="flex min-w-0 flex-1 items-center gap-3 px-4 text-left transition-colors hover:bg-secondary-bg"
               >
                 {currentIcon ? (
                   <div className="relative h-6 w-6">
@@ -244,11 +244,11 @@ export default function CtaSidebar({
                     />
                   </div>
                 ) : (
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#F4F4F5] text-gray-400">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-secondary-bg text-secondary-text">
                     <Smile size={14} />
                   </div>
                 )}
-                <span className="truncate text-xs font-semibold text-gray-500">
+                <span className="truncate text-xs font-semibold text-secondary-text">
                   {currentIcon ? currentIcon.label : "Select Icon"}
                 </span>
               </button>
@@ -256,7 +256,7 @@ export default function CtaSidebar({
               <button
                 type="button"
                 onClick={handleClearIcon}
-                className="flex w-[50px] shrink-0 items-center justify-center border-l border-[#EDEDED] text-gray-400 transition-colors hover:bg-gray-50 hover:text-red-600"
+                className="flex w-[50px] shrink-0 items-center justify-center border-l border-border text-secondary-text transition-colors hover:bg-secondary-bg hover:text-red-600"
                 title="Remove Icon"
               >
                 <Trash2 size={16} />
@@ -265,8 +265,8 @@ export default function CtaSidebar({
 
             {/* Presets Grid Dropdown */}
             {isIconSelectorOpen && (
-              <div className="border-tertiary-b animate-in fade-in slide-in-from-bottom-2 absolute bottom-[55px] left-0 z-30 max-h-56 w-full overflow-y-auto rounded-xl border bg-white p-3.5 shadow-lg duration-150">
-                <p className="mb-2.5 text-left text-xs font-bold tracking-wider text-[#747474] uppercase">
+              <div className="border-tertiary-b animate-in fade-in slide-in-from-bottom-2 absolute bottom-[55px] left-0 z-30 max-h-56 w-full overflow-y-auto rounded-xl border bg-background p-3.5 shadow-lg duration-150">
+                <p className="mb-2.5 text-left text-xs font-bold tracking-wider text-secondary-text uppercase">
                   Select Presets
                 </p>
                 <div className="grid grid-cols-4 gap-2">
@@ -280,7 +280,7 @@ export default function CtaSidebar({
                       className={`flex h-11 items-center justify-center rounded-lg border transition-all ${
                         selectedIconId === ico.id
                           ? "border-brand-b bg-brand-light-subtle-bg/30"
-                          : "border-gray-100 hover:border-gray-300 hover:bg-gray-50"
+                          : "border-gray-100 hover:border-border hover:bg-secondary-bg"
                       }`}
                     >
                       <div className="relative h-6 w-6">
@@ -300,14 +300,14 @@ export default function CtaSidebar({
 
           {/* Button Section */}
           <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold text-[#050505]">Button</label>
-            <div className="flex flex-col overflow-hidden rounded-[10px] border border-[#EDEDED] bg-white">
+            <label className="text-xs font-bold text-primary-text">Button</label>
+            <div className="flex flex-col overflow-hidden rounded-[10px] border border-border bg-background">
               <input
                 type="text"
                 value={buttonText}
                 onChange={(e) => handleButtonTextChange(e.target.value)}
                 placeholder="Start a Conversation"
-                className="w-full border-b border-[#EDEDED] px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:bg-gray-50/30"
+                className="w-full border-b border-border px-4 py-3 text-sm font-semibold text-primary-text outline-none focus:bg-secondary-bg/30"
               />
               <div className="relative flex items-center">
                 <input
@@ -315,11 +315,11 @@ export default function CtaSidebar({
                   value={buttonUrl}
                   onChange={(e) => handleButtonUrlChange(e.target.value)}
                   placeholder="Paste link, email, or phone (e.g., +1234567890)..."
-                  className={`w-full px-4 py-3 pr-10 text-sm outline-none focus:bg-gray-50/30 ${
+                  className={`w-full px-4 py-3 pr-10 text-sm outline-none focus:bg-secondary-bg/30 ${
                     urlError ? "text-red-500" : "text-gray-600"
                   }`}
                 />
-                <span className="absolute right-4 text-xs font-bold text-gray-400 select-none">
+                <span className="absolute right-4 text-xs font-bold text-secondary-text select-none">
                   ...
                 </span>
               </div>

@@ -72,8 +72,16 @@ export default async function UserProfilePage({ params }: Props) {
   }
 
   const themeSettings = (profile.themeSettings ||
-    (content as any)?.themeSettings ||
-    {}) as Record<string, any>;
+    (content as { themeSettings?: Record<string, unknown> })?.themeSettings ||
+    {}) as {
+    font?: string;
+    theme?: string;
+    bgColor?: string;
+    textColor?: string;
+    iconColor?: string;
+    spacing?: number;
+    borderRadius?: string;
+  };
 
   const fontStyles: Record<string, string> = {
     Afacad: "font-afacad",
@@ -199,7 +207,8 @@ export default async function UserProfilePage({ params }: Props) {
 
           if (sectionId === "links" && content?.links) {
             if (!content.links.visible) return null;
-            const links = content.links.items || [];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const links = (content.links.items || []) as any[];
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const secProps = content.links as any;
             const secBgColor = secProps.bgColor || globalBgColor;
@@ -224,7 +233,7 @@ export default async function UserProfilePage({ params }: Props) {
                 <div className="flex flex-col gap-4">
                   {links.length > 0 ? (
                     <div className="grid grid-cols-1 gap-3">
-                      {links.map((link: Record<string, any>) => (
+                      {links.map((link: { id: string | number; url?: string; title?: string; imageSrc?: string; iconSrc?: string; iconLabel?: string }) => (
                         <a
                           key={link.id}
                           href={link.url}
@@ -242,7 +251,7 @@ export default async function UserProfilePage({ params }: Props) {
                             {link.imageSrc ? (
                               <Image
                                 src={getImageUrl(link.imageSrc)!}
-                                alt={link.title}
+                                alt={link.title || ""}
                                 width={40}
                                 height={40}
                                 unoptimized
@@ -257,7 +266,7 @@ export default async function UserProfilePage({ params }: Props) {
                               >
                                 <Image
                                   src={link.iconSrc}
-                                  alt={link.iconLabel ?? link.title}
+                                  alt={link.iconLabel || link.title || ""}
                                   width={24}
                                   height={24}
                                   unoptimized
@@ -303,7 +312,8 @@ export default async function UserProfilePage({ params }: Props) {
 
           if (sectionId === "projects" && content?.projects) {
             if (!content.projects.visible) return null;
-            const projects = content.projects.items || [];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const projects = (content.projects.items || []) as any[];
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const secProps = content.projects as any;
             const secBgColor = secProps.bgColor || globalBgColor;
@@ -353,7 +363,7 @@ export default async function UserProfilePage({ params }: Props) {
                           : "flex flex-col gap-4"
                       }
                     >
-                      {projects.map((project: Record<string, any>) => {
+                      {projects.map((project: { id: string | number; title?: string; description?: string; url?: string; buttonText?: string; imageSrc?: string; highlighted?: boolean }) => {
                         const isHighlighted = project.highlighted;
                         const projectCardStyle = {
                           borderColor: isHighlighted
@@ -379,7 +389,7 @@ export default async function UserProfilePage({ params }: Props) {
                                 <div className="relative aspect-video w-full shrink-0 bg-gray-100 dark:bg-zinc-800">
                                   <Image
                                     src={getImageUrl(project.imageSrc)!}
-                                    alt={project.title}
+                                    alt={project.title || ""}
                                     fill
                                     className="object-cover"
                                     unoptimized
@@ -420,7 +430,7 @@ export default async function UserProfilePage({ params }: Props) {
                                 <div className="relative h-44 w-full shrink-0 bg-gray-100 dark:bg-zinc-800">
                                   <Image
                                     src={getImageUrl(project.imageSrc)!}
-                                    alt={project.title}
+                                    alt={project.title || ""}
                                     fill
                                     className="object-cover"
                                     unoptimized
@@ -463,7 +473,7 @@ export default async function UserProfilePage({ params }: Props) {
                                 <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
                                   <Image
                                     src={getImageUrl(project.imageSrc)!}
-                                    alt={project.title}
+                                    alt={project.title || ""}
                                     fill
                                     className="object-cover"
                                     unoptimized
@@ -529,7 +539,7 @@ export default async function UserProfilePage({ params }: Props) {
                                 <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
                                   <Image
                                     src={getImageUrl(project.imageSrc)!}
-                                    alt={project.title}
+                                    alt={project.title || ""}
                                     fill
                                     className="object-cover"
                                     unoptimized

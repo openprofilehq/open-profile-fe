@@ -3,23 +3,8 @@
 import Image from "next/image";
 import { ArrowLeft, ArrowRight, Eye } from "lucide-react";
 
-// Custom decorative Chat Bubble SVG to match Figma perfectly
-const ChatBubbleDotIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="h-12 w-12 text-[#087583]"
-    aria-hidden="true"
-  >
-    <rect width="20" height="16" x="2" y="3" rx="4" />
-    <path d="M8 11h.01M12 11h.01M16 11h.01" />
-    <path d="M12 19v3l-4-3" />
-  </svg>
-);
+import { ROUTES } from "@/constants/routes";
+import { ChatBubbleDotIcon } from "@/components/icons/chat-bubble-dot";
 
 export default function PortfolioTemplatePreviewPage() {
   const name = "Micaela Robinsson";
@@ -67,17 +52,17 @@ export default function PortfolioTemplatePreviewPage() {
   const handleClose = () => {
     window.close();
     setTimeout(() => {
-      window.location.href = "/dashboard/profile-builder";
+      window.location.href = ROUTES.dashboard.profileBuilder;
     }, 100);
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#F5F5F5] pb-24 font-sans text-[#050505] antialiased">
+    <div className="flex min-h-screen flex-col bg-secondary-bg pb-24 font-sans text-primary-text antialiased">
       {/* Floating Preview Banner */}
-      <div className="sticky top-0 z-50 w-full border-b border-neutral-800 bg-neutral-900/95 px-4 py-3 text-white shadow-md backdrop-blur-md">
+      <div className="sticky top-0 z-50 w-full border-b border-inverse-b bg-inverse-bg/95 px-4 py-3 text-inverse-text shadow-md backdrop-blur-md">
         <div className="mx-auto flex max-w-4xl flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-left">
           <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1 rounded-full bg-[#087583] px-2 py-0.5 text-xs font-bold tracking-wider text-white uppercase">
+            <span className="flex items-center gap-1 rounded-full bg-brand-hover-bg px-2 py-0.5 text-xs font-bold tracking-wider text-white uppercase">
               <Eye size={12} /> Preview
             </span>
             <p className="text-sm font-medium text-neutral-300">
@@ -111,7 +96,7 @@ export default function PortfolioTemplatePreviewPage() {
       {/* MAIN CARDS CONTAINER STACK */}
       <main className="mx-auto flex w-full max-w-[800px] flex-1 flex-col gap-8 px-4 sm:px-6">
         {/* CARD 1: BIO HEADER CARD */}
-        <section className="flex w-full flex-col items-center gap-8 rounded-[24px] border border-[#EDEDED] bg-white p-8 shadow-sm sm:p-12 md:flex-row md:items-start">
+        <section className="flex w-full flex-col items-center gap-8 rounded-[24px] border border-tertiary-b bg-white p-8 shadow-sm sm:p-12 md:flex-row md:items-start">
           {/* Avatar container */}
           <div className="relative h-[100px] w-[100px] shrink-0 overflow-hidden rounded-full border border-neutral-200 bg-neutral-50 shadow-sm sm:h-[110px] sm:w-[110px]">
             <Image
@@ -128,17 +113,17 @@ export default function PortfolioTemplatePreviewPage() {
             <h1 className="mb-4 text-[28px] leading-tight font-extrabold tracking-tight sm:text-[32px]">
               {name}
             </h1>
-            <p className="mb-6 text-[16px] leading-relaxed font-normal text-[#454545] sm:text-[17px]">
+            <p className="mb-6 text-[16px] leading-relaxed font-normal text-secondary-text sm:text-[17px]">
               {dummyData.bio}
             </p>
-            <button className="rounded-[8px] bg-[#087583] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#065e69] active:scale-95">
+            <button className="rounded-[8px] bg-brand-hover-bg px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-button-brand-bg active:scale-95">
               Message
             </button>
           </div>
         </section>
 
         {/* CARD 2: SELECTED PROJECTS */}
-        <section className="w-full rounded-[24px] border border-[#EDEDED] bg-white p-8 shadow-sm sm:p-12">
+        <section className="w-full rounded-[24px] border border-tertiary-b bg-white p-8 shadow-sm sm:p-12">
           <h2 className="mb-8 text-center text-[24px] font-extrabold tracking-tight sm:text-[28px] md:text-left">
             Selected Projects
           </h2>
@@ -151,12 +136,12 @@ export default function PortfolioTemplatePreviewPage() {
                 className="group flex w-full flex-col items-start"
               >
                 {/* Project Aspect Ratio Card */}
-                <div className="relative mb-4 aspect-[4/3] w-full overflow-hidden rounded-[16px] border border-[#EDEDED] shadow-sm">
+                <div className="relative mb-4 aspect-4/3 w-full overflow-hidden rounded-[16px] border border-tertiary-b shadow-sm">
                   <Image
                     src={project.imageSrc}
                     alt={project.title}
                     fill
-                    sizes="(max-width: 640px) 100vw, 50vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 800px) 50vw, 400px"
                     className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                   />
                 </div>
@@ -165,14 +150,14 @@ export default function PortfolioTemplatePreviewPage() {
                 <h3 className="mb-1 text-[20px] font-extrabold tracking-tight">
                   {project.title}
                 </h3>
-                <p className="mb-3 text-[14px] font-medium text-[#747474]">
+                <p className="mb-3 text-[14px] font-medium text-tertiary-text">
                   {project.description}
                 </p>
                 <a
                   href={project.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm font-bold text-[#087583] transition-all hover:gap-2.5 hover:text-[#065e69] focus-visible:underline focus-visible:outline-none"
+                  className="inline-flex items-center gap-1 text-sm font-bold text-link-hover-text transition-all hover:gap-2.5 hover:text-link-active-text focus-visible:underline focus-visible:outline-none"
                 >
                   <span>View project</span>
                   <ArrowRight size={14} />
@@ -185,11 +170,11 @@ export default function PortfolioTemplatePreviewPage() {
         {/* CARD 3: LET'S BUILD SOMETHING */}
         <section
           id="portfolio-cta-section"
-          className="flex w-full flex-col items-center gap-6 rounded-[24px] border border-[#EDEDED] bg-white p-8 text-center shadow-sm sm:p-12"
+          className="flex w-full flex-col items-center gap-6 rounded-[24px] border border-tertiary-b bg-white p-8 text-center shadow-sm sm:p-12"
         >
           {/* Custom chat bubble svg badge */}
-          <div className="rounded-full border border-[#EDEDED] bg-[#FAFAFA] p-4 shadow-sm">
-            <ChatBubbleDotIcon />
+          <div className="rounded-full border border-tertiary-b bg-primary-bg p-4 shadow-sm">
+            <ChatBubbleDotIcon className="h-12 w-12 text-brand-hover-bg" />
           </div>
 
           <h2 className="text-[28px] leading-none font-extrabold tracking-tight sm:text-[32px]">
@@ -198,7 +183,7 @@ export default function PortfolioTemplatePreviewPage() {
           <p className="max-w-[500px] text-[16px] leading-relaxed font-normal text-neutral-600">
             {dummyData.cta.subtitle}
           </p>
-          <button className="mt-2 rounded-[8px] bg-[#087583] px-8 py-3 text-sm font-bold text-white shadow-md transition-all hover:scale-105 hover:bg-[#065e69] active:scale-95">
+          <button className="mt-2 rounded-[8px] bg-brand-hover-bg px-8 py-3 text-sm font-bold text-white shadow-md transition-all hover:scale-105 hover:bg-button-brand-bg active:scale-95">
             {dummyData.cta.label}
           </button>
         </section>
