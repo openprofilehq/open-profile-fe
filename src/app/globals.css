@@ -103,6 +103,7 @@
   --color-button-bg: var(--button-bg);
   --color-button-bg-waitlist: var(--button-bg-waitlist);
   --color-button-brand-bg: var(--button-brand-bg);
+  --color-brand-dark-bg: var(--brand-dark-bg);
 
   /* border colors */
   --color-primary-b: var(--primary-b);
@@ -300,6 +301,7 @@
   --brand-bg: #0a92a4;
   --brand-hover-bg: #087583;
   --brand-active-bg: #065862;
+  --brand-dark-bg: #05464f;
   --brand-subtle-bg: #daf2f5;
   --brand-light-subtle-bg: #f1fdfe;
   --info-bg: #95d2da;
