@@ -2,14 +2,11 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Image from "next/image";
 
 type CreateProfileInfoProps = {
   bio: string;
-  displayName: string;
   onUpdateBio: (e: ChangeEvent<HTMLTextAreaElement>) => void;
-  onUpdateDisplayName: (e: ChangeEvent<HTMLInputElement>) => void;
   onUpdateStep: () => void;
   isPending?: boolean;
   photoUrl?: string;
@@ -20,9 +17,7 @@ type CreateProfileInfoProps = {
 
 export default function CreateProfileInfo({
   bio,
-  displayName,
   onUpdateBio,
-  onUpdateDisplayName,
   onUpdateStep,
   isPending,
   photoUrl,
@@ -114,18 +109,6 @@ export default function CreateProfileInfo({
         <div className="mt-16 flex flex-col gap-1.5">
           <div className="mt-4">
             <label className="mb-1 inline-block font-bold text-[#454545]">
-              Display Name
-            </label>
-            <Input
-              value={displayName}
-              onChange={onUpdateDisplayName}
-              placeholder="John Doe"
-              className="border-2 border-[#ededed] bg-white shadow-none"
-            />
-          </div>
-
-          <div className="mt-4">
-            <label className="mb-1 inline-block font-bold text-[#454545]">
               Bio
             </label>
             <textarea
@@ -139,7 +122,7 @@ export default function CreateProfileInfo({
 
           <Button
             type="button"
-            disabled={isPending || !displayName.trim()}
+            disabled={isPending}
             className="mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-medium shadow-none transition-colors"
             onClick={onUpdateStep}
           >
