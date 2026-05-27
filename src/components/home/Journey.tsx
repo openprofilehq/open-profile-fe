@@ -91,13 +91,13 @@ function MobileStepCard({ step }: { step: Step }) {
       <div className="relative z-10">
         <h3
           className={`pb-4 text-[32px] leading-[1.1] font-semibold tracking-[-0.03em] ${
-            step.titleColor === "teal" ? "text-[#S00798C]" : "text-primary-text"
+            step.titleColor === "teal" ? "text-[#S00798C]" : "text-[#202020]"
           }`}
         >
           {step.title}
         </h3>
 
-        <p className="mt-5 text-[17px] leading-[32px] text-secondary-text">
+        <p className="mt-5 text-[17px] leading-[32px] text-[#6B7280]">
           {step.description}
         </p>
       </div>
@@ -107,7 +107,7 @@ function MobileStepCard({ step }: { step: Step }) {
 
 export function Journey() {
   return (
-    <section className="relative w-full overflow-hidden bg-primary-bg py-28">
+    <section className="relative w-full overflow-hidden bg-[#FBFBFB] py-28">
       <div className="mx-auto max-w-7xl px-4 md:px-8">
         {/* HEADER */}
         <motion.div
@@ -118,7 +118,7 @@ export function Journey() {
           className="flex flex-col items-center text-center"
         >
           {/* Badge */}
-          <div className="mx-auto flex h-7.5 w-fit items-center gap-1 rounded-[24px] bg-brand-light-subtle-bg pr-5.5 pl-3.5">
+          <div className="mx-auto flex h-7.5 w-fit items-center gap-1 rounded-[24px] bg-[#F2FDFE] pr-5.5 pl-3.5">
             <Image
               src="/target_assets/icon-flash.svg"
               alt=""
@@ -131,7 +131,7 @@ export function Journey() {
           </div>
 
           {/* Heading */}
-          <h2 className="mt-6 max-w-[900px] text-[34px] leading-[1.05] font-semibold tracking-[-0.04em] text-primary-text md:text-[40px]">
+          <h2 className="mt-6 max-w-[900px] text-[34px] leading-[1.05] font-semibold tracking-[-0.04em] text-[#111111] md:text-[40px]">
             Create the profile people should find first
           </h2>
         </motion.div>
@@ -176,11 +176,11 @@ export function Journey() {
             </div>
 
             <div className="relative z-10 -translate-x-12">
-              <h3 className="text-[28px] leading-[1.05] font-semibold tracking-[-0.04em] text-brand-text">
+              <h3 className="text-[28px] leading-[1.05] font-semibold tracking-[-0.04em] text-[#00798C]">
                 {steps[0].title}
               </h3>
 
-              <p className="mt-4 max-w-[275px] text-[16px] leading-[1.75] text-secondary-text">
+              <p className="mt-4 max-w-[275px] text-[16px] leading-[1.75] text-[#6B7280]">
                 {steps[0].description}
               </p>
             </div>
@@ -216,7 +216,7 @@ export function Journey() {
                 {steps[1].title}
               </h3>
 
-              <p className="mt-4 max-w-[285px] text-[16px] leading-[1.75] text-secondary-text">
+              <p className="mt-4 max-w-[285px] text-[16px] leading-[1.75] text-[#6B7280]">
                 {steps[1].description}
               </p>
             </div>
@@ -248,11 +248,11 @@ export function Journey() {
             </div>
 
             <div className="relative z-10 pt-18">
-              <h3 className="max-w-[335px] text-[28px] leading-[1.12] font-semibold tracking-[-0.04em] text-primary-text">
+              <h3 className="max-w-[335px] text-[28px] leading-[1.12] font-semibold tracking-[-0.04em] text-[#202020]">
                 {steps[2].title}
               </h3>
 
-              <p className="mt-4 max-w-[320px] text-[16px] leading-[1.75] text-secondary-text">
+              <p className="mt-4 max-w-[320px] text-[16px] leading-[1.75] text-[#6B7280]">
                 {steps[2].description}
               </p>
             </div>

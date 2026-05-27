@@ -80,7 +80,7 @@ export function Proof() {
   };
 
   return (
-    <section className="w-full bg-primary-bg py-16">
+    <section className="w-full bg-[#FAFAFA] py-16">
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -90,7 +90,7 @@ export function Proof() {
       >
         <motion.div
           variants={itemVariants}
-          className="mx-auto mb-8 flex h-7.5 w-fit items-center gap-1 rounded-[24px] bg-brand-light-subtle-bg pr-5.5 pl-3.5"
+          className="mx-auto mb-8 flex h-7.5 w-fit items-center gap-1 rounded-[24px] bg-[#F2FDFE] pr-5.5 pl-3.5"
         >
           <Image
             src="/target_assets/icon-flash.svg"
@@ -105,7 +105,7 @@ export function Proof() {
 
         <motion.h2
           variants={itemVariants}
-          className="mb-8 text-center text-[32px] font-semibold text-primary-text lg:text-[40px]"
+          className="mb-8 text-center text-[32px] font-semibold text-[#050505] lg:text-[40px]"
         >
           Join creators and freelancers building their identity online
         </motion.h2>
@@ -139,10 +139,10 @@ export function Proof() {
 
               <div className="mt-auto flex items-center justify-between">
                 <div>
-                  <h4 className="mb-0.5 text-[12px] font-bold text-primary-text md:text-[15px]">
+                  <h4 className="mb-0.5 text-[12px] font-bold text-[#050505] md:text-[15px]">
                     {testimonial.name}
                   </h4>
-                  <p className="text-[11px] font-medium text-tertiary-text md:text-[13px]">
+                  <p className="text-[11px] font-medium text-[#737373] md:text-[13px]">
                     {testimonial.role}
                   </p>
                 </div>

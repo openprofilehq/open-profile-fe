@@ -140,7 +140,7 @@ export default function PrivacyPolicy() {
       <Navbar />
 
       <section className="mx-auto mt-20 w-full">
-        <div className="bg-brand-subtle-bg px-5 py-12 md:px-28">
+        <div className="bg-[#DBEFF2] px-5 py-12 md:px-28">
           <div className="mx-auto max-w-7xl">
             <div className="max-w-2xl">
               <h1 className="mb-4 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
@@ -163,7 +163,7 @@ export default function PrivacyPolicy() {
                   value={search}
                   placeholder="Search..."
                   onChange={(e) => setSearch(e.target.value)}
-                  className="focus:ring-brand/40 w-full rounded-[5.57px] border border-secondary-b bg-primary-bg px-12 py-3 text-[16px] leading-6 text-disabled-text transition outline-none placeholder:text-disabled-text focus:ring-2 lg:w-1/2"
+                  className="focus:ring-brand/40 w-full rounded-[5.57px] border border-[#C9C9C9] bg-[#FAFAFA] px-12 py-3 text-[16px] leading-6 text-[#A3A3A3] transition outline-none placeholder:text-[#A3A3A3] focus:ring-2 lg:w-1/2"
                 />
 
                 <Button className="mt-2 w-full rounded-[5.57px] py-6 lg:mt-0 lg:ml-1 lg:w-auto">

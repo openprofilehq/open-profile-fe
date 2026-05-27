@@ -70,7 +70,7 @@ export default function CreateProfileInfo({
           <h1 className="text-primary text-3xl font-bold">
             Tell us about yourself
           </h1>
-          <p className="my-2 text-secondary-text">
+          <p className="my-2 text-[#454545]">
             This is what people will see when they search you
           </p>
         </div>
@@ -113,23 +113,23 @@ export default function CreateProfileInfo({
 
         <div className="mt-16 flex flex-col gap-1.5">
           <div className="mt-4">
-            <label className="mb-1 inline-block font-bold text-secondary-text">
+            <label className="mb-1 inline-block font-bold text-[#454545]">
               Display Name
             </label>
             <Input
               value={displayName}
               onChange={onUpdateDisplayName}
               placeholder="John Doe"
-              className="border-2 border-tertiary-b bg-white shadow-none"
+              className="border-2 border-[#ededed] bg-white shadow-none"
             />
           </div>
 
           <div className="mt-4">
-            <label className="mb-1 inline-block font-bold text-secondary-text">
+            <label className="mb-1 inline-block font-bold text-[#454545]">
               Bio
             </label>
             <textarea
-              className="w-full resize-none rounded-lg border-2 border-tertiary-b bg-white p-3"
+              className="w-full resize-none rounded-lg border-2 border-[#ededed] bg-white p-3"
               value={bio}
               onChange={onUpdateBio}
               rows={5}
@@ -140,7 +140,7 @@ export default function CreateProfileInfo({
           <Button
             type="button"
             disabled={isPending || !displayName.trim()}
-            className="mt-4 h-13 w-full rounded-[10px] bg-brand-hover-bg text-[16px] font-medium shadow-none transition-colors"
+            className="mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-medium shadow-none transition-colors"
             onClick={onUpdateStep}
           >
             {isPending ? "Please wait…" : "Continue"}

@@ -143,12 +143,12 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
   }
 
   const inputClass =
-    "h-11 bg-primary-bg border border-input-b shadow-none placeholder:text-input-text";
+    "h-11 bg-[#FAFAFA] border border-input-b shadow-none placeholder:text-input-text";
 
   return (
     <AuthLayout>
       <div className="mb-1 text-center">
-        <h1 className="text-2xl font-bold text-primary-text">
+        <h1 className="text-2xl font-bold text-[#050505]">
           {isSignup ? "Join Openprofile" : "Welcome back"}
         </h1>
         <p className="mt-1 text-sm text-gray-500">
@@ -285,7 +285,7 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
 
       <a
         href={googleAuthUrl}
-        className="border-input-b flex h-11 w-full items-center justify-center gap-3 rounded-lg border bg-primary-bg text-sm font-medium transition-colors hover:bg-secondary-bg"
+        className="border-input-b flex h-11 w-full items-center justify-center gap-3 rounded-lg border bg-[#FAFAFA] text-sm font-medium transition-colors hover:bg-[#f0f0f0]"
       >
         <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
           <path

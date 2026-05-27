@@ -187,7 +187,7 @@ export function Hero() {
         </div>
 
         {/* ───────────────── RIGHT COLUMN — desktop only ───────────────── */}
-        <div className="relative ml-[-10px] hidden w-full flex-1 overflow-visible lg:block">
+        <div className="relative -ml-[10px] hidden w-full flex-1 overflow-visible lg:block">
           {/* LEFT fade */}
           <div
             style={{
@@ -197,7 +197,7 @@ export function Hero() {
               bottom: "-20px",
               width: "160px",
               background:
-                "linear-gradient(to right, var(--primary-bg) 0%, var(--primary-bg) 40%, transparent 100%)",
+                "linear-gradient(to right, #ffffff 0%, #ffffff 40%, rgba(255,255,255,0) 100%)",
               zIndex: 20,
               pointerEvents: "none",
             }}
@@ -211,7 +211,7 @@ export function Hero() {
               bottom: "-20px",
               width: "220px",
               background:
-                "linear-gradient(to left, var(--primary-bg) 0%, var(--primary-bg) 50%, transparent 100%)",
+                "linear-gradient(to left, #ffffff 0%, #ffffff 50%, rgba(255,255,255,0) 100%)",
               zIndex: 20,
               pointerEvents: "none",
             }}
@@ -260,7 +260,10 @@ export function Hero() {
                           >
                             {p.name}
                           </span>
-                          <CircleCheck className="text-positive-hover-bg h-5 w-5 shrink-0" />
+                          <CircleCheck
+                            className="h-5 w-5 shrink-0"
+                            style={{ color: "#98FAC3" }}
+                          />
                         </div>
                         <span
                           className="text-span-text-100 text-[14px] leading-[24px] font-medium"
@@ -288,7 +291,7 @@ export function Hero() {
               bottom: "-20px",
               width: "80px",
               background:
-                "linear-gradient(to right, var(--primary-bg) 0%, var(--primary-bg) 30%, transparent 100%)",
+                "linear-gradient(to right, #ffffff 0%, #ffffff 30%, rgba(255,255,255,0) 100%)",
               zIndex: 20,
               pointerEvents: "none",
             }}
@@ -302,7 +305,7 @@ export function Hero() {
               bottom: "-20px",
               width: "80px",
               background:
-                "linear-gradient(to left, var(--primary-bg) 0%, var(--primary-bg) 30%, transparent 100%)",
+                "linear-gradient(to left, #ffffff 0%, #ffffff 30%, rgba(255,255,255,0) 100%)",
               zIndex: 20,
               pointerEvents: "none",
             }}
@@ -354,7 +357,10 @@ export function Hero() {
                       >
                         {p.name}
                       </span>
-                      <CircleCheck className="text-positive-hover-bg h-3.5 w-3.5 shrink-0" />
+                      <CircleCheck
+                        className="h-3.5 w-3.5 shrink-0"
+                        style={{ color: "#98FAC3" }}
+                      />
                     </div>
                     <span
                       className="text-span-text-100 text-[11px] leading-[16px] font-medium whitespace-nowrap"

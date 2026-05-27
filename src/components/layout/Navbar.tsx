@@ -30,7 +30,7 @@ export function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 right-0 left-0 z-50 w-full border-b border-tertiary-b transition-colors duration-300 ${scrolled ? "bg-white/70 backdrop-blur-md" : "bg-white"}`}
+        className={`fixed top-0 right-0 left-0 z-50 w-full border-b border-[#EDEDED] transition-colors duration-300 ${scrolled ? "bg-white/70 backdrop-blur-md" : "bg-white"}`}
       >
         <nav className="mx-auto flex h-[76px] w-full max-w-[1440px] items-center justify-between gap-8 px-5 md:px-10 lg:px-[112px]">
           {/* Logo */}
@@ -52,21 +52,21 @@ export function Navbar() {
           <div className="hidden items-center gap-6 md:flex lg:gap-8">
             <Link
               href="/coming-soon"
-              className="text-[17px] leading-[26px] font-medium text-primary-text transition-colors hover:text-link-hover-text"
+              className="text-[17px] leading-[26px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               How it works
             </Link>
             <Link
               href="/#pricing"
-              className="text-[16px] leading-[24px] font-medium text-primary-text transition-colors hover:text-link-hover-text"
+              className="text-[16px] leading-[24px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               Pricing
             </Link>
             <Link
               href="/faq"
-              className="text-[16px] leading-[24px] font-medium text-primary-text transition-colors hover:text-link-hover-text"
+              className="text-[16px] leading-[24px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
               FAQ
@@ -87,7 +87,7 @@ export function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="flex h-[44px] items-center justify-center rounded-[8px] bg-primary-bg px-[16px] py-[12px] text-[15px] font-semibold text-link-hover-text transition-colors hover:bg-brand-light-subtle-bg"
+                  className="flex h-[44px] items-center justify-center rounded-[8px] bg-[#FAFAFA] px-[16px] py-[12px] text-[15px] font-semibold text-[#087583] transition-colors hover:bg-[#E5F4F6]"
                   style={{ fontFamily: "'Inter', sans-serif" }}
                 >
                   Login
@@ -109,13 +109,13 @@ export function Navbar() {
             aria-label="Toggle menu"
           >
             <span
-              className={`block h-0.5 w-5 bg-primary-text transition-transform duration-200 ${mobileOpen ? "translate-y-2 rotate-45" : ""}`}
+              className={`block h-0.5 w-5 bg-[#050505] transition-transform duration-200 ${mobileOpen ? "translate-y-2 rotate-45" : ""}`}
             />
             <span
-              className={`block h-0.5 w-5 bg-primary-text transition-opacity duration-200 ${mobileOpen ? "opacity-0" : ""}`}
+              className={`block h-0.5 w-5 bg-[#050505] transition-opacity duration-200 ${mobileOpen ? "opacity-0" : ""}`}
             />
             <span
-              className={`block h-0.5 w-5 bg-primary-text transition-transform duration-200 ${mobileOpen ? "-translate-y-2 -rotate-45" : ""}`}
+              className={`block h-0.5 w-5 bg-[#050505] transition-transform duration-200 ${mobileOpen ? "-translate-y-2 -rotate-45" : ""}`}
             />
           </button>
         </nav>
@@ -131,16 +131,16 @@ export function Navbar() {
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className="fixed inset-0 z-50 flex flex-col bg-white md:hidden"
           >
-            <div className="flex h-[76px] items-center justify-between border-b border-tertiary-b px-6">
+            <div className="flex h-[76px] items-center justify-between border-b border-[#EDEDED] px-6">
               <span
-                className="text-[18px] font-semibold text-link-hover-text"
+                className="text-[18px] font-semibold text-[#087583]"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               >
                 Menu
               </span>
               <button
                 onClick={() => setMobileOpen(false)}
-                className="cursor-pointer p-2 text-primary-text"
+                className="cursor-pointer p-2 text-[#050505]"
                 aria-label="Close menu"
               >
                 <X className="h-5 w-5" />
@@ -157,7 +157,7 @@ export function Navbar() {
                   key={item.label}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className="text-[18px] font-medium text-primary-text"
+                  className="text-[18px] font-medium text-[#050505]"
                   style={{ fontFamily: "'Afacad', sans-serif" }}
                 >
                   {item.label}
@@ -180,7 +180,7 @@ export function Navbar() {
                   <Link
                     href="/login"
                     onClick={() => setMobileOpen(false)}
-                    className="flex h-[52px] w-full items-center justify-center rounded-[10px] border border-tertiary-b bg-secondary-bg text-[16px] font-semibold text-link-hover-text"
+                    className="flex h-[52px] w-full items-center justify-center rounded-[10px] border border-[#EDEDED] bg-[#F5F5F5] text-[16px] font-semibold text-[#087583]"
                     style={{ fontFamily: "'Afacad', sans-serif" }}
                   >
                     Login

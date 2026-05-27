@@ -96,7 +96,8 @@ export function Features() {
 
   return (
     <section
-      className="relative w-full overflow-hidden py-16 md:py-24 bg-brand-active-bg"
+      className="relative w-full overflow-hidden py-16 md:py-24"
+      style={{ backgroundColor: "#0d3d3a" }}
       aria-labelledby="features-heading"
     >
       <motion.div
@@ -106,7 +107,7 @@ export function Features() {
         transition={{ duration: 0.6 }}
         className="mx-auto mb-16 flex max-w-7xl flex-col items-center gap-4 px-4 text-center md:px-8"
       >
-        <span className="mx-auto flex h-7.5 w-fit items-center gap-1 rounded-[24px] bg-brand-light-subtle-bg pr-5.5 pl-3.5">
+        <span className="mx-auto flex h-7.5 w-fit items-center gap-1 rounded-[24px] bg-[#F2FDFE] pr-5.5 pl-3.5">
           <Image
             src="/target_assets/icon-flash.svg"
             alt=""
