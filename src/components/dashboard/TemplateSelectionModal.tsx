@@ -112,30 +112,21 @@ export function TemplateSelectionModal({
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => e.stopPropagation()}
                       className="z-25 mt-3 flex items-center gap-1 rounded-md bg-[#087583] px-3 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:scale-105 hover:bg-[#065e69] active:scale-95"
                     >
                       <Eye size={12} />
                       Live Preview ↗
                     </a>
                   )}
-                  {isCreator && (
-                    <a
-                      href="/dashboard"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="z-25 mt-3 flex items-center gap-1 rounded-md bg-[#087583] px-3 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:scale-105 hover:bg-[#065e69] active:scale-95"
-                    >
-                      <Eye size={12} />
-                      Live Preview ↗
-                    </a>
-                  )}
+                  {/* Creator template preview temporarily hidden until a dedicated preview route exists */}
                   {isPortfolio && (
                     <a
                       href="/templates/portfolio/preview"
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => e.stopPropagation()}
                       className="z-25 mt-3 flex items-center gap-1 rounded-md bg-[#087583] px-3 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:scale-105 hover:bg-[#065e69] active:scale-95"
                     >
                       <Eye size={12} />

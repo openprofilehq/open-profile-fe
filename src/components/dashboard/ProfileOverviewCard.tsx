@@ -85,7 +85,23 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
         theme = "light";
       }
 
-      // 1. Sync theme settings to the draft state
+      const apiCornerStyle: "sharp" | "medium" | "round" =
+        cornerStyle === "sharp"
+          ? "sharp"
+          : cornerStyle === "pill"
+            ? "round"
+            : "medium";
+
+      const appearanceRes = await updateProfileAppearance({
+        template,
+        accentColour,
+        font,
+        cornerStyle: apiCornerStyle,
+        spacing,
+        theme,
+      });
+
+      // 2. Sync theme settings to the draft state ONLY if live appearance succeeds
       await upsertDraft({
         themeSettings: {
           template,
@@ -96,24 +112,10 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
         },
       });
 
-      const apiCornerStyle: "sharp" | "medium" | "round" =
-        cornerStyle === "sharp"
-          ? "sharp"
-          : cornerStyle === "pill"
-            ? "round"
-            : "medium";
-
-      // 2. Sync to active profile appearance
-      return updateProfileAppearance({
-        template,
-        accentColour,
-        font,
-        cornerStyle: apiCornerStyle,
-        spacing,
-        theme,
-      });
+      return { appearanceRes, templateType };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      setSelectedTemplateOverride(data.templateType);
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       toast.success("Template saved successfully.");
       setIsTemplateModalOpen(false);
@@ -124,7 +126,6 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
   });
 
   const handleSelectTemplate = (template: TemplateType) => {
-    setSelectedTemplateOverride(template);
     doSaveTemplate(template);
   };
 

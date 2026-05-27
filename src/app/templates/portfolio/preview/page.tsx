@@ -22,7 +22,7 @@ const ChatBubbleDotIcon = () => (
 );
 
 export default function PortfolioTemplatePreviewPage() {
-  const name = "Micaela, Robinssonss";
+  const name = "Micaela Robinsson";
 
   const dummyData = {
     bio: "I'm a digital creator focusing on the intersection of design, technology, and intentional living. Sharing insights to help you build better products and habits.",
@@ -118,6 +118,7 @@ export default function PortfolioTemplatePreviewPage() {
               src="/profile-preview/avatar.png"
               alt={name}
               fill
+              sizes="(max-width: 640px) 100px, 110px"
               className="object-cover"
             />
           </div>
@@ -155,6 +156,7 @@ export default function PortfolioTemplatePreviewPage() {
                     src={project.imageSrc}
                     alt={project.title}
                     fill
+                    sizes="(max-width: 640px) 100vw, 50vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                   />
                 </div>
