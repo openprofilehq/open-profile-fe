@@ -26,6 +26,7 @@ export type ProfileResponse = {
   isPublished?: boolean;
   templateType?: string | null;
   themeSettings?: unknown | null;
+  appearance?: ProfileAppearanceSettings | null;
   content?: ProfileContentDetails | null;
 };
 
@@ -162,6 +163,7 @@ export type ProfileAppearanceResponse = {
 
 export type GetProfileAppearanceResponse = {
   status: string;
-  message: string;
+  message?: string;
   data?: ProfileAppearanceSettings | null;
+  appearance?: ProfileAppearanceSettings | null;
 };
