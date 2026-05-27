@@ -10,6 +10,12 @@ export interface TableOfContentItem {
         footer?: string;
       };
 }
+export const getTableOfContentId = (heading: string) => {
+  return heading
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+};
 
 export const tableOfContent: TableOfContentItem[] = [
   {
@@ -147,10 +153,7 @@ const PrivacyContent = () => {
   return (
     <div>
       {tableOfContent.map((item, index) => {
-        const id = item.heading
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/(^-|-$)/g, "");
+        const id = getTableOfContentId(item.heading);
 
         return (
           <div className="mt-6 scroll-mt-32 space-y-4" key={index} id={id}>

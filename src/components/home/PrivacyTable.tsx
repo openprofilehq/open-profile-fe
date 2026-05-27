@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { tableOfContent } from "./PrivacyContent";
+import { tableOfContent, getTableOfContentId } from "./PrivacyContent";
 
 const PrivacyTable = () => {
-  const [activeId, setActiveId] = useState<string>("");
+  const [activeId, setActiveId] = useState<string>(
+    getTableOfContentId(tableOfContent[0]?.heading || "")
+  );
   const isClickingRef = React.useRef(false);
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -14,16 +16,13 @@ const PrivacyTable = () => {
 
       const headingElements = tableOfContent
         .map((item) => {
-          const id = item.heading
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/(^-|-$)/g, "");
+          const id = getTableOfContentId(item.heading);
           const el = document.getElementById(id);
           return { id, el };
         })
         .filter((item) => item.el !== null);
 
-      let currentActiveId = "";
+      let currentActiveId = headingElements[0]?.id || "";
       for (const { id, el } of headingElements) {
         if (el) {
           const rect = el.getBoundingClientRect();
@@ -71,10 +70,7 @@ const PrivacyTable = () => {
       </h4>
       <ul className="text-secondary-text space-y-1 text-[14px] font-medium md:text-[15px]">
         {tableOfContent.map((item, index) => {
-          const id = item.heading
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/(^-|-$)/g, "");
+          const id = getTableOfContentId(item.heading);
           const isActive = activeId === id;
 
           return (

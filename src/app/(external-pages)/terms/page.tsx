@@ -149,7 +149,7 @@ export default function TermsOfService() {
         })
         .filter((item) => item.el !== null);
 
-      let currentActiveId = "";
+      let currentActiveId = headingElements[0]?.id || "";
       for (const { id, el } of headingElements) {
         if (el) {
           const rect = el.getBoundingClientRect();
@@ -189,7 +189,7 @@ export default function TermsOfService() {
   };
 
   return (
-    <div className="text-primary min-h-screen overflow-x-clip bg-white font-sans selection:bg-[#065E69] selection:text-white">
+    <div className="text-primary selection:bg-brand min-h-screen overflow-x-clip bg-white font-sans selection:text-white">
       <Navbar />
 
       <div className="bg-brand-subtle-bg h-80 w-screen pt-20 lg:pt-36">
