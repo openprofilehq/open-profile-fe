@@ -76,7 +76,7 @@ export function Opportunities() {
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
 
             <h3 className="absolute bottom-8 left-8 text-[24px] font-bold tracking-tight text-white">
               -Monitor your audience

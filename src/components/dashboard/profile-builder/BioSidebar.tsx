@@ -74,9 +74,9 @@ export default function BioSidebar({
   const displayImage = uploadedImage || profilePhotoUrl;
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in hidden h-full w-72.5 shrink-0 flex-col border bg-background shadow-sm duration-200 select-none lg:flex">
+    <aside className="border-tertiary-b animate-in fade-in hidden h-full w-72.5 shrink-0 flex-col rounded-2xl border bg-background p-6 shadow-sm duration-200 select-none lg:flex">
       {/* Back Button */}
-      <div className="p-6 pb-4">
+      <div className="pb-4">
         <button
           onClick={returnTab}
           className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
@@ -117,7 +117,7 @@ export default function BioSidebar({
       </div>
 
       {/* Tab Content */}
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto py-6 pr-1">
         {selectedTab === "content" ? (
           <div className="flex flex-col gap-6">
             {/* Full name */}
@@ -136,7 +136,7 @@ export default function BioSidebar({
                   onUpdateSection(section.id, { fullName: e.target.value })
                 }
                 placeholder="Enter full name"
-                className="border-tertiary-b focus:border-brand-b w-full rounded-[10px] border bg-background px-4 py-3 text-sm text-primary-text transition-colors outline-none"
+                className="border-tertiary-b focus:border-brand-b w-full rounded-[10px] border bg-background px-4 py-3 text-sm text-[#050505] transition-colors outline-none"
               />
             </div>
 
@@ -157,9 +157,9 @@ export default function BioSidebar({
                 rows={5}
                 maxLength={200}
                 placeholder="Write a short bio..."
-                className="border-tertiary-b focus:border-brand-b w-full resize-none rounded-[10px] border bg-background px-4 py-3 text-sm text-primary-text transition-colors outline-none"
+                className="border-tertiary-b focus:border-brand-b w-full resize-none rounded-[10px] border bg-background px-4 py-3 text-sm text-[#050505] transition-colors outline-none"
               />
-              <p className="mt-1 text-right text-xs text-tertiary-text">
+              <p className="mt-1 text-right text-xs text-[#A2A2A2]">
                 {bio.length}/200
               </p>
             </div>
@@ -174,7 +174,7 @@ export default function BioSidebar({
                 <button
                   type="button"
                   onClick={() => !displayImage && fileInputRef.current?.click()}
-                  className="flex min-w-0 flex-1 items-center gap-3 p-1 text-left transition-colors hover:bg-secondary-bg"
+                  className="flex min-w-0 flex-1 items-center gap-3 p-1 text-left transition-colors hover:bg-[#F8FAFC]"
                 >
                   {displayImage ? (
                     <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
@@ -221,7 +221,7 @@ export default function BioSidebar({
                       fileInputRef.current?.click();
                     }
                   }}
-                  className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-secondary-bg disabled:opacity-50"
+                  className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-[#F8FAFC] disabled:opacity-50"
                   aria-label={displayImage ? "Remove image" : "Upload image"}
                   title={
                     uploading
@@ -232,9 +232,9 @@ export default function BioSidebar({
                   }
                 >
                   {uploading ? (
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-hover-bg border-t-transparent" />
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#087583] border-t-transparent" />
                   ) : displayImage ? (
-                    <Trash2 size={16} className="text-negative-text" />
+                    <Trash2 size={16} className="text-[#9F2B2B]" />
                   ) : (
                     <Upload size={16} />
                   )}
@@ -258,7 +258,7 @@ export default function BioSidebar({
               <div className="border-tertiary-b overflow-hidden rounded-[10px] border bg-background">
                 {/* Messages header */}
                 <div className="border-tertiary-b border-b px-4 py-3">
-                  <p className="text-sm font-semibold text-primary-text">
+                  <p className="text-sm font-semibold text-[#050505]">
                     Messages
                   </p>
                 </div>
@@ -268,7 +268,7 @@ export default function BioSidebar({
                   <input
                     type="text"
                     placeholder="Search site or paste link"
-                    className="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm text-primary-text placeholder-disabled-text outline-none"
+                    className="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm text-[#050505] placeholder-[#A2A2A2] outline-none"
                     readOnly
                   />
                   <button
@@ -286,14 +286,14 @@ export default function BioSidebar({
                       <button
                         type="button"
                         onClick={() => setButtonMenuOpen(false)}
-                        className="hover:bg-hover-bg w-full px-4 py-3 text-left text-sm text-primary-text transition-colors"
+                        className="hover:bg-hover-bg w-full px-4 py-3 text-left text-sm text-[#050505] transition-colors"
                       >
                         Link
                       </button>
                       <button
                         type="button"
                         onClick={() => setButtonMenuOpen(false)}
-                        className="hover:bg-hover-bg border-tertiary-b w-full border-t px-4 py-3 text-left text-sm text-primary-text transition-colors"
+                        className="hover:bg-hover-bg border-tertiary-b w-full border-t px-4 py-3 text-left text-sm text-[#050505] transition-colors"
                       >
                         Email
                       </button>
@@ -308,11 +308,11 @@ export default function BioSidebar({
           <div className="flex flex-col gap-6">
             {/* Upload area */}
             <div
-              className="border-tertiary-b flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-8 transition-colors hover:bg-secondary-bg"
+              className="border-tertiary-b flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-8 transition-colors hover:bg-[#FAFAFA]"
               onClick={() => fileInputRef.current?.click()}
             >
-              <Upload size={24} className="text-tertiary-text" />
-              <p className="text-sm text-secondary-text">
+              <Upload size={24} className="text-[#A2A2A2]" />
+              <p className="text-sm text-[#747474]">
                 Click to upload · 5MB max
               </p>
             </div>

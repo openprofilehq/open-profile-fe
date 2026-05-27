@@ -39,14 +39,15 @@ export default function DashboardSidebar({
   const queryClient = useQueryClient();
 
   const logoutMutation = useMutation({
-    mutationKey: logoutOption.mutationKey,
-    mutationFn: logoutOption.mutationFn,
+    ...logoutOption,
     onSuccess: () => {
       sessionStorage.removeItem("resetToken");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
       queryClient.removeQueries({ queryKey: userQueryOptions.queryKey });
       router.push("/login");
     },
-    onError: (err: unknown) =>
+    onError: (err) =>
       toast.error(isApiError(err) ? err.message : "Logout failed."),
   });
 
@@ -77,7 +78,7 @@ export default function DashboardSidebar({
         }`}
       >
         <div className="flex h-19 items-center justify-between border-b border-border px-4 lg:hidden">
-          <span className="font-bold text-brand-hover-bg">Menu</span>
+          <span className="font-bold text-[#087583]">Menu</span>
 
           <button
             type="button"
@@ -105,8 +106,8 @@ export default function DashboardSidebar({
                 onClick={onClose}
                 className={`flex items-center gap-3 rounded-[10px] px-4 py-4 text-[18px] font-medium transition-colors ${
                   isActive
-                    ? "bg-brand-hover-bg text-white"
-                    : "text-primary-text hover:bg-secondary-bg"
+                    ? "bg-[#087583] text-white"
+                    : "text-[#050505] hover:bg-[#F5F5F5]"
                 }`}
               >
                 <Icon size={22} />
