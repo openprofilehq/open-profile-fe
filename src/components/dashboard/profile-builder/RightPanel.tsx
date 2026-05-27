@@ -39,7 +39,7 @@ const FONT_OPTIONS = [
   { value: "Inter", label: "Inter Sans" },
   { value: "Serif", label: "Playfair Serif" },
   { value: "Mono", label: "Roboto Mono" },
-  { value: "Geoligica", label: "Geoligica" },
+  { value: "Geologica", label: "Geologica" },
   { value: "Manrope", label: "Manrope" },
 ];
 
