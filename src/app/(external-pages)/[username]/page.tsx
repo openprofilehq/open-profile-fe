@@ -2,12 +2,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { type ProfileResponse } from "@/api/profile/profile.type";
+import {
+  type ProfileContentDetails,
+  type ProfileResponse,
+} from "@/api/profile/profile.type";
 import { env as serverEnv } from "@/env/server";
 import { Folder, ExternalLink } from "lucide-react";
 
 type Props = {
   params: Promise<{ username: string }>;
+};
+
+type LegacyContent = ProfileContentDetails & {
+  themeSettings?: unknown;
 };
 
 function getImageUrl(src?: string | null) {
@@ -95,7 +102,7 @@ export default async function UserProfilePage({ params }: Props) {
 
   const rawAppearance = (profile.appearance ||
     profile.themeSettings ||
-    (content as any)?.themeSettings ||
+    (content as LegacyContent | null)?.themeSettings ||
     {}) as PublicProfileAppearance;
 
   const themeSettings: PublicProfileAppearance = {
