@@ -3,43 +3,43 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="relative w-full overflow-hidden rounded-t-3xl bg-slate-900 px-4 pt-16 pb-10 md:px-8">
-      <div className="pointer-events-none absolute -bottom-6 -left-10 z-0 hidden h-20 w-28 select-none md:block md:h-28 md:w-36">
+    <footer className="bg-inverse-bg relative w-full overflow-hidden rounded-t-3xl px-6 pt-14 pb-8 md:px-8 md:py-16">
+      <div className="pointer-events-none absolute -bottom-16 -left-16 z-0 h-72 w-72 opacity-80 select-none md:-bottom-24 md:-left-20 md:h-[400px] md:w-[400px]">
         <Image
           src="/footer/footer.svg"
-          className="object-contain pt-5"
+          className="object-contain"
           alt=""
           fill
         />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl">
-        <div className="flex flex-col justify-between gap-12 pb-16 md:flex-row md:gap-8">
-          <div className="flex-1 md:pt-7">
-            <div className="flex items-center">
-              <div className="relative h-10 w-48 md:h-12 md:w-64">
-                <Image
-                  src="/footer/logo.svg"
-                  className="h-full w-full object-contain object-bottom"
-                  alt="OpenProfile logo"
-                  fill
-                />
-              </div>
+      <div className="relative z-10 mx-auto max-w-6xl">
+        <div className="flex flex-col justify-between gap-10 pb-12 md:flex-row md:gap-8 md:pb-16">
+          <div className="flex-1">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/footer/logo.svg"
+                width={26}
+                height={28}
+                className="h-[26px] w-auto object-contain"
+                alt="OpenProfile mark"
+              />
             </div>
 
-            <p className="mt-3 max-w-md text-base leading-relaxed font-semibold text-slate-200 md:text-base">
-              Your verified identity, discoverable everywhere.
+            <p className="text-inverse-text mt-5 text-[15px] leading-[1.6] font-normal">
+              Your verified identity, <br />
+              discoverable everywhere.
             </p>
           </div>
 
-          <div className="grid flex-1 grid-cols-2 gap-8 md:grid-cols-3 md:gap-16">
-            <div className="space-y-6">
+          <div className="grid flex-1 grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-3 md:gap-16">
+            <div className="space-y-5 md:space-y-6">
               <h4 className="text-sm font-semibold text-white">Products</h4>
               <ul className="space-y-4">
                 <li>
                   <Link
                     href="/coming-soon"
-                    className="text-sm font-normal text-slate-200 transition-colors hover:text-white"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     How it works
                   </Link>
@@ -47,7 +47,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/coming-soon"
-                    className="text-sm font-normal text-slate-200 transition-colors hover:text-white"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     Features
                   </Link>
@@ -55,7 +55,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="#pricing"
-                    className="text-sm font-normal text-slate-200 transition-colors hover:text-white"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     Pricing
                   </Link>
@@ -63,7 +63,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/faq"
-                    className="text-sm font-normal text-slate-200 transition-colors hover:text-white"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     FAQ
                   </Link>
@@ -71,22 +71,37 @@ export default function Footer() {
               </ul>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-5 md:space-y-6">
               <h4 className="text-sm font-semibold text-white">Company</h4>
               <ul className="space-y-4">
                 <li>
                   <Link
                     href="/coming-soon"
-                    className="text-sm font-normal text-slate-200 transition-colors hover:text-white"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     About
                   </Link>
                 </li>
-
+                <li>
+                  <Link
+                    href="/coming-soon"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
+                  >
+                    Blog
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/coming-soon"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
+                  >
+                    Careers
+                  </Link>
+                </li>
                 <li>
                   <Link
                     href="/contact"
-                    className="text-sm font-normal text-slate-200 transition-colors hover:text-white"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     Contact
                   </Link>
@@ -94,13 +109,13 @@ export default function Footer() {
               </ul>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-5 md:space-y-6">
               <h4 className="text-sm font-semibold text-white">Legal</h4>
               <ul className="space-y-4">
                 <li>
                   <Link
                     href="/privacy-policy"
-                    className="text-sm font-normal text-slate-200 transition-colors hover:text-white"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     Privacy Policy
                   </Link>
@@ -108,7 +123,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/terms"
-                    className="text-sm font-normal text-slate-200 transition-colors hover:text-white"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     Terms of Service
                   </Link>
@@ -118,8 +133,8 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="flex items-center justify-center border-t border-gray-500 pt-8">
-          <p className="text-center text-sm font-light text-white">
+        <div className="flex items-center justify-start border-t border-white/10 pt-8 pb-2 md:justify-center md:pb-0">
+          <p className="text-left text-[12px] font-light text-slate-400 md:text-center md:text-sm md:text-white">
             © {new Date().getFullYear()} Open Profile. All rights reserved.
           </p>
         </div>
