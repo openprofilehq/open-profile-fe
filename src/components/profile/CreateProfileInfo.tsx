@@ -114,12 +114,12 @@ export default function CreateProfileInfo({
         <div className="mt-16 flex flex-col gap-1.5">
           <div className="mt-4">
             <label className="mb-1 inline-block font-bold text-[#454545]">
-              Display Name
+              Full Name
             </label>
             <Input
               value={displayName}
               onChange={onUpdateDisplayName}
-              placeholder="John Doe"
+              placeholder="Enter your full name"
               className="border-2 border-[#ededed] bg-white shadow-none"
             />
           </div>
