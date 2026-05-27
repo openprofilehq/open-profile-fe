@@ -122,10 +122,10 @@ export default function ContactPage() {
                       className="text-link-hover-text mt-0.5 shrink-0"
                     />
                     <div>
-                      <p className="text-[13px] font-medium text-[#050505]">
+                      <p className="text-sm font-medium text-[#050505]">
                         Email Address
                       </p>
-                      <p className="text-[13px] text-[#5C5E64]">
+                      <p className="text-xs text-[#5C5E64]">
                         openprofile@email.com
                       </p>
                     </div>
@@ -136,12 +136,10 @@ export default function ContactPage() {
                       className="text-link-hover-text mt-0.5 shrink-0"
                     />
                     <div>
-                      <p className="text-[13px] font-medium text-[#050505]">
+                      <p className="text-sm font-medium text-[#050505]">
                         Phone number
                       </p>
-                      <p className="text-[13px] text-[#5C5E64]">
-                        +1 234 567 8900
-                      </p>
+                      <p className="text-xs text-[#5C5E64]">+1 234 567 8900</p>
                     </div>
                   </li>
                   <li className="flex items-start gap-3">
@@ -150,12 +148,10 @@ export default function ContactPage() {
                       className="text-link-hover-text mt-0.5 shrink-0"
                     />
                     <div>
-                      <p className="text-[13px] font-medium text-[#050505]">
+                      <p className="text-sm font-medium text-[#050505]">
                         Our Office Address
                       </p>
-                      <p className="text-[13px] text-[#5C5E64]">
-                        New York, USA
-                      </p>
+                      <p className="text-xs text-[#5C5E64]">New York, USA</p>
                     </div>
                   </li>
                 </ul>
@@ -191,10 +187,10 @@ export default function ContactPage() {
                   <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#E6F4F5]">
                     <Mail size={24} style={{ color: "#065E69" }} />
                   </div>
-                  <h3 className="text-[17px] font-semibold text-[#050505]">
+                  <h3 className="font-semibold text-[#050505]">
                     Message Sent!
                   </h3>
-                  <p className="max-w-xs text-[13px] text-[#5C5E64]">
+                  <p className="max-w-xs text-sm text-[#5C5E64]">
                     Thanks for reaching out. We&apos;ll get back to you as soon
                     as possible.
                   </p>
