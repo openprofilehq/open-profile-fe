@@ -55,6 +55,8 @@ export default function DashboardTopbar() {
       draftUpdatedAtRef.current = null;
       queryClient.invalidateQueries({ queryKey: ["profile", "content"] });
       queryClient.invalidateQueries({ queryKey: ["profile", "draft-state"] });
+      queryClient.invalidateQueries({ queryKey: ["profile", "dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["profile", "appearance"] });
       toast.success("Profile published successfully.");
     },
     onError(error: unknown) {
@@ -166,7 +168,7 @@ export default function DashboardTopbar() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.15, ease: "easeOut" }}
-                    className="border-tertiary-b absolute right-0 top-full mt-2 w-44 overflow-hidden rounded-xl border bg-white py-1 shadow-lg"
+                    className="border-tertiary-b absolute top-full right-0 mt-2 w-44 overflow-hidden rounded-xl border bg-white py-1 shadow-lg"
                   >
                     {user?.fullName && (
                       <p className="border-tertiary-b text-tertiary-text text-md truncate border-b px-4 py-2">

@@ -221,7 +221,10 @@ export default function ProfileBuilderContent() {
       dashboardProfile.data
     );
 
-    const appearanceSettings = profileAppearance.data?.data ?? null;
+    const appearanceSettings =
+      profileAppearance.data?.appearance ??
+      profileAppearance.data?.data ??
+      null;
 
     if (appearanceSettings) {
       appearanceHydratingRef.current = true;

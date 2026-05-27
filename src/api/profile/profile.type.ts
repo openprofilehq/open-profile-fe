@@ -26,6 +26,7 @@ export type ProfileResponse = {
   isPublished?: boolean;
   templateType?: string | null;
   themeSettings?: unknown | null;
+  appearance?: ProfileAppearanceSettings | null;
   content?: ProfileContentDetails | null;
 };
 
@@ -160,8 +161,19 @@ export type ProfileAppearanceResponse = {
   message: string;
 };
 
+/**
+ * Response for GET /profiles/appearance.
+ *
+ * `appearance` is the canonical response field returned by the current backend.
+ * `data` is kept only as a temporary backwards-compatible fallback for older
+ * response shapes and should be removed once the migration is complete.
+ *
+ * Callers should always prefer `appearance` before falling back to `data`.
+ */
 export type GetProfileAppearanceResponse = {
   status: string;
-  message: string;
+  message?: string;
+  appearance?: ProfileAppearanceSettings | null;
+  /** @deprecated Use `appearance` instead. */
   data?: ProfileAppearanceSettings | null;
 };
