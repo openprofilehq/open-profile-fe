@@ -80,7 +80,7 @@ export default async function UserProfilePage({ params }: Props) {
     Inter: "font-sans",
     Serif: "font-serif",
     Mono: "font-mono",
-    Geoligica: "font-geoligica",
+    Geologica: "font-geologica",
     Manrope: "font-manrope",
   };
 
