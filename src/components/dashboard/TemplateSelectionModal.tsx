@@ -6,6 +6,7 @@ import {
   dashboardProfileOption,
   saveTemplateOption,
   profileContentOption,
+  profileAppearanceOption,
 } from "@/api/profile/profile.options";
 import { toast } from "sonner";
 import { TemplateType } from "@/api/profile/profile.type";
@@ -54,7 +55,7 @@ export function TemplateSelectionModal({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: dashboardProfileOption().queryKey });
       queryClient.invalidateQueries({ queryKey: profileContentOption().queryKey });
-      queryClient.invalidateQueries({ queryKey: ["profile", "appearance"] });
+      queryClient.invalidateQueries({ queryKey: profileAppearanceOption().queryKey });
       toast.success("Template saved successfully.");
       setIsOpen(false);
       onPreviewChange?.(null);
@@ -76,9 +77,28 @@ export function TemplateSelectionModal({
     onPreviewChange?.(null);
   };
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (!isSaving) {
+          setIsOpen(false);
+          setLocalSelectedTemplate(initialTemplate);
+          onPreviewChange?.(null);
+        }
+      }
+    };
+    if (isOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+    }
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, isSaving, initialTemplate, onPreviewChange]);
+
   return (
     <>
-      <div onClick={handleOpen}>{trigger}</div>
+      {React.isValidElement(trigger) 
+        ? React.cloneElement(trigger as React.ReactElement<any>, { onClick: handleOpen }) 
+        : <div onClick={handleOpen} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') handleOpen(); }}>{trigger}</div>
+      }
       {isOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm"
@@ -87,10 +107,13 @@ export function TemplateSelectionModal({
           <div
             className="bg-background w-full max-w-3xl rounded-[24px] border border-border p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="template-modal-title"
           >
           <div className="mb-4 flex items-start justify-between">
             <div>
-              <h2 className="text-primary-text text-2xl font-bold">
+              <h2 id="template-modal-title" className="text-primary-text text-2xl font-bold">
                 Choose a Template
               </h2>
               <p className="text-secondary-text mt-2 text-sm">

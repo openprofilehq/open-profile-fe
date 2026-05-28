@@ -65,7 +65,7 @@ export default function PortfolioDashboardView({
 
   const rawPhotoSrc = profile?.photoUrl;
   const photoSrc = rawPhotoSrc 
-    ? (rawPhotoSrc.startsWith('/profile-preview/') ? rawPhotoSrc : getImageUrl(rawPhotoSrc)!)
+    ? (rawPhotoSrc.startsWith('/profile-preview/') ? rawPhotoSrc : (getImageUrl(rawPhotoSrc) || "/profile-preview/avatar.png"))
     : "/profile-preview/avatar.png";
 
   return (

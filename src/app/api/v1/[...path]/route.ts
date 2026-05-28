@@ -21,6 +21,8 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   return proxyRequest(request, await params);
 }
 
+import { parseSetCookie } from "@/lib/cookie-utils";
+
 async function proxyRequest(request: NextRequest, { path }: { path: string[] }) {
   const upstreamUrl = new URL(`${env.API_BASE_URL}/api/v1/${path.join("/")}`);
   request.nextUrl.searchParams.forEach((v, k) => upstreamUrl.searchParams.set(k, v));
@@ -47,36 +49,26 @@ async function proxyRequest(request: NextRequest, { path }: { path: string[] }) 
     headers: { "content-type": upstream.headers.get("content-type") ?? "application/json" },
   });
 
-  function parseSetCookie(cookieStr: string) {
-    const parts = cookieStr.split(';');
-    const [nameValue, ...options] = parts;
-    const [name, ...valueParts] = nameValue.split('=');
-    const value = valueParts.join('=');
-    
-    const cookieOptions: Record<string, unknown> = {};
-    for (const opt of options) {
-      const [optName, optVal] = opt.trim().split('=');
-      const key = optName.toLowerCase();
-      if (key === 'max-age') cookieOptions.maxAge = parseInt(optVal);
-      if (key === 'path') cookieOptions.path = optVal;
-      // Ignore domain to allow the browser to set it to the frontend domain
-      // if (key === 'domain') cookieOptions.domain = optVal;
-      if (key === 'secure') cookieOptions.secure = process.env.NODE_ENV === "production";
-      if (key === 'httponly') cookieOptions.httpOnly = true;
-      if (key === 'samesite') cookieOptions.sameSite = optVal.toLowerCase() as 'lax' | 'strict' | 'none';
-    }
-    return { name: name.trim(), value: value.trim(), cookieOptions };
-  }
-
   // Forward Set-Cookie headers properly using getSetCookie() to prevent comma-merging
   const setCookies = upstream.headers.getSetCookie?.() || [];
+  let loginSuccess = false;
   for (const cookieStr of setCookies) {
     const { name, value, cookieOptions } = parseSetCookie(cookieStr);
     response.cookies.set(name, value, cookieOptions);
+    if (name === "accessToken") loginSuccess = true;
   }
 
+  if (loginSuccess) {
+    response.cookies.set("auth", "1", {
+      path: "/",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+    });
+  }
+
+  const excludedHeaders = ["set-cookie", "content-encoding", "content-length", "transfer-encoding", "content-type"];
   upstream.headers.forEach((value, key) => {
-    if (key.toLowerCase() !== "set-cookie") {
+    if (!excludedHeaders.includes(key.toLowerCase())) {
       response.headers.append(key, value);
     }
   });

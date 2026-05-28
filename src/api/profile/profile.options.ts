@@ -92,7 +92,8 @@ export const saveTemplateOption = mutationOptions({
     try {
       const res = await getProfileAppearance();
       if (res?.data) {
-        currentAppearance = res.data;
+        // Read appearance (canonical) before the deprecated data field (CR2)
+        currentAppearance = (res.data as any).appearance || (res.data as any).data || res.data;
       }
     } catch (e) {
       console.warn("Could not fetch current appearance, proceeding with minimal payload", e);
@@ -103,12 +104,18 @@ export const saveTemplateOption = mutationOptions({
       template,
     });
 
-    // Sync template setting to the draft state so it reflects in dashboard
-    await upsertDraft({
-      themeSettings: {
-        template,
-      },
-    });
+    // Sync theme settings to the draft state ONLY if live appearance succeeds
+    // Treat draft sync as best-effort so partial failures do not block the UI
+    try {
+      await upsertDraft({
+        themeSettings: {
+          ...currentAppearance,
+          template,
+        },
+      });
+    } catch (error) {
+      console.warn("Failed to sync template settings to draft state:", error);
+    }
 
     return { appearanceRes, templateType };
   },

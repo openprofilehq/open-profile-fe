@@ -37,26 +37,20 @@ export default function DashboardHome() {
   const themeSettings = (content as Record<string, unknown>)?.themeSettings as Record<string, unknown> | undefined;
   const rawTemplate = 
     previewTemplate ||
-    profileAppearance.data?.data?.template || 
+    profileAppearance.data?.appearance?.template || 
     themeSettings?.template || 
     profile?.templateType;
 
-  // eslint-disable-next-line no-console
-  console.log("DEBUG: rawTemplate resolved to", rawTemplate, "from", {
-    previewTemplate,
-    appearance: profileAppearance.data?.data?.template,
-    contentTheme: themeSettings?.template,
-    profileTemplate: profile?.templateType
-  });
+  const activeTemplateMap: Record<string, "portfolio" | "professional" | "creator" | "default"> = {
+    portfolio: "portfolio",
+    professional: "professional",
+    creator: "creator",
+    default: "default",
+  };
 
-  const activeTemplate =
-    typeof rawTemplate === "string" && rawTemplate.toLowerCase() === "portfolio"
-      ? "portfolio"
-      : typeof rawTemplate === "string" && rawTemplate.toLowerCase() === "professional"
-        ? "professional"
-      : typeof rawTemplate === "string" && rawTemplate.toLowerCase() === "creator"
-        ? "creator"
-        : "default"; // Default to default template if not specified
+  const activeTemplate = typeof rawTemplate === "string" 
+    ? activeTemplateMap[rawTemplate.toLowerCase()] || "default"
+    : "default";
 
   return (
     <div className="mx-auto grid w-full max-w-[1180px] grid-cols-1 gap-6 overflow-x-hidden xl:grid-cols-[0.8fr_1.2fr]">

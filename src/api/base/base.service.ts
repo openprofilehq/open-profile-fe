@@ -48,10 +48,11 @@ api.interceptors.response.use(
     };
 
     const isAuthEndpoint =
-      originalRequest.url?.includes("/auth/refresh-token") ||
-      originalRequest.url?.includes("/auth/logout");
+      originalRequest.url?.includes("/auth/") &&
+      !originalRequest.url?.match(/\/auth\/me(?:$|\?|\/)/);
 
     if (
+      isServer || // Prevent server-side silent token refresh (CR1)
       error.response?.status !== 401 ||
       originalRequest._retry ||
       isAuthEndpoint

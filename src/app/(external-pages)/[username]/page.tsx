@@ -164,8 +164,8 @@ export default async function UserProfilePage({ params }: Props) {
 
   const textStyle = {
     color:
-      globalTextColor === THEME_DEFAULTS.TEXT_COLOR && isDark
-        ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT
+      globalTextColor === (isDark ? THEME_DEFAULTS.DARK_MODE.TEXT_COLOR : THEME_DEFAULTS.TEXT_COLOR)
+        ? (isDark ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT : THEME_DEFAULTS.LIGHT_MODE.MUTED_TEXT)
         : globalTextColor || (isDark ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT : THEME_DEFAULTS.LIGHT_MODE.MUTED_TEXT),
   };
 
@@ -233,8 +233,8 @@ export default async function UserProfilePage({ params }: Props) {
                     <p
                       style={{
                         color:
-                          secTextColor === THEME_DEFAULTS.TEXT_COLOR && isDark
-                            ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT
+                          secTextColor === (isDark ? THEME_DEFAULTS.DARK_MODE.TEXT_COLOR : THEME_DEFAULTS.TEXT_COLOR)
+                            ? (isDark ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT : THEME_DEFAULTS.LIGHT_MODE.MUTED_TEXT)
                             : secTextColor || textStyle.color,
                       }}
                       className="mt-3 text-[15px] leading-relaxed whitespace-pre-wrap opacity-90 transition-colors"
@@ -331,7 +331,7 @@ export default async function UserProfilePage({ params }: Props) {
                             </div>
                           </div>
                           <span
-                            className="cursor-pointer rounded-full border p-2 opacity-70"
+                            className="rounded-full border p-2 opacity-70"
                             style={{
                               borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
                             }}

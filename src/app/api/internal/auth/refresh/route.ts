@@ -48,11 +48,21 @@ export async function POST() {
     const setCookies = res.headers.getSetCookie?.() || [];
     for (const cookie of setCookies) {
       if (cookie.startsWith("accessToken=")) {
-        accessToken = cookie.split(";")[0].split("=")[1];
+        const fullValue = cookie.split(";")[0];
+        accessToken = fullValue.substring(fullValue.indexOf("=") + 1);
       }
       if (cookie.startsWith("refreshToken=")) {
-        newRefreshToken = cookie.split(";")[0].split("=")[1];
+        const fullValue = cookie.split(";")[0];
+        newRefreshToken = fullValue.substring(fullValue.indexOf("=") + 1);
       }
+    }
+
+    // Do not spread tokens into the JSON response body to avoid leaking them to the client (CR6)
+    delete data.accessToken;
+    delete data.refreshToken;
+    if (data.data) {
+      delete data.data.accessToken;
+      delete data.data.refreshToken;
     }
 
     const response = NextResponse.json({ success: true, ...data });

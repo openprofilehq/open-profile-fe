@@ -154,7 +154,8 @@ const mapCornerStyleFromApi = (cornerStyle: string) => {
   };
 
   return (
-    cornerStyleMap[cornerStyle as ProfileAppearanceCornerStyle] ?? "medium"
+    cornerStyleMap[cornerStyle as ProfileAppearanceCornerStyle] ?? 
+    (cornerStyle === "pill" ? "round" : "medium")
   );
 };
 
@@ -359,7 +360,7 @@ export default function ProfileBuilderContent() {
       // Backend verifies link URLs and returns 422 INVALID_LINKS when some fail
       // (e.g. Twitter 403, Instagram blocks crawlers) but still saves the data.
       // Treat this as a soft warning — the save succeeded.
-      if (isApiError(error) && error.status === 422) {
+      if (isApiError(error) && error.status === 422 && error.message?.includes('INVALID_LINKS')) {
         queryClient.invalidateQueries({
           queryKey: profileContentOption().queryKey,
         });

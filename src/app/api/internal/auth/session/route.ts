@@ -18,31 +18,6 @@ export async function POST(req: Request) {
       return response;
     }
 
-    if (accessToken) {
-      store.set("accessToken", accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 15 * 60, // 15 mins matching standard access token
-      });
-      store.set("auth", "1", {
-        path: "/",
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60, // 7 days (ui state maxes out at refresh token lifespan)
-      });
-    }
-
-    if (refreshToken) {
-      store.set("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 7 * 24 * 60 * 60, // 7 days
-      });
-    }
-
     return response;
   } catch (_err) {
     return NextResponse.json(

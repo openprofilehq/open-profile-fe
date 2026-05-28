@@ -13,14 +13,14 @@ type Props = {
   isLoadingContent?: boolean;
 };
 
-export default function DefaultDashboardView({ profile }: Props) {
+export default function DefaultDashboardView({ profile, content, isLoadingProfile, isLoadingContent }: Props) {
   return (
     <>
-      <ProfileSummaryCard />
-      <FeaturedLinks />
-      <HighlightCard profile={profile as unknown as Record<string, unknown>} />
-      <SelectedProject />
-      <YourCTA />
+      <ProfileSummaryCard profile={profile} isLoading={isLoadingProfile} />
+      <FeaturedLinks content={content} isLoading={isLoadingContent} />
+      <HighlightCard profile={profile} />
+      <SelectedProject content={content} />
+      <YourCTA content={content} />
     </>
   );
 }

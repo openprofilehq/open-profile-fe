@@ -58,7 +58,9 @@ export default function ProfileOverviewCard({ profile, isLoading, onPreviewChang
       ? "Creator"
       : typeof rawTemplate === "string" && rawTemplate.toLowerCase() === "portfolio"
         ? "Portfolio"
-        : "Professional";
+        : typeof rawTemplate === "string" && rawTemplate.toLowerCase() === "default"
+          ? "Default"
+          : "Professional";
 
   return (
     <>

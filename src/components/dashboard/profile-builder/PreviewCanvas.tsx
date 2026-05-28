@@ -197,6 +197,7 @@ export default function PreviewCanvas({
                     }}
                     className="text-secondary-text transition-opacity hover:opacity-80"
                     title="Toggle visibility"
+                    aria-label="Toggle section visibility"
                   >
                     {section.visible ? (
                       <Eye size={18} strokeWidth={2} />
@@ -211,6 +212,7 @@ export default function PreviewCanvas({
                     }}
                     className="text-negative-text transition-opacity hover:opacity-80"
                     title="Delete section"
+                    aria-label="Delete section"
                   >
                     <Trash2 size={18} strokeWidth={2} />
                   </button>
@@ -281,7 +283,7 @@ export default function PreviewCanvas({
                                 className="flex flex-col overflow-hidden rounded-xl border transition-all"
                               >
                                 {getImageUrl(project.imageSrc) && (
-                                  <div className={`relative w-full shrink-0 bg-secondary-bg dark:bg-zinc-800 ${isPortfolio ? "aspect-4/3" : "aspect-video"}`}>
+                                  <div className={`relative w-full shrink-0 ${isDark ? 'bg-zinc-800' : 'bg-secondary-bg'} ${isPortfolio ? "aspect-4/3" : "aspect-video"}`}>
                                     <Image
                                       src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
@@ -325,7 +327,7 @@ export default function PreviewCanvas({
                                 className="flex flex-col overflow-hidden rounded-xl border transition-all"
                               >
                                 {getImageUrl(project.imageSrc) && (
-                                  <div className="relative h-44 w-full shrink-0 bg-secondary-bg dark:bg-zinc-800">
+                                  <div className={`relative h-44 w-full shrink-0 ${isDark ? 'bg-zinc-800' : 'bg-secondary-bg'}`}>
                                     <Image
                                       src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
@@ -372,7 +374,7 @@ export default function PreviewCanvas({
                                 className="flex items-center gap-4 rounded-xl border p-4 transition-all"
                               >
                                 {getImageUrl(project.imageSrc) && (
-                                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-secondary-bg dark:bg-zinc-800">
+                                  <div className={`relative h-18 w-18 shrink-0 overflow-hidden rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-secondary-bg'}`}>
                                     <Image
                                       src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
@@ -439,7 +441,7 @@ export default function PreviewCanvas({
                                   )}
                                 </div>
                                 {getImageUrl(project.imageSrc) && (
-                                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-secondary-bg dark:bg-zinc-800">
+                                  <div className={`relative h-18 w-18 shrink-0 overflow-hidden rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-secondary-bg'}`}>
                                     <Image
                                       src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
@@ -478,7 +480,7 @@ export default function PreviewCanvas({
                         {section.links.map((link) => (
                           <div
                             key={link.id}
-                            className="border-tertiary-b flex items-center justify-between rounded-xl border bg-background/60 p-4 transition-colors hover:bg-black/5 dark:border-secondary-b dark:bg-background/5 dark:hover:bg-background/10"
+                            className={`border-tertiary-b flex items-center justify-between rounded-xl border p-4 transition-colors ${isDark ? 'border-secondary-b bg-background/5 hover:bg-background/10' : 'bg-background/60 hover:bg-black/5'}`}
                           >
                             <div className="flex min-w-0 items-center gap-3">
                               {getImageUrl(link.imageSrc) ? (
@@ -516,7 +518,7 @@ export default function PreviewCanvas({
                                 </p>
                               </div>
                             </div>
-                            <span className="cursor-pointer rounded-full border p-2">
+                            <span className="rounded-full border p-2">
                               <ExternalLink size={14} className="shrink-0" />
                             </span>
                           </div>
@@ -555,7 +557,7 @@ export default function PreviewCanvas({
                               src={section.iconSrc!}
                               alt={section.iconLabel || "CTA Icon"}
                               fill
-                              className="object-contain filter dark:invert"
+                              className={`object-contain filter ${isDark ? 'invert' : ''}`}
                               unoptimized
                             />
                           )}
@@ -565,7 +567,7 @@ export default function PreviewCanvas({
 
                     {/* Text Container (Title + Subtitle) */}
                     <div className={isCreator ? "flex flex-col" : "flex flex-col items-center"}>
-                      <h4 className="text-[32px] leading-snug font-bold tracking-tight text-primary-text dark:text-white">
+                      <h4 className={`text-[32px] leading-snug font-bold tracking-tight ${isDark ? 'text-white' : 'text-primary-text'}`}>
                         {section.title || "Let's build something"}
                       </h4>
 

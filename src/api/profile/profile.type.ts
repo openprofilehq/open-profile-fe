@@ -24,7 +24,7 @@ export type ProfileResponse = {
   bio: string | null;
   photoUrl: string | null;
   isPublished?: boolean;
-  templateType?: string | null;
+  templateType?: TemplateType | null;
   themeSettings?: unknown | null;
   appearance?: ProfileAppearanceSettings | null;
   content?: ProfileContentDetails | null;
@@ -35,7 +35,7 @@ export type DashboardProfileResponse = {
   fullName: string;
   bio: string | null;
   photoUrl: string | null;
-  templateType: string | null;
+  templateType: TemplateType | null;
   themeSettings: unknown | null;
   isPublished: boolean;
   hasUnpublishedChanges: boolean;
