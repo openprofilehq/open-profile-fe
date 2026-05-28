@@ -9,17 +9,16 @@ async function test() {
       email,
       password
     });
-    console.log("SIGNUP DATA:", JSON.stringify(signup.data, null, 2));
+    console.log("SIGNUP SUCCESSFUL");
     
     const login = await axios.post('https://api.staging.open-profile.hng14.com/api/v1/auth/login', {
       email,
       password
     });
-    console.log("LOGIN BODY KEYS:", Object.keys(login.data.data || login.data));
-    console.log("LOGIN DATA:", JSON.stringify(login.data, null, 2));
-    console.log("LOGIN HEADERS:", login.headers['set-cookie']);
+    console.log("LOGIN SUCCESSFUL");
   } catch(e) {
-    console.log("ERROR", e.response?.status, e.response?.data);
+    console.error("ERROR", e.response?.status, e.response?.data);
+    process.exit(1);
   }
 }
 test();

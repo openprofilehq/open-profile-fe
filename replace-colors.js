@@ -68,13 +68,13 @@ const textMap = {
   '#171717': 'selected-text',
   '#fefefe': 'span-text',
   '#e6e6e6': 'span-text-100',
-  '#9F2B2B': 'negative-text', // mapping to negative
-  '#3A3A3A': 'secondary-text',
-  '#6B7280': 'secondary-text', // extra mapping for common gray
+  '#9f2b2b': 'negative-text', // mapping to negative
+  '#3a3a3a': 'secondary-text',
+  '#6b7280': 'secondary-text', // extra mapping for common gray
   '#202020': 'primary-text',
   '#525252': 'secondary-text',
-  '#087A32': 'positive-bold-text',
-  '#D92D20': 'negative-text',
+  '#087a32': 'positive-bold-text',
+  '#d92d20': 'negative-text',
 };
 
 const bgMap = {
@@ -103,11 +103,11 @@ const bgMap = {
   '#262626': 'button-bg-waitlist',
   '#065e69': 'button-brand-bg',
   '#121212': 'inverse-bg', // generic mapping for dark bg
-  '#F8FAFC': 'secondary-bg',
-  '#DFF3F6': 'brand-subtle-bg',
-  '#E9FFE9': 'positive-subtle-bg',
-  '#FBFBFB': 'primary-bg',
-  '#F2FDFE': 'brand-light-subtle-bg',
+  '#f8fafc': 'secondary-bg',
+  '#dff3f6': 'brand-subtle-bg',
+  '#e9ffe9': 'positive-subtle-bg',
+  '#fbfbfb': 'primary-bg',
+  '#f2fdfe': 'brand-light-subtle-bg',
 };
 
 const borderMap = {
@@ -123,10 +123,10 @@ const borderMap = {
   '#ff4d4d': 'warning-b',
   '#31e47f': 'positive-b',
   '#454545': 'button-b',
-  '#D0D5DD': 'secondary-b',
-  '#2D2D2D': 'secondary-b',
-  '#E5E5E5': 'tertiary-b',
-  '#F04438': 'warning-b',
+  '#d0d5dd': 'secondary-b',
+  '#2d2d2d': 'secondary-b',
+  '#e5e5e5': 'tertiary-b',
+  '#f04438': 'warning-b',
 };
 
 function getMapForPrefix(prefix) {
@@ -153,8 +153,8 @@ function processFile(filePath) {
       hex = '#' + hex[1]+hex[1] + hex[2]+hex[2] + hex[3]+hex[3];
     }
     
-    // Ignore hex colors with opacity if we don't have them mapped, but we can strip opacity for the map check
-    let cleanHex = hex.slice(0, 7);
+    // Do not strip alpha for 8-digit hex colors, as this can produce incorrect opaque replacements
+    let cleanHex = hex;
     
     const map = getMapForPrefix(prefix);
     if (map && map[cleanHex]) {

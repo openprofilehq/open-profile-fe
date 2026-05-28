@@ -129,15 +129,20 @@ export const saveTemplateOption = mutationOptions({
     });
 
     // Sync theme settings to the draft state ONLY if live appearance succeeds
-    await upsertDraft({
-      themeSettings: {
-        template,
-        accentColour,
-        font,
-        borderRadius:
-          cornerStyle === "sharp" ? 0 : cornerStyle === "pill" ? 16 : 8,
-      },
-    });
+    // Treat draft sync as best-effort so partial failures do not block the UI
+    try {
+      await upsertDraft({
+        themeSettings: {
+          template,
+          accentColour,
+          font,
+          borderRadius:
+            cornerStyle === "sharp" ? 0 : cornerStyle === "pill" ? 16 : 8,
+        },
+      });
+    } catch (error) {
+      console.warn("Failed to sync template settings to draft state:", error);
+    }
 
     return { appearanceRes, templateType };
   },

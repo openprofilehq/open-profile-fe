@@ -45,7 +45,7 @@ api.interceptors.response.use(
 
     const isAuthEndpoint =
       originalRequest.url?.includes("/auth/") &&
-      !originalRequest.url?.includes("/auth/me");
+      !originalRequest.url?.match(/\/auth\/me(?:$|\?|\/)/);
 
     if (
       error.response?.status !== 401 ||

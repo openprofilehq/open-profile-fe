@@ -42,9 +42,9 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
 
   // Derive the active template from the profile's templateType
   const activeTemplate: TemplateType =
-    profile?.templateType === "creator"
+    (profile?.templateType as string | undefined)?.toLowerCase() === "creator"
       ? "Creator"
-      : profile?.templateType === "portfolio"
+      : (profile?.templateType as string | undefined)?.toLowerCase() === "portfolio"
         ? "Portfolio"
         : "Professional";
 
