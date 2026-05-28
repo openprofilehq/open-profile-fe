@@ -58,7 +58,7 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
             <Skeleton className="h-8" />
           ) : (
             <h1 className="text-2xl font-bold">
-              Welcome, {user?.fullName ?? "User"}
+              Welcome, {profile?.fullName ?? user?.fullName ?? "User"}
             </h1>
           )}
           <p className="mt-3 max-w-[390px] text-secondary-text">
