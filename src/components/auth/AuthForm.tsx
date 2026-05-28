@@ -32,10 +32,8 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
   const searchParams = useSearchParams();
   const returnTo = searchParams.get("returnTo");
 
-  const [name, setName] = useState("");
   const [email, setEmail] = useState(searchParams.get("email") ?? "");
   const [password, setPassword] = useState("");
-  const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
@@ -93,14 +91,6 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
     let hasError = false;
 
     if (isSignup) {
-      if (!name) {
-        setNameError("Full name is required");
-        hasError = true;
-      } else if (name.trim().split(/\s+/).length < 2) {
-        setNameError("Enter first and last name");
-        hasError = true;
-      }
-
       if (!email) {
         setEmailError("Email is required");
         hasError = true;
@@ -136,7 +126,10 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
     }
 
     if (isSignup) {
-      signupMutation.mutate({ fullName: name, email, password });
+      signupMutation.mutate({
+        email,
+        password,
+      });
     } else {
       loginMutation.mutate({ email, password });
     }
@@ -159,36 +152,6 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {isSignup && (
-          <div className="flex flex-col gap-1.5">
-            <label className="text-label-text text-sm font-medium">
-              Full Name
-            </label>
-            <Input
-              name="name"
-              placeholder="Enter your name"
-              required
-              autoComplete="name"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                if (nameError) setNameError("");
-              }}
-              onBlur={() =>
-                setNameError(
-                  !name
-                    ? "Full name is required"
-                    : name.trim().split(/\s+/).length < 2
-                      ? "Enter first and last name"
-                      : ""
-                )
-              }
-              className={`${inputClass} ${nameError ? "border-red-400" : ""}`}
-            />
-            {nameError && <p className="text-xs text-red-500">{nameError}</p>}
-          </div>
-        )}
-
         <div className="flex flex-col gap-1.5">
           <label className="text-label-text text-sm font-medium">
             Email Address
