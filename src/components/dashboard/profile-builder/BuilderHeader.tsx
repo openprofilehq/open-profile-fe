@@ -37,7 +37,7 @@ export default function BuilderHeader({
               alt="Open Profile"
               width={40}
               height={40}
-              className="border-tertiary-b h-10 w-10 rounded-full border bg-white object-contain"
+              className="border-tertiary-b h-10 w-10 rounded-full border bg-background object-contain"
               priority
             />
           </Link>

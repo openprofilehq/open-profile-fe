@@ -47,10 +47,10 @@ export default function SearchPage() {
   }
 
   return (
-    <main className="min-h-screen overflow-hidden bg-white text-[#050505]">
+    <main className="min-h-screen overflow-hidden bg-white text-primary-text">
       <Navbar />
 
-      <section className="bg-[#E5F7FA] px-4 pt-[120px] pb-12 md:pt-[150px] md:pb-20">
+      <section className="bg-brand-light-subtle-bg px-4 pt-[120px] pb-12 md:pt-[150px] md:pb-20">
         <div className="mx-auto max-w-[680px] text-center">
           <h1 className="text-[30px] leading-tight font-semibold md:text-[48px]">
             Find Someone on Open Profile
@@ -70,21 +70,21 @@ export default function SearchPage() {
             <button
               type="submit"
               disabled={isFetching}
-              className="h-[56px] w-full rounded-[8px] bg-[#087583] px-8 font-medium text-white disabled:opacity-60 md:w-auto"
+              className="h-[56px] w-full rounded-[8px] bg-brand-hover-bg px-8 font-medium text-white disabled:opacity-60 md:w-auto"
             >
               {isFetching ? "Searching..." : "Search a Profile"}
             </button>
           </form>
 
           {validationError && (
-            <p className="mt-3 flex items-center gap-2 text-left text-[14px] text-[#FF3158]">
+            <p className="mt-3 flex items-center gap-2 text-left text-[14px] text-negative-text">
               <AlertCircle size={16} />
               {validationError}
             </p>
           )}
 
           {isError && (
-            <p className="mt-3 flex items-center gap-2 text-left text-[14px] text-[#FF3158]">
+            <p className="mt-3 flex items-center gap-2 text-left text-[14px] text-negative-text">
               <AlertCircle size={16} />
               {error instanceof Error ? error.message : "Search failed"}
             </p>
@@ -95,15 +95,15 @@ export default function SearchPage() {
       {!searched && (
         <section className="flex min-h-[440px] items-center justify-center px-4">
           <div className="max-w-[460px] text-center">
-            <div className="mx-auto mb-6 flex h-[42px] w-[42px] items-center justify-center rounded-[8px] bg-[#D8F3F6]">
-              <Search className="text-[#087583]" size={24} />
+            <div className="mx-auto mb-6 flex h-[42px] w-[42px] items-center justify-center rounded-[8px] bg-brand-subtle-bg">
+              <Search className="text-link-hover-text" size={24} />
             </div>
 
             <h2 className="text-[22px] font-semibold">
               Discover your Network on Open Profile
             </h2>
 
-            <p className="mt-3 text-[16px] leading-[26px] text-[#666]">
+            <p className="mt-3 text-[16px] leading-[26px] text-secondary-text">
               Search by name or username to find freelancers, creators, and
               builders. Every profile is verified and searchable.
             </p>
@@ -115,16 +115,16 @@ export default function SearchPage() {
         <section className="mx-auto max-w-[1040px] px-4 py-12">
           {results.length === 0 && !isFetching ? (
             <div className="py-16 text-center">
-              <h3 className="text-[18px] font-semibold text-[#050505]">
+              <h3 className="text-[18px] font-semibold text-primary-text">
                 No results found
               </h3>
 
-              <p className="mt-3 text-[14px] text-[#666]">
+              <p className="mt-3 text-[14px] text-secondary-text">
                 We couldn&apos;t find any published profiles matching &quot;
                 {submittedQuery}&quot;.
               </p>
 
-              <p className="mt-2 text-[14px] text-[#666]">
+              <p className="mt-2 text-[14px] text-secondary-text">
                 Try a different name or username.
               </p>
             </div>
@@ -143,7 +143,7 @@ export default function SearchPage() {
                 return (
                   <div
                     key={user.id || user.username || index}
-                    className="flex items-center justify-between gap-4 rounded-[8px] border border-[#EEEEEE] p-5"
+                    className="flex items-center justify-between gap-4 rounded-[8px] border border-tertiary-b p-5"
                   >
                     <div className="flex min-w-0 items-center gap-4">
                       <Image
@@ -156,7 +156,7 @@ export default function SearchPage() {
 
                       <div className="min-w-0">
                         <h3 className="truncate font-semibold">{name}</h3>
-                        <p className="line-clamp-2 text-sm text-[#666]">
+                        <p className="line-clamp-2 text-sm text-secondary-text">
                           {bio}
                         </p>
                       </div>
@@ -164,7 +164,7 @@ export default function SearchPage() {
 
                     <Link
                       href={user.username ? `/${user.username}` : "#"}
-                      className="shrink-0 rounded-[6px] bg-[#087583] px-6 py-3 text-sm text-white"
+                      className="shrink-0 rounded-[6px] bg-brand-hover-bg px-6 py-3 text-sm text-white"
                     >
                       View Profile
                     </Link>
@@ -177,7 +177,7 @@ export default function SearchPage() {
       )}
 
       <section className="px-4 pt-16 pb-24">
-        <div className="relative mx-auto flex min-h-[300px] max-w-[1040px] items-center overflow-hidden rounded-[12px] bg-[#087583] px-6 md:min-h-[260px] md:px-16">
+        <div className="relative mx-auto flex min-h-[300px] max-w-[1040px] items-center overflow-hidden rounded-[12px] bg-brand-hover-bg px-6 md:min-h-[260px] md:px-16">
           <div className="relative z-10 max-w-[420px]">
             <h2 className="text-[30px] leading-tight font-semibold text-white md:text-[36px]">
               Not on Open Profile yet?
@@ -190,7 +190,7 @@ export default function SearchPage() {
 
             <Link
               href="/signup"
-              className="mt-6 inline-flex rounded-[8px] bg-white px-6 py-4 font-semibold text-[#087583]"
+              className="mt-6 inline-flex rounded-[8px] bg-white px-6 py-4 font-semibold text-link-hover-text"
             >
               Create Your Profile Now
             </Link>

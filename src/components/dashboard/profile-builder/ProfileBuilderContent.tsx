@@ -18,9 +18,11 @@ import PreviewCanvas from "./PreviewCanvas";
 import RightPanel from "./RightPanel";
 import Link from "next/link";
 import type { Section } from "./types";
+import { THEME_DEFAULTS } from "@/constants/theme";
 import type {
   ProfileAppearanceCornerStyle,
   ProfileAppearanceFont,
+  UpsertDraftResponse,
 } from "@/api/profile/profile.type";
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { ROUTES } from "@/constants/routes";
@@ -182,9 +184,11 @@ export default function ProfileBuilderContent() {
   const profile = dashboardProfile.data;
 
   const [font, setFont] = useState("Afacad");
-  const [textColor, setTextColor] = useState("#050505");
-  const [bgColor, setBgColor] = useState("#FFFFFF");
-  const [iconColor, setIconColor] = useState("#087583");
+  const [textColor, setTextColor] = useState<string>(THEME_DEFAULTS.TEXT_COLOR);
+  const [bgColor, setBgColor] = useState<string>(THEME_DEFAULTS.BG_COLOR);
+  const [iconColor, setIconColor] = useState<string>(
+    THEME_DEFAULTS.ACCENT_COLORS.DEFAULT
+  );
   const [spacing, setSpacing] = useState(20);
   const [borderRadius, setBorderRadius] = useState<
     "sharp" | "medium" | "round"
@@ -319,7 +323,7 @@ export default function ProfileBuilderContent() {
   const { mutate: saveDraft } = useMutation({
     mutationKey: upsertDraftOption.mutationKey,
     mutationFn: upsertDraftOption.mutationFn,
-    onSuccess(response) {
+    onSuccess(response: UpsertDraftResponse) {
       const updatedAt = response?.data?.updatedAt;
       if (updatedAt) {
         draftUpdatedAtRef.current = updatedAt;
@@ -541,16 +545,16 @@ export default function ProfileBuilderContent() {
 
   return (
     <>
-      <div className="flex min-h-screen flex-col items-center justify-center bg-[#FAFAFA] px-6 text-center lg:hidden">
-        <h1 className="text-2xl font-bold text-[#050505]">
+      <div className="bg-secondary-bg flex min-h-screen flex-col items-center justify-center px-6 text-center lg:hidden">
+        <h1 className="text-primary-text text-2xl font-bold">
           Profile editor works best on desktop
         </h1>
-        <p className="mt-3 max-w-[420px] text-[#747474]">
+        <p className="text-secondary-text mt-3 max-w-[420px]">
           Please use a desktop or large tablet to edit your profile layout.
         </p>
         <Link
           href={ROUTES.dashboard.home}
-          className="mt-6 rounded-[8px] bg-[#087583] px-5 py-3 font-semibold text-white"
+          className="bg-brand-hover-bg mt-6 rounded-[8px] px-5 py-3 font-semibold text-white"
         >
           Back to dashboard
         </Link>
@@ -559,7 +563,7 @@ export default function ProfileBuilderContent() {
       <div className="bg-primary-bg hidden h-screen w-full flex-col overflow-hidden lg:flex">
         {/* <BuilderHeader onPublish={handlePublish} isPublishing={isPublishing} /> */}
 
-        <div className="flex flex-1 gap-4 overflow-hidden bg-[#FAFAFA] p-4 lg:p-6 lg:px-8">
+        <div className="bg-secondary-bg flex flex-1 gap-4 overflow-hidden p-4 lg:p-6 lg:px-8">
           <LeftSidebar
             sections={resolvedSections}
             selectedSectionId={selectedSectionId}

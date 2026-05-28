@@ -135,7 +135,7 @@ export default function DashboardTopbar() {
               <Search size={24} />
             </button> */}
 
-            {/* <Button asChild className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text hidden h-10 rounded-[10px] border px-5 text-sm font-semibold shadow-none transition-all hover:bg-white active:scale-95 md:flex">
+            {/* <Button asChild className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text hidden h-10 rounded-[10px] border px-5 text-sm font-semibold shadow-none transition-all hover:bg-background active:scale-95 md:flex">
               <Link href="/coming-soon">Upgrade</Link>
             </Button> */}
 
@@ -168,7 +168,7 @@ export default function DashboardTopbar() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.15, ease: "easeOut" }}
-                    className="border-tertiary-b absolute top-full right-0 mt-2 w-44 overflow-hidden rounded-xl border bg-white py-1 shadow-lg"
+                    className="border-tertiary-b absolute right-0 top-full mt-2 w-44 overflow-hidden rounded-xl border bg-background py-1 shadow-lg"
                   >
                     {user?.fullName && (
                       <p className="border-tertiary-b text-tertiary-text text-md truncate border-b px-4 py-2">

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Folder, ExternalLink, Eye, EyeOff, Trash2 } from "lucide-react";
 import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 import type { Section, ProfilePreview } from "./types";
+import { THEME_DEFAULTS } from "@/constants/theme";
 
 interface PreviewCanvasProps {
   font: string;
@@ -54,23 +55,23 @@ export default function PreviewCanvas({
 
   const cardStyle = {
     backgroundColor:
-      bgColor === "#FFFFFF" && isDark
-        ? "#1E1E1E"
-        : bgColor || (isDark ? "#1E1E1E" : "#FFFFFF"),
+      bgColor === THEME_DEFAULTS.BG_COLOR && isDark
+        ? THEME_DEFAULTS.DARK_MODE.BG_COLOR
+        : bgColor || (isDark ? THEME_DEFAULTS.DARK_MODE.BG_COLOR : THEME_DEFAULTS.BG_COLOR),
     borderRadius: activeRadius,
     color:
-      textColor === "#050505" && isDark
-        ? "#FAFAFA"
-        : textColor || (isDark ? "#FAFAFA" : "#050505"),
-    borderColor: isDark ? "#2D2D2D" : "#EDEDED",
+      textColor === THEME_DEFAULTS.TEXT_COLOR && isDark
+        ? THEME_DEFAULTS.DARK_MODE.TEXT_COLOR
+        : textColor || (isDark ? THEME_DEFAULTS.DARK_MODE.TEXT_COLOR : THEME_DEFAULTS.TEXT_COLOR),
+    borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
     marginBottom: `${spacing}px`,
   };
 
   const textStyle = {
     color:
-      textColor === "#050505" && isDark
-        ? "#E0E0E0"
-        : textColor || (isDark ? "#E0E0E0" : "#454545"),
+      textColor === THEME_DEFAULTS.TEXT_COLOR && isDark
+        ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT
+        : textColor || (isDark ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT : THEME_DEFAULTS.LIGHT_MODE.MUTED_TEXT),
   };
 
   const getRgbaColor = (hex: string, alpha: number) => {
@@ -90,8 +91,8 @@ export default function PreviewCanvas({
   };
 
   const iconStyle = {
-    color: iconColor || "#0a92a4",
-    backgroundColor: getRgbaColor(iconColor || "#0a92a4", isDark ? 0.15 : 0.08),
+    color: iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT,
+    backgroundColor: getRgbaColor(iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT, isDark ? 0.15 : 0.08),
   };
 
   const visibleSections = sections.filter((section) => section.visible);
@@ -101,7 +102,7 @@ export default function PreviewCanvas({
 
   return (
     <div
-      className={`animate-in fade-in flex h-full min-h-0 flex-1 justify-center overflow-y-auto px-4 lg:px-12 transition-colors duration-200 ${isDark ? "bg-[#121212]" : "bg-transparent"}`}
+      className={`animate-in fade-in flex h-full min-h-0 flex-1 justify-center overflow-y-auto px-4 lg:px-12 transition-colors duration-200 ${isDark ? "bg-inverse-bg" : "bg-transparent"}`}
     >
       {/* Device wrapper */}
       <div className="flex w-full max-w-3xl flex-col gap-6 pb-32">
@@ -166,8 +167,8 @@ export default function PreviewCanvas({
             const currentCardStyle = isSectionHighlighted
               ? {
                   ...cardStyle,
-                  borderColor: iconColor || "#0a92a4",
-                  boxShadow: `0 0 16px ${iconColor || "#0a92a4"}25`,
+                  borderColor: iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT,
+                  boxShadow: `0 0 16px ${iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT}25`,
                   borderWidth: "2px",
                 }
               : cardStyle;
@@ -179,13 +180,13 @@ export default function PreviewCanvas({
                 className="relative flex flex-col border p-6 transition-all duration-300"
               >
                 {/* Action buttons (View/Delete) */}
-                <div className="absolute top-6 right-6 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border border-[#EDEDED] bg-white p-3 shadow-none select-none">
+                <div className="absolute top-6 right-6 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border border-border bg-background p-3 shadow-none select-none">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       onToggleSectionVisibility(section.id);
                     }}
-                    className="text-[#3A3A3A] transition-opacity hover:opacity-80"
+                    className="text-secondary-text transition-opacity hover:opacity-80"
                     title="Toggle visibility"
                   >
                     {section.visible ? (
@@ -199,7 +200,7 @@ export default function PreviewCanvas({
                       e.stopPropagation();
                       onRemoveSection(section.id);
                     }}
-                    className="text-[#9F2B2B] transition-opacity hover:opacity-80"
+                    className="text-negative-text transition-opacity hover:opacity-80"
                     title="Delete section"
                   >
                     <Trash2 size={18} strokeWidth={2} />
@@ -211,7 +212,7 @@ export default function PreviewCanvas({
                 ) : (
                   <div
                     className="mb-4 flex items-center justify-between border-b pr-24 pb-4"
-                    style={{ borderColor: isDark ? "#2D2D2D" : "#F0F0F0" }}
+                    style={{ borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_LIGHT }}
                   >
                     <div className="flex items-center gap-3">
                       <span
@@ -246,12 +247,12 @@ export default function PreviewCanvas({
                           const isHighlighted = project.highlighted;
                           const projectCardStyle = {
                             borderColor: isHighlighted
-                              ? iconColor || "#0a92a4"
+                              ? iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT
                               : isDark
-                                ? "#2D2D2D"
-                                : "#EDEDED",
+                                ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR
+                                : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
                             boxShadow: isHighlighted
-                              ? `0 4px 12px ${iconColor || "#0a92a4"}20`
+                              ? `0 4px 12px ${iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT}20`
                               : undefined,
                             borderWidth: isHighlighted ? "2px" : "1px",
                             backgroundColor: "transparent",
@@ -266,7 +267,7 @@ export default function PreviewCanvas({
                                 className="flex flex-col overflow-hidden rounded-xl border transition-all"
                               >
                                 {getImageUrl(project.imageSrc) && (
-                                  <div className="relative aspect-video w-full shrink-0 bg-gray-100 dark:bg-zinc-800">
+                                  <div className="relative aspect-video w-full shrink-0 bg-secondary-bg dark:bg-zinc-800">
                                     <Image
                                       src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
@@ -289,7 +290,7 @@ export default function PreviewCanvas({
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       style={{
-                                        backgroundColor: iconColor || "#0a92a4",
+                                        backgroundColor: iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT,
                                       }}
                                       className="mt-4 flex h-9 w-full items-center justify-center rounded-lg px-4 text-center text-xs font-bold text-white transition-opacity hover:opacity-90"
                                     >
@@ -310,7 +311,7 @@ export default function PreviewCanvas({
                                 className="flex flex-col overflow-hidden rounded-xl border transition-all"
                               >
                                 {getImageUrl(project.imageSrc) && (
-                                  <div className="relative h-44 w-full shrink-0 bg-gray-100 dark:bg-zinc-800">
+                                  <div className="relative h-44 w-full shrink-0 bg-secondary-bg dark:bg-zinc-800">
                                     <Image
                                       src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
@@ -335,7 +336,7 @@ export default function PreviewCanvas({
                                         rel="noopener noreferrer"
                                         style={{
                                           backgroundColor:
-                                            iconColor || "#0a92a4",
+                                            iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT,
                                         }}
                                         className="flex h-9 items-center justify-center rounded-lg px-5 text-center text-xs font-bold text-white transition-opacity hover:opacity-90"
                                       >
@@ -357,7 +358,7 @@ export default function PreviewCanvas({
                                 className="flex items-center gap-4 rounded-xl border p-4 transition-all"
                               >
                                 {getImageUrl(project.imageSrc) && (
-                                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
+                                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-secondary-bg dark:bg-zinc-800">
                                     <Image
                                       src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
@@ -379,7 +380,7 @@ export default function PreviewCanvas({
                                       href={sanitizeUrl(project.url)}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      style={{ color: iconColor || "#0a92a4" }}
+                                      style={{ color: iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT }}
                                       className="mt-2 inline-flex items-center gap-1 text-xs font-bold hover:underline"
                                     >
                                       <span>
@@ -413,7 +414,7 @@ export default function PreviewCanvas({
                                       href={sanitizeUrl(project.url)}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      style={{ color: iconColor || "#0a92a4" }}
+                                      style={{ color: iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT }}
                                       className="mt-2 inline-flex items-center gap-1 text-xs font-bold hover:underline"
                                     >
                                       <span>
@@ -424,7 +425,7 @@ export default function PreviewCanvas({
                                   )}
                                 </div>
                                 {getImageUrl(project.imageSrc) && (
-                                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
+                                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-secondary-bg dark:bg-zinc-800">
                                     <Image
                                       src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
@@ -462,7 +463,7 @@ export default function PreviewCanvas({
                         {section.links.map((link) => (
                           <div
                             key={link.id}
-                            className="border-tertiary-b flex items-center justify-between rounded-xl border bg-white/60 p-4 transition-colors hover:bg-black/5 dark:border-[#2D2D2D] dark:bg-white/5 dark:hover:bg-white/10"
+                            className="border-tertiary-b flex items-center justify-between rounded-xl border bg-background/60 p-4 transition-colors hover:bg-black/5 dark:border-secondary-b dark:bg-background/5 dark:hover:bg-background/10"
                           >
                             <div className="flex min-w-0 items-center gap-3">
                               {getImageUrl(link.imageSrc) ? (
@@ -495,7 +496,7 @@ export default function PreviewCanvas({
                                 <p className="truncate text-sm font-semibold">
                                   {link.title}
                                 </p>
-                                <p className="truncate text-xs text-gray-500">
+                                <p className="truncate text-xs text-secondary-text">
                                   {link.url}
                                 </p>
                               </div>
@@ -528,9 +529,9 @@ export default function PreviewCanvas({
                     {section.iconSrc && (
                       <div
                         style={{
-                          borderColor: isDark ? "#2D2D2D" : "#EDEDED",
+                          borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
                         }}
-                        className="mb-5 flex h-16 w-16 shrink-0 items-center justify-center rounded-[16px] border bg-white shadow-[0_2px_8px_rgba(0,0,0,0.03)] transition-all duration-300"
+                        className="mb-5 flex h-16 w-16 shrink-0 items-center justify-center rounded-[16px] border bg-background shadow-[0_2px_8px_rgba(0,0,0,0.03)] transition-all duration-300"
                       >
                         <div className="relative h-7 w-7">
                           <Image
@@ -545,7 +546,7 @@ export default function PreviewCanvas({
                     )}
 
                     {/* Title */}
-                    <h4 className="text-[32px] leading-snug font-bold tracking-tight text-[#050505] dark:text-white">
+                    <h4 className="text-[32px] leading-snug font-bold tracking-tight text-primary-text dark:text-white">
                       {section.title || "Let's build something"}
                     </h4>
 
@@ -566,7 +567,7 @@ export default function PreviewCanvas({
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
-                          backgroundColor: iconColor || "#0a92a4",
+                          backgroundColor: iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT,
                           borderRadius: activeRadius || "8px",
                         }}
                         className="mt-6 inline-flex h-11 items-center justify-center px-[32px] text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90 active:scale-95"

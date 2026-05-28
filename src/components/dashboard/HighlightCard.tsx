@@ -13,11 +13,11 @@ export default function HighlightCard({ profile }: Props) {
   const imageSrc = getImageUrl(profile?.photoUrl);
 
   return (
-    <section className="rounded-[12px] border border-[#EDEDED] bg-white p-6">
+    <section className="rounded-[12px] border border-border bg-background p-6">
       <h2 className="text-2xl font-bold">Highlight</h2>
 
-      <div className="mt-6 flex flex-col gap-8 rounded-[28px] border border-[#EDEDED] p-6 md:flex-row md:items-center">
-        <div className="flex flex-1 justify-center bg-[#F4F4F4] p-10">
+      <div className="mt-6 flex flex-col gap-8 rounded-[28px] border border-border p-6 md:flex-row md:items-center">
+        <div className="flex flex-1 justify-center bg-secondary-bg p-10">
           {imageSrc ? (
             <Image
               src={imageSrc}
@@ -27,7 +27,7 @@ export default function HighlightCard({ profile }: Props) {
               className="h-auto w-full max-w-[260px] rounded-[12px] object-cover"
             />
           ) : (
-            <div className="flex h-[180px] w-full max-w-[260px] items-center justify-center rounded-[12px] bg-white text-[#747474]">
+            <div className="flex h-[180px] w-full max-w-[260px] items-center justify-center rounded-[12px] bg-background text-secondary-text">
               No image yet
             </div>
           )}
@@ -37,7 +37,7 @@ export default function HighlightCard({ profile }: Props) {
           <h3 className="text-2xl font-bold">
             {profile?.fullName ?? "No title yet"}
           </h3>
-          <p className="mt-4 text-lg text-[#747474]">
+          <p className="mt-4 text-lg text-secondary-text">
             {profile?.bio ?? "No bio added yet."}
           </p>
         </div>

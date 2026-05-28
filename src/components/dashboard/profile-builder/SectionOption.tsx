@@ -224,11 +224,11 @@ export default function SectionOption({
             Icon
           </label>
           <div className="relative">
-            <div className="border-tertiary-b flex overflow-hidden rounded-md border bg-white">
+            <div className="border-tertiary-b flex overflow-hidden rounded-md border bg-background">
               <button
                 type="button"
                 onClick={() => setIsIconMenuOpen((current) => !current)}
-                className="flex min-w-0 flex-1 items-center gap-3 p-3 text-left transition-colors hover:bg-[#F8FAFC]"
+                className="flex min-w-0 flex-1 items-center gap-3 p-3 text-left transition-colors hover:bg-secondary-bg"
                 aria-haspopup="listbox"
                 aria-expanded={isIconMenuOpen}
               >
@@ -265,7 +265,7 @@ export default function SectionOption({
 
                   setIsIconMenuOpen((current) => !current);
                 }}
-                className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-[#F8FAFC]"
+                className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-secondary-bg"
                 aria-label={
                   selectedIcon ? "Remove selected icon" : "Open icon list"
                 }
@@ -280,8 +280,8 @@ export default function SectionOption({
             </div>
 
             {isIconMenuOpen && (
-              <div className="border-tertiary-b absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-xl border bg-white p-2 shadow-lg">
-                <div className="mb-2 px-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+              <div className="border-tertiary-b absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-xl border bg-background p-2 shadow-lg">
+                <div className="mb-2 px-2 text-xs font-semibold tracking-wide text-secondary-text uppercase">
                   Preset icons
                 </div>
                 <div className="grid grid-cols-4 gap-2">
@@ -296,7 +296,7 @@ export default function SectionOption({
                           setSelectedIconId(icon.id);
                           setIsIconMenuOpen(false);
                         }}
-                        className={`flex flex-col items-center gap-2 rounded-md border p-2 transition-all ${isActive ? "border-brand-b bg-brand-light-subtle-bg" : "hover:border-tertiary-b border-transparent hover:bg-[#F8FAFC]"}`}
+                        className={`flex flex-col items-center gap-2 rounded-md border p-2 transition-all ${isActive ? "border-brand-b bg-brand-light-subtle-bg" : "hover:border-tertiary-b border-transparent hover:bg-secondary-bg"}`}
                         aria-label={icon.label}
                       >
                         <Image
@@ -340,11 +340,11 @@ export default function SectionOption({
               aria-hidden
             />
 
-            <div className="border-tertiary-b flex overflow-hidden rounded-md border bg-white">
+            <div className="border-tertiary-b flex overflow-hidden rounded-md border bg-background">
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex min-w-0 flex-1 items-center gap-3 p-3 text-left transition-colors hover:bg-[#F8FAFC]"
+                className="flex min-w-0 flex-1 items-center gap-3 p-3 text-left transition-colors hover:bg-secondary-bg"
               >
                 {uploadedImage ? (
                   <Image
@@ -379,7 +379,7 @@ export default function SectionOption({
 
                   fileInputRef.current?.click();
                 }}
-                className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-[#F8FAFC]"
+                className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-secondary-bg"
                 aria-label={
                   uploadedImage ? "Remove uploaded image" : "Upload image"
                 }

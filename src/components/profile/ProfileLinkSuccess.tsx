@@ -85,12 +85,12 @@ export default function ProfileLinkSuccess({
               alt=""
             />
           ) : (
-            <div className="mt-3 flex h-20 w-20 items-center justify-center rounded-full bg-[#087583] text-2xl font-bold text-white">
+            <div className="mt-3 flex h-20 w-20 items-center justify-center rounded-full bg-brand-hover-bg text-2xl font-bold text-white">
               {initials}
             </div>
           )}
 
-          <div className="pointer-events-auto relative z-30 mt-4 flex items-center gap-2 text-center font-bold text-[#747474]">
+          <div className="pointer-events-auto relative z-30 mt-4 flex items-center gap-2 text-center font-bold text-tertiary-text">
             <a
               href={profileUrl}
               target="_blank"
@@ -121,7 +121,7 @@ export default function ProfileLinkSuccess({
 
         <Button
           type="button"
-          className="mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-normal shadow-none transition-colors"
+          className="mt-4 h-13 w-full rounded-[10px] bg-brand-hover-bg text-[16px] font-normal shadow-none transition-colors"
           onClick={onContinue}
         >
           Continue To Dashboard

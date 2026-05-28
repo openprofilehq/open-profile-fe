@@ -39,25 +39,25 @@ const socials = [
   {
     label: "GitHub",
     sub: "Projects",
-    bg: "#171717",
+    bg: "bg-inverse-bg",
     icon: "/impression/icon-github.svg",
   },
   {
     label: "Behance",
     sub: "Portfolio",
-    bg: "#548BF1",
+    bg: "bg-brand-bg",
     icon: "/impression/icon-behance.svg",
   },
   {
     label: "LinkedIn",
     sub: "Experience",
-    bg: "#548BF1",
+    bg: "bg-brand-bg",
     icon: "/impression/icon-linkedin.svg",
   },
   {
     label: "X",
     sub: "Thoughts",
-    bg: "#171717",
+    bg: "bg-inverse-bg",
     icon: "/impression/icon-twitter.svg",
   },
 ];
@@ -128,7 +128,7 @@ export default function Impression() {
               <motion.line
                 key={i}
                 {...line}
-                stroke="#ABABAB"
+                className="text-primary-b stroke-current"
                 strokeWidth="1"
                 strokeDasharray="6 6"
                 initial={{ opacity: 0 }}
@@ -151,8 +151,7 @@ export default function Impression() {
                 cx={SVG_W / 2}
                 cy={SVG_H / 2}
                 r="30"
-                fill="#FEFEFE"
-                stroke="white"
+                className="fill-span-text stroke-white"
                 strokeWidth="2"
               />
               {/* user icon */}
@@ -185,11 +184,10 @@ export default function Impression() {
               whileInView="show"
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.3 + i * 0.15 }}
-              className="border-input-b flex h-18 w-[143px] rotate-[0.82deg] items-center justify-start gap-2 rounded-[16px] border bg-[#FEFEFE] pl-4"
+              className="border-input-b flex h-18 w-[143px] rotate-[0.82deg] items-center justify-start gap-2 rounded-[16px] border bg-span-text pl-4"
             >
               <div
-                style={{ backgroundColor: bg }}
-                className="border-input-b flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-[4px] border"
+                className={`border-input-b flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-[4px] border ${bg}`}
               >
                 <Image src={icon} alt={label} width={24} height={24} />
               </div>
@@ -211,11 +209,10 @@ export default function Impression() {
               whileInView="show"
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.5 + i * 0.15 }}
-              className="border-input-b flex h-18 w-[143px] rotate-[0.82deg] items-center justify-start gap-2 rounded-[16px] border bg-[#FEFEFE] pl-4"
+              className="border-input-b flex h-18 w-[143px] rotate-[0.82deg] items-center justify-start gap-2 rounded-[16px] border bg-span-text pl-4"
             >
               <div
-                style={{ backgroundColor: bg }}
-                className="border-input-b flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-[4px] border"
+                className={`border-input-b flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-[4px] border ${bg}`}
               >
                 <Image src={icon} alt={label} width={24} height={24} />
               </div>
@@ -286,7 +283,7 @@ export default function Impression() {
         >
           <Link
             href={user ? ROUTES.dashboard.home : "/signup"}
-            className="bg-brand flex h-12 cursor-pointer items-center justify-center rounded-[8px] px-4 font-medium text-[#FEFEFE]"
+            className="bg-brand flex h-12 cursor-pointer items-center justify-center rounded-[8px] px-4 font-medium text-span-text"
           >
             {user ? "Go to Dashboard" : "Create Your Profile Now"}
           </Link>

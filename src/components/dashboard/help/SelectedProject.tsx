@@ -22,7 +22,7 @@ export default function SelectedProject({ content, isLoading }: Props) {
   }[];
 
   return (
-    <section className="w-full rounded-[12px] border border-[#EDEDED] bg-white">
+    <section className="w-full rounded-[12px] border border-border bg-background">
       <h2 className="p-4 text-2xl font-bold">Selected Projects</h2>
 
       {isLoading ? (
@@ -39,7 +39,7 @@ export default function SelectedProject({ content, isLoading }: Props) {
           ))}
         </div>
       ) : projects.length === 0 ? (
-        <span className="flex items-center justify-between p-4 text-sm text-gray-500">
+        <span className="flex items-center justify-between p-4 text-sm text-secondary-text">
           No projects added yet
         </span>
       ) : (
@@ -50,7 +50,7 @@ export default function SelectedProject({ content, isLoading }: Props) {
 
             const card = (
               <div className="flex flex-col gap-4">
-                <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-[#EDEDED]">
+                <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-border">
                   {displayImg ? (
                     <Image
                       src={displayImg}
@@ -60,17 +60,17 @@ export default function SelectedProject({ content, isLoading }: Props) {
                       unoptimized
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-[#F5F5F5] text-xs text-[#A2A2A2]">
+                    <div className="flex h-full w-full items-center justify-center bg-secondary-bg text-xs text-tertiary-text">
                       No image
                     </div>
                   )}
                 </div>
                 <div className="flex flex-col items-start">
-                  <h5 className="text-xl font-bold text-[#050505]">
+                  <h5 className="text-xl font-bold text-primary-text">
                     {project.title}
                   </h5>
-                  <p className="text-[#64748B]">{project.description}</p>
-                  <span className="mt-2 flex items-center gap-1 text-sm font-semibold text-[#087583]">
+                  <p className="text-secondary-text">{project.description}</p>
+                  <span className="mt-2 flex items-center gap-1 text-sm font-semibold text-brand-hover-bg">
                     {hasUrl ? "View project" : "Edit project"}
                     <ChevronRight size={16} />
                   </span>

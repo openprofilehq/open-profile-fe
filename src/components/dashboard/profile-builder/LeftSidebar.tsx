@@ -116,7 +116,7 @@ export default function LeftSidebar({
 
   if (isAddingSection) {
     return (
-      <aside className="border-tertiary-b animate-in fade-in hidden h-full w-72.5 shrink-0 flex-col rounded-2xl border bg-white p-6 shadow-sm duration-200 select-none lg:flex">
+      <aside className="border-tertiary-b animate-in fade-in hidden h-full w-72.5 shrink-0 flex-col rounded-2xl border bg-background p-6 shadow-sm duration-200 select-none lg:flex">
         {/* Back Button */}
         <div className="mb-6">
           <button
@@ -142,9 +142,9 @@ export default function LeftSidebar({
           <button
             type="button"
             onClick={() => handleSelectCard("Bio", "bio")}
-            className="group border-tertiary-b hover:border-brand-b flex h-35 w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
+            className="group border-tertiary-b hover:border-brand-b flex h-35 w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-background text-left transition-all duration-200 hover:shadow-sm"
           >
-            <div className="flex flex-1 items-center bg-white p-2">
+            <div className="flex flex-1 items-center bg-background p-2">
               <Image
                 src="/profilebuilder_home/bio.png"
                 alt="Bio"
@@ -153,7 +153,7 @@ export default function LeftSidebar({
                 className="object-contain"
               />
             </div>
-            <div className="text-primary-text flex h-9 items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
+            <div className="text-primary-text flex h-9 items-center bg-secondary-bg px-4 text-[13px] font-medium transition-colors group-hover:bg-hover-bg">
               Bio
             </div>
           </button>
@@ -163,9 +163,9 @@ export default function LeftSidebar({
             type="button"
             onClick={handleSwitchToAddLinkSection}
             disabled={isDisabled}
-            className={`group border-tertiary-b hover:border-brand-b disabled:border-tertiary-b flex h-35 w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm disabled:cursor-not-allowed disabled:bg-[#F4F4F5] disabled:opacity-70 ${isDisabled ? "cursor-not-allowed opacity-70" : "hover:shadow-sm"}`}
+            className={`group border-tertiary-b hover:border-brand-b disabled:border-tertiary-b flex h-35 w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-background text-left transition-all duration-200 hover:shadow-sm disabled:cursor-not-allowed disabled:bg-secondary-bg disabled:opacity-70 ${isDisabled ? "cursor-not-allowed opacity-70" : "hover:shadow-sm"}`}
           >
-            <div className="-mx-1 flex flex-1 items-center bg-white p-2">
+            <div className="-mx-1 flex flex-1 items-center bg-background p-2">
               {isDisabled ? (
                 <Image
                   src="/profilebuilder_home/link_disabled.svg"
@@ -184,7 +184,7 @@ export default function LeftSidebar({
                 />
               )}
             </div>
-            <div className="text-primary-text flex h-9 items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
+            <div className="text-primary-text flex h-9 items-center bg-secondary-bg px-4 text-[13px] font-medium transition-colors group-hover:bg-hover-bg">
               Links
             </div>
           </button>
@@ -193,9 +193,9 @@ export default function LeftSidebar({
           <button
             type="button"
             onClick={() => handleSelectCard("Portfolio", "projects")}
-            className="group border-tertiary-b hover:border-brand-b flex h-35 w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
+            className="group border-tertiary-b hover:border-brand-b flex h-35 w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-background text-left transition-all duration-200 hover:shadow-sm"
           >
-            <div className="flex flex-1 items-center bg-white p-2">
+            <div className="flex flex-1 items-center bg-background p-2">
               <Image
                 src="/profilebuilder_home/portfolio.png"
                 alt="Portfolio"
@@ -204,7 +204,7 @@ export default function LeftSidebar({
                 className="object-contain"
               />
             </div>
-            <div className="text-primary-text flex h-9 items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
+            <div className="text-primary-text flex h-9 items-center bg-secondary-bg px-4 text-[13px] font-medium transition-colors group-hover:bg-hover-bg">
               Portfolio
             </div>
           </button>
@@ -213,9 +213,9 @@ export default function LeftSidebar({
           <button
             type="button"
             onClick={() => handleSelectCard("CTA", "experience")}
-            className="group border-tertiary-b hover:border-brand-b flex h-35 w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-white text-left transition-all duration-200 hover:shadow-sm"
+            className="group border-tertiary-b hover:border-brand-b flex h-35 w-full cursor-pointer flex-col overflow-hidden rounded-[16px] border bg-background text-left transition-all duration-200 hover:shadow-sm"
           >
-            <div className="flex flex-1 items-center bg-white p-2">
+            <div className="flex flex-1 items-center bg-background p-2">
               <Image
                 src="/profilebuilder_home/cta.png"
                 alt="CTA"
@@ -224,7 +224,7 @@ export default function LeftSidebar({
                 className="object-contain"
               />
             </div>
-            <div className="text-primary-text flex h-9 items-center bg-[#F4F4F5] px-4 text-[13px] font-medium transition-colors group-hover:bg-[#E5E7EB]">
+            <div className="text-primary-text flex h-9 items-center bg-secondary-bg px-4 text-[13px] font-medium transition-colors group-hover:bg-hover-bg">
               CTA
             </div>
           </button>
@@ -276,7 +276,7 @@ export default function LeftSidebar({
     }
 
     return (
-      <aside className="border-tertiary-b animate-in fade-in flex h-full w-[290px] shrink-0 flex-col rounded-2xl border bg-white p-6 shadow-sm duration-200 select-none">
+      <aside className="border-tertiary-b animate-in fade-in flex h-full w-[290px] shrink-0 flex-col rounded-2xl border bg-background p-6 shadow-sm duration-200 select-none">
         <div className="mb-6">
           <button
             type="button"
@@ -292,7 +292,7 @@ export default function LeftSidebar({
 
         <div className="flex flex-col gap-5">
           <div>
-            <label className="mb-2 block text-xs font-bold tracking-wider text-[#747474] uppercase">
+            <label className="mb-2 block text-xs font-bold tracking-wider text-secondary-text uppercase">
               Section title
             </label>
             <input
@@ -301,12 +301,12 @@ export default function LeftSidebar({
               onChange={(e) =>
                 onUpdateSection(editingSection.id, { title: e.target.value })
               }
-              className="w-full rounded-[10px] border border-[#EDEDED] bg-white px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:border-[#087583]"
+              className="w-full rounded-[10px] border border-border bg-background px-4 py-3 text-sm font-semibold text-primary-text outline-none focus:border-brand-hover-bg"
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-xs font-bold tracking-wider text-[#747474] uppercase">
+            <label className="mb-2 block text-xs font-bold tracking-wider text-secondary-text uppercase">
               Component type
             </label>
             <select
@@ -314,7 +314,7 @@ export default function LeftSidebar({
               onChange={(e) =>
                 onUpdateSection(editingSection.id, { type: e.target.value })
               }
-              className="w-full rounded-[10px] border border-[#EDEDED] bg-white px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:border-[#087583]"
+              className="w-full rounded-[10px] border border-border bg-background px-4 py-3 text-sm font-semibold text-primary-text outline-none focus:border-brand-hover-bg"
             >
               <option value="bio">Bio / Header</option>
               <option value="links">Links</option>
@@ -324,8 +324,8 @@ export default function LeftSidebar({
           </div>
 
           {editingSection.type === "bio" && (
-            <div className="rounded-[12px] border border-dashed border-[#D0D5DD] p-4">
-              <label className="mb-2 block text-sm font-bold text-[#050505]">
+            <div className="rounded-[12px] border border-dashed border-secondary-b p-4">
+              <label className="mb-2 block text-sm font-bold text-primary-text">
                 Full name
               </label>
               <input
@@ -337,10 +337,10 @@ export default function LeftSidebar({
                   })
                 }
                 placeholder="Enter full name"
-                className="w-full rounded-[10px] border border-[#EDEDED] bg-white px-4 py-3 text-sm text-[#050505] outline-none focus:border-[#087583]"
+                className="w-full rounded-[10px] border border-border bg-background px-4 py-3 text-sm text-primary-text outline-none focus:border-brand-hover-bg"
               />
 
-              <label className="mt-4 mb-2 block text-sm font-bold text-[#050505]">
+              <label className="mt-4 mb-2 block text-sm font-bold text-primary-text">
                 Bio
               </label>
               <textarea
@@ -353,18 +353,18 @@ export default function LeftSidebar({
                 rows={5}
                 maxLength={200}
                 placeholder="Placeholder text..."
-                className="w-full resize-none rounded-[10px] border border-[#EDEDED] bg-white px-4 py-3 text-sm text-[#050505] outline-none focus:border-[#087583]"
+                className="w-full resize-none rounded-[10px] border border-border bg-background px-4 py-3 text-sm text-primary-text outline-none focus:border-brand-hover-bg"
               />
 
-              <p className="mt-1 text-right text-xs text-[#A2A2A2]">
+              <p className="mt-1 text-right text-xs text-tertiary-text">
                 {(editingSection.bio ?? "").length}/200
               </p>
             </div>
           )}
 
           {editingSection.type === "experience" && (
-            <div className="flex flex-col gap-4 rounded-[12px] border border-dashed border-[#D0D5DD] p-4">
-              <h4 className="text-sm font-bold text-[#050505]">
+            <div className="flex flex-col gap-4 rounded-[12px] border border-dashed border-secondary-b p-4">
+              <h4 className="text-sm font-bold text-primary-text">
                 Experience / CTA List
               </h4>
 
@@ -375,13 +375,13 @@ export default function LeftSidebar({
                   editingSection.experience.map((exp) => (
                     <div
                       key={exp.id}
-                      className="flex items-center justify-between rounded-lg border bg-gray-50 p-2"
+                      className="flex items-center justify-between rounded-lg border bg-secondary-bg p-2"
                     >
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-xs font-semibold">
                           {exp.role} at {exp.company}
                         </p>
-                        <p className="truncate text-[10px] text-gray-500">
+                        <p className="truncate text-[10px] text-secondary-text">
                           {exp.duration}
                         </p>
                       </div>
@@ -403,7 +403,7 @@ export default function LeftSidebar({
                     </div>
                   ))
                 ) : (
-                  <p className="py-2 text-center text-xs text-gray-500 italic">
+                  <p className="py-2 text-center text-xs text-secondary-text italic">
                     No items added yet.
                   </p>
                 )}
@@ -411,7 +411,7 @@ export default function LeftSidebar({
 
               {/* Add New Experience Form */}
               <div className="flex flex-col gap-2 border-t pt-3">
-                <h5 className="text-xs font-bold text-[#454545]">
+                <h5 className="text-xs font-bold text-secondary-text">
                   Add New Experience
                 </h5>
                 <input
@@ -419,21 +419,21 @@ export default function LeftSidebar({
                   placeholder="Role/Title * (e.g. Lead Designer)"
                   value={newExpRole}
                   onChange={(e) => setNewExpRole(e.target.value)}
-                  className="w-full rounded-[8px] border border-[#EDEDED] px-3 py-2 text-xs outline-none focus:border-[#087583]"
+                  className="w-full rounded-[8px] border border-border px-3 py-2 text-xs outline-none focus:border-brand-hover-bg"
                 />
                 <input
                   type="text"
                   placeholder="Company Name * (e.g. Acme Corp)"
                   value={newExpCompany}
                   onChange={(e) => setNewExpCompany(e.target.value)}
-                  className="w-full rounded-[8px] border border-[#EDEDED] px-3 py-2 text-xs outline-none focus:border-[#087583]"
+                  className="w-full rounded-[8px] border border-border px-3 py-2 text-xs outline-none focus:border-brand-hover-bg"
                 />
                 <input
                   type="text"
                   placeholder="Duration * (e.g. 2024 - Present)"
                   value={newExpDuration}
                   onChange={(e) => setNewExpDuration(e.target.value)}
-                  className="w-full rounded-[8px] border border-[#EDEDED] px-3 py-2 text-xs outline-none focus:border-[#087583]"
+                  className="w-full rounded-[8px] border border-border px-3 py-2 text-xs outline-none focus:border-brand-hover-bg"
                 />
                 <Button
                   type="button"
@@ -456,7 +456,7 @@ export default function LeftSidebar({
                     setNewExpDuration("");
                   }}
                   disabled={!newExpRole || !newExpCompany || !newExpDuration}
-                  className="h-8 w-full rounded-[6px] bg-[#087583] text-xs text-white hover:bg-[#065E69]"
+                  className="h-8 w-full rounded-[6px] bg-brand-hover-bg text-xs text-white hover:bg-button-brand-bg"
                 >
                   Add Experience
                 </Button>
@@ -468,8 +468,8 @@ export default function LeftSidebar({
             editingSection.type !== "links" &&
             editingSection.type !== "projects" &&
             editingSection.type !== "experience" && (
-              <div className="rounded-[12px] border border-dashed border-[#D0D5DD] p-6 text-center">
-                <p className="text-xs font-semibold text-[#747474]">
+              <div className="rounded-[12px] border border-dashed border-secondary-b p-6 text-center">
+                <p className="text-xs font-semibold text-secondary-text">
                   Additional dynamic items editor will display here based on
                   chosen component.
                 </p>
@@ -495,7 +495,7 @@ export default function LeftSidebar({
   }
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in hidden h-full w-72.5 shrink-0 flex-col rounded-2xl border bg-white p-6 shadow-sm duration-200 select-none lg:flex">
+    <aside className="border-tertiary-b animate-in fade-in hidden h-full w-72.5 shrink-0 flex-col rounded-2xl border bg-background p-6 shadow-sm duration-200 select-none lg:flex">
       {/* Back Button */}
       <div className="mb-6">
         <Link
@@ -517,7 +517,7 @@ export default function LeftSidebar({
           placeholder="Search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="border-tertiary-b text-primary-text placeholder-tertiary-text focus:border-brand-b focus:ring-brand-b w-full rounded-[10px] border bg-white py-3 pr-4 pl-10 text-sm font-medium transition-all outline-none focus:ring-1"
+          className="border-tertiary-b text-primary-text placeholder-tertiary-text focus:border-brand-b focus:ring-brand-b w-full rounded-[10px] border bg-background py-3 pr-4 pl-10 text-sm font-medium transition-all outline-none focus:ring-1"
         />
       </div>
 
@@ -562,7 +562,7 @@ export default function LeftSidebar({
                 className={`group focus:ring-brand-b flex cursor-pointer items-center justify-between overflow-hidden rounded-xl border transition-all duration-200 focus:ring-2 focus:outline-none ${
                   isSelected
                     ? "border-brand-b bg-brand-light-subtle-bg shadow-sm"
-                    : "border-tertiary-b hover:border-secondary-b hover:bg-primary-bg bg-white"
+                    : "border-tertiary-b hover:border-secondary-b hover:bg-primary-bg bg-background"
                 }`}
               >
                 <div className="flex min-w-0 flex-1 items-center justify-between px-4 py-3">
@@ -583,7 +583,7 @@ export default function LeftSidebar({
                         : section.title}
                     </p>
 
-                    <p className="mt-0.5 truncate text-xs text-[#747474]">
+                    <p className="mt-0.5 truncate text-xs text-secondary-text">
                       {getSectionDescriptor(section)}
                     </p>
                   </div>
@@ -594,7 +594,7 @@ export default function LeftSidebar({
                         e.stopPropagation();
                         onToggleSectionVisibility(section.id);
                       }}
-                      className="hover:bg-hover-bg shrink-0 rounded-lg p-1.5 text-gray-400 opacity-0 transition-all group-hover:opacity-100"
+                      className="hover:bg-hover-bg shrink-0 rounded-lg p-1.5 text-secondary-text opacity-0 transition-all group-hover:opacity-100"
                       title={section.visible ? "Hide section" : "Show section"}
                       aria-label={`${section.visible ? "Hide" : "Show"} section ${section.title}`}
                     >
@@ -611,7 +611,7 @@ export default function LeftSidebar({
                         e.stopPropagation();
                         onRemoveSection(section.id);
                       }}
-                      className="hover:bg-hover-bg hover:text-negative-text shrink-0 rounded-lg p-1.5 text-gray-400 opacity-0 transition-all group-hover:opacity-100"
+                      className="hover:bg-hover-bg hover:text-negative-text shrink-0 rounded-lg p-1.5 text-secondary-text opacity-0 transition-all group-hover:opacity-100"
                       title="Delete Section"
                       aria-label={`Delete section ${section.title}`}
                     >
