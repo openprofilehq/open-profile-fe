@@ -230,10 +230,6 @@
 }
 
 :root {
-  --font-afacad: "Afacad", sans-serif;
-  --font-dancing: "Dancing Script", cursive;
-  --font-inter: "Inter", sans-serif;
-
   --brand: #065e69;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
