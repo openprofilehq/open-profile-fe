@@ -14,7 +14,7 @@ declare module "axios" {
 }
 
 export const api = axios.create({
-  baseURL: `${env.NEXT_PUBLIC_API_URL}/api/v1`,
+  baseURL: `${env.NEXT_PUBLIC_API_URL || ""}/api/v1`,
   timeout: 60 * 1000,
   withCredentials: true,
 });
@@ -44,8 +44,8 @@ api.interceptors.response.use(
     };
 
     const isAuthEndpoint =
-      originalRequest.url?.includes("/auth/refresh-token") ||
-      originalRequest.url?.includes("/auth/logout");
+      originalRequest.url?.includes("/auth/") &&
+      !originalRequest.url?.match(/\/auth\/me(?:$|\?|\/)/);
 
     if (
       error.response?.status !== 401 ||

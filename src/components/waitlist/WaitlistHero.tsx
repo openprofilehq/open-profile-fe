@@ -53,7 +53,7 @@ export function WaitlistHero() {
   };
 
   return (
-    <section className="relative flex min-h-screen w-full flex-col items-center overflow-hidden bg-[#FAFAFA] px-6 pt-8 md:h-[700px] md:min-h-[700px] md:pt-12">
+    <section className="relative flex min-h-screen w-full flex-col items-center overflow-hidden bg-primary-bg px-6 pt-8 md:h-[700px] md:min-h-[700px] md:pt-12">
       {/* Background Images */}
       <div className="pointer-events-none absolute bottom-0 -left-0 hidden select-none lg:block">
         <Image
@@ -94,7 +94,7 @@ export function WaitlistHero() {
       <div className="z-10 flex w-full max-w-[800px] flex-col items-center text-center">
         <motion.h1
           {...fadeUp(0.1)}
-          className="mb-6 text-[40px] leading-[1.1] font-semibold tracking-[-1.5px] text-[#050505] md:text-[60px]"
+          className="mb-6 text-[40px] leading-[1.1] font-semibold tracking-[-1.5px] text-primary-text md:text-[60px]"
           style={{ fontFamily: "'Afacad', sans-serif" }}
         >
           Join the waitlist for <br className="hidden md:block" />
@@ -129,10 +129,10 @@ export function WaitlistHero() {
               }}
               onBlur={handleBlur}
               disabled={isPending}
-              className={`h-[50px] w-full rounded-[8px] border bg-[#FAFAFA] px-4 text-[#050505] transition-colors outline-none placeholder:text-[#999] ${
+              className={`h-[50px] w-full rounded-[8px] border bg-primary-bg px-4 text-primary-text transition-colors outline-none placeholder:text-disabled-text ${
                 emailError
                   ? "border-red-400"
-                  : "border-[#E5E5E5] focus:border-[#087583]"
+                  : "border-tertiary-b focus:border-link-hover-text"
               }`}
               style={{ fontFamily: "'Afacad', sans-serif" }}
             />

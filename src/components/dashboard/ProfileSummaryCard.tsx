@@ -14,7 +14,7 @@ type Props = {
 export default function ProfileSummaryCard({ profile, isLoading }: Props) {
   const profileImageUrl = getImageUrl(profile?.photoUrl);
   return (
-    <section className="flex flex-col gap-5 rounded-[12px] border border-[#EDEDED] bg-white p-6 md:flex-row md:items-start">
+    <section className="flex flex-col gap-5 rounded-[12px] border border-border bg-background p-6 md:flex-row md:items-start">
       {isLoading ? (
         <Skeleton className="h-24 w-24 shrink-0 rounded-full" />
       ) : profileImageUrl ? (
@@ -27,7 +27,7 @@ export default function ProfileSummaryCard({ profile, isLoading }: Props) {
           className="h-24 w-24 rounded-full object-cover"
         />
       ) : (
-        <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-[#E5F4F6] text-3xl font-bold text-[#087583]">
+        <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-brand-subtle-bg text-3xl font-bold text-brand-hover-bg">
           {profile?.fullName?.charAt(0).toUpperCase() ?? "U"}
         </div>
       )}
@@ -44,7 +44,7 @@ export default function ProfileSummaryCard({ profile, isLoading }: Props) {
         {isLoading ? (
           <Skeleton className="mt-4 h-5" />
         ) : (
-          <p className="mt-4 max-w-[650px] text-xl leading-8 text-[#050505]">
+          <p className="mt-4 max-w-[650px] text-xl leading-8 text-primary-text">
             {profile?.bio ?? "No bio added yet."}
           </p>
         )}
