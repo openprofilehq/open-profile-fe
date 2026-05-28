@@ -6,7 +6,7 @@ import { ChevronLeft, GripVertical, Trash2, Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ProjectItem, Section } from "./types";
 import { uploadImage } from "@/api/uploads/uploads.service";
-import { isValidUrl } from "./builder.utils";
+import { validateProfileLink } from "@/api/profile/profile.service";
 
 interface ProjectsSidebarProps {
   returnTab: () => void;
@@ -52,6 +52,7 @@ export default function ProjectsSidebar({
   const [itemImage, setItemImage] = useState<string | null>(null);
   const [itemHighlighted, setItemHighlighted] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [validatingUrl, setValidatingUrl] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -140,18 +141,28 @@ export default function ProjectsSidebar({
     }
   };
 
-  const handleSaveProject = (e: React.FormEvent) => {
+  const handleSaveProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!itemTitle.trim() || !itemDesc.trim()) return;
 
-    if (itemUrl.trim() && !isValidUrl(itemUrl.trim())) {
-      setUrlError("Please enter a valid link (e.g. yoursite.com)");
-      return;
+    let validatedProjectUrl: string | undefined;
+
+    if (itemUrl.trim()) {
+      try {
+        setValidatingUrl(true);
+        setUrlError("");
+
+        const validatedLink = await validateProfileLink(itemUrl.trim());
+        validatedProjectUrl = validatedLink.encoded;
+      } catch {
+        setUrlError("Please enter a valid project link.");
+        return;
+      } finally {
+        setValidatingUrl(false);
+      }
     }
-    setUrlError("");
 
     if (editingProject) {
-      // Update existing project
       const updated = projects.map((p) =>
         p.id === editingProject.id
           ? {
@@ -159,7 +170,7 @@ export default function ProjectsSidebar({
               title: itemTitle.trim(),
               description: itemDesc.trim(),
               buttonText: itemButtonText.trim() || "View project",
-              url: itemUrl.trim() || undefined,
+              url: validatedProjectUrl,
               imageSrc: itemImage,
               highlighted: itemHighlighted,
             }
@@ -167,20 +178,18 @@ export default function ProjectsSidebar({
       );
       handleProjectsChange(updated);
     } else {
-      // Add new project
       const newProj: ProjectItem = {
         id: Math.random().toString(36).substring(2, 9),
         title: itemTitle.trim(),
         description: itemDesc.trim(),
         buttonText: itemButtonText.trim() || "View project",
-        url: itemUrl.trim() || undefined,
+        url: validatedProjectUrl,
         imageSrc: itemImage,
         highlighted: itemHighlighted,
       };
       handleProjectsChange([...projects, newProj]);
     }
 
-    // Go back to list tab
     setEditingProject(null);
     setSelectedTab("content");
   };
@@ -518,14 +527,21 @@ export default function ProjectsSidebar({
               </Button>
               <Button
                 type="submit"
-                disabled={uploading || !itemTitle.trim() || !itemDesc.trim()}
+                disabled={
+                  uploading ||
+                  validatingUrl ||
+                  !itemTitle.trim() ||
+                  !itemDesc.trim()
+                }
                 className="bg-brand-hover-bg hover:bg-brand h-[46px] flex-1 rounded-[10px] font-semibold text-white disabled:opacity-50"
               >
-                {uploading
-                  ? "Uploading..."
-                  : editingProject
-                    ? "Update Project"
-                    : "Save Project"}
+                {validatingUrl
+                  ? "Validating..."
+                  : uploading
+                    ? "Uploading..."
+                    : editingProject
+                      ? "Update Project"
+                      : "Save Project"}
               </Button>
             </div>
           </form>

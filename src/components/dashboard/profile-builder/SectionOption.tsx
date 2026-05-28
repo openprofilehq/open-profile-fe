@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import type { SavedLink } from "./LinkSidebar";
 import { uploadImage } from "@/api/uploads/uploads.service";
-import { isValidUrl } from "./builder.utils";
+import { validateProfileLink } from "@/api/profile/profile.service";
 
 const presetIcons = [
   {
@@ -122,6 +122,7 @@ export default function SectionOption({
   );
   const [urlError, setUrlError] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [validatingUrl, setValidatingUrl] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const selectedIcon =
@@ -154,34 +155,44 @@ export default function SectionOption({
     }
   };
 
-  const handleSaveLink = () => {
+  const handleSaveLink = async () => {
     if (!title.trim() || !url.trim()) return;
 
-    if (!isValidUrl(url.trim(), selectedIconId)) {
-      setUrlError("Please enter a valid link (e.g. yoursite.com)");
-      return;
+    const trimmedUrl = url.trim();
+
+    try {
+      setValidatingUrl(true);
+      setUrlError("");
+
+      const validatedLink = await validateProfileLink(
+        trimmedUrl,
+        selectedIconId
+      );
+
+      onSaveLink(
+        {
+          title: title.trim(),
+          url: validatedLink.encoded,
+          iconId: selectedIcon?.id ?? null,
+          iconLabel: selectedIcon?.label ?? null,
+          iconSrc: selectedIcon?.icon ?? null,
+          imageSrc: uploadedImage,
+        },
+        editingLink?.id ?? null
+      );
+
+      setTitle("");
+      setUrl("");
+      setUrlError("");
+      setSelectedIconId(null);
+      setIsIconMenuOpen(false);
+      setUploadedImage(null);
+      returnTab();
+    } catch {
+      setUrlError("Please enter a valid link for the selected icon.");
+    } finally {
+      setValidatingUrl(false);
     }
-    setUrlError("");
-
-    onSaveLink(
-      {
-        title: title.trim(),
-        url: url.trim(),
-        iconId: selectedIcon?.id ?? null,
-        iconLabel: selectedIcon?.label ?? null,
-        iconSrc: selectedIcon?.icon ?? null,
-        imageSrc: uploadedImage,
-      },
-      editingLink?.id ?? null
-    );
-
-    setTitle("");
-    setUrl("");
-    setUrlError("");
-    setSelectedIconId(null);
-    setIsIconMenuOpen(false);
-    setUploadedImage(null);
-    returnTab();
   };
 
   return (
@@ -190,7 +201,7 @@ export default function SectionOption({
         className="flex flex-col gap-4"
         onSubmit={(event) => {
           event.preventDefault();
-          handleSaveLink();
+          void handleSaveLink();
         }}
       >
         <span className="flex w-full flex-col gap-2">
@@ -392,7 +403,9 @@ export default function SectionOption({
             onChange={(event) => setUrl(event.target.value)}
             placeholder="Paste link (e.g. yoursite.com)..."
             className={`rounded-md border p-2 focus:ring-2 focus:ring-offset-1 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
-              urlError ? "border-red-500 focus:ring-red-500" : "border-accent-foreground/30 focus:ring-accent"
+              urlError
+                ? "border-red-500 focus:ring-red-500"
+                : "border-accent-foreground/30 focus:ring-accent"
             }`}
           />
           {urlError && <p className="text-xs text-red-500">{urlError}</p>}
@@ -412,13 +425,19 @@ export default function SectionOption({
           type="submit"
           size="lg"
           variant="primary"
-          disabled={uploading || (!editingLink?.title && !canAddMoreLinks)}
+          disabled={
+            uploading ||
+            validatingUrl ||
+            (!editingLink?.title && !canAddMoreLinks)
+          }
         >
-          {uploading
-            ? "Uploading..."
-            : editingLink
-              ? "Update Link"
-              : "Save Link"}
+          {validatingUrl
+            ? "Validating..."
+            : uploading
+              ? "Uploading..."
+              : editingLink
+                ? "Update Link"
+                : "Save Link"}
         </Button>
       </form>
     </div>
