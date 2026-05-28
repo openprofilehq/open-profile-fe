@@ -62,13 +62,10 @@ const PrivacyTable = () => {
 
   return (
     <div className="bg-primary-bg sticky top-28 rounded-[20px] p-6 md:p-8">
-      <h4
-        className="text-primary-text mb-6 text-xl font-bold tracking-tight"
-        style={{ fontFamily: "'Inter', sans-serif" }}
-      >
+      <h4 className="text-primary-text font-inter mb-6 text-xl font-bold tracking-tight">
         Table Of Contents
       </h4>
-      <ul className="text-secondary-text space-y-1 text-[14px] font-medium md:text-[15px]">
+      <ul className="text-secondary-text space-y-1 text-sm font-medium md:text-base">
         {tableOfContent.map((item, index) => {
           const id = getTableOfContentId(item.heading);
           const isActive = activeId === id;
@@ -78,7 +75,7 @@ const PrivacyTable = () => {
               <a
                 href={`#${id}`}
                 onClick={(e) => handleClick(e, id)}
-                className={`block rounded-[8px] px-4 py-3 transition-colors ${
+                className={`block rounded-lg px-4 py-3 transition-colors ${
                   isActive
                     ? "bg-brand-subtle-bg text-brand-text font-semibold"
                     : "hover:bg-hover-bg hover:text-primary-text"

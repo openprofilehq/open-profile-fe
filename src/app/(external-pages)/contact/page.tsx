@@ -2,9 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
-import { Navbar } from "@/components/layout/Navbar";
 import { CTA } from "@/components/home/CTA";
-import Footer from "@/components/layout/Footer";
 import { Mail, Phone, MapPin, ChevronDown } from "lucide-react";
 import { contactAction } from "@/app/actions/contact";
 import { Button } from "@/components/ui/button";
@@ -102,7 +100,6 @@ export default function ContactPage() {
 
   return (
     <div className="selection:bg-brand text-primary-text min-h-screen overflow-hidden bg-white font-sans selection:text-white">
-      <Navbar />
       <div className="pt-[76px]">
         <main className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24">
           {/* Header */}
@@ -341,7 +338,6 @@ export default function ContactPage() {
         </main>
 
         <CTA />
-        <Footer />
       </div>
     </div>
   );

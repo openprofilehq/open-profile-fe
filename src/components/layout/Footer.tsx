@@ -26,7 +26,7 @@ export default function Footer() {
               />
             </div>
 
-            <p className="text-inverse-text mt-5 text-[15px] leading-[1.6] font-normal">
+            <p className="text-inverse-text mt-5 leading-[1.6] font-normal">
               Your verified identity, <br />
               discoverable everywhere.
             </p>
@@ -39,7 +39,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/coming-soon"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     How it works
                   </Link>
@@ -47,7 +47,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/coming-soon"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     Features
                   </Link>
@@ -55,7 +55,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="#pricing"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     Pricing
                   </Link>
@@ -63,7 +63,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/faq"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     FAQ
                   </Link>
@@ -77,7 +77,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/coming-soon"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     About
                   </Link>
@@ -85,7 +85,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/coming-soon"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     Blog
                   </Link>
@@ -93,7 +93,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/coming-soon"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     Careers
                   </Link>
@@ -101,7 +101,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/contact"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     Contact
                   </Link>
@@ -115,7 +115,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/privacy-policy"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     Privacy Policy
                   </Link>
@@ -123,7 +123,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/terms"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
+                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
                   >
                     Terms of Service
                   </Link>
