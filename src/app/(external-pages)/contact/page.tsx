@@ -2,35 +2,40 @@
 
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
-import { Navbar } from "@/components/layout/Navbar";
 import { CTA } from "@/components/home/CTA";
-import Footer from "@/components/layout/Footer";
 import { Mail, Phone, MapPin, ChevronDown } from "lucide-react";
 import { contactAction } from "@/app/actions/contact";
 import { Button } from "@/components/ui/button";
-import { BsInstagram } from "react-icons/bs";
-
 const XIcon = () => (
   <svg
     width="22"
     height="22"
     viewBox="0 0 24 24"
     fill="currentColor"
-    aria-hidden="true"
+    className="opacity-70 transition-opacity hover:opacity-100"
   >
     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
   </svg>
 );
 
-const XIg = () => <BsInstagram size={20} />;
+const InstagramIcon = () => (
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className="opacity-70 transition-opacity hover:opacity-100"
+  >
+    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+  </svg>
+);
 
 const socials = [
   { label: "X", href: "https://x.com/OpenProfilehq", icon: <XIcon /> },
-
   {
     label: "Instagram",
-    href: "https://www.instagram.com/openprofilehq/",
-    icon: <XIg />,
+    href: "https://instagram.com/openprofilehq",
+    icon: <InstagramIcon />,
   },
 ];
 
@@ -94,8 +99,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="selection:bg-brand min-h-screen overflow-hidden bg-white font-sans text-primary-text selection:text-white">
-      <Navbar />
+    <div className="selection:bg-brand text-primary-text min-h-screen overflow-hidden bg-white font-sans selection:text-white">
       <div className="pt-[76px]">
         <main className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24">
           {/* Header */}
@@ -103,7 +107,7 @@ export default function ContactPage() {
             <h1 className="mb-3 text-[32px] font-semibold tracking-tight md:text-[40px]">
               Get in Touch With Us
             </h1>
-            <p className="text-[14px] text-secondary-text md:text-[15px]">
+            <p className="text-secondary-text text-[14px] md:text-[15px]">
               No matter where you are, Open Profile brings solutions closer to
               you.
             </p>
@@ -122,10 +126,10 @@ export default function ContactPage() {
                       className="text-link-hover-text mt-0.5 shrink-0"
                     />
                     <div>
-                      <p className="text-[13px] font-medium text-primary-text">
+                      <p className="text-primary-text text-[13px] font-medium">
                         Email Address
                       </p>
-                      <p className="text-[13px] text-secondary-text">
+                      <p className="text-secondary-text text-[13px]">
                         openprofile@email.com
                       </p>
                     </div>
@@ -136,10 +140,10 @@ export default function ContactPage() {
                       className="text-link-hover-text mt-0.5 shrink-0"
                     />
                     <div>
-                      <p className="text-[13px] font-medium text-primary-text">
+                      <p className="text-primary-text text-[13px] font-medium">
                         Phone number
                       </p>
-                      <p className="text-[13px] text-secondary-text">
+                      <p className="text-secondary-text text-[13px]">
                         +1 234 567 8900
                       </p>
                     </div>
@@ -150,10 +154,10 @@ export default function ContactPage() {
                       className="text-link-hover-text mt-0.5 shrink-0"
                     />
                     <div>
-                      <p className="text-[13px] font-medium text-primary-text">
+                      <p className="text-primary-text text-[13px] font-medium">
                         Our Office Address
                       </p>
-                      <p className="text-[13px] text-secondary-text">
+                      <p className="text-secondary-text text-[13px]">
                         New York, USA
                       </p>
                     </div>
@@ -163,7 +167,7 @@ export default function ContactPage() {
 
               {/* Socials */}
               <div>
-                <p className="mb-4 text-[20px] font-medium text-primary-text">
+                <p className="text-primary-text mb-2 text-[20px] font-medium">
                   Follow us on our social media accounts
                 </p>
                 <div className="flex items-center gap-4">
@@ -173,7 +177,8 @@ export default function ContactPage() {
                       href={s.href}
                       aria-label={s.label}
                       target="_blank"
-                      className="text-secondary-text transition-colors hover:text-button-brand-bg"
+                      rel="noopener noreferrer"
+                      className="text-secondary-text hover:text-brand block transition-colors"
                     >
                       {s.icon}
                     </a>
@@ -188,13 +193,13 @@ export default function ContactPage() {
 
               {success ? (
                 <div className="flex flex-col items-center justify-center gap-4 py-12 text-center">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-subtle-bg">
-                    <Mail size={24} style={{ color: "#065E69" }} />
+                  <div className="bg-brand-subtle-bg flex h-14 w-14 items-center justify-center rounded-full">
+                    <Mail size={24} className="text-brand" />
                   </div>
-                  <h3 className="text-[17px] font-semibold text-primary-text">
+                  <h3 className="text-primary-text text-[17px] font-semibold">
                     Message Sent!
                   </h3>
-                  <p className="max-w-xs text-[13px] text-secondary-text">
+                  <p className="text-secondary-text max-w-xs text-[13px]">
                     Thanks for reaching out. We&apos;ll get back to you as soon
                     as possible.
                   </p>
@@ -212,9 +217,9 @@ export default function ContactPage() {
                   <div className="space-y-1.5">
                     <label
                       htmlFor="name"
-                      className="text-[13px] font-medium text-primary-text"
+                      className="text-primary-text text-[13px] font-medium"
                     >
-                      Name <span className="text-red-500">*</span>
+                      Name <span className="text-negative-text">*</span>
                     </label>
                     <input
                       id="name"
@@ -223,16 +228,16 @@ export default function ContactPage() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Shukuneh Itouer"
-                      className="w-full rounded-[8px] border border-tertiary-b px-4 py-3 text-[13px] transition placeholder:text-secondary-b focus:border-transparent focus:ring-2 focus:ring-button-brand-bg focus:outline-none"
+                      className="border-input-b placeholder:text-disabled-text focus:ring-brand w-full rounded-[8px] border px-4 py-3 text-[13px] transition focus:border-transparent focus:ring-2 focus:outline-none"
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <label
                       htmlFor="email"
-                      className="text-[13px] font-medium text-primary-text"
+                      className="text-primary-text text-[13px] font-medium"
                     >
-                      Email <span className="text-red-500">*</span>
+                      Email <span className="text-negative-text">*</span>
                     </label>
                     <input
                       id="email"
@@ -241,24 +246,26 @@ export default function ContactPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="shukuneh025@gmail.com"
-                      className="w-full rounded-[8px] border border-tertiary-b px-4 py-3 text-[13px] transition placeholder:text-secondary-b focus:border-transparent focus:ring-2 focus:ring-button-brand-bg focus:outline-none"
+                      className="border-input-b placeholder:text-disabled-text focus:ring-brand w-full rounded-[8px] border px-4 py-3 text-[13px] transition focus:border-transparent focus:ring-2 focus:outline-none"
                     />
                   </div>
 
                   {/* Custom industry dropdown */}
                   <div className="space-y-1.5">
-                    <label className="text-[13px] font-medium text-primary-text">
+                    <label className="text-primary-text text-[13px] font-medium">
                       Industry
                     </label>
                     <div className="relative" ref={dropdownRef}>
                       <Button
                         type="button"
                         onClick={() => setOpen((o) => !o)}
-                        className="flex w-full items-center justify-between rounded-[8px] border border-tertiary-b bg-white px-4 py-3 text-[13px] transition focus:ring-2 focus:ring-button-brand-bg focus:outline-none"
+                        className="border-input-b focus:ring-brand flex w-full items-center justify-between rounded-[8px] border bg-white px-4 py-3 text-[13px] transition focus:ring-2 focus:outline-none"
                       >
                         <span
                           className={
-                            industry ? "text-primary-text" : "text-disabled-text"
+                            industry
+                              ? "text-primary-text"
+                              : "text-disabled-text"
                           }
                         >
                           {industry || "Select..."}
@@ -270,7 +277,7 @@ export default function ContactPage() {
                       </Button>
 
                       <div
-                        className={`absolute z-10 mt-1 w-full origin-top overflow-hidden rounded-[8px] border border-tertiary-b bg-white shadow-lg transition-all duration-200 ${
+                        className={`border-input-b absolute z-10 mt-1 w-full origin-top overflow-hidden rounded-[8px] border bg-white shadow-lg transition-all duration-200 ${
                           open
                             ? "scale-y-100 opacity-100"
                             : "pointer-events-none scale-y-0 opacity-0"
@@ -285,9 +292,9 @@ export default function ContactPage() {
                               setIndustry(i);
                               setOpen(false);
                             }}
-                            className={`w-full px-4 py-2.5 text-left text-[13px] transition-colors hover:bg-brand-light-subtle-bg ${
+                            className={`hover:bg-brand-light-subtle-bg w-full px-4 py-2.5 text-left text-[13px] transition-colors ${
                               industry === i
-                                ? "font-medium text-button-brand-bg"
+                                ? "text-brand font-medium"
                                 : "text-primary-text"
                             }`}
                           >
@@ -301,9 +308,9 @@ export default function ContactPage() {
                   <div className="space-y-1.5">
                     <label
                       htmlFor="message"
-                      className="text-[13px] font-medium text-primary-text"
+                      className="text-primary-text text-[13px] font-medium"
                     >
-                      Message <span className="text-red-500">*</span>
+                      Message <span className="text-negative-text">*</span>
                     </label>
                     <textarea
                       id="message"
@@ -312,7 +319,7 @@ export default function ContactPage() {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Type your messages"
-                      className="w-full resize-none rounded-[8px] border border-tertiary-b px-4 py-3 text-[13px] transition placeholder:text-secondary-b focus:border-transparent focus:ring-2 focus:ring-button-brand-bg focus:outline-none"
+                      className="border-input-b placeholder:text-disabled-text focus:ring-brand w-full resize-none rounded-[8px] border px-4 py-3 text-[13px] transition focus:border-transparent focus:ring-2 focus:outline-none"
                     />
                   </div>
 
@@ -320,7 +327,7 @@ export default function ContactPage() {
                     type="submit"
                     size="lg"
                     disabled={!isValid || pending}
-                    className="w-full rounded-[8px] bg-button-brand-bg py-3.5 text-[14px] font-medium text-white transition-all hover:enabled:bg-brand-active-bg disabled:cursor-not-allowed disabled:opacity-40"
+                    className="bg-brand hover:enabled:bg-brand-hover-bg w-full rounded-[8px] py-3.5 text-[14px] font-medium text-white transition-all disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {pending ? "Sending…" : "Continue"}
                   </Button>
@@ -331,7 +338,6 @@ export default function ContactPage() {
         </main>
 
         <CTA />
-        <Footer />
       </div>
     </div>
   );

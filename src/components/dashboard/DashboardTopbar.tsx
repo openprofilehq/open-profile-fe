@@ -55,6 +55,8 @@ export default function DashboardTopbar() {
       draftUpdatedAtRef.current = null;
       queryClient.invalidateQueries({ queryKey: ["profile", "content"] });
       queryClient.invalidateQueries({ queryKey: ["profile", "draft-state"] });
+      queryClient.invalidateQueries({ queryKey: ["profile", "dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["profile", "appearance"] });
       toast.success("Profile published successfully.");
     },
     onError(error: unknown) {

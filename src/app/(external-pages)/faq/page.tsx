@@ -1,6 +1,5 @@
 "use client";
 
-import { Navbar } from "@/components/layout/Navbar";
 import {
   Accordion,
   AccordionContent,
@@ -11,7 +10,6 @@ import { motion, Variants } from "motion/react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Footer from "@/components/layout/Footer";
 
 export default function FaqPage() {
   const faqData = [
@@ -106,13 +104,11 @@ export default function FaqPage() {
 
   return (
     <div>
-      <Navbar />
-
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="mt-19 flex flex-col items-center justify-center space-y-1 bg-brand-subtle-bg py-10 text-center lg:py-17"
+        className="mt-19 flex flex-col items-center justify-center space-y-1 bg-[#DBEFF2] py-10 text-center lg:py-17"
       >
         <p className="text-[36px] leading-18 font-semibold tracking-[-1.51px] lg:text-[60px] lg:leading-18">
           Frequently asked questions
@@ -142,7 +138,7 @@ export default function FaqPage() {
                 >
                   <span className="pr-4">{item.question}</span>
                 </AccordionTrigger>
-                <AccordionContent className="px-6 pb-6 text-[18px] leading-relaxed text-secondary-text">
+                <AccordionContent className="px-6 pb-6 text-[18px] leading-relaxed text-[#525252]">
                   {item.answer}
                 </AccordionContent>
               </AccordionItem>
@@ -151,15 +147,15 @@ export default function FaqPage() {
         </Accordion>
       </motion.div>
 
-      <section className="mt-[153px] px-4 lg:mt-0 lg:border-t lg:border-b-transparent lg:pt-12.75">
+      <section className="mt-[153px] px-4 pb-10 lg:mt-0 lg:border-t lg:border-b lg:pt-12.75">
         <div className="mx-auto max-w-7xl">
           <div className="bg-brand relative mx-auto flex w-full max-w-6xl items-center justify-between overflow-hidden rounded-[8px] px-4 py-10 md:rounded-[32px] lg:px-16 lg:py-18">
             <div className="relative z-10 max-w-105 space-y-6">
               <div className="flex flex-col gap-2">
-                <p className="text-[32px] leading-[1.2] font-semibold tracking-tight text-span-text md:whitespace-nowrap">
+                <p className="text-[32px] leading-[1.2] font-semibold tracking-tight text-[#FEFEFE] md:whitespace-nowrap">
                   Be the profile people find first
                 </p>
-                <p className="leading-relaxed font-normal text-span-text md:text-[15px]">
+                <p className="leading-relaxed font-normal text-[#FEFEFE] md:text-[15px]">
                   Create one searchable profile that shows who you are, what you
                   do and why people should trust you
                 </p>
@@ -179,10 +175,6 @@ export default function FaqPage() {
             </div>
           </div>
         </div>
-      </section>
-
-      <section className="mt-[111px]">
-        <Footer />
       </section>
     </div>
   );
