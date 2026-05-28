@@ -3,7 +3,13 @@ import { ChevronDown, Trash2, Upload } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import type { SavedLink } from "./LinkSidebar";
-import { uploadImage } from "@/api/uploads/uploads.service";
+import {
+  isSupportedImageFile,
+  SUPPORTED_IMAGE_ACCEPT,
+  UNSUPPORTED_IMAGE_MESSAGE,
+  uploadImage,
+} from "@/api/uploads/uploads.service";
+import { toast } from "sonner";
 import { isValidUrl } from "./builder.utils";
 
 const presetIcons = [
@@ -133,6 +139,13 @@ export default function SectionOption({
     const file = event.target.files?.[0];
     if (!file) return;
 
+    event.target.value = "";
+
+    if (!isSupportedImageFile(file)) {
+      toast.error(UNSUPPORTED_IMAGE_MESSAGE);
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => {
       const result = reader.result;
@@ -141,7 +154,6 @@ export default function SectionOption({
       }
     };
     reader.readAsDataURL(file);
-    event.target.value = "";
 
     try {
       setUploading(true);
@@ -323,7 +335,7 @@ export default function SectionOption({
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept={SUPPORTED_IMAGE_ACCEPT}
               onChange={handleFileChange}
               className="hidden"
               aria-hidden
@@ -392,7 +404,9 @@ export default function SectionOption({
             onChange={(event) => setUrl(event.target.value)}
             placeholder="Paste link (e.g. yoursite.com)..."
             className={`rounded-md border p-2 focus:ring-2 focus:ring-offset-1 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
-              urlError ? "border-red-500 focus:ring-red-500" : "border-accent-foreground/30 focus:ring-accent"
+              urlError
+                ? "border-red-500 focus:ring-red-500"
+                : "border-accent-foreground/30 focus:ring-accent"
             }`}
           />
           {urlError && <p className="text-xs text-red-500">{urlError}</p>}

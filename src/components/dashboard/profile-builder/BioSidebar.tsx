@@ -6,7 +6,12 @@ import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getImageUrl } from "@/utils/profile";
-import { uploadImage } from "@/api/uploads/uploads.service";
+import {
+  isSupportedImageFile,
+  SUPPORTED_IMAGE_ACCEPT,
+  UNSUPPORTED_IMAGE_MESSAGE,
+  uploadImage,
+} from "@/api/uploads/uploads.service";
 import { updateProfile } from "@/api/profile/profile.service";
 import type { Section, ProfilePreview } from "./types";
 
@@ -42,8 +47,18 @@ export default function BioSidebar({
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) return;
+
     event.target.value = "";
+
+    if (!isSupportedImageFile(file)) {
+      toast.error(UNSUPPORTED_IMAGE_MESSAGE);
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be 5MB or less.");
+      return;
+    }
 
     const prevUploadedImage = uploadedImage;
 
@@ -243,7 +258,7 @@ export default function BioSidebar({
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept={SUPPORTED_IMAGE_ACCEPT}
                 onChange={handleFileChange}
                 className="hidden"
                 aria-hidden
@@ -319,7 +334,7 @@ export default function BioSidebar({
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept={SUPPORTED_IMAGE_ACCEPT}
               onChange={handleFileChange}
               className="hidden"
               aria-hidden

@@ -17,7 +17,6 @@ import {
 } from "@/api/profile/profile.options";
 import { isApiError } from "@/api/base";
 import { uploadImage } from "@/api/uploads/uploads.service";
-import { updateProfile } from "@/api/profile/profile.service";
 
 type UsernameStatus = "available" | "taken" | "error" | "checking" | "";
 
@@ -29,6 +28,7 @@ export default function CreateProfileForm() {
   const [bio, setBio] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoUrl, setPhotoUrl] = useState("");
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const debouncedUsername = useDebounce(username, 300);
   const isUsernameSynced = username === debouncedUsername;
 
@@ -57,16 +57,7 @@ export default function CreateProfileForm() {
 
   const createProfile = useMutation({
     ...createProfileOption,
-    onSuccess: async () => {
-      if (photoFile) {
-        try {
-          const { url } = await uploadImage(photoFile, "profiles");
-          await updateProfile(username, { photoUrl: url });
-          setPhotoUrl(url);
-        } catch {
-          toast.error("Profile created but photo upload failed.");
-        }
-      }
+    onSuccess: () => {
       queryClient.setQueryData<import("@/api/auth/auth.type").User>(
         ["auth", "me"],
         (prev) => (prev ? { ...prev, onboardingComplete: true } : prev)
@@ -86,14 +77,48 @@ export default function CreateProfileForm() {
     },
   });
 
-  function submitProfile() {
+  async function submitProfile() {
     if (currentStep !== 2) return;
 
-    createProfile.mutate({
-      username,
-      bio,
-      ...(photoUrl && photoUrl.startsWith("http") ? { photoUrl } : {}),
-    });
+    const trimmedBio = bio.trim();
+    const hasUploadedPhoto = photoUrl.startsWith("http");
+
+    if (!trimmedBio) {
+      toast.error("Please add a bio to continue.");
+      return;
+    }
+
+    if (!photoFile && !hasUploadedPhoto) {
+      toast.error("Please upload a profile picture to continue.");
+      return;
+    }
+
+    try {
+      setIsUploadingPhoto(true);
+
+      let uploadedPhotoUrl = hasUploadedPhoto ? photoUrl : "";
+
+      if (photoFile) {
+        const { url } = await uploadImage(photoFile, "profiles");
+        uploadedPhotoUrl = url;
+        setPhotoUrl(url);
+      }
+
+      await createProfile.mutateAsync({
+        username,
+        bio: trimmedBio,
+        photoUrl: uploadedPhotoUrl,
+      });
+    } catch (err) {
+      if (isApiError(err)) {
+        toast.error(err.message);
+        return;
+      }
+
+      toast.error("Failed to complete profile setup.");
+    } finally {
+      setIsUploadingPhoto(false);
+    }
   }
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -134,7 +159,7 @@ export default function CreateProfileForm() {
             bio={bio}
             onUpdateBio={(e) => setBio(e.target.value)}
             onUpdateStep={submitProfile}
-            isPending={createProfile.isPending}
+            isPending={createProfile.isPending || isUploadingPhoto}
             photoUrl={photoUrl}
             onPhotoUrl={setPhotoUrl}
             photoFile={photoFile}

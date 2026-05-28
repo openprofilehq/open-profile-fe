@@ -2,12 +2,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { type ProfileResponse } from "@/api/profile/profile.type";
+import {
+  type ProfileContentDetails,
+  type ProfileResponse,
+} from "@/api/profile/profile.type";
 import { env as serverEnv } from "@/env/server";
 import { Folder, ExternalLink } from "lucide-react";
 
 type Props = {
   params: Promise<{ username: string }>;
+};
+
+type LegacyContent = ProfileContentDetails & {
+  themeSettings?: unknown;
 };
 
 function getImageUrl(src?: string | null) {
@@ -71,12 +78,43 @@ export default async function UserProfilePage({ params }: Props) {
     sectionOrder = [...new Set(sectionOrder)];
   }
 
-  const themeSettings = (profile.themeSettings ||
-    (content as any)?.themeSettings ||
-    {}) as Record<string, any>;
+  type PublicProfileAppearance = {
+    template?: string;
+    accentColour?: string;
+    iconColor?: string;
+    textColor?: string;
+    bgColor?: string;
+    font?: string;
+    cornerStyle?: string;
+    borderRadius?: "sharp" | "medium" | "round";
+    spacing?: number;
+    theme?: "light" | "dark";
+  };
 
-  const globalFont = themeSettings?.font || "afacad";
-  const globalFontNormalized = globalFont.toString().toLowerCase();
+  const mapCornerStyleToRadius = (
+    cornerStyle?: unknown
+  ): "sharp" | "medium" | "round" | undefined => {
+    if (cornerStyle === "sharp") return "sharp";
+    if (cornerStyle === "rounded") return "medium";
+    if (cornerStyle === "pill") return "round";
+    return undefined;
+  };
+
+  const rawAppearance = (profile.appearance ||
+    profile.themeSettings ||
+    (content as LegacyContent | null)?.themeSettings ||
+    {}) as PublicProfileAppearance;
+
+  const themeSettings: PublicProfileAppearance = {
+    ...rawAppearance,
+    iconColor: rawAppearance.iconColor ?? rawAppearance.accentColour,
+    borderRadius:
+      rawAppearance.borderRadius ??
+      mapCornerStyleToRadius(rawAppearance.cornerStyle),
+  };
+
+  const globalFont = (themeSettings.font || "afacad").toString();
+  const globalFontNormalized = globalFont.toLowerCase();
 
   const fontStyles: Record<string, string> = {
     afacad: "font-afacad",
@@ -86,7 +124,6 @@ export default async function UserProfilePage({ params }: Props) {
     geologica: "font-sans",
     manrope: "font-sans",
 
-    // Legacy/display labels fallback
     Afacad: "font-afacad",
     Inter: "font-sans",
     Serif: "font-serif",

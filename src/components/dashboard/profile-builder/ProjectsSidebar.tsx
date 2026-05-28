@@ -5,7 +5,13 @@ import Image from "next/image";
 import { ChevronLeft, GripVertical, Trash2, Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ProjectItem, Section } from "./types";
-import { uploadImage } from "@/api/uploads/uploads.service";
+import {
+  isSupportedImageFile,
+  SUPPORTED_IMAGE_ACCEPT,
+  UNSUPPORTED_IMAGE_MESSAGE,
+  uploadImage,
+} from "@/api/uploads/uploads.service";
+import { toast } from "sonner";
 import { isValidUrl } from "./builder.utils";
 
 interface ProjectsSidebarProps {
@@ -120,6 +126,13 @@ export default function ProjectsSidebar({
     const file = event.target.files?.[0];
     if (!file) return;
 
+    event.target.value = "";
+
+    if (!isSupportedImageFile(file)) {
+      toast.error(UNSUPPORTED_IMAGE_MESSAGE);
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === "string") {
@@ -127,7 +140,6 @@ export default function ProjectsSidebar({
       }
     };
     reader.readAsDataURL(file);
-    event.target.value = "";
 
     try {
       setUploading(true);
@@ -413,7 +425,7 @@ export default function ProjectsSidebar({
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept={SUPPORTED_IMAGE_ACCEPT}
                 onChange={handleFileChange}
                 className="hidden"
               />

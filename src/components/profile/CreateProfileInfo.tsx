@@ -4,6 +4,14 @@ import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
+import { toast } from "sonner";
+import {
+  isSupportedImageFile,
+  SUPPORTED_IMAGE_ACCEPT,
+  SUPPORTED_IMAGE_HELPER_TEXT,
+  UNSUPPORTED_IMAGE_MESSAGE,
+} from "@/api/uploads/uploads.service";
+
 type CreateProfileInfoProps = {
   bio: string;
   onUpdateBio: (e: ChangeEvent<HTMLTextAreaElement>) => void;
@@ -22,6 +30,7 @@ export default function CreateProfileInfo({
   isPending,
   photoUrl,
   onPhotoUrl,
+  photoFile,
   onPhotoFile,
 }: CreateProfileInfoProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -38,9 +47,20 @@ export default function CreateProfileInfo({
 
   const displayPhoto = preview ?? photoUrl;
 
+  const hasPhoto = Boolean(photoFile || photoUrl);
+  const hasBio = bio.trim().length > 0;
+  const canContinue = hasPhoto && hasBio && !isPending;
+
   function handleFile(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    e.target.value = "";
+
+    if (!isSupportedImageFile(file)) {
+      toast.error(UNSUPPORTED_IMAGE_MESSAGE);
+      return;
+    }
 
     if (currentBlobRef.current) {
       URL.revokeObjectURL(currentBlobRef.current);
@@ -53,7 +73,6 @@ export default function CreateProfileInfo({
     onPhotoUrl?.(objectUrl);
     onPhotoFile?.(file);
   }
-
   return (
     <>
       <motion.div
@@ -92,7 +111,7 @@ export default function CreateProfileInfo({
           <input
             ref={inputRef}
             type="file"
-            accept="image/*"
+            accept={SUPPORTED_IMAGE_ACCEPT}
             className="hidden"
             onChange={handleFile}
           />
@@ -104,9 +123,13 @@ export default function CreateProfileInfo({
           >
             {displayPhoto ? "Change Photo" : "Upload a Photo"}
           </Button>
+
+          <p className="mt-2 text-center text-xs text-[#747474]">
+            {SUPPORTED_IMAGE_HELPER_TEXT}
+          </p>
         </div>
 
-        <div className="mt-16 flex flex-col gap-1.5">
+        <div className="mt-12 flex flex-col gap-1.5">
           <div className="mt-4">
             <label className="mb-1 inline-block font-bold text-[#454545]">
               Bio
@@ -118,12 +141,17 @@ export default function CreateProfileInfo({
               rows={5}
               placeholder="Product designer & side project builder based in lagos"
             />
+
+            <div className="mt-2 min-h-5 text-sm text-red-500">
+              {!hasPhoto && <p>Please upload a profile picture to continue.</p>}
+              {!hasBio && <p>Please add a bio to continue.</p>}
+            </div>
           </div>
 
           <Button
             type="button"
-            disabled={isPending}
-            className="mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-medium shadow-none transition-colors"
+            disabled={!canContinue}
+            className="mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-medium shadow-none transition-colors disabled:cursor-not-allowed disabled:opacity-60"
             onClick={onUpdateStep}
           >
             {isPending ? "Please wait…" : "Continue"}
