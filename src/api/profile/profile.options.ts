@@ -18,7 +18,6 @@ import {
 import { isQueryEnabled } from "@/api/base/base.util";
 import { QueryStaleTime } from "@/api/base/base.const";
 import { QueryBaseKeys } from "@/constants/query-keys";
-import { THEME_DEFAULTS } from "@/constants/theme";
 
 export const createProfileOption = mutationOptions({
   mutationKey: [QueryBaseKeys.profile, "create"],
@@ -89,53 +88,25 @@ export const saveTemplateOption = mutationOptions({
   mutationFn: async (templateType: TemplateType) => {
     const template = templateType.toLowerCase();
 
-    // Define cohesive appearance settings for each template variant to provide immediate, wow factor aesthetics
-    let accentColour: string = THEME_DEFAULTS.ACCENT_COLORS.DEFAULT;
-    let font: "inter" | "lato" | "poppins" | "playfair" | "roboto" = "inter";
-    let cornerStyle: "sharp" | "rounded" | "pill" = "rounded";
-    let spacing = 20;
-    let theme: "light" | "dark" = "light";
-
-    if (template === "creator") {
-      accentColour = THEME_DEFAULTS.ACCENT_COLORS.AMBER;
-      font = "lato";
-      cornerStyle = "pill";
-      spacing = 24;
-      theme = "dark";
-    } else if (template === "portfolio") {
-      accentColour = THEME_DEFAULTS.ACCENT_COLORS.INDIGO;
-      font = "inter";
-      cornerStyle = "sharp";
-      spacing = 16;
-      theme = "light";
+    let currentAppearance = {};
+    try {
+      const res = await getProfileAppearance();
+      if (res?.data) {
+        currentAppearance = res.data;
+      }
+    } catch (e) {
+      console.warn("Could not fetch current appearance, proceeding with minimal payload", e);
     }
 
-    const apiCornerStyle: "sharp" | "medium" | "round" =
-      cornerStyle === "sharp"
-        ? "sharp"
-        : cornerStyle === "pill"
-          ? "round"
-          : "medium";
-
     const appearanceRes = await updateProfileAppearance({
+      ...currentAppearance,
       template,
-      accentColour,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      font: font as any,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      cornerStyle: apiCornerStyle as any,
-      spacing,
-      theme,
     });
 
-    // Sync theme settings to the draft state ONLY if live appearance succeeds
+    // Sync template setting to the draft state so it reflects in dashboard
     await upsertDraft({
       themeSettings: {
         template,
-        accentColour,
-        font,
-        borderRadius:
-          cornerStyle === "sharp" ? 0 : cornerStyle === "pill" ? 16 : 8,
       },
     });
 

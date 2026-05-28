@@ -72,30 +72,8 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const refreshToken =
-        typeof window !== "undefined"
-          ? localStorage.getItem("refreshToken")
-          : undefined;
-      const refreshRes = await api.post(
-        "/auth/refresh-token",
-        refreshToken ? { refreshToken } : {}
-      );
+      await axios.post("/api/internal/auth/refresh", {}, { withCredentials: true });
       processQueue(null);
-
-      // Update access token in localStorage if returned
-      if (refreshRes.data?.accessToken || refreshRes.data?.data?.accessToken) {
-        const newAccessToken =
-          refreshRes.data?.accessToken || refreshRes.data?.data?.accessToken;
-        localStorage.setItem("accessToken", newAccessToken);
-      }
-      if (
-        refreshRes.data?.refreshToken ||
-        refreshRes.data?.data?.refreshToken
-      ) {
-        const newRefreshToken =
-          refreshRes.data?.refreshToken || refreshRes.data?.data?.refreshToken;
-        localStorage.setItem("refreshToken", newRefreshToken);
-      }
 
       return await api(originalRequest);
     } catch (refreshError: unknown) {

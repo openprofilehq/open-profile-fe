@@ -3,10 +3,10 @@
 
 import { ArrowLeft, Eye } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
-import PortfolioDashboardView from "@/components/dashboard/templates/PortfolioDashboardView";
-import { DashboardProfileResponse, ProfileContentResponse } from "@/api/profile/profile.type";
+import DefaultDashboardView from "@/components/dashboard/templates/DefaultDashboardView";
+import { DashboardProfileResponse } from "@/api/profile/profile.type";
 
-export default function PortfolioTemplatePreviewPage() {
+export default function DefaultTemplatePreviewPage() {
   const handleClose = () => {
     window.close();
     setTimeout(() => {
@@ -17,9 +17,9 @@ export default function PortfolioTemplatePreviewPage() {
   const dummyProfile: DashboardProfileResponse = {
     username: "johnsmith",
     fullName: "John Smith",
-    bio: "I help teams craft thoughtful, user-centered products — from the first sketch to a polished design system.",
+    bio: "I'm a default creator...",
     photoUrl: "/profile-preview/avatar.png",
-    templateType: "Portfolio",
+    templateType: "Default",
     themeSettings: null,
     isPublished: true,
     hasUnpublishedChanges: false,
@@ -28,27 +28,18 @@ export default function PortfolioTemplatePreviewPage() {
     components: [],
   };
 
-  const dummyContent: ProfileContentResponse = {
-    profileId: "123",
-    bio: null,
-    photoUrl: null,
-    source: "draft",
-    updatedAt: new Date().toISOString(),
-    content: null,
-  };
-
   return (
     <div className="flex min-h-screen flex-col bg-secondary-bg pb-24 font-sans text-primary-text antialiased">
       {/* Floating Preview Banner */}
       <div className="sticky top-0 z-50 w-full border-b border-inverse-b bg-inverse-bg/95 px-4 py-3 text-inverse-text shadow-md backdrop-blur-md">
-        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-left">
+        <div className="mx-auto flex max-w-4xl flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-left">
           <div className="flex items-center gap-2">
             <span className="flex items-center gap-1 rounded-full bg-brand-hover-bg px-2 py-0.5 text-xs font-bold tracking-wider text-white uppercase">
               <Eye size={12} /> Preview
             </span>
             <p className="text-sm font-medium text-neutral-300">
               Viewing{" "}
-              <span className="font-bold text-white">Portfolio Template</span>.
+              <span className="font-bold text-white">Default Template</span>.
             </p>
           </div>
           <button
@@ -61,9 +52,9 @@ export default function PortfolioTemplatePreviewPage() {
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-5xl px-4 sm:px-6">
-        <div className="w-full">
-          <PortfolioDashboardView profile={dummyProfile} content={dummyContent} />
+      <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 pt-12">
+        <div className="overflow-hidden rounded-[24px] border border-border bg-background shadow-sm p-6">
+          <DefaultDashboardView profile={dummyProfile} />
         </div>
       </div>
     </div>

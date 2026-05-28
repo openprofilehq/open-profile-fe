@@ -44,15 +44,21 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
   const loginMutation = useMutation({
     ...loginOption,
     onSuccess: async (data) => {
-      document.cookie = "auth=1; path=/; SameSite=Lax";
-
       const nestedData = data as unknown as {
         data?: { accessToken?: string; refreshToken?: string };
       };
       const accessToken = data?.accessToken || nestedData?.data?.accessToken;
       const refreshToken = data?.refreshToken || nestedData?.data?.refreshToken;
-      if (accessToken) localStorage.setItem("accessToken", accessToken);
-      if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+      
+      try {
+        await fetch("/api/internal/auth/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ accessToken, refreshToken }),
+        });
+      } catch (err) {
+        console.error("Failed to establish secure session", err);
+      }
 
       await queryClient.resetQueries({ queryKey: userQueryOptions.queryKey });
       const onboardingComplete = data?.user?.onboardingComplete;

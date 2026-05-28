@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import type { SavedLink } from "./LinkSidebar";
 import { uploadImage } from "@/api/uploads/uploads.service";
 import { validateProfileLink } from "@/api/profile/profile.service";
+import { isValidUrl } from "./builder.utils";
 
 const presetIcons = [
   {

@@ -55,7 +55,7 @@ export type ProfileContentSectionBio = {
   content: string;
 };
 
-export type TemplateType = "Professional" | "Creator" | "Portfolio";
+export type TemplateType = "Professional" | "Creator" | "Portfolio" | "Default";
 
 export type LinkItem = {
   id: string | number;
@@ -161,7 +161,7 @@ export type ProfileAppearanceFont =
   | "geologica"
   | "manrope";
 
-export type ProfileAppearanceCornerStyle = "sharp" | "rounded" | "pill";
+export type ProfileAppearanceCornerStyle = "sharp" | "medium" | "round";
 
 export type ProfileAppearanceSettings = {
   template: string;
@@ -175,12 +175,12 @@ export type ProfileAppearanceSettings = {
 };
 
 export type ProfileAppearanceRequest = {
-  template: string;
-  accentColour: string;
-  font: ProfileAppearanceFont;
-  cornerStyle: ProfileAppearanceCornerStyle;
-  spacing: number;
-  theme: "light" | "dark";
+  template?: string;
+  accentColour?: string;
+  font?: ProfileAppearanceFont;
+  cornerStyle?: ProfileAppearanceCornerStyle;
+  spacing?: number;
+  theme?: "light" | "dark";
 };
 
 export type ProfileAppearanceResponse = {

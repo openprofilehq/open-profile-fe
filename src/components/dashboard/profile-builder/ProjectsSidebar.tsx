@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import type { ProjectItem, Section } from "./types";
 import { uploadImage } from "@/api/uploads/uploads.service";
 import { validateProfileLink } from "@/api/profile/profile.service";
+import { isValidUrl } from "./builder.utils";
 
 import { isApiError } from "@/api/base";
 

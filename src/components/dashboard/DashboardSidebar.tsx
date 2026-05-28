@@ -42,8 +42,6 @@ export default function DashboardSidebar({
     ...logoutOption,
     onSuccess: () => {
       sessionStorage.removeItem("resetToken");
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
       queryClient.removeQueries({ queryKey: userQueryOptions.queryKey });
       router.push("/login");
     },

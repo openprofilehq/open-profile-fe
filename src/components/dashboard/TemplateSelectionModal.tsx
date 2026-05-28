@@ -2,13 +2,18 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, X, Eye } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { saveTemplateOption, dashboardProfileOption } from "@/api/profile/profile.options";
+import {
+  dashboardProfileOption,
+  saveTemplateOption,
+  profileContentOption,
+} from "@/api/profile/profile.options";
 import { toast } from "sonner";
 import { TemplateType } from "@/api/profile/profile.type";
 
 type Props = {
   initialTemplate: TemplateType;
   trigger: React.ReactNode;
+  onPreviewChange?: (template: TemplateType | null) => void;
 };
 
 const TEMPLATES: { type: TemplateType; description: string }[] = [
@@ -27,11 +32,17 @@ const TEMPLATES: { type: TemplateType; description: string }[] = [
     description:
       "A grid-based layout ideal for featuring projects and visual media.",
   },
+  {
+    type: "Default",
+    description:
+      "The standard profile layout with your summary, featured links, and highlights.",
+  },
 ];
 
 export function TemplateSelectionModal({
   initialTemplate,
   trigger,
+  onPreviewChange,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [localSelectedTemplate, setLocalSelectedTemplate] =
@@ -42,8 +53,11 @@ export function TemplateSelectionModal({
     ...saveTemplateOption,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: dashboardProfileOption().queryKey });
+      queryClient.invalidateQueries({ queryKey: profileContentOption().queryKey });
+      queryClient.invalidateQueries({ queryKey: ["profile", "appearance"] });
       toast.success("Template saved successfully.");
       setIsOpen(false);
+      onPreviewChange?.(null);
     },
     onError: () => {
       toast.error("Failed to save template.");
@@ -59,6 +73,7 @@ export function TemplateSelectionModal({
     if (isSaving) return;
     setIsOpen(false);
     setLocalSelectedTemplate(initialTemplate);
+    onPreviewChange?.(null);
   };
 
   return (
@@ -93,23 +108,25 @@ export function TemplateSelectionModal({
             </button>
           </div>
 
-          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {TEMPLATES.map((template) => {
               const isSelected = localSelectedTemplate === template.type;
-              const isProfessional = template.type === "Professional";
-              const isCreator = template.type === "Creator";
-              const isPortfolio = template.type === "Portfolio";
+
               return (
                 <div
                   key={template.type}
                   role="button"
                   tabIndex={0}
                   aria-pressed={isSelected}
-                  onClick={() => setLocalSelectedTemplate(template.type)}
+                  onClick={() => {
+                    setLocalSelectedTemplate(template.type);
+                    onPreviewChange?.(template.type);
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
                       setLocalSelectedTemplate(template.type);
+                      onPreviewChange?.(template.type);
                     }
                   }}
                   className={`relative flex cursor-pointer flex-col items-start rounded-xl border-2 p-4 text-left transition-all focus-visible:ring-2 focus-visible:ring-brand-hover-bg focus-visible:outline-none ${
@@ -125,41 +142,20 @@ export function TemplateSelectionModal({
                   )}
                   <div className="relative mb-4 flex h-32 w-full flex-col items-center justify-center overflow-hidden rounded-lg bg-secondary-bg text-xs font-semibold text-tertiary-text">
                     <span>{template.type} Preview</span>
-                    {isProfessional && (
-                      <a
-                        href="/templates/professional/preview"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => e.stopPropagation()}
-                        className="z-25 mt-3 flex items-center gap-1 rounded-md bg-brand-hover-bg px-3 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:scale-105 hover:bg-button-brand-bg active:scale-95"
-                      >
-                        <Eye size={12} />
-                        Live Preview ↗
-                      </a>
-                    )}
-                    {/* Creator template preview temporarily hidden until a dedicated preview route exists */}
-                    {isPortfolio && (
-                      <a
-                        href="/templates/portfolio/preview"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => e.stopPropagation()}
-                        className="z-25 mt-3 flex items-center gap-1 rounded-md bg-brand-hover-bg px-3 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:scale-105 hover:bg-button-brand-bg active:scale-95"
-                      >
-                        <Eye size={12} />
-                        Live Preview ↗
-                      </a>
-                    )}
+                    <a
+                      href={`/templates/${template.type.toLowerCase()}/preview`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => e.stopPropagation()}
+                      className="z-25 mt-3 flex items-center gap-1 rounded-md bg-brand-hover-bg px-3 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:scale-105 hover:bg-button-brand-bg active:scale-95"
+                    >
+                      <Eye size={12} />
+                      Live Preview ↗
+                    </a>
                   </div>
                   <h3 className="flex items-center gap-2 text-lg font-bold text-primary-text">
                     {template.type}
-                    {isCreator && (
-                      <span className="rounded-full bg-brand-hover-bg/10 px-2 py-0.5 text-[10px] font-bold tracking-wider text-brand-hover-bg uppercase">
-                        Default
-                      </span>
-                    )}
                   </h3>
                   <p className="mt-1 text-xs leading-snug text-secondary-text">
                     {template.description}

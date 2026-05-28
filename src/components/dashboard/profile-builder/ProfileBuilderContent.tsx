@@ -85,9 +85,6 @@ const createSection = (type: string, customTitle?: string): Section | null => {
   };
 };
 
-const DEFAULT_TEMPLATE = "professional" as const;
-// Only the professional template is currently supported by the builder UI.
-
 const normalizeColorForApi = (color: string) => {
   if (!color) return "#087583";
 
@@ -122,8 +119,8 @@ const mapCornerStyleToApi = (
     ProfileAppearanceCornerStyle
   > = {
     sharp: "sharp",
-    medium: "rounded",
-    round: "pill",
+    medium: "medium",
+    round: "round",
   };
 
   return cornerStyleMap[borderRadius];
@@ -152,8 +149,8 @@ const mapCornerStyleFromApi = (cornerStyle: string) => {
     "sharp" | "medium" | "round"
   > = {
     sharp: "sharp",
-    rounded: "medium",
-    pill: "round",
+    medium: "medium",
+    round: "round",
   };
 
   return (
@@ -202,6 +199,7 @@ export default function ProfileBuilderContent() {
     "sharp" | "medium" | "round"
   >("medium");
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [template, setTemplate] = useState<string>("creator");
   const [sections, setSections] = useState<Section[]>([]);
 
   const contentLoadedRef = useRef(false);
@@ -280,6 +278,17 @@ export default function ProfileBuilderContent() {
           appearanceEditedRef.current = true;
         });
       });
+    }
+
+    const themeSettings = (profileContent.data as Record<string, unknown>)?.themeSettings as Record<string, unknown> | undefined;
+    const rawTemplate = 
+      appearanceSettings?.template || 
+      themeSettings?.template || 
+      dashboardProfile.data?.templateType ||
+      "professional";
+
+    if (typeof rawTemplate === "string") {
+      setTemplate(rawTemplate.toLowerCase());
     }
 
     // Automatically initialize section if requested via URL search param and missing
@@ -409,7 +418,7 @@ export default function ProfileBuilderContent() {
 
     appearanceTimerRef.current = setTimeout(() => {
       saveAppearance({
-        template: DEFAULT_TEMPLATE,
+        template,
         accentColour: normalizeColorForApi(iconColor),
         font: mapFontToApi(font),
         cornerStyle: mapCornerStyleToApi(borderRadius),
@@ -424,7 +433,7 @@ export default function ProfileBuilderContent() {
         clearTimeout(appearanceTimerRef.current);
       }
     };
-  }, [font, iconColor, spacing, borderRadius, theme, saveAppearance]);
+  }, [template, font, iconColor, spacing, borderRadius, theme, saveAppearance]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
@@ -646,6 +655,7 @@ export default function ProfileBuilderContent() {
             spacing={spacing}
             borderRadius={borderRadius}
             theme={theme}
+            template={template}
             sections={resolvedSections}
             profile={profile}
             selectedSectionId={selectedSectionId}

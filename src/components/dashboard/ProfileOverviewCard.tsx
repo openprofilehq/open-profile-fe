@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/api/auth/auth.options";
 import { TemplateSelectionModal } from "./TemplateSelectionModal";
 import { DashboardProfileResponse, TemplateType } from "@/api/profile/profile.type";
+import { profileAppearanceOption, profileContentOption } from "@/api/profile/profile.options";
 
 const actions = [
   {
@@ -34,17 +35,28 @@ const actions = [
 type Props = {
   profile?: DashboardProfileResponse;
   isLoading?: boolean;
+  onPreviewChange?: (template: TemplateType | null) => void;
+  previewTemplate?: TemplateType | null;
 };
 
-export default function ProfileOverviewCard({ profile, isLoading }: Props) {
+export default function ProfileOverviewCard({ profile, isLoading, onPreviewChange, previewTemplate }: Props) {
   const { data: user } = useQuery(userQueryOptions);
+  const { data: appearanceData } = useQuery(profileAppearanceOption());
+  const { data: contentData } = useQuery(profileContentOption());
   const publicProfileUrl = getProfileUrl(profile?.username);
 
-  // Derive the active template from the profile's templateType
+  // Derive the active template
+  const themeSettings = (contentData as Record<string, unknown>)?.themeSettings as Record<string, unknown> | undefined;
+  const rawTemplate = 
+    previewTemplate ||
+    appearanceData?.data?.template || 
+    themeSettings?.template || 
+    profile?.templateType;
+    
   const activeTemplate: TemplateType =
-    profile?.templateType === "creator"
+    typeof rawTemplate === "string" && rawTemplate.toLowerCase() === "creator"
       ? "Creator"
-      : profile?.templateType === "portfolio"
+      : typeof rawTemplate === "string" && rawTemplate.toLowerCase() === "portfolio"
         ? "Portfolio"
         : "Professional";
 
@@ -87,6 +99,7 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
 
             <TemplateSelectionModal
               initialTemplate={activeTemplate}
+              onPreviewChange={onPreviewChange}
               trigger={
                 <Button variant="outline">
                   <Palette size={16} className="mr-2" />
@@ -148,10 +161,14 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
             )}
           </div>
 
-          {/* <div className="mt-3 flex justify-between text-sm">
+          <div className="mt-3 flex justify-between text-sm">
             <span className="text-secondary-text">Template</span>
-            <span>Creator Template</span>
-          </div> */}
+            {isLoading ? (
+              <Skeleton className="h-4 w-24" />
+            ) : (
+              <span className="text-right">{activeTemplate} Template</span>
+            )}
+          </div>
         </div>
       </section>
     </>

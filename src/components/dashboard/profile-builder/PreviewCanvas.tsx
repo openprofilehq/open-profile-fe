@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Folder, ExternalLink, Eye, EyeOff, Trash2 } from "lucide-react";
+import { Folder, ExternalLink, Eye, EyeOff, Trash2, MessageSquare } from "lucide-react";
 import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 import type { Section, ProfilePreview } from "./types";
 import { THEME_DEFAULTS } from "@/constants/theme";
@@ -14,6 +14,7 @@ interface PreviewCanvasProps {
   spacing: number;
   borderRadius: "sharp" | "medium" | "round";
   theme: "light" | "dark";
+  template?: string;
   sections: Section[];
   profile?: ProfilePreview | null;
   selectedSectionId?: string | null;
@@ -29,6 +30,7 @@ export default function PreviewCanvas({
   spacing,
   borderRadius,
   theme,
+  template,
   sections,
   profile,
   selectedSectionId,
@@ -111,6 +113,8 @@ export default function PreviewCanvas({
           className={`flex w-full flex-col transition-all duration-300 ${selectedFontClass}`}
         >
           {visibleSections.map((section) => {
+            const isPortfolio = template === "portfolio";
+            const isCreator = template === "creator";
             if (section.type === "bio") {
               if (
                 selectedSectionId &&
@@ -122,7 +126,7 @@ export default function PreviewCanvas({
                 <div
                   key={section.id}
                   style={cardStyle}
-                  className="relative flex flex-col items-center gap-6 border p-6 transition-all duration-300 sm:flex-row sm:items-start sm:p-8"
+                  className={`relative flex flex-col items-center border transition-all duration-300 sm:flex-row sm:items-start ${isPortfolio ? "gap-8 p-8 sm:p-12 md:flex-row md:items-start" : isCreator ? "gap-5 p-6 md:flex-row" : "gap-6 p-6 sm:p-8"}`}
                 >
                   <div className="border-brand-b/20 bg-brand-light-subtle-bg relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-inner">
                     {getImageUrl(profile?.photoUrl) ? (
@@ -140,16 +144,21 @@ export default function PreviewCanvas({
                     )}
                   </div>
                   <div className="flex-1 text-center sm:text-left">
-                    <h2 className="text-2xl font-bold tracking-tight">
+                    <h2 className={`font-bold tracking-tight ${isPortfolio ? "mb-4 text-[28px] sm:text-[32px] font-extrabold" : "text-2xl"}`}>
                       {profile?.fullName || "Micaela Robinsonss"}
                     </h2>
                     <p
                       style={textStyle}
-                      className="mt-3 text-[15px] leading-relaxed opacity-90 transition-colors"
+                      className={`leading-relaxed opacity-90 transition-colors ${isPortfolio ? "mb-6 text-[16px] sm:text-[17px]" : "mt-3 text-[15px]"}`}
                     >
                       {profile?.bio ||
                         "I'm a digital creator focusing on the intersection of design, technology, and intentional living. Sharing insights to help you build better products and habits."}
                     </p>
+                    {isPortfolio && (
+                      <button style={{ backgroundColor: iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT }} className="rounded-[8px] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:opacity-90 active:scale-95">
+                        Message
+                      </button>
+                    )}
                   </div>
                 </div>
               );
@@ -180,7 +189,7 @@ export default function PreviewCanvas({
                 className="relative flex flex-col border p-6 transition-all duration-300"
               >
                 {/* Action buttons (View/Delete) */}
-                <div className="absolute top-6 right-6 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border border-border bg-background p-3 shadow-none select-none">
+                <div className={`absolute z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border border-border bg-background p-3 shadow-none select-none ${isPortfolio ? "top-8 right-8" : "top-6 right-6"}`}>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -234,17 +243,22 @@ export default function PreviewCanvas({
                         {section.subtitle}
                       </p>
                     )}
+                    
 
                     {section.projects && section.projects.length > 0 ? (
                       <div
                         className={
-                          section.layout === "1"
+                          isPortfolio ? "grid w-full grid-cols-1 gap-8 xl:grid-cols-2" :
+                          (section.layout === "1" && !isCreator)
                             ? "grid grid-cols-1 gap-4 sm:grid-cols-2"
                             : "flex flex-col gap-4"
                         }
                       >
                         {section.projects.map((project) => {
                           const isHighlighted = project.highlighted;
+                          let forcedLayout = section.layout || "1";
+                          if (isPortfolio) forcedLayout = "1";
+                          if (isCreator) forcedLayout = "4";
                           const projectCardStyle = {
                             borderColor: isHighlighted
                               ? iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT
@@ -259,7 +273,7 @@ export default function PreviewCanvas({
                           };
 
                           // Render Layout 1: Grid Card
-                          if (!section.layout || section.layout === "1") {
+                          if (forcedLayout === "1") {
                             return (
                               <div
                                 key={project.id}
@@ -267,7 +281,7 @@ export default function PreviewCanvas({
                                 className="flex flex-col overflow-hidden rounded-xl border transition-all"
                               >
                                 {getImageUrl(project.imageSrc) && (
-                                  <div className="relative aspect-video w-full shrink-0 bg-secondary-bg dark:bg-zinc-800">
+                                  <div className={`relative w-full shrink-0 bg-secondary-bg dark:bg-zinc-800 ${isPortfolio ? "aspect-4/3" : "aspect-video"}`}>
                                     <Image
                                       src={getImageUrl(project.imageSrc)}
                                       alt={project.title}
@@ -303,7 +317,7 @@ export default function PreviewCanvas({
                           }
 
                           // Render Layout 2: Full List Card (Image on top, full width)
-                          if (section.layout === "2") {
+                          if (forcedLayout === "2") {
                             return (
                               <div
                                 key={project.id}
@@ -350,7 +364,7 @@ export default function PreviewCanvas({
                           }
 
                           // Render Layout 3: Image Left
-                          if (section.layout === "3") {
+                          if (forcedLayout === "3") {
                             return (
                               <div
                                 key={project.id}
@@ -395,7 +409,7 @@ export default function PreviewCanvas({
                           }
 
                           // Render Layout 4: Image Right
-                          if (section.layout === "4") {
+                          if (forcedLayout === "4") {
                             return (
                               <div
                                 key={project.id}
@@ -451,7 +465,8 @@ export default function PreviewCanvas({
                 )}
 
                 {section.type === "links" && (
-                  <div className="flex flex-col gap-4">
+                  <div className={`flex flex-col gap-4 ${isPortfolio ? "opacity-50 grayscale" : ""}`}>
+                    {isPortfolio && <div className="text-xs font-bold text-red-500 mb-2 border border-red-500/20 bg-red-500/10 p-2 rounded-md">Links are hidden in Portfolio template (visible here for editing only)</div>}
                     {section.subtitle && (
                       <p className="text-tertiary-text leading-relaxed">
                         {section.subtitle}
@@ -517,16 +532,15 @@ export default function PreviewCanvas({
 
                 {section.type === "experience" && (
                   <div
-                    className={`flex flex-col py-4 ${
-                      section.layout === "2"
-                        ? "items-start text-left"
-                        : section.layout === "3"
-                          ? "items-end text-right"
-                          : "items-center text-center"
+                    className={`flex py-4 ${
+                      isPortfolio ? "flex-col items-center text-center" :
+                      isCreator ? "flex-col gap-6 lg:flex-row lg:items-center lg:justify-between text-left" :
+                      section.layout === "2" ? "flex-col items-start text-left" :
+                      section.layout === "3" ? "flex-col items-end text-right" : "flex-col items-center text-center"
                     }`}
                   >
                     {/* Icon card wrapper */}
-                    {section.iconSrc && (
+                    {(section.iconSrc || isPortfolio) && (
                       <div
                         style={{
                           borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
@@ -534,31 +548,37 @@ export default function PreviewCanvas({
                         className="mb-5 flex h-16 w-16 shrink-0 items-center justify-center rounded-[16px] border bg-background shadow-[0_2px_8px_rgba(0,0,0,0.03)] transition-all duration-300"
                       >
                         <div className="relative h-7 w-7">
-                          <Image
-                            src={section.iconSrc}
-                            alt={section.iconLabel || "CTA Icon"}
-                            fill
-                            className="object-contain filter dark:invert"
-                            unoptimized
-                          />
+                          {isPortfolio ? (
+                            <MessageSquare className="h-full w-full opacity-80" />
+                          ) : (
+                            <Image
+                              src={section.iconSrc!}
+                              alt={section.iconLabel || "CTA Icon"}
+                              fill
+                              className="object-contain filter dark:invert"
+                              unoptimized
+                            />
+                          )}
                         </div>
                       </div>
                     )}
 
-                    {/* Title */}
-                    <h4 className="text-[32px] leading-snug font-bold tracking-tight text-primary-text dark:text-white">
-                      {section.title || "Let's build something"}
-                    </h4>
+                    {/* Text Container (Title + Subtitle) */}
+                    <div className={isCreator ? "flex flex-col" : "flex flex-col items-center"}>
+                      <h4 className="text-[32px] leading-snug font-bold tracking-tight text-primary-text dark:text-white">
+                        {section.title || "Let's build something"}
+                      </h4>
 
-                    {/* Subtitle */}
-                    {section.subtitle && (
-                      <p
-                        style={textStyle}
-                        className="text-tertiary-text mt-3 max-w-lg text-[15px] leading-relaxed font-medium"
-                      >
-                        {section.subtitle}
-                      </p>
-                    )}
+                      {/* Subtitle */}
+                      {section.subtitle && (
+                        <p
+                          style={textStyle}
+                          className="text-tertiary-text mt-3 max-w-lg text-[15px] leading-relaxed font-medium"
+                        >
+                          {section.subtitle}
+                        </p>
+                      )}
+                    </div>
 
                     {/* Action Button */}
                     {section.buttonText && (

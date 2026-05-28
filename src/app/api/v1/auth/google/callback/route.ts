@@ -27,9 +27,13 @@ export async function GET(request: NextRequest) {
 
   const response = NextResponse.redirect(new URL("/dashboard", request.url));
 
-  const setCookie = res.headers.get("set-cookie");
-  if (setCookie) {
-    response.headers.set("set-cookie", setCookie);
+  const setCookies = res.headers.getSetCookie?.() || [];
+  for (const cookieStr of setCookies) {
+    let safeCookie = cookieStr.replace(/;\s*domain=[^;]+/i, '');
+    if (process.env.NODE_ENV !== "production") {
+      safeCookie = safeCookie.replace(/;\s*secure/i, '');
+    }
+    response.headers.append("set-cookie", safeCookie);
   }
 
   return response;
