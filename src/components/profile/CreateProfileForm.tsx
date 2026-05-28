@@ -88,11 +88,11 @@ export default function CreateProfileForm() {
   });
 
   function submitProfile() {
-    if (currentStep !== 2) return;
+    if (currentStep !== 2 || !displayName.trim()) return;
 
     createProfile.mutate({
       username,
-      fullName: displayName,
+      fullName: displayName.trim(),
       bio,
       ...(photoUrl && photoUrl.startsWith("http") ? { photoUrl } : {}),
     });
