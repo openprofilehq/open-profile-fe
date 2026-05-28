@@ -7,8 +7,14 @@ import { Skeleton } from "../ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/api/auth/auth.options";
 import { TemplateSelectionModal } from "./TemplateSelectionModal";
-import { DashboardProfileResponse, TemplateType } from "@/api/profile/profile.type";
-import { profileAppearanceOption, profileContentOption } from "@/api/profile/profile.options";
+import {
+  DashboardProfileResponse,
+  TemplateType,
+} from "@/api/profile/profile.type";
+import {
+  profileAppearanceOption,
+  profileContentOption,
+} from "@/api/profile/profile.options";
 
 const actions = [
   {
@@ -39,35 +45,45 @@ type Props = {
   previewTemplate?: TemplateType | null;
 };
 
-export default function ProfileOverviewCard({ profile, isLoading, onPreviewChange, previewTemplate }: Props) {
+export default function ProfileOverviewCard({
+  profile,
+  isLoading,
+  onPreviewChange,
+  previewTemplate,
+}: Props) {
   const { data: user } = useQuery(userQueryOptions);
   const { data: appearanceData } = useQuery(profileAppearanceOption());
   const { data: contentData } = useQuery(profileContentOption());
   const publicProfileUrl = getProfileUrl(profile?.username);
 
   // Derive the active template
-  const themeSettings = (contentData as Record<string, unknown>)?.themeSettings as Record<string, unknown> | undefined;
-  const rawTemplate = 
+  const themeSettings = (contentData as Record<string, unknown>)
+    ?.themeSettings as Record<string, unknown> | undefined;
+  const rawTemplate =
     previewTemplate ||
-    appearanceData?.data?.template || 
-    themeSettings?.template || 
+    appearanceData?.appearance?.template ||
+    themeSettings?.template ||
     profile?.templateType;
-    
+
   const activeTemplate: TemplateType =
     typeof rawTemplate === "string" && rawTemplate.toLowerCase() === "creator"
       ? "Creator"
-      : typeof rawTemplate === "string" && rawTemplate.toLowerCase() === "portfolio"
+      : typeof rawTemplate === "string" &&
+          rawTemplate.toLowerCase() === "portfolio"
         ? "Portfolio"
-        : typeof rawTemplate === "string" && rawTemplate.toLowerCase() === "default"
+        : typeof rawTemplate === "string" &&
+            rawTemplate.toLowerCase() === "default"
           ? "Default"
           : "Professional";
 
   return (
     <>
-      <section className="rounded-[12px] border border-border bg-background p-4">
-        <p className="text-sm text-secondary-text uppercase">Profile Overview</p>
+      <section className="border-border bg-background rounded-[12px] border p-4">
+        <p className="text-secondary-text text-sm uppercase">
+          Profile Overview
+        </p>
 
-        <div className="mt-3 rounded-[10px] bg-secondary-bg p-4">
+        <div className="bg-secondary-bg mt-3 rounded-[10px] p-4">
           {isLoading ? (
             <Skeleton className="h-8" />
           ) : (
@@ -75,13 +91,16 @@ export default function ProfileOverviewCard({ profile, isLoading, onPreviewChang
               Welcome, {profile?.fullName ?? user?.fullName ?? "User"}
             </h1>
           )}
-          <p className="mt-3 max-w-[390px] text-secondary-text">
+          <p className="text-secondary-text mt-3 max-w-[390px]">
             Your profile is live and ready to share. Manage your public page,
             update key sections, and keep things current from one place
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
-            <Button asChild className="bg-brand-hover-bg hover:bg-button-brand-bg">
+            <Button
+              asChild
+              className="bg-brand-hover-bg hover:bg-button-brand-bg"
+            >
               <a
                 href={publicProfileUrl || "#"}
                 target="_blank"
@@ -121,16 +140,16 @@ export default function ProfileOverviewCard({ profile, isLoading, onPreviewChang
             key={item.title}
             href={item.href}
             aria-label={item.title}
-            className="flex w-full items-center justify-between rounded-[12px] border border-border bg-background p-5 text-left"
+            className="border-border bg-background flex w-full items-center justify-between rounded-[12px] border p-5 text-left"
           >
             <div className="flex items-start gap-3">
-              <span className="flex h-7 w-7 items-center justify-center rounded-[8px] border border-border">
+              <span className="border-border flex h-7 w-7 items-center justify-center rounded-[8px] border">
                 <Icon size={16} />
               </span>
 
               <div>
                 <h2 className="text-lg font-bold">{item.title}</h2>
-                <p className="mt-1 text-secondary-text">{item.description}</p>
+                <p className="text-secondary-text mt-1">{item.description}</p>
               </div>
             </div>
 
@@ -139,9 +158,9 @@ export default function ProfileOverviewCard({ profile, isLoading, onPreviewChang
         );
       })}
 
-      <section className="rounded-[12px] border border-border bg-background p-4">
+      <section className="border-border bg-background rounded-[12px] border p-4">
         <div className="bg-secondary-bg p-3">
-          <p className="text-sm text-secondary-text uppercase">Page Details</p>
+          <p className="text-secondary-text text-sm uppercase">Page Details</p>
 
           <div className="mt-4 flex justify-between text-sm">
             <span className="text-secondary-text">Public URL</span>
@@ -152,7 +171,7 @@ export default function ProfileOverviewCard({ profile, isLoading, onPreviewChang
                 href={publicProfileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-right break-all text-brand-hover-bg hover:underline"
+                className="text-brand-hover-bg text-right break-all hover:underline"
               >
                 {getDisplayUrl(publicProfileUrl)}
               </a>

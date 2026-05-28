@@ -1,0 +1,161 @@
+import type { CSSProperties, ReactNode } from "react";
+
+type TemplateAppearanceInput = {
+  font?: string | null;
+  accentColour?: string | null;
+  iconColor?: string | null;
+  textColor?: string | null;
+  bgColor?: string | null;
+  cornerStyle?: string | null;
+  borderRadius?: string | null;
+  spacing?: number | null;
+  theme?: string | null;
+};
+
+type Props = {
+  appearance?: TemplateAppearanceInput | null;
+  children: ReactNode;
+  className?: string;
+};
+
+function normalizeColor(color?: string | null) {
+  if (!color) return null;
+
+  if (color.startsWith("#")) return color;
+
+  const hex = color.split("_")[0];
+
+  return `#${hex}`;
+}
+
+function getRgbaColor(color: string, alpha: number) {
+  const cleanHex = color.replace("#", "");
+
+  if (cleanHex.length !== 6) {
+    return `rgba(8, 117, 131, ${alpha})`;
+  }
+
+  const value = Number.parseInt(cleanHex, 16);
+  const red = (value >> 16) & 255;
+  const green = (value >> 8) & 255;
+  const blue = value & 255;
+
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
+function getFontClass(font?: string | null) {
+  const normalizedFont = font?.toLowerCase();
+
+  const fontClassMap: Record<string, string> = {
+    afacad: "font-afacad",
+    inter: "font-sans",
+    serif: "font-serif",
+    mono: "font-mono",
+    geologica: "font-sans",
+    geoligica: "font-sans",
+    manrope: "font-sans",
+
+    Afacad: "font-afacad",
+    Inter: "font-sans",
+    Serif: "font-serif",
+    Mono: "font-mono",
+    Geologica: "font-sans",
+    Geoligica: "font-sans",
+    Manrope: "font-sans",
+  };
+
+  return (
+    fontClassMap[normalizedFont ?? ""] ||
+    fontClassMap[font ?? ""] ||
+    "font-afacad"
+  );
+}
+
+function getRadius(cornerStyle?: string | null, borderRadius?: string | null) {
+  const value = cornerStyle || borderRadius;
+
+  if (value === "sharp") return "0px";
+  if (value === "round" || value === "pill") return "32px";
+
+  return "16px";
+}
+
+export default function TemplateAppearanceProvider({
+  appearance,
+  children,
+  className = "",
+}: Props) {
+  const isDark = appearance?.theme === "dark";
+
+  const accentColor =
+    normalizeColor(appearance?.accentColour || appearance?.iconColor) ||
+    "#087583";
+
+  const bgColor =
+    normalizeColor(appearance?.bgColor) || (isDark ? "#171717" : "#FAFAFA");
+
+  const surfaceColor = isDark ? "#1E1E1E" : "#FFFFFF";
+  const secondarySurfaceColor = isDark ? "#262626" : "#F6F6F6";
+
+  const textColor =
+    normalizeColor(appearance?.textColor) || (isDark ? "#FAFAFA" : "#050505");
+
+  const secondaryTextColor = isDark ? "#E0E0E0" : "#454545";
+  const tertiaryTextColor = isDark ? "#A3A3A3" : "#747474";
+  const borderColor = isDark ? "#2D2D2D" : "#EDEDED";
+  const radius = getRadius(appearance?.cornerStyle, appearance?.borderRadius);
+  const spacing =
+    typeof appearance?.spacing === "number" ? appearance.spacing : 20;
+
+  const style = {
+    "--primary-text": textColor,
+    "--secondary-text": secondaryTextColor,
+    "--tertiary-text": tertiaryTextColor,
+    "--label-text": secondaryTextColor,
+
+    "--primary-bg": bgColor,
+    "--secondary-bg": secondarySurfaceColor,
+    "--background": surfaceColor,
+    "--hover-bg": isDark ? "#2D2D2D" : "#F1F1F1",
+
+    "--brand": accentColor,
+    "--brand-text": accentColor,
+    "--brand-bg": accentColor,
+    "--brand-hover-bg": accentColor,
+    "--button-brand-bg": accentColor,
+    "--brand-b": accentColor,
+    "--link-text": accentColor,
+    "--link-hover-text": accentColor,
+    "--brand-subtle-bg": getRgbaColor(accentColor, 0.14),
+    "--brand-light-subtle-bg": getRgbaColor(accentColor, 0.1),
+
+    "--border": borderColor,
+    "--tertiary-b": borderColor,
+    "--input-b": borderColor,
+
+    "--radius": radius,
+    "--template-radius": radius,
+    "--template-spacing": `${spacing}px`,
+
+    color: textColor,
+    backgroundColor: bgColor,
+  } as CSSProperties;
+
+  return (
+    <div
+      className={`template-appearance-scope ${getFontClass(
+        appearance?.font
+      )} ${className}`}
+      style={style}
+    >
+      <style>
+        {`
+          .template-appearance-scope [class*="rounded-"]:not([class*="rounded-full"]) {
+            border-radius: var(--template-radius) !important;
+          }
+        `}
+      </style>
+      {children}
+    </div>
+  );
+}
