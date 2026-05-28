@@ -8,6 +8,14 @@ import type { ProjectItem, Section } from "./types";
 import { uploadImage } from "@/api/uploads/uploads.service";
 import { validateProfileLink } from "@/api/profile/profile.service";
 
+import { isApiError } from "@/api/base";
+
+const isLinkValidationError = (error: unknown) => {
+  if (!isApiError(error)) return false;
+
+  return error.status === 400 || error.status === 422;
+};
+
 interface ProjectsSidebarProps {
   returnTab: () => void;
   section: Section | null;
@@ -154,9 +162,15 @@ export default function ProjectsSidebar({
 
         const validatedLink = await validateProfileLink(itemUrl.trim());
         validatedProjectUrl = validatedLink.encoded;
-      } catch {
-        setUrlError("Please enter a valid project link.");
-        return;
+      } catch (error) {
+        if (isLinkValidationError(error)) {
+          setUrlError("Please enter a valid link for the selected icon.");
+        } else {
+          console.error("[profile-builder] Link validation failed:", error);
+          setUrlError(
+            "Unable to verify link. Please check your connection and try again."
+          );
+        }
       } finally {
         setValidatingUrl(false);
       }
