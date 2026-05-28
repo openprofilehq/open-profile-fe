@@ -1,6 +1,5 @@
 export type CreateProfileRequest = {
   username: string;
-  fullName: string;
   bio: string;
   photoUrl?: string;
 };

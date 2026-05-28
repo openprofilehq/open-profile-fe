@@ -13,7 +13,7 @@ export default function ProfileLinkSuccess({
 }: {
   username: string;
   bio: string;
-  displayName: string;
+  displayName?: string;
   photoUrl?: string;
   onContinue?: () => void;
 }) {
