@@ -1,6 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 
+const FOOTER_LINK_CLASS =
+  "relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100";
+
 export default function Footer() {
   return (
     <footer className="bg-inverse-bg relative w-full overflow-hidden rounded-t-3xl px-6 pt-14 pb-8 md:px-8 md:py-16">
@@ -37,34 +40,22 @@ export default function Footer() {
               <h4 className="text-sm font-semibold text-white">Products</h4>
               <ul className="space-y-4">
                 <li>
-                  <Link
-                    href="/coming-soon"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
-                  >
+                  <Link href="/coming-soon" className={FOOTER_LINK_CLASS}>
                     How it works
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="/coming-soon"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
-                  >
+                  <Link href="/coming-soon" className={FOOTER_LINK_CLASS}>
                     Features
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="#pricing"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
-                  >
+                  <Link href="#pricing" className={FOOTER_LINK_CLASS}>
                     Pricing
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="/faq"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
-                  >
+                  <Link href="/faq" className={FOOTER_LINK_CLASS}>
                     FAQ
                   </Link>
                 </li>
@@ -75,34 +66,22 @@ export default function Footer() {
               <h4 className="text-sm font-semibold text-white">Company</h4>
               <ul className="space-y-4">
                 <li>
-                  <Link
-                    href="/coming-soon"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
-                  >
+                  <Link href="/coming-soon" className={FOOTER_LINK_CLASS}>
                     About
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="/coming-soon"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
-                  >
+                  <Link href="/coming-soon" className={FOOTER_LINK_CLASS}>
                     Blog
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="/coming-soon"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
-                  >
+                  <Link href="/coming-soon" className={FOOTER_LINK_CLASS}>
                     Careers
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="/contact"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
-                  >
+                  <Link href="/contact" className={FOOTER_LINK_CLASS}>
                     Contact
                   </Link>
                 </li>
@@ -113,18 +92,12 @@ export default function Footer() {
               <h4 className="text-sm font-semibold text-white">Legal</h4>
               <ul className="space-y-4">
                 <li>
-                  <Link
-                    href="/privacy-policy"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
-                  >
+                  <Link href="/privacy-policy" className={FOOTER_LINK_CLASS}>
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="/terms"
-                    className="relative inline-block text-sm font-normal text-slate-200 transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-bottom-right after:scale-x-0 after:bg-white after:transition-transform after:duration-300 hover:text-white hover:after:origin-bottom-left hover:after:scale-x-100"
-                  >
+                  <Link href="/terms" className={FOOTER_LINK_CLASS}>
                     Terms of Service
                   </Link>
                 </li>

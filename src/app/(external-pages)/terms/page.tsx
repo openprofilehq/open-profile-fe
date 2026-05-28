@@ -76,7 +76,7 @@ const sectionContent: SectionContentProp = {
       "Other users may share your profile",
     ],
     extraDetails:
-      "You retain ownership of your content, but you grant Open Profile a non-exclusive license to host, display, and distribute content necessary to operate the Service.You are solely responsible for the content you publish",
+      "You retain ownership of your content, but you grant Open Profile a non-exclusive license to host, display, and distribute content necessary to operate the Service. You are solely responsible for the content you publish",
   },
   "5": {
     title: "Intellectual Property",
@@ -93,7 +93,7 @@ const sectionContent: SectionContentProp = {
     content: "We reserve the right to suspend or terminate accounts for:",
     details: [
       "Violating these Terms",
-      "Keep users logged inFraudulent or harmful activity",
+      "Fraudulent or harmful activity",
       "Security concerns",
       "Legal compliance requirements",
     ],
