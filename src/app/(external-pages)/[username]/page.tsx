@@ -5,11 +5,14 @@ import {
   type ProfileContentDetails,
   type ProfileResponse,
   type LinkItem,
-  type ProjectItem
+  type ProjectItem,
 } from "@/api/profile/profile.type";
 import { env as serverEnv } from "@/env/server";
 import { Folder, ExternalLink } from "lucide-react";
 import { THEME_DEFAULTS } from "@/constants/theme";
+import CreatorDashboardView from "@/components/dashboard/templates/CreatorDashboardView";
+import ProfessionalDashboardView from "@/components/dashboard/templates/ProfessionalDashboardView";
+import PortfolioDashboardView from "@/components/dashboard/templates/PortfolioDashboardView";
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -115,6 +118,68 @@ export default async function UserProfilePage({ params }: Props) {
       mapCornerStyleToRadius(rawAppearance.cornerStyle),
   };
 
+  const rawTemplate =
+    rawAppearance.template || profile.templateType || "default";
+
+  const activeTemplateMap: Record<string, string> = {
+    portfolio: "portfolio",
+    professional: "professional",
+    creator: "creator",
+    default: "default",
+  };
+
+  const activeTemplate =
+    typeof rawTemplate === "string"
+      ? activeTemplateMap[rawTemplate.toLowerCase()] || "default"
+      : "default";
+
+  if (activeTemplate !== "default") {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const dashboardProfile: any = {
+      ...profile,
+      isPublished: true,
+      hasUnpublishedChanges: false,
+      ctaLabel: null,
+      ctaUrl: null,
+      components: [],
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const profileContent: any = {
+      profileId: profile.id || "",
+      bio: profile.bio,
+      photoUrl: profile.photoUrl,
+      content: profile.content,
+      source: "published",
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (activeTemplate === "creator") {
+      return (
+        <CreatorDashboardView
+          profile={dashboardProfile}
+          content={profileContent}
+        />
+      );
+    }
+    if (activeTemplate === "professional") {
+      return (
+        <ProfessionalDashboardView
+          profile={dashboardProfile}
+          content={profileContent}
+        />
+      );
+    }
+    if (activeTemplate === "portfolio") {
+      return (
+        <PortfolioDashboardView
+          profile={dashboardProfile}
+          content={profileContent}
+        />
+      );
+    }
+  }
+
   const globalFont = (themeSettings.font || "afacad").toString();
   const globalFontNormalized = globalFont.toLowerCase();
 
@@ -139,10 +204,13 @@ export default async function UserProfilePage({ params }: Props) {
 
   const isDark = themeSettings.theme === "dark";
   const globalBgColor =
-    themeSettings.bgColor || (isDark ? THEME_DEFAULTS.DARK_MODE.BG_COLOR : THEME_DEFAULTS.BG_COLOR);
+    themeSettings.bgColor ||
+    (isDark ? THEME_DEFAULTS.DARK_MODE.BG_COLOR : THEME_DEFAULTS.BG_COLOR);
   const globalTextColor =
-    themeSettings.textColor || (isDark ? THEME_DEFAULTS.DARK_MODE.TEXT_COLOR : THEME_DEFAULTS.TEXT_COLOR);
-  const globalIconColor = themeSettings.iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT;
+    themeSettings.textColor ||
+    (isDark ? THEME_DEFAULTS.DARK_MODE.TEXT_COLOR : THEME_DEFAULTS.TEXT_COLOR);
+  const globalIconColor =
+    themeSettings.iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT;
   const globalSpacing =
     typeof themeSettings.spacing === "number" ? themeSettings.spacing : 20;
 
@@ -158,15 +226,23 @@ export default async function UserProfilePage({ params }: Props) {
     backgroundColor: globalBgColor,
     borderRadius: activeRadius,
     color: globalTextColor,
-    borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
+    borderColor: isDark
+      ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR
+      : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
     marginBottom: `${globalSpacing}px`,
   };
 
   const textStyle = {
     color:
-      globalTextColor === (isDark ? THEME_DEFAULTS.DARK_MODE.TEXT_COLOR : THEME_DEFAULTS.TEXT_COLOR)
-        ? (isDark ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT : THEME_DEFAULTS.LIGHT_MODE.MUTED_TEXT)
-        : globalTextColor || (isDark ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT : THEME_DEFAULTS.LIGHT_MODE.MUTED_TEXT),
+      globalTextColor ===
+      (isDark ? THEME_DEFAULTS.DARK_MODE.TEXT_COLOR : THEME_DEFAULTS.TEXT_COLOR)
+        ? isDark
+          ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT
+          : THEME_DEFAULTS.LIGHT_MODE.MUTED_TEXT
+        : globalTextColor ||
+          (isDark
+            ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT
+            : THEME_DEFAULTS.LIGHT_MODE.MUTED_TEXT),
   };
 
   return (
@@ -233,8 +309,13 @@ export default async function UserProfilePage({ params }: Props) {
                     <p
                       style={{
                         color:
-                          secTextColor === (isDark ? THEME_DEFAULTS.DARK_MODE.TEXT_COLOR : THEME_DEFAULTS.TEXT_COLOR)
-                            ? (isDark ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT : THEME_DEFAULTS.LIGHT_MODE.MUTED_TEXT)
+                          secTextColor ===
+                          (isDark
+                            ? THEME_DEFAULTS.DARK_MODE.TEXT_COLOR
+                            : THEME_DEFAULTS.TEXT_COLOR)
+                            ? isDark
+                              ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT
+                              : THEME_DEFAULTS.LIGHT_MODE.MUTED_TEXT
                             : secTextColor || textStyle.color,
                       }}
                       className="mt-3 text-[15px] leading-relaxed whitespace-pre-wrap opacity-90 transition-colors"
@@ -281,7 +362,9 @@ export default async function UserProfilePage({ params }: Props) {
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{
-                            borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
+                            borderColor: isDark
+                              ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR
+                              : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
                             backgroundColor: isDark
                               ? "rgba(255,255,255,0.05)"
                               : "rgba(255,255,255,0.6)",
@@ -302,7 +385,9 @@ export default async function UserProfilePage({ params }: Props) {
                               <span
                                 className="rounded-md border p-2"
                                 style={{
-                                  borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
+                                  borderColor: isDark
+                                    ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR
+                                    : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
                                 }}
                               >
                                 <Image
@@ -333,7 +418,9 @@ export default async function UserProfilePage({ params }: Props) {
                           <span
                             className="rounded-full border p-2 opacity-70"
                             style={{
-                              borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
+                              borderColor: isDark
+                                ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR
+                                : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
                             }}
                           >
                             <ExternalLink size={14} className="shrink-0" />
@@ -380,7 +467,11 @@ export default async function UserProfilePage({ params }: Props) {
               >
                 <div
                   className="mb-4 flex items-center justify-between border-b pb-4"
-                  style={{ borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_LIGHT }}
+                  style={{
+                    borderColor: isDark
+                      ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR
+                      : THEME_DEFAULTS.LIGHT_MODE.BORDER_LIGHT,
+                  }}
                 >
                   <div className="flex items-center gap-3">
                     <span
@@ -635,7 +726,11 @@ export default async function UserProfilePage({ params }: Props) {
                 <div className={`flex flex-col py-4 ${ctaAlignClass}`}>
                   {secProps.iconSrc && (
                     <div
-                      style={{ borderColor: isDark ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR }}
+                      style={{
+                        borderColor: isDark
+                          ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR
+                          : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
+                      }}
                       className="mb-5 flex h-16 w-16 shrink-0 items-center justify-center rounded-[16px] border bg-white shadow-[0_2px_8px_rgba(0,0,0,0.03)]"
                     >
                       <div className="relative h-7 w-7">
