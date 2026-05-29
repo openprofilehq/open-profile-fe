@@ -52,11 +52,9 @@ const LinkSidebar = ({
   const handleLinksChange = (
     updateFn: (currentLinks: SavedLink[]) => SavedLink[]
   ) => {
-    setLinks((current) => {
-      const nextLinks = updateFn(current);
-      syncSection({ links: nextLinks });
-      return nextLinks;
-    });
+    const nextLinks = updateFn(links);
+    setLinks(nextLinks);
+    syncSection({ links: nextLinks });
   };
 
   const canAddMoreLinks = useMemo(
@@ -105,7 +103,7 @@ const LinkSidebar = ({
   };
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in flex h-full w-72.5 shrink-0 flex-col rounded-2xl p-6 border bg-background shadow-sm duration-200 select-none">
+    <aside className="border-tertiary-b animate-in fade-in bg-background flex h-full w-72.5 shrink-0 flex-col rounded-2xl border p-6 shadow-sm duration-200 select-none">
       {/* Back Button */}
       <div className="pb-4">
         <button

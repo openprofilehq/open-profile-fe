@@ -44,10 +44,13 @@ export function contentToSections(
         type: "links" as const,
         visible: content?.links?.visible ?? true,
         subtitle: content?.links?.sectionTitle ?? "",
-        links: (content?.links?.items ?? []).map((l) => ({
-          ...l,
-          url: decodeUrlForFrontend(l.url),
-        })) as unknown as SavedLink[],
+        links: (content?.links?.items ?? []).map(
+          (l: Record<string, unknown>) => ({
+            ...l,
+            title: l.label || l.title || "",
+            url: decodeUrlForFrontend(l.url as string),
+          })
+        ) as unknown as SavedLink[],
       };
     }
 
@@ -58,10 +61,14 @@ export function contentToSections(
         type: "projects" as const,
         visible: content?.projects?.visible ?? true,
         subtitle: content?.projects?.sectionTitle ?? "",
-        projects: (content?.projects?.items ?? []).map((p) => ({
-          ...p,
-          url: decodeUrlForFrontend(p.url),
-        })) as unknown as ProjectItem[],
+        projects: (content?.projects?.items ?? []).map(
+          (p: Record<string, unknown>) => ({
+            ...p,
+            url: decodeUrlForFrontend(
+              (p.repoUrl as string) || (p.url as string)
+            ),
+          })
+        ) as unknown as ProjectItem[],
       };
     }
 
@@ -82,16 +89,13 @@ export function contentToSections(
   });
 }
 
-const isRemoteUrl = (src?: string | null) =>
-  !!src && (src.startsWith("http://") || src.startsWith("https://"));
-
 export const isValidUrl = (urlString: string, iconId?: string | null) => {
   if (!urlString) return true;
   const trimmed = urlString.trim();
 
   // Allow explicit protocols
   if (/^(mailto:|tel:|whatsapp:|sms:)/i.test(trimmed)) return true;
-  
+
   // Allow wa.me links
   if (/^(?:https?:\/\/)?wa\.me\//i.test(trimmed)) {
     const extractedNumber = trimmed.split("wa.me/")[1];
@@ -107,7 +111,17 @@ export const isValidUrl = (urlString: string, iconId?: string | null) => {
 
   // Allow social media usernames starting with @
   if (/^@[\w.-]+$/.test(trimmed)) {
-    const supportedSocials = ["insta", "twitter", "linkedin", "github", "youtube", "tiktok", "behance", "flickr", "pinterest"];
+    const supportedSocials = [
+      "insta",
+      "twitter",
+      "linkedin",
+      "github",
+      "youtube",
+      "tiktok",
+      "behance",
+      "flickr",
+      "pinterest",
+    ];
     if (iconId && supportedSocials.includes(iconId)) {
       return true;
     }
@@ -115,9 +129,16 @@ export const isValidUrl = (urlString: string, iconId?: string | null) => {
   }
 
   // Allow plain domains without http/www
-  if (/^[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{2,63}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/i.test(trimmed)) return true;
+  if (
+    /^[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{2,63}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/i.test(
+      trimmed
+    )
+  )
+    return true;
 
-  return /^(https?:\/\/|www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{2,63}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/i.test(trimmed);
+  return /^(https?:\/\/|www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{2,63}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/i.test(
+    trimmed
+  );
 };
 
 export function sectionsToContent(
@@ -142,9 +163,10 @@ export function sectionsToContent(
           visible: linksSection.visible,
           sectionTitle: linksSection.subtitle ?? "Links",
           items: (linksSection.links ?? []).map((l) => ({
-            ...l,
+            id: l.id,
+            label: l.title || "",
             url: l.url ? encodeUrlForBackend(l.url, l.iconId) : "",
-            imageSrc: isRemoteUrl(l.imageSrc) ? l.imageSrc : null,
+            visible: true,
           })) as unknown as LinkItem[],
         }
       : undefined,
@@ -152,18 +174,27 @@ export function sectionsToContent(
       ? {
           visible: projectsSection.visible,
           sectionTitle: projectsSection.subtitle ?? "Projects",
-          items: (projectsSection.projects ?? []).map((p) => ({
-            ...p,
-            url: p.url ? encodeUrlForBackend(p.url) : "",
-            imageSrc: isRemoteUrl(p.imageSrc) ? p.imageSrc : null,
-          })) as unknown as ApiProjectItem[],
+          items: (projectsSection.projects ?? []).map((p) => {
+            const mappedProject: Record<string, unknown> = {
+              id: p.id,
+              title: p.title || "",
+              description: p.description || "",
+              visible: true,
+            };
+            if (p.url) {
+              mappedProject.repoUrl = encodeUrlForBackend(p.url);
+            }
+            return mappedProject;
+          }) as unknown as ApiProjectItem[],
         }
       : undefined,
     cta: ctaSection
       ? {
           visible: ctaSection.visible,
           label: ctaSection.buttonText ?? "",
-          url: ctaSection.url ? encodeUrlForBackend(ctaSection.url, ctaSection.iconId) : null,
+          url: ctaSection.url
+            ? encodeUrlForBackend(ctaSection.url, ctaSection.iconId)
+            : null,
           title: ctaSection.title ?? "",
           subtitle: ctaSection.subtitle ?? "",
           layout: ctaSection.layout ?? "1",

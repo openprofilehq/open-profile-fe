@@ -133,7 +133,6 @@ export default function CreatorDashboardView({ profile, content }: Props) {
   return (
     <div className="text-primary-text bg-primary-bg flex min-h-screen w-full flex-col font-sans antialiased">
       <div className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-24">
-        {/* HEADER SECTION */}
         <header className="flex w-full flex-col items-center gap-4 text-center">
           <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
             <Image
@@ -143,14 +142,12 @@ export default function CreatorDashboardView({ profile, content }: Props) {
               className="object-cover"
               unoptimized
             />
-            {/* Online indicator dot */}
             <div className="border-background absolute right-[6px] bottom-[6px] h-4 w-4 rounded-full border-2 bg-green-400" />
           </div>
 
           <div className="flex flex-col items-center">
             <h1 className="text-primary-text flex items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
               {name}
-              {/* Verified Badge */}
               <svg
                 className="text-brand-hover-bg h-5 w-5"
                 viewBox="0 0 24 24"
@@ -164,7 +161,6 @@ export default function CreatorDashboardView({ profile, content }: Props) {
             </p>
           </div>
 
-          {/* Social Icons Row */}
           {socialLinks.length > 0 && (
             <div className="mt-2 flex items-center gap-4">
               {socialLinks.map((link, i) => {
@@ -184,7 +180,6 @@ export default function CreatorDashboardView({ profile, content }: Props) {
             </div>
           )}
 
-          {/* CTA Button */}
           {details?.cta?.visible !== false && (
             <a
               href={cta?.url || "mailto:hello@example.com"}
@@ -231,7 +226,6 @@ export default function CreatorDashboardView({ profile, content }: Props) {
 
         {/* TABS CONTENT */}
         <div className="mt-10 min-h-[400px] w-full">
-          {/* PROJECTS TAB */}
           {activeTab === "projects" && (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               {projects.map((project) => (
@@ -282,7 +276,6 @@ export default function CreatorDashboardView({ profile, content }: Props) {
             </div>
           )}
 
-          {/* LINKS TAB */}
           {activeTab === "links" && (
             <div className="mx-auto flex max-w-xl flex-col gap-4">
               {links.map((link) => {
@@ -328,7 +321,6 @@ export default function CreatorDashboardView({ profile, content }: Props) {
             </div>
           )}
 
-          {/* ABOUT TAB */}
           {activeTab === "about" && (
             <div className="border-border bg-background mx-auto max-w-2xl rounded-3xl border p-8 sm:p-12">
               <p className="text-secondary-text text-center text-[16px] leading-relaxed whitespace-pre-wrap">
