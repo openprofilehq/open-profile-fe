@@ -24,6 +24,7 @@ import {
 } from "@/api/profile/profile.type";
 import { getImageUrl } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
+import { normalizeHref } from "@/utils/url";
 
 type Props = {
   profile?: DashboardProfileResponse;
@@ -32,66 +33,6 @@ type Props = {
   isLoadingContent?: boolean;
   appearance?: ProfileAppearanceSettings | null;
 };
-
-const DEFAULT_LINKS = [
-  { id: "link-1", title: "Website", url: "https://john.studio" },
-  { id: "link-2", title: "Instagram", url: "https://instagram.com/johnsmith" },
-  { id: "link-3", title: "Twitter/X", url: "https://twitter.com/johnsmith" },
-  { id: "link-4", title: "LinkedIn", url: "https://linkedin.com/in/johnsmith" },
-] as LinkItem[];
-
-const DEFAULT_PROJECTS = [
-  {
-    id: "proj-1",
-    title: "Fintech Dashboard",
-    description:
-      "A financial analytics dashboard that helps users track their investments",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature1.jpg",
-  },
-  {
-    id: "proj-2",
-    title: "Landing page Design",
-    description: "A minimal landing page design for an e-commerce website",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature2.jpg",
-  },
-  {
-    id: "proj-3",
-    title: "Nova Health SaaS",
-    description: "A minimalist SaaS platform designed for doctors.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature3.jpg",
-  },
-  {
-    id: "proj-4",
-    title: "Origin Collective",
-    description:
-      "A minimalist e-commerce website for a high-end furniture brand.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature2.jpg",
-  },
-  {
-    id: "proj-5",
-    title: "Apex Banking App",
-    description: "Redesigning the core user journey of a modern banking app.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature1.jpg",
-  },
-  {
-    id: "proj-6",
-    title: "Form Branding System",
-    description: "A cohesive visual identity and branding system.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature3.jpg",
-  },
-] as ProjectItem[];
 
 const getLinkIcon = (title: string = "") => {
   const t = title.toLowerCase();
@@ -114,11 +55,9 @@ export default function PortfolioDashboardView({ profile, content }: Props) {
     details?.bio?.content ??
     "I help teams craft thoughtful, user-centered products — from the first sketch to a polished design system. Currently shaping fintech and SaaS experiences.";
 
-  const rawLinks = (details?.links?.items ?? []) as LinkItem[];
-  const links = rawLinks.length > 0 ? rawLinks : DEFAULT_LINKS;
+  const links = (details?.links?.items ?? []) as LinkItem[];
 
-  const rawProjects = (details?.projects?.items ?? []) as ProjectItem[];
-  const projects = rawProjects.length > 0 ? rawProjects : DEFAULT_PROJECTS;
+  const projects = (details?.projects?.items ?? []) as ProjectItem[];
 
   const cta = details?.cta;
 
@@ -187,28 +126,51 @@ export default function PortfolioDashboardView({ profile, content }: Props) {
           <section className="mb-20 w-full">
             <h2 className="text-tertiary-text mb-4 text-[13px]">Links</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {links.map((link) => (
-                <a
-                  key={link.id}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group border-border bg-background hover:border-brand-hover-bg/30 flex items-center justify-between rounded-xl border p-4 shadow-sm transition-all hover:shadow-md"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="text-primary-text group-hover:text-brand-hover-bg transition-colors">
-                      {getLinkIcon(link.title || link.label)}
+              {links.map((link) => {
+                const safeHref = normalizeHref(link.url);
+
+                if (safeHref) {
+                  return (
+                    <a
+                      key={link.id}
+                      href={safeHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group border-border bg-background hover:border-brand-hover-bg/30 flex items-center justify-between rounded-xl border p-4 shadow-sm transition-all hover:shadow-md"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="text-primary-text group-hover:text-brand-hover-bg transition-colors">
+                          {getLinkIcon(link.title || link.label)}
+                        </div>
+                        <span className="text-primary-text text-[14px] font-medium">
+                          {link.title || link.label}
+                        </span>
+                      </div>
+                      <ExternalLink
+                        size={14}
+                        className="text-tertiary-text group-hover:text-brand-hover-bg transition-colors"
+                      />
+                    </a>
+                  );
+                }
+
+                return (
+                  <div
+                    key={link.id}
+                    className="group border-border bg-background flex items-center justify-between rounded-xl border p-4 shadow-sm transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="text-primary-text transition-colors">
+                        {getLinkIcon(link.title || link.label)}
+                      </div>
+                      <span className="text-primary-text text-[14px] font-medium">
+                        {link.title || link.label}
+                      </span>
                     </div>
-                    <span className="text-primary-text text-[14px] font-medium">
-                      {link.title || link.label}
-                    </span>
+                    <ExternalLink size={14} className="text-tertiary-text" />
                   </div>
-                  <ExternalLink
-                    size={14}
-                    className="text-tertiary-text group-hover:text-brand-hover-bg transition-colors"
-                  />
-                </a>
-              ))}
+                );
+              })}
             </div>
           </section>
         )}
@@ -272,17 +234,29 @@ export default function PortfolioDashboardView({ profile, content }: Props) {
                         </p>
                       )}
 
-                      {project.url && (
-                        <a
-                          href={project.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-brand-hover-bg mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
-                        >
-                          {project.buttonText || "View Project"}
-                          <ArrowRight size={14} strokeWidth={2.5} />
-                        </a>
-                      )}
+                      {project.url &&
+                        (() => {
+                          const safe = normalizeHref(project.url);
+                          if (!safe) {
+                            return (
+                              <span className="text-tertiary-text mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold">
+                                {project.buttonText || "View Project"}
+                              </span>
+                            );
+                          }
+
+                          return (
+                            <a
+                              href={safe}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-brand-hover-bg mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
+                            >
+                              {project.buttonText || "View Project"}
+                              <ArrowRight size={14} strokeWidth={2.5} />
+                            </a>
+                          );
+                        })()}
                     </div>
                   </div>
                 );

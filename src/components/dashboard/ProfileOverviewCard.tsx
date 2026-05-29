@@ -74,7 +74,7 @@ export default function ProfileOverviewCard({
         : typeof rawTemplate === "string" &&
             rawTemplate.toLowerCase() === "default"
           ? "Default"
-          : "Professional";
+          : "Default";
 
   return (
     <>

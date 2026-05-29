@@ -45,6 +45,7 @@ export default function DashboardHome() {
   const rawTemplate =
     previewTemplate ||
     profileAppearance.data?.appearance?.template ||
+    profileAppearance.data?.data?.template ||
     themeSettings?.template ||
     profile?.templateType;
 

@@ -23,6 +23,10 @@ interface PreviewCanvasProps {
 export default function PreviewCanvas(props: PreviewCanvasProps) {
   const { font, theme } = props;
 
+  const templateKey = props.template
+    ? String(props.template).toLowerCase()
+    : "";
+
   const fontStyles: Record<string, string> = {
     Afacad: "font-afacad",
     Inter: "font-sans",
@@ -54,11 +58,11 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
         } ${selectedFontClass}`}
       >
         <div className="flex w-full max-w-5xl flex-col gap-6 pb-32">
-          {props.template === "creator" && <CreatorPreview {...props} />}
-          {props.template === "portfolio" && <PortfolioPreview {...props} />}
-          {(!props.template || props.template === "professional") && (
-            <ProfessionalPreview {...props} />
-          )}
+          {templateKey === "creator" && <CreatorPreview {...props} />}
+          {templateKey === "portfolio" && <PortfolioPreview {...props} />}
+          {(templateKey === "" ||
+            templateKey === "professional" ||
+            templateKey === "default") && <ProfessionalPreview {...props} />}
         </div>
       </div>
     </TemplateAppearanceProvider>
