@@ -55,11 +55,14 @@ export default function PortfolioPreview({
   const bioSectionId = bioSection?.id ?? "bio";
 
   return (
-    <div className="text-primary-text mx-auto flex w-full max-w-5xl flex-col py-8 pt-12">
+    <div
+      className="text-primary-text mx-auto flex w-full max-w-5xl flex-col py-8 pt-12"
+      style={{ gap: "calc(var(--op-spacing, 24px) * 2)" }}
+    >
       {/* HEADER SECTION (Bio) */}
       {bioSection?.visible && (
         <div
-          className={`group relative mb-12 transition-opacity duration-200 ${selectedSectionId && selectedSectionId !== bioSectionId ? "opacity-50" : ""}`}
+          className={`group relative transition-opacity duration-200 ${selectedSectionId && selectedSectionId !== bioSectionId ? "opacity-50" : ""}`}
         >
           {bioSection && (
             <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
@@ -85,8 +88,17 @@ export default function PortfolioPreview({
             </div>
           )}
 
-          <header className="hover:border-border hover:bg-background/50 relative mb-8 flex w-full flex-col justify-between gap-6 rounded-2xl border border-transparent p-6 transition-colors sm:flex-row sm:items-start">
-            <div className="flex flex-col gap-6">
+          <header
+            className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between rounded-2xl border border-transparent transition-colors sm:flex-row sm:items-start"
+            style={{
+              gap: "var(--op-spacing, 24px)",
+              padding: "var(--op-spacing, 24px)",
+            }}
+          >
+            <div
+              className="flex flex-col"
+              style={{ gap: "var(--op-spacing, 24px)" }}
+            >
               <div className="border-border bg-secondary-bg relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-full border">
                 {getImageUrl(profile?.photoUrl) ? (
                   <Image
@@ -134,7 +146,7 @@ export default function PortfolioPreview({
             </a>
           </header>
 
-          <section className="mt-2 px-6">
+          <section style={{ paddingInline: "var(--op-spacing, 24px)" }}>
             <p className="text-secondary-text max-w-3xl text-[15px] leading-relaxed whitespace-pre-wrap">
               {bioSection?.bio || "Write a little bit about yourself here..."}
             </p>
@@ -145,7 +157,8 @@ export default function PortfolioPreview({
       {/* LINKS SECTION */}
       {linksSection?.visible && (
         <section
-          className={`group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors ${selectedSectionId && selectedSectionId !== linksSection.id ? "opacity-50" : ""}`}
+          className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent transition-colors ${selectedSectionId && selectedSectionId !== linksSection.id ? "opacity-50" : ""}`}
+          style={{ padding: "var(--op-spacing, 24px)" }}
         >
           <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
             <button
@@ -176,14 +189,18 @@ export default function PortfolioPreview({
             {linksSection.subtitle || "Links"}
           </h2>
           {linksSection.links && linksSection.links.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+              style={{ gap: "var(--op-spacing, 24px)" }}
+            >
               {linksSection.links.map((link) => (
                 <a
                   key={link.id}
                   href={sanitizeUrl(link.url)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group/link border-border bg-background hover:border-brand-hover-bg/30 flex items-center justify-between rounded-xl border p-4 shadow-sm transition-all hover:shadow-md"
+                  className="group/link border-border bg-background hover:border-brand-hover-bg/30 flex items-center justify-between rounded-xl border shadow-sm transition-all hover:shadow-md"
+                  style={{ padding: "var(--op-spacing, 24px)" }}
                 >
                   <div className="flex items-center gap-3">
                     <div className="text-primary-text group-hover/link:text-brand-hover-bg transition-colors">
@@ -211,7 +228,8 @@ export default function PortfolioPreview({
       {/* PROJECTS SECTION */}
       {projectsSection?.visible && (
         <section
-          className={`group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors ${selectedSectionId && selectedSectionId !== projectsSection.id ? "opacity-50" : ""}`}
+          className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent transition-colors ${selectedSectionId && selectedSectionId !== projectsSection.id ? "opacity-50" : ""}`}
+          style={{ padding: "var(--op-spacing, 24px)" }}
         >
           <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
             <button
@@ -242,7 +260,10 @@ export default function PortfolioPreview({
             {projectsSection.subtitle || "Featured Projects"}
           </h2>
           {projectsSection.projects && projectsSection.projects.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+              style={{ gap: "var(--op-spacing, 24px)" }}
+            >
               {projectsSection.projects.map((project, idx) => {
                 const numberStr = String(idx + 1).padStart(2, "0");
                 return (
@@ -264,7 +285,10 @@ export default function PortfolioPreview({
                       )}
                     </div>
 
-                    <div className="flex flex-col p-6">
+                    <div
+                      className="flex flex-col"
+                      style={{ padding: "var(--op-spacing, 24px)" }}
+                    >
                       <div className="mb-1 flex items-start gap-2">
                         <span className="text-primary-text text-[16px] font-bold">
                           {numberStr}
@@ -311,7 +335,8 @@ export default function PortfolioPreview({
       {/* CTA SECTION */}
       {ctaSection?.visible && (
         <section
-          className={`group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors ${selectedSectionId && selectedSectionId !== ctaSection.id ? "opacity-50" : ""}`}
+          className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent transition-colors ${selectedSectionId && selectedSectionId !== ctaSection.id ? "opacity-50" : ""}`}
+          style={{ padding: "var(--op-spacing, 24px)" }}
         >
           <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
             <button
@@ -338,7 +363,13 @@ export default function PortfolioPreview({
             </button>
           </div>
 
-          <div className="flex flex-col justify-between gap-6 py-4 md:flex-row md:items-center">
+          <div
+            className="flex flex-col justify-between md:flex-row md:items-center"
+            style={{
+              gap: "var(--op-spacing, 24px)",
+              paddingBlock: "calc(var(--op-spacing, 24px) * 0.5)",
+            }}
+          >
             <div className="flex items-center gap-4">
               <div className="bg-brand-hover-bg flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-white shadow-sm">
                 <Rocket size={24} strokeWidth={2} />

@@ -142,8 +142,19 @@ export default function TemplateAppearanceProvider({
     "--template-radius": radius,
     "--template-spacing": `${spacing}px`,
 
-    color: textColor,
-    backgroundColor: bgColor,
+    "--op-text-color": textColor,
+    "--op-secondary-text-color": secondaryTextColor,
+    "--op-tertiary-text-color": tertiaryTextColor,
+    "--op-bg-color": bgColor,
+    "--op-surface-color": surfaceColor,
+    "--op-secondary-bg-color": secondarySurfaceColor,
+    "--op-accent-color": accentColor,
+    "--op-border-color": borderColor,
+    "--op-rounded": radius,
+    "--op-spacing": `${spacing}px`,
+
+    color: "var(--op-text-color)",
+    backgroundColor: "var(--op-bg-color)",
   } as CSSProperties;
 
   return (
@@ -156,7 +167,7 @@ export default function TemplateAppearanceProvider({
       <style>
         {`
           .template-appearance-scope [class*="rounded-"]:not([class*="rounded-full"]) {
-            border-radius: var(--template-radius) !important;
+            border-radius: var(--op-rounded, var(--template-radius)) !important;
           }
         `}
       </style>

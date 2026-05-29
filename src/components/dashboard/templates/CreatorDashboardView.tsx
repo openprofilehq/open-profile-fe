@@ -109,8 +109,14 @@ export default function CreatorDashboardView({
       className="text-primary-text bg-primary-bg flex min-h-screen w-full flex-col antialiased"
       style={customBgStyle}
     >
-      <div className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-24">
-        <header className="flex w-full flex-col items-center gap-4 text-center">
+      <div
+        className="mx-auto flex w-full max-w-3xl flex-col px-6 py-16 sm:py-24"
+        style={{ gap: "calc(var(--op-spacing, 24px) * 2)" }}
+      >
+        <header
+          className="flex w-full flex-col items-center text-center"
+          style={{ gap: "var(--op-spacing, 24px)" }}
+        >
           <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
             <Image
               src={photoSrc}
@@ -139,7 +145,10 @@ export default function CreatorDashboardView({
           </div>
 
           {socialLinks.length > 0 && (
-            <div className="mt-2 flex items-center gap-4">
+            <div
+              className="flex items-center"
+              style={{ gap: "calc(var(--op-spacing, 24px) * 0.75)" }}
+            >
               {socialLinks.map((link, i) => {
                 const Icon = getIconForUrl(link.url);
                 return (
@@ -162,7 +171,7 @@ export default function CreatorDashboardView({
               href={sanitizeUrl(cta?.url || "mailto:hello@example.com")}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-brand-hover-bg hover:bg-button-brand-bg mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all active:scale-95"
+              className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all active:scale-95"
             >
               <Mail size={16} />
               {cta?.label || "Let's Collaborate"}
@@ -171,7 +180,10 @@ export default function CreatorDashboardView({
         </header>
 
         {/* TABS NAVIGATION */}
-        <div className="border-border mt-12 flex items-center justify-center gap-8 border-b">
+        <div
+          className="border-border flex items-center justify-center border-b"
+          style={{ gap: "calc(var(--op-spacing, 24px) * 1.5)" }}
+        >
           <button
             onClick={() => setActiveTab("projects")}
             className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "projects" ? "text-primary-text" : "text-secondary-text hover:text-primary-text"}`}
@@ -202,9 +214,12 @@ export default function CreatorDashboardView({
         </div>
 
         {/* TABS CONTENT */}
-        <div className="mt-10 min-h-[400px] w-full">
+        <div className="min-h-[400px] w-full">
           {activeTab === "projects" && (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div
+              className="grid grid-cols-1 sm:grid-cols-2"
+              style={{ gap: "var(--op-spacing, 24px)" }}
+            >
               {projects.map((project) => (
                 <div
                   key={project.id}
@@ -227,7 +242,10 @@ export default function CreatorDashboardView({
                       <div className="h-full w-full bg-neutral-200" />
                     )}
                   </div>
-                  <div className="flex flex-col p-6">
+                  <div
+                    className="flex flex-col"
+                    style={{ padding: "var(--op-spacing, 24px)" }}
+                  >
                     <h3 className="text-primary-text text-[17px] font-bold">
                       {project.title}
                     </h3>
@@ -254,7 +272,10 @@ export default function CreatorDashboardView({
           )}
 
           {activeTab === "links" && (
-            <div className="mx-auto flex max-w-xl flex-col gap-4">
+            <div
+              className="mx-auto flex max-w-xl flex-col"
+              style={{ gap: "var(--op-spacing, 24px)" }}
+            >
               {links.map((link) => {
                 const Icon = getIconForUrl(link.url);
                 const isWebsite =
@@ -276,7 +297,8 @@ export default function CreatorDashboardView({
                     href={sanitizeUrl(link.url)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group border-border bg-background hover:border-brand-hover-bg flex items-center justify-between rounded-2xl border p-4 transition-all hover:shadow-sm sm:px-6"
+                    className="group border-border bg-background hover:border-brand-hover-bg flex items-center justify-between rounded-2xl border transition-all hover:shadow-sm"
+                    style={{ padding: "var(--op-spacing, 24px)" }}
                   >
                     <div className="flex items-center gap-4">
                       <div className="bg-brand-light-subtle-bg text-brand-hover-bg flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
@@ -299,7 +321,10 @@ export default function CreatorDashboardView({
           )}
 
           {activeTab === "about" && (
-            <div className="border-border bg-background mx-auto max-w-2xl rounded-3xl border p-8 sm:p-12">
+            <div
+              className="border-border bg-background mx-auto max-w-2xl rounded-3xl border"
+              style={{ padding: "calc(var(--op-spacing, 24px) * 1.5)" }}
+            >
               <p className="text-secondary-text text-center text-[16px] leading-relaxed whitespace-pre-wrap">
                 {bio}
               </p>
@@ -308,7 +333,7 @@ export default function CreatorDashboardView({
         </div>
 
         {/* FOOTER */}
-        <div className="mt-20">
+        <div>
           <TemplateFooter />
         </div>
       </div>
