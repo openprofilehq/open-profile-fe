@@ -6,6 +6,15 @@ import { getDisplayUrl, getProfileUrl } from "@/utils/profile";
 import { Skeleton } from "../ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/api/auth/auth.options";
+import { TemplateSelectionModal } from "./TemplateSelectionModal";
+import {
+  DashboardProfileResponse,
+  TemplateType,
+} from "@/api/profile/profile.type";
+import {
+  profileAppearanceOption,
+  profileContentOption,
+} from "@/api/profile/profile.options";
 
 const actions = [
   {
@@ -30,37 +39,68 @@ const actions = [
 ];
 
 type Props = {
-  profile?: {
-    username?: string;
-    fullName?: string;
-    bio?: string | null;
-  };
+  profile?: DashboardProfileResponse;
   isLoading?: boolean;
+  onPreviewChange?: (template: TemplateType | null) => void;
+  previewTemplate?: TemplateType | null;
 };
 
-export default function ProfileOverviewCard({ profile, isLoading }: Props) {
+export default function ProfileOverviewCard({
+  profile,
+  isLoading,
+  onPreviewChange,
+  previewTemplate,
+}: Props) {
   const { data: user } = useQuery(userQueryOptions);
+  const { data: appearanceData } = useQuery(profileAppearanceOption());
+  const { data: contentData } = useQuery(profileContentOption());
   const publicProfileUrl = getProfileUrl(profile?.username);
+
+  // Derive the active template
+  const themeSettings = (contentData as Record<string, unknown>)
+    ?.themeSettings as Record<string, unknown> | undefined;
+  const rawTemplate =
+    previewTemplate ||
+    appearanceData?.appearance?.template ||
+    themeSettings?.template ||
+    profile?.templateType;
+
+  const activeTemplate: TemplateType =
+    typeof rawTemplate === "string" && rawTemplate.toLowerCase() === "creator"
+      ? "Creator"
+      : typeof rawTemplate === "string" &&
+          rawTemplate.toLowerCase() === "portfolio"
+        ? "Portfolio"
+        : typeof rawTemplate === "string" &&
+            rawTemplate.toLowerCase() === "default"
+          ? "Default"
+          : "Default";
+
   return (
     <>
-      <section className="rounded-[12px] border border-[#EDEDED] bg-white p-4">
-        <p className="text-sm text-[#454545] uppercase">Profile Overview</p>
+      <section className="border-border bg-background rounded-[12px] border p-4">
+        <p className="text-secondary-text text-sm uppercase">
+          Profile Overview
+        </p>
 
-        <div className="mt-3 rounded-[10px] bg-[#FAFAFA] p-4">
+        <div className="bg-secondary-bg mt-3 rounded-[10px] p-4">
           {isLoading ? (
             <Skeleton className="h-8" />
           ) : (
             <h1 className="text-2xl font-bold">
-              Welcome, {user?.fullName ?? "User"}
+              Welcome, {profile?.fullName ?? user?.fullName ?? "User"}
             </h1>
           )}
-          <p className="mt-3 max-w-[390px] text-[#454545]">
+          <p className="text-secondary-text mt-3 max-w-[390px]">
             Your profile is live and ready to share. Manage your public page,
             update key sections, and keep things current from one place
           </p>
 
-          <div className="mt-6 flex gap-3">
-            <Button asChild className="bg-[#087583] hover:bg-[#065e69]">
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button
+              asChild
+              className="bg-brand-hover-bg hover:bg-button-brand-bg"
+            >
               <a
                 href={publicProfileUrl || "#"}
                 target="_blank"
@@ -77,6 +117,17 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
                 Edit
               </Link>
             </Button>
+
+            <TemplateSelectionModal
+              initialTemplate={activeTemplate}
+              onPreviewChange={onPreviewChange}
+              trigger={
+                <Button variant="outline">
+                  <Palette size={16} className="mr-2" />
+                  Choose Template
+                </Button>
+              }
+            />
           </div>
         </div>
       </section>
@@ -89,16 +140,16 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
             key={item.title}
             href={item.href}
             aria-label={item.title}
-            className="flex w-full items-center justify-between rounded-[12px] border border-[#EDEDED] bg-white p-5 text-left"
+            className="border-border bg-background flex w-full items-center justify-between rounded-[12px] border p-5 text-left"
           >
             <div className="flex items-start gap-3">
-              <span className="flex h-7 w-7 items-center justify-center rounded-[8px] border border-[#EDEDED]">
+              <span className="border-border flex h-7 w-7 items-center justify-center rounded-[8px] border">
                 <Icon size={16} />
               </span>
 
               <div>
                 <h2 className="text-lg font-bold">{item.title}</h2>
-                <p className="mt-1 text-[#454545]">{item.description}</p>
+                <p className="text-secondary-text mt-1">{item.description}</p>
               </div>
             </div>
 
@@ -107,12 +158,12 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
         );
       })}
 
-      <section className="rounded-[12px] border border-[#EDEDED] bg-white p-4">
-        <div className="bg-[#FAFAFA] p-3">
-          <p className="text-sm text-[#454545] uppercase">Page Details</p>
+      <section className="border-border bg-background rounded-[12px] border p-4">
+        <div className="bg-secondary-bg p-3">
+          <p className="text-secondary-text text-sm uppercase">Page Details</p>
 
           <div className="mt-4 flex justify-between text-sm">
-            <span className="text-[#454545]">Public URL</span>
+            <span className="text-secondary-text">Public URL</span>
             {isLoading ? (
               <Skeleton className="h-4 w-40" />
             ) : publicProfileUrl ? (
@@ -120,7 +171,7 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
                 href={publicProfileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-right break-all text-[#087583] hover:underline"
+                className="text-brand-hover-bg text-right break-all hover:underline"
               >
                 {getDisplayUrl(publicProfileUrl)}
               </a>
@@ -131,10 +182,14 @@ export default function ProfileOverviewCard({ profile, isLoading }: Props) {
             )}
           </div>
 
-          {/* <div className="mt-3 flex justify-between text-sm">
-            <span className="text-[#454545]">Template</span>
-            <span>Creator Template</span>
-          </div> */}
+          <div className="mt-3 flex justify-between text-sm">
+            <span className="text-secondary-text">Template</span>
+            {isLoading ? (
+              <Skeleton className="h-4 w-24" />
+            ) : (
+              <span className="text-right">{activeTemplate} Template</span>
+            )}
+          </div>
         </div>
       </section>
     </>

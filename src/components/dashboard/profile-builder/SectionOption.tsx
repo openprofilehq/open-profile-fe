@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import type { SavedLink } from "./LinkSidebar";
 import { uploadImage } from "@/api/uploads/uploads.service";
+import { validateProfileLink } from "@/api/profile/profile.service";
 import { isValidUrl } from "./builder.utils";
 
 const presetIcons = [
@@ -122,6 +123,7 @@ export default function SectionOption({
   );
   const [urlError, setUrlError] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [validatingUrl, setValidatingUrl] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const selectedIcon =
@@ -154,43 +156,53 @@ export default function SectionOption({
     }
   };
 
-  const handleSaveLink = () => {
+  const handleSaveLink = async () => {
     if (!title.trim() || !url.trim()) return;
 
-    if (!isValidUrl(url.trim(), selectedIconId)) {
-      setUrlError("Please enter a valid link (e.g. yoursite.com)");
-      return;
+    const trimmedUrl = url.trim();
+
+    try {
+      setValidatingUrl(true);
+      setUrlError("");
+
+      const validatedLink = await validateProfileLink(
+        trimmedUrl,
+        selectedIconId
+      );
+
+      onSaveLink(
+        {
+          title: title.trim(),
+          url: validatedLink.encoded,
+          iconId: selectedIcon?.id ?? null,
+          iconLabel: selectedIcon?.label ?? null,
+          iconSrc: selectedIcon?.icon ?? null,
+          imageSrc: uploadedImage,
+        },
+        editingLink?.id ?? null
+      );
+
+      setTitle("");
+      setUrl("");
+      setUrlError("");
+      setSelectedIconId(null);
+      setIsIconMenuOpen(false);
+      setUploadedImage(null);
+      returnTab();
+    } catch {
+      setUrlError("Please enter a valid link for the selected icon.");
+    } finally {
+      setValidatingUrl(false);
     }
-    setUrlError("");
-
-    onSaveLink(
-      {
-        title: title.trim(),
-        url: url.trim(),
-        iconId: selectedIcon?.id ?? null,
-        iconLabel: selectedIcon?.label ?? null,
-        iconSrc: selectedIcon?.icon ?? null,
-        imageSrc: uploadedImage,
-      },
-      editingLink?.id ?? null
-    );
-
-    setTitle("");
-    setUrl("");
-    setUrlError("");
-    setSelectedIconId(null);
-    setIsIconMenuOpen(false);
-    setUploadedImage(null);
-    returnTab();
   };
 
   return (
-    <div className="p-3">
+    <div>
       <form
         className="flex flex-col gap-4"
         onSubmit={(event) => {
           event.preventDefault();
-          handleSaveLink();
+          void handleSaveLink();
         }}
       >
         <span className="flex w-full flex-col gap-2">
@@ -213,11 +225,11 @@ export default function SectionOption({
             Icon
           </label>
           <div className="relative">
-            <div className="border-tertiary-b flex overflow-hidden rounded-md border bg-white">
+            <div className="border-tertiary-b flex overflow-hidden rounded-md border bg-background">
               <button
                 type="button"
                 onClick={() => setIsIconMenuOpen((current) => !current)}
-                className="flex min-w-0 flex-1 items-center gap-3 p-3 text-left transition-colors hover:bg-[#F8FAFC]"
+                className="flex min-w-0 flex-1 items-center gap-3 p-3 text-left transition-colors hover:bg-secondary-bg"
                 aria-haspopup="listbox"
                 aria-expanded={isIconMenuOpen}
               >
@@ -254,7 +266,7 @@ export default function SectionOption({
 
                   setIsIconMenuOpen((current) => !current);
                 }}
-                className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-[#F8FAFC]"
+                className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-secondary-bg"
                 aria-label={
                   selectedIcon ? "Remove selected icon" : "Open icon list"
                 }
@@ -269,8 +281,8 @@ export default function SectionOption({
             </div>
 
             {isIconMenuOpen && (
-              <div className="border-tertiary-b absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-xl border bg-white p-2 shadow-lg">
-                <div className="mb-2 px-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+              <div className="border-tertiary-b absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-xl border bg-background p-2 shadow-lg">
+                <div className="mb-2 px-2 text-xs font-semibold tracking-wide text-secondary-text uppercase">
                   Preset icons
                 </div>
                 <div className="grid grid-cols-4 gap-2">
@@ -285,7 +297,7 @@ export default function SectionOption({
                           setSelectedIconId(icon.id);
                           setIsIconMenuOpen(false);
                         }}
-                        className={`flex flex-col items-center gap-2 rounded-md border p-2 transition-all ${isActive ? "border-brand-b bg-brand-light-subtle-bg" : "hover:border-tertiary-b border-transparent hover:bg-[#F8FAFC]"}`}
+                        className={`flex flex-col items-center gap-2 rounded-md border p-2 transition-all ${isActive ? "border-brand-b bg-brand-light-subtle-bg" : "hover:border-tertiary-b border-transparent hover:bg-secondary-bg"}`}
                         aria-label={icon.label}
                       >
                         <Image
@@ -329,11 +341,11 @@ export default function SectionOption({
               aria-hidden
             />
 
-            <div className="border-tertiary-b flex overflow-hidden rounded-md border bg-white">
+            <div className="border-tertiary-b flex overflow-hidden rounded-md border bg-background">
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex min-w-0 flex-1 items-center gap-3 p-3 text-left transition-colors hover:bg-[#F8FAFC]"
+                className="flex min-w-0 flex-1 items-center gap-3 p-3 text-left transition-colors hover:bg-secondary-bg"
               >
                 {uploadedImage ? (
                   <Image
@@ -368,7 +380,7 @@ export default function SectionOption({
 
                   fileInputRef.current?.click();
                 }}
-                className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-[#F8FAFC]"
+                className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-secondary-bg"
                 aria-label={
                   uploadedImage ? "Remove uploaded image" : "Upload image"
                 }
@@ -389,10 +401,28 @@ export default function SectionOption({
             id="url"
             name="url"
             value={url}
-            onChange={(event) => setUrl(event.target.value)}
+            onChange={(event) => {
+              const val = event.target.value;
+              setUrl(val);
+              if (urlError) {
+                if (!val.trim() || isValidUrl(val.trim(), selectedIconId)) {
+                  setUrlError("");
+                }
+              }
+            }}
+            onBlur={(event) => {
+              const val = event.target.value;
+              if (val.trim() && !isValidUrl(val.trim(), selectedIconId)) {
+                setUrlError("Please enter a valid link (e.g. yoursite.com)");
+              } else {
+                setUrlError("");
+              }
+            }}
             placeholder="Paste link (e.g. yoursite.com)..."
             className={`rounded-md border p-2 focus:ring-2 focus:ring-offset-1 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
-              urlError ? "border-red-500 focus:ring-red-500" : "border-accent-foreground/30 focus:ring-accent"
+              urlError
+                ? "border-red-500 focus:ring-red-500"
+                : "border-accent-foreground/30 focus:ring-accent"
             }`}
           />
           {urlError && <p className="text-xs text-red-500">{urlError}</p>}
@@ -412,13 +442,19 @@ export default function SectionOption({
           type="submit"
           size="lg"
           variant="primary"
-          disabled={uploading || (!editingLink?.title && !canAddMoreLinks)}
+          disabled={
+            uploading ||
+            validatingUrl ||
+            (!editingLink?.title && !canAddMoreLinks)
+          }
         >
-          {uploading
-            ? "Uploading..."
-            : editingLink
-              ? "Update Link"
-              : "Save Link"}
+          {validatingUrl
+            ? "Validating..."
+            : uploading
+              ? "Uploading..."
+              : editingLink
+                ? "Update Link"
+                : "Save Link"}
         </Button>
       </form>
     </div>

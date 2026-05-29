@@ -3,6 +3,7 @@ export type SectionType = "bio" | "links" | "projects" | "experience";
 export interface SavedLink {
   id: string;
   title: string;
+  label?: string;
   url: string;
   iconId: string | null;
   iconLabel: string | null;

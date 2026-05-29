@@ -12,6 +12,8 @@ import {
   PublishProfileResponse,
   ProfileAppearanceRequest,
   ProfileAppearanceResponse,
+  GetProfileAppearanceResponse,
+  ValidateProfileLinkData,
 } from "./profile.type";
 
 export function createProfile(data: CreateProfileRequest) {
@@ -67,6 +69,22 @@ export function getProfileContent(signal?: AbortSignal) {
   return callApi<ProfileContentResponse>({
     url: "/profiles/content",
     method: "GET",
+    signal,
+  });
+}
+
+export function validateProfileLink(
+  url: string,
+  iconId?: string | null,
+  signal?: AbortSignal
+) {
+  return callApi<ValidateProfileLinkData>({
+    url: "/profiles/validate/link",
+    method: "GET",
+    params: {
+      url,
+      ...(iconId ? { iconId } : {}),
+    },
     signal,
   });
 }
@@ -129,5 +147,13 @@ export function updateProfileAppearance(data: ProfileAppearanceRequest) {
     url: "/profiles/appearance",
     method: "PATCH",
     data,
+  });
+}
+
+export function getProfileAppearance(signal?: AbortSignal) {
+  return callApi<GetProfileAppearanceResponse>({
+    url: "/profiles/appearance",
+    method: "GET",
+    signal,
   });
 }

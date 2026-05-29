@@ -180,7 +180,7 @@ export function Navbar() {
                   <Link
                     href="/login"
                     onClick={() => setMobileOpen(false)}
-                    className="flex h-[52px] w-full items-center justify-center rounded-[10px] border border-[#EDEDED] bg-[#F5F5F5] text-[16px] font-semibold text-[#087583]"
+                    className="bg-primary-bg text-link-hover-text flex h-[52px] w-full items-center justify-center rounded-[10px] text-[16px] font-semibold"
                     style={{ fontFamily: "'Afacad', sans-serif" }}
                   >
                     Login

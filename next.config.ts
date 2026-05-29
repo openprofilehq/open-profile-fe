@@ -25,6 +25,14 @@ const nextConfig: NextConfig = {
         protocol: "https" as const,
         hostname: "api.staging.open-profile.hng14.com",
       },
+      ...(process.env.NODE_ENV === "development"
+        ? [
+            {
+              protocol: "http" as const,
+              hostname: "localhost",
+            },
+          ]
+        : []),
     ],
   },
 };

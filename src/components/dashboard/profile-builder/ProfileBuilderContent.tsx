@@ -10,6 +10,7 @@ import {
   draftStateOption,
   upsertDraftOption,
   updateProfileAppearanceOption,
+  profileAppearanceOption,
 } from "@/api/profile/profile.options";
 import { upsertDraft } from "@/api/profile/profile.service";
 import LeftSidebar from "./LeftSidebar";
@@ -17,8 +18,16 @@ import PreviewCanvas from "./PreviewCanvas";
 import RightPanel from "./RightPanel";
 import Link from "next/link";
 import type { Section } from "./types";
+import { THEME_DEFAULTS } from "@/constants/theme";
+import type {
+  ProfileAppearanceCornerStyle,
+  ProfileAppearanceFont,
+  UpsertDraftResponse,
+} from "@/api/profile/profile.type";
 import { contentToSections, sectionsToContent } from "./builder.utils";
+import { isApiError } from "@/api/base";
 import { ROUTES } from "@/constants/routes";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const createSection = (type: string, customTitle?: string): Section | null => {
   const allowedTypes: Record<string, Section["type"]> = {
@@ -76,36 +85,82 @@ const createSection = (type: string, customTitle?: string): Section | null => {
   };
 };
 
-const DEFAULT_TEMPLATE = "professional" as const;
-// Only the professional template is currently supported by the builder UI.
+const normalizeColorForApi = (color: string) => {
+  if (!color) return "#087583";
 
-type AppearanceThemeSettings = {
-  font?: unknown;
-  textColor?: unknown;
-  bgColor?: unknown;
-  iconColor?: unknown;
-  spacing?: unknown;
-  borderRadius?: unknown;
-  theme?: unknown;
+  if (color.startsWith("#")) return color;
+
+  const hex = color.split("_")[0];
+
+  return `#${hex}`;
 };
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null;
+const mapFontToApi = (font: string): ProfileAppearanceFont => {
+  const fontMap: Record<string, ProfileAppearanceFont> = {
+    Afacad: "afacad",
+    Inter: "inter",
+    "Inter Sans": "inter",
+    Serif: "serif",
+    "Playfair Serif": "serif",
+    Mono: "mono",
+    "Roboto Mono": "mono",
+    Geologica: "geologica",
+    Manrope: "manrope",
+  };
 
-const isBorderRadius = (
-  value: unknown
-): value is "sharp" | "medium" | "round" =>
-  value === "sharp" || value === "medium" || value === "round";
+  return fontMap[font] ?? "afacad";
+};
+
+const mapCornerStyleToApi = (
+  borderRadius: "sharp" | "medium" | "round"
+): ProfileAppearanceCornerStyle => {
+  const cornerStyleMap: Record<
+    "sharp" | "medium" | "round",
+    ProfileAppearanceCornerStyle
+  > = {
+    sharp: "sharp",
+    medium: "medium",
+    round: "round",
+  };
+
+  return cornerStyleMap[borderRadius];
+};
+
+const clampSpacingForApi = (spacing: number) => {
+  return Math.min(Math.max(spacing, 0), 40);
+};
+
+const mapFontFromApi = (font: string) => {
+  const fontMap: Record<ProfileAppearanceFont, string> = {
+    afacad: "Afacad",
+    inter: "Inter",
+    serif: "Serif",
+    mono: "Mono",
+    geologica: "Geologica",
+    manrope: "Manrope",
+  };
+
+  return fontMap[font as ProfileAppearanceFont] ?? "Afacad";
+};
+
+const mapCornerStyleFromApi = (cornerStyle: string) => {
+  const cornerStyleMap: Record<
+    ProfileAppearanceCornerStyle,
+    "sharp" | "medium" | "round"
+  > = {
+    sharp: "sharp",
+    medium: "medium",
+    round: "round",
+  };
+
+  return (
+    cornerStyleMap[cornerStyle as ProfileAppearanceCornerStyle] ?? 
+    (cornerStyle === "pill" ? "round" : "medium")
+  );
+};
 
 const isTheme = (value: unknown): value is "light" | "dark" =>
   value === "light" || value === "dark";
-
-const getAppearanceSettings = (
-  value: unknown
-): AppearanceThemeSettings | null => {
-  if (!isRecord(value)) return null;
-  return value;
-};
 
 export default function ProfileBuilderContent() {
   const queryClient = useQueryClient();
@@ -124,32 +179,49 @@ export default function ProfileBuilderContent() {
   const profileContent = useQuery(profileContentOption());
   const draftState = useQuery(draftStateOption());
 
+  const profileAppearance = useQuery(profileAppearanceOption());
+
   const profile = dashboardProfile.data;
 
+  const isLoading =
+    dashboardProfile.isPending ||
+    profileContent.isPending ||
+    draftState.isPending ||
+    profileAppearance.isPending;
+
   const [font, setFont] = useState("Afacad");
-  const [textColor, setTextColor] = useState("#050505");
-  const [bgColor, setBgColor] = useState("#FFFFFF");
-  const [iconColor, setIconColor] = useState("#087583");
+  const [textColor, setTextColor] = useState<string>(THEME_DEFAULTS.TEXT_COLOR);
+  const [bgColor, setBgColor] = useState<string>(THEME_DEFAULTS.BG_COLOR);
+  const [iconColor, setIconColor] = useState<string>(
+    THEME_DEFAULTS.ACCENT_COLORS.DEFAULT
+  );
   const [spacing, setSpacing] = useState(20);
   const [borderRadius, setBorderRadius] = useState<
     "sharp" | "medium" | "round"
   >("medium");
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [template, setTemplate] = useState<string>("creator");
   const [sections, setSections] = useState<Section[]>([]);
 
   const contentLoadedRef = useRef(false);
   const userEditedRef = useRef(false);
+  const appearanceHydratingRef = useRef(false);
+  const appearanceEditedRef = useRef(false);
   const draftUpdatedAtRef = useRef<string | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const appearanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    const isAppearanceReady =
+      profileAppearance.isSuccess || profileAppearance.isError;
+
     if (
       contentLoadedRef.current ||
       !profileContent.isSuccess ||
       !draftState.isSuccess ||
-      !dashboardProfile.isSuccess
+      !dashboardProfile.isSuccess ||
+      !isAppearanceReady
     ) {
       return;
     }
@@ -160,14 +232,17 @@ export default function ProfileBuilderContent() {
       dashboardProfile.data
     );
 
-    const appearanceSettings = getAppearanceSettings(
-      dashboardProfile.data.themeSettings
-    );
+    const appearanceSettings =
+      profileAppearance.data?.appearance ??
+      profileAppearance.data?.data ??
+      null;
 
     if (appearanceSettings) {
+      appearanceHydratingRef.current = true;
+
       queueMicrotask(() => {
         if (typeof appearanceSettings.font === "string") {
-          setFont(appearanceSettings.font);
+          setFont(mapFontFromApi(appearanceSettings.font));
         }
 
         if (typeof appearanceSettings.textColor === "string") {
@@ -178,8 +253,8 @@ export default function ProfileBuilderContent() {
           setBgColor(appearanceSettings.bgColor);
         }
 
-        if (typeof appearanceSettings.iconColor === "string") {
-          setIconColor(appearanceSettings.iconColor);
+        if (typeof appearanceSettings.accentColour === "string") {
+          setIconColor(appearanceSettings.accentColour);
         }
 
         if (
@@ -189,14 +264,32 @@ export default function ProfileBuilderContent() {
           setSpacing(appearanceSettings.spacing);
         }
 
-        if (isBorderRadius(appearanceSettings.borderRadius)) {
-          setBorderRadius(appearanceSettings.borderRadius);
+        if (typeof appearanceSettings.cornerStyle === "string") {
+          setBorderRadius(
+            mapCornerStyleFromApi(appearanceSettings.cornerStyle)
+          );
         }
 
         if (isTheme(appearanceSettings.theme)) {
           setTheme(appearanceSettings.theme);
         }
+
+        queueMicrotask(() => {
+          appearanceHydratingRef.current = false;
+          appearanceEditedRef.current = true;
+        });
       });
+    }
+
+    const themeSettings = (profileContent.data as Record<string, unknown>)?.themeSettings as Record<string, unknown> | undefined;
+    const rawTemplate = 
+      appearanceSettings?.template || 
+      themeSettings?.template || 
+      dashboardProfile.data?.templateType ||
+      "professional";
+
+    if (typeof rawTemplate === "string") {
+      setTemplate(rawTemplate.toLowerCase());
     }
 
     // Automatically initialize section if requested via URL search param and missing
@@ -219,6 +312,9 @@ export default function ProfileBuilderContent() {
     draftState.data,
     dashboardProfile.isSuccess,
     dashboardProfile.data,
+    profileAppearance.isSuccess,
+    profileAppearance.isError,
+    profileAppearance.data,
     sectionParam,
   ]);
 
@@ -228,6 +324,9 @@ export default function ProfileBuilderContent() {
     onSuccess() {
       queryClient.invalidateQueries({
         queryKey: dashboardProfileOption().queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: profileAppearanceOption().queryKey,
       });
     },
     onError(error: unknown) {
@@ -242,7 +341,7 @@ export default function ProfileBuilderContent() {
   const { mutate: saveDraft } = useMutation({
     mutationKey: upsertDraftOption.mutationKey,
     mutationFn: upsertDraftOption.mutationFn,
-    onSuccess(response) {
+    onSuccess(response: UpsertDraftResponse) {
       const updatedAt = response?.data?.updatedAt;
       if (updatedAt) {
         draftUpdatedAtRef.current = updatedAt;
@@ -256,9 +355,20 @@ export default function ProfileBuilderContent() {
       });
     },
     onError(error: unknown) {
+      const errObj = error as Record<string, unknown>;
+
+      // Backend verifies link URLs and returns 422 INVALID_LINKS when some fail
+      // (e.g. Twitter 403, Instagram blocks crawlers) but still saves the data.
+      // Treat this as a soft warning — the save succeeded.
+      if (isApiError(error) && error.status === 422 && error.message?.includes('INVALID_LINKS')) {
+        queryClient.invalidateQueries({
+          queryKey: profileContentOption().queryKey,
+        });
+        return;
+      }
+
       console.error("[draft] Save FAILED! Full error object:", error);
 
-      const errObj = error as Record<string, unknown>;
       if (
         errObj?.status === 409 ||
         errObj?.statusCode === 409 ||
@@ -296,20 +406,26 @@ export default function ProfileBuilderContent() {
   useEffect(() => {
     if (!contentLoadedRef.current) return;
 
+    if (appearanceHydratingRef.current) return;
+
+    if (!appearanceEditedRef.current) {
+      appearanceEditedRef.current = true;
+      return;
+    }
+
     if (appearanceTimerRef.current) {
       clearTimeout(appearanceTimerRef.current);
     }
 
     appearanceTimerRef.current = setTimeout(() => {
       saveAppearance({
-        template: DEFAULT_TEMPLATE,
-        accentColour: iconColor,
-        font,
-        cornerStyle: borderRadius,
-        spacing,
+        template,
+        accentColour: normalizeColorForApi(iconColor),
+        font: mapFontToApi(font),
+        cornerStyle: mapCornerStyleToApi(borderRadius),
+        spacing: clampSpacingForApi(spacing),
         theme,
       });
-
       appearanceTimerRef.current = null;
     }, 1000);
 
@@ -318,7 +434,7 @@ export default function ProfileBuilderContent() {
         clearTimeout(appearanceTimerRef.current);
       }
     };
-  }, [font, iconColor, spacing, borderRadius, theme, saveAppearance]);
+  }, [template, font, iconColor, spacing, borderRadius, theme, saveAppearance]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
@@ -348,16 +464,7 @@ export default function ProfileBuilderContent() {
         clearTimeout(saveTimerRef.current);
       }
     };
-  }, [
-    sections,
-    font,
-    textColor,
-    bgColor,
-    iconColor,
-    spacing,
-    borderRadius,
-    theme,
-  ]);
+  }, [sections]);
 
   useEffect(() => {
     return () => {
@@ -465,27 +572,67 @@ export default function ProfileBuilderContent() {
   const selectedSection =
     resolvedSections.find((s) => s.id === selectedSectionId) || null;
 
+  if (isLoading) {
+    return (
+      <>
+        <div className="flex min-h-screen flex-col items-center justify-center bg-[#FAFAFA] px-6 text-center lg:hidden">
+          <div className="border-muted-foreground/30 border-t-foreground h-8 w-8 animate-spin rounded-full border-2 mb-4" />
+          <h1 className="text-2xl font-bold text-[#050505]">
+            Loading profile editor...
+          </h1>
+        </div>
+
+        <div className="hidden flex-1 w-full lg:flex gap-4 bg-[#FAFAFA] p-4 lg:p-6 lg:px-8">
+          {/* Left Sidebar Skeleton */}
+          <div className="w-[320px] shrink-0 rounded-2xl bg-white flex flex-col gap-6 p-6">
+            <Skeleton className="h-8 w-1/2" />
+            <div className="flex flex-col gap-3 mt-4">
+              <Skeleton className="h-16 w-full rounded-xl" />
+              <Skeleton className="h-16 w-full rounded-xl" />
+              <Skeleton className="h-16 w-full rounded-xl" />
+            </div>
+          </div>
+
+          {/* Preview Canvas Skeleton */}
+          <div className="flex-1 rounded-2xl flex items-center justify-center">
+            <Skeleton className="h-[750px] w-[350px] rounded-[3rem]" />
+          </div>
+
+          {/* Right Panel Skeleton */}
+          <div className="w-[320px] shrink-0 rounded-2xl bg-white flex flex-col gap-6 p-6">
+            <Skeleton className="h-8 w-1/2" />
+            <div className="flex flex-col gap-4 mt-4">
+              <Skeleton className="h-20 w-full rounded-xl" />
+              <Skeleton className="h-20 w-full rounded-xl" />
+              <Skeleton className="h-20 w-full rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
-      <div className="flex min-h-screen flex-col items-center justify-center bg-[#FAFAFA] px-6 text-center lg:hidden">
-        <h1 className="text-2xl font-bold text-[#050505]">
+      <div className="bg-secondary-bg flex min-h-screen flex-col items-center justify-center px-6 text-center lg:hidden">
+        <h1 className="text-primary-text text-2xl font-bold">
           Profile editor works best on desktop
         </h1>
-        <p className="mt-3 max-w-[420px] text-[#747474]">
+        <p className="text-secondary-text mt-3 max-w-[420px]">
           Please use a desktop or large tablet to edit your profile layout.
         </p>
         <Link
           href={ROUTES.dashboard.home}
-          className="mt-6 rounded-[8px] bg-[#087583] px-5 py-3 font-semibold text-white"
+          className="bg-brand-hover-bg mt-6 rounded-[8px] px-5 py-3 font-semibold text-white"
         >
           Back to dashboard
         </Link>
       </div>
 
-      <div className="bg-primary-bg hidden h-screen w-full flex-col overflow-hidden lg:flex">
+      <div className="bg-primary-bg hidden flex-1 w-full flex-col overflow-hidden lg:flex">
         {/* <BuilderHeader onPublish={handlePublish} isPublishing={isPublishing} /> */}
 
-        <div className="flex flex-1 gap-4 overflow-hidden bg-[#FAFAFA] p-4 lg:p-6 lg:px-8">
+        <div className="bg-secondary-bg flex flex-1 gap-4 overflow-hidden p-4 lg:p-6 lg:px-8">
           <LeftSidebar
             sections={resolvedSections}
             selectedSectionId={selectedSectionId}
@@ -509,6 +656,7 @@ export default function ProfileBuilderContent() {
             spacing={spacing}
             borderRadius={borderRadius}
             theme={theme}
+            template={template}
             sections={resolvedSections}
             profile={profile}
             selectedSectionId={selectedSectionId}

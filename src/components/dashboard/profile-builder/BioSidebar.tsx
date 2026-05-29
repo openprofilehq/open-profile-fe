@@ -74,9 +74,9 @@ export default function BioSidebar({
   const displayImage = uploadedImage || profilePhotoUrl;
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in hidden h-full w-72.5 shrink-0 flex-col border bg-white shadow-sm duration-200 select-none lg:flex">
+    <aside className="border-tertiary-b animate-in fade-in hidden h-full w-72.5 shrink-0 flex-col rounded-2xl border bg-background p-6 shadow-sm duration-200 select-none lg:flex">
       {/* Back Button */}
-      <div className="p-6 pb-4">
+      <div className="pb-4">
         <button
           onClick={returnTab}
           className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
@@ -117,7 +117,7 @@ export default function BioSidebar({
       </div>
 
       {/* Tab Content */}
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto py-6 pr-1">
         {selectedTab === "content" ? (
           <div className="flex flex-col gap-6">
             {/* Full name */}
@@ -136,7 +136,7 @@ export default function BioSidebar({
                   onUpdateSection(section.id, { fullName: e.target.value })
                 }
                 placeholder="Enter full name"
-                className="border-tertiary-b focus:border-brand-b w-full rounded-[10px] border bg-white px-4 py-3 text-sm text-[#050505] transition-colors outline-none"
+                className="border-tertiary-b focus:border-brand-b w-full rounded-[10px] border bg-background px-4 py-3 text-sm text-[#050505] transition-colors outline-none"
               />
             </div>
 
@@ -157,7 +157,7 @@ export default function BioSidebar({
                 rows={5}
                 maxLength={200}
                 placeholder="Write a short bio..."
-                className="border-tertiary-b focus:border-brand-b w-full resize-none rounded-[10px] border bg-white px-4 py-3 text-sm text-[#050505] transition-colors outline-none"
+                className="border-tertiary-b focus:border-brand-b w-full resize-none rounded-[10px] border bg-background px-4 py-3 text-sm text-[#050505] transition-colors outline-none"
               />
               <p className="mt-1 text-right text-xs text-[#A2A2A2]">
                 {bio.length}/200
@@ -169,7 +169,7 @@ export default function BioSidebar({
               <label className="text-primary-text mb-2 block text-sm font-semibold">
                 Image
               </label>
-              <div className="border-tertiary-b flex overflow-hidden rounded-md border bg-white">
+              <div className="border-tertiary-b flex overflow-hidden rounded-md border bg-background">
                 {/* Left side — image / placeholder */}
                 <button
                   type="button"
@@ -255,7 +255,7 @@ export default function BioSidebar({
               <label className="text-primary-text mb-2 block text-sm font-semibold">
                 Buttons
               </label>
-              <div className="border-tertiary-b overflow-hidden rounded-[10px] border bg-white">
+              <div className="border-tertiary-b overflow-hidden rounded-[10px] border bg-background">
                 {/* Messages header */}
                 <div className="border-tertiary-b border-b px-4 py-3">
                   <p className="text-sm font-semibold text-[#050505]">
@@ -282,7 +282,7 @@ export default function BioSidebar({
 
                   {/* Dropdown menu */}
                   {buttonMenuOpen && (
-                    <div className="border-tertiary-b absolute top-full right-0 z-20 mt-1 w-36 overflow-hidden rounded-[10px] border bg-white shadow-lg">
+                    <div className="border-tertiary-b absolute top-full right-0 z-20 mt-1 w-36 overflow-hidden rounded-[10px] border bg-background shadow-lg">
                       <button
                         type="button"
                         onClick={() => setButtonMenuOpen(false)}

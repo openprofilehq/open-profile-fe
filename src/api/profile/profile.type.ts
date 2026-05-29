@@ -24,8 +24,9 @@ export type ProfileResponse = {
   bio: string | null;
   photoUrl: string | null;
   isPublished?: boolean;
-  templateType?: string | null;
+  templateType?: TemplateType | null;
   themeSettings?: unknown | null;
+  appearance?: ProfileAppearanceSettings | null;
   content?: ProfileContentDetails | null;
 };
 
@@ -34,7 +35,7 @@ export type DashboardProfileResponse = {
   fullName: string;
   bio: string | null;
   photoUrl: string | null;
-  templateType: string | null;
+  templateType: TemplateType | null;
   themeSettings: unknown | null;
   isPublished: boolean;
   hasUnpublishedChanges: boolean;
@@ -43,21 +44,49 @@ export type DashboardProfileResponse = {
   components: unknown[];
 };
 
+export type ValidateProfileLinkData = {
+  original: string;
+  sanitized: string;
+  encoded: string;
+};
+
 export type ProfileContentSectionBio = {
   visible: boolean;
   content: string;
 };
 
+export type TemplateType = "Professional" | "Creator" | "Portfolio" | "Default";
+
+export type LinkItem = {
+  id: string | number;
+  url?: string;
+  title?: string;
+  label?: string;
+  imageSrc?: string;
+  iconSrc?: string;
+  iconLabel?: string;
+};
+
+export type ProjectItem = {
+  id: string | number;
+  title?: string;
+  description?: string;
+  url?: string;
+  buttonText?: string;
+  imageSrc?: string;
+  highlighted?: boolean;
+};
+
 export type ProfileContentSectionLinks = {
   visible: boolean;
   sectionTitle: string;
-  items: Record<string, unknown>[];
+  items: LinkItem[];
 };
 
 export type ProfileContentSectionProjects = {
   visible: boolean;
   sectionTitle: string;
-  items: Record<string, unknown>[];
+  items: ProjectItem[];
 };
 
 export type ProfileContentSectionCta = {
@@ -125,16 +154,54 @@ export type PublishProfileResponse = {
   };
 };
 
-export type ProfileAppearanceRequest = {
+export type ProfileAppearanceFont =
+  | "afacad"
+  | "inter"
+  | "serif"
+  | "mono"
+  | "geologica"
+  | "manrope";
+
+export type ProfileAppearanceCornerStyle = "sharp" | "medium" | "round";
+
+export type ProfileAppearanceSettings = {
   template: string;
   accentColour: string;
-  font: string;
-  cornerStyle: "sharp" | "medium" | "round";
+  textColor?: string;
+  bgColor?: string;
+  font: ProfileAppearanceFont;
+  cornerStyle: ProfileAppearanceCornerStyle;
   spacing: number;
   theme: "light" | "dark";
+};
+
+export type ProfileAppearanceRequest = {
+  template?: string;
+  accentColour?: string;
+  font?: ProfileAppearanceFont;
+  cornerStyle?: ProfileAppearanceCornerStyle;
+  spacing?: number;
+  theme?: "light" | "dark";
 };
 
 export type ProfileAppearanceResponse = {
   status: string;
   message: string;
+};
+
+/**
+ * Response for GET /profiles/appearance.
+ *
+ * `appearance` is the canonical response field returned by the current backend.
+ * `data` is kept only as a temporary backwards-compatible fallback for older
+ * response shapes and should be removed once the migration is complete.
+ *
+ * Callers should always prefer `appearance` before falling back to `data`.
+ */
+export type GetProfileAppearanceResponse = {
+  status: string;
+  message?: string;
+  appearance?: ProfileAppearanceSettings | null;
+  /** @deprecated Use `appearance` instead. */
+  data?: ProfileAppearanceSettings | null;
 };

@@ -2,6 +2,7 @@ import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import type {
   UpsertDraftRequest,
   ProfileAppearanceRequest,
+  TemplateType,
 } from "./profile.type";
 import {
   createProfile,
@@ -12,18 +13,20 @@ import {
   upsertDraft,
   publishProfile,
   updateProfileAppearance,
+  getProfileAppearance,
 } from "./profile.service";
 import { isQueryEnabled } from "@/api/base/base.util";
 import { QueryStaleTime } from "@/api/base/base.const";
+import { QueryBaseKeys } from "@/constants/query-keys";
 
 export const createProfileOption = mutationOptions({
-  mutationKey: ["profile", "create"],
+  mutationKey: [QueryBaseKeys.profile, "create"],
   mutationFn: createProfile,
 });
 
 export function dashboardProfileOption() {
   return queryOptions({
-    queryKey: ["profile", "dashboard"],
+    queryKey: [QueryBaseKeys.profile, "dashboard"],
     queryFn: ({ signal }) => getDashboardProfile(signal),
     staleTime: QueryStaleTime.fiveMins,
   });
@@ -40,7 +43,7 @@ export function checkUsernameOption(username: string | undefined) {
 
 export function profileContentOption() {
   return queryOptions({
-    queryKey: ["profile", "content"],
+    queryKey: [QueryBaseKeys.profile, "content"],
     queryFn: ({ signal }) => getProfileContent(signal),
     staleTime: 0,
   });
@@ -48,14 +51,14 @@ export function profileContentOption() {
 
 export function draftStateOption() {
   return queryOptions({
-    queryKey: ["profile", "draft-state"],
+    queryKey: [QueryBaseKeys.profile, "draft-state"],
     queryFn: ({ signal }) => getDraftState(signal),
     staleTime: 0,
   });
 }
 
 export const upsertDraftOption = mutationOptions({
-  mutationKey: ["profile", "draft", "upsert"],
+  mutationKey: [QueryBaseKeys.profile, "draft", "upsert"],
   mutationFn: (variables: {
     data: UpsertDraftRequest;
     draftVersion?: string | null;
@@ -63,11 +66,57 @@ export const upsertDraftOption = mutationOptions({
 });
 
 export const publishProfileOption = mutationOptions({
-  mutationKey: ["profile", "publish"],
+  mutationKey: [QueryBaseKeys.profile, "publish"],
   mutationFn: publishProfile,
 });
 
+export function profileAppearanceOption() {
+  return queryOptions({
+    queryKey: [QueryBaseKeys.profile, "appearance"],
+    queryFn: ({ signal }) => getProfileAppearance(signal),
+    staleTime: QueryStaleTime.fiveMins,
+  });
+}
+
 export const updateProfileAppearanceOption = mutationOptions({
-  mutationKey: ["profile", "appearance", "update"],
+  mutationKey: [QueryBaseKeys.profile, "appearance", "update"],
   mutationFn: (data: ProfileAppearanceRequest) => updateProfileAppearance(data),
+});
+
+export const saveTemplateOption = mutationOptions({
+  mutationKey: [QueryBaseKeys.profile, "template", "save"],
+  mutationFn: async (templateType: TemplateType) => {
+    const template = templateType.toLowerCase();
+
+    let currentAppearance: Partial<ProfileAppearanceRequest> = {};
+    try {
+      const res = await getProfileAppearance();
+      currentAppearance = res?.appearance ?? res?.data ?? {};
+    } catch (e) {
+      console.warn(
+        "Could not fetch current appearance, proceeding with minimal payload",
+        e
+      );
+    }
+
+    const appearanceRes = await updateProfileAppearance({
+      ...currentAppearance,
+      template,
+    });
+
+    // Sync theme settings to the draft state ONLY if live appearance succeeds
+    // Treat draft sync as best-effort so partial failures do not block the UI
+    try {
+      await upsertDraft({
+        themeSettings: {
+          ...currentAppearance,
+          template,
+        },
+      });
+    } catch (error) {
+      console.warn("Failed to sync template settings to draft state:", error);
+    }
+
+    return { appearanceRes, templateType };
+  },
 });

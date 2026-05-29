@@ -187,7 +187,7 @@ export function Hero() {
         </div>
 
         {/* ───────────────── RIGHT COLUMN — desktop only ───────────────── */}
-        <div className="relative -ml-[10px] hidden w-full flex-1 overflow-visible lg:block">
+        <div className="relative ml-[-10px] hidden w-full flex-1 overflow-visible lg:block">
           {/* LEFT fade */}
           <div
             style={{

@@ -91,7 +91,7 @@ function MobileStepCard({ step }: { step: Step }) {
       <div className="relative z-10">
         <h3
           className={`pb-4 text-[32px] leading-[1.1] font-semibold tracking-[-0.03em] ${
-            step.titleColor === "teal" ? "text-[#S00798C]" : "text-[#202020]"
+            step.titleColor === "teal" ? "text-brand-text" : "text-primary-text"
           }`}
         >
           {step.title}

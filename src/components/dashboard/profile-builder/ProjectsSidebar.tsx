@@ -6,7 +6,16 @@ import { ChevronLeft, GripVertical, Trash2, Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ProjectItem, Section } from "./types";
 import { uploadImage } from "@/api/uploads/uploads.service";
+import { validateProfileLink } from "@/api/profile/profile.service";
 import { isValidUrl } from "./builder.utils";
+
+import { isApiError } from "@/api/base";
+
+const isLinkValidationError = (error: unknown) => {
+  if (!isApiError(error)) return false;
+
+  return error.status === 400 || error.status === 422;
+};
 
 interface ProjectsSidebarProps {
   returnTab: () => void;
@@ -52,6 +61,7 @@ export default function ProjectsSidebar({
   const [itemImage, setItemImage] = useState<string | null>(null);
   const [itemHighlighted, setItemHighlighted] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [validatingUrl, setValidatingUrl] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -140,18 +150,34 @@ export default function ProjectsSidebar({
     }
   };
 
-  const handleSaveProject = (e: React.FormEvent) => {
+  const handleSaveProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!itemTitle.trim() || !itemDesc.trim()) return;
 
-    if (itemUrl.trim() && !isValidUrl(itemUrl.trim())) {
-      setUrlError("Please enter a valid link (e.g. yoursite.com)");
-      return;
+    let validatedProjectUrl: string | undefined;
+
+    if (itemUrl.trim()) {
+      try {
+        setValidatingUrl(true);
+        setUrlError("");
+
+        const validatedLink = await validateProfileLink(itemUrl.trim());
+        validatedProjectUrl = validatedLink.encoded;
+      } catch (error) {
+        if (isLinkValidationError(error)) {
+          setUrlError("Please enter a valid link for the selected icon.");
+        } else {
+          console.error("[profile-builder] Link validation failed:", error);
+          setUrlError(
+            "Unable to verify link. Please check your connection and try again."
+          );
+        }
+      } finally {
+        setValidatingUrl(false);
+      }
     }
-    setUrlError("");
 
     if (editingProject) {
-      // Update existing project
       const updated = projects.map((p) =>
         p.id === editingProject.id
           ? {
@@ -159,7 +185,7 @@ export default function ProjectsSidebar({
               title: itemTitle.trim(),
               description: itemDesc.trim(),
               buttonText: itemButtonText.trim() || "View project",
-              url: itemUrl.trim() || undefined,
+              url: validatedProjectUrl,
               imageSrc: itemImage,
               highlighted: itemHighlighted,
             }
@@ -167,20 +193,18 @@ export default function ProjectsSidebar({
       );
       handleProjectsChange(updated);
     } else {
-      // Add new project
       const newProj: ProjectItem = {
         id: Math.random().toString(36).substring(2, 9),
         title: itemTitle.trim(),
         description: itemDesc.trim(),
         buttonText: itemButtonText.trim() || "View project",
-        url: itemUrl.trim() || undefined,
+        url: validatedProjectUrl,
         imageSrc: itemImage,
         highlighted: itemHighlighted,
       };
       handleProjectsChange([...projects, newProj]);
     }
 
-    // Go back to list tab
     setEditingProject(null);
     setSelectedTab("content");
   };
@@ -190,9 +214,9 @@ export default function ProjectsSidebar({
   }, [projects]);
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in flex h-full w-72.5 shrink-0 flex-col border bg-white shadow-sm duration-200 select-none">
+    <aside className="border-tertiary-b animate-in fade-in flex h-full w-72.5 shrink-0 flex-col rounded-2xl p-6 border bg-background shadow-sm duration-200 select-none">
       {/* Back Button */}
-      <div className="p-6 pb-4">
+      <div className="pb-4">
         <button
           onClick={returnTab}
           className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
@@ -242,7 +266,7 @@ export default function ProjectsSidebar({
       </div>
 
       {/* Sidebar Content */}
-      <div className="flex-1 overflow-y-auto p-4 pr-3.5">
+      <div className="flex-1 overflow-y-auto py-6 pr-1">
         {selectedTab === "content" ? (
           <div className="flex flex-col gap-6">
             {/* Layout Section */}
@@ -257,7 +281,7 @@ export default function ProjectsSidebar({
                     className={`group relative aspect-video overflow-hidden rounded-[8px] border-2 transition-all duration-200 outline-none focus:outline-none ${
                       layout === lay
                         ? "border-brand-b bg-transparent"
-                        : "border-[#EDEDED] bg-transparent hover:border-gray-300"
+                        : "border-border bg-transparent hover:border-gray-300"
                     }`}
                   >
                     <Image
@@ -279,7 +303,7 @@ export default function ProjectsSidebar({
                 value={sectionTitle}
                 onChange={(e) => handleTitleChange(e.target.value)}
                 placeholder="Selected Projects"
-                className="focus:border-brand-b focus:ring-brand-b w-full rounded-[10px] border border-[#EDEDED] px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:ring-1"
+                className="focus:border-brand-b focus:ring-brand-b w-full rounded-[10px] border border-border px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:ring-1"
               />
             </div>
 
@@ -294,7 +318,7 @@ export default function ProjectsSidebar({
                 maxLength={200}
                 placeholder="Add Text here"
                 rows={3}
-                className="focus:border-brand-b focus:ring-brand-b w-full resize-none rounded-[10px] border border-[#EDEDED] px-4 py-3 text-sm text-[#050505] outline-none focus:ring-1"
+                className="focus:border-brand-b focus:ring-brand-b w-full resize-none rounded-[10px] border border-border px-4 py-3 text-sm text-[#050505] outline-none focus:ring-1"
               />
               <p className="text-right text-[11px] text-[#A2A2A2]">
                 {sectionSubtitle.length}/200
@@ -302,7 +326,7 @@ export default function ProjectsSidebar({
             </div>
 
             {/* Highlight Section Toggle */}
-            {/* <div className="flex items-center justify-between rounded-[10px] border border-[#EDEDED] bg-white p-3.5">
+            {/* <div className="flex items-center justify-between rounded-[10px] border border-border bg-background p-3.5">
               <span className="text-sm font-bold text-[#050505]">
                 Highlight
               </span>
@@ -315,7 +339,7 @@ export default function ProjectsSidebar({
                   }
                   className="peer sr-only"
                 />
-                <div className="peer peer-checked:bg-brand-hover-bg h-6 w-11 rounded-full bg-gray-200 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white" />
+                <div className="peer peer-checked:bg-brand-hover-bg h-6 w-11 rounded-full bg-gray-200 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-background after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white" />
               </label>
             </div> */}
 
@@ -333,7 +357,7 @@ export default function ProjectsSidebar({
                   <div
                     key={proj.id}
                     onClick={() => handleEditProjectClick(proj)}
-                    className="group hover:border-brand-b/40 flex h-[50px] cursor-pointer items-center justify-between overflow-hidden rounded-[8px] border border-[#EDEDED] bg-white pl-4 transition-all"
+                    className="group hover:border-brand-b/40 flex h-[50px] cursor-pointer items-center justify-between overflow-hidden rounded-[8px] border border-border bg-background pl-4 transition-all"
                   >
                     <span className="flex-1 truncate text-sm font-semibold text-[#050505]">
                       {proj.title}
@@ -350,7 +374,7 @@ export default function ProjectsSidebar({
                       >
                         <Trash2 size={16} />
                       </button>
-                      <div className="flex h-full w-[50px] shrink-0 items-center justify-center border-l border-[#EDEDED] bg-[#F4F4F5] text-gray-400">
+                      <div className="flex h-full w-[50px] shrink-0 items-center justify-center border-l border-border bg-[#F4F4F5] text-gray-400">
                         <GripVertical size={16} />
                       </div>
                     </div>
@@ -361,12 +385,12 @@ export default function ProjectsSidebar({
                 <button
                   type="button"
                   onClick={handleAddNewProjectClick}
-                  className="hover:border-brand-b/60 flex h-[50px] w-full items-center justify-between overflow-hidden rounded-[8px] border border-[#EDEDED] bg-white pl-4 text-left transition-all"
+                  className="hover:border-brand-b/60 flex h-[50px] w-full items-center justify-between overflow-hidden rounded-[8px] border border-border bg-background pl-4 text-left transition-all"
                 >
                   <span className="text-sm font-semibold text-[#747474]">
                     Add Project
                   </span>
-                  <div className="flex h-full w-[50px] shrink-0 items-center justify-center border-l border-[#EDEDED] bg-[#F4F4F5] text-[#747474]">
+                  <div className="flex h-full w-[50px] shrink-0 items-center justify-center border-l border-border bg-[#F4F4F5] text-[#747474]">
                     <Plus size={16} />
                   </div>
                 </button>
@@ -383,7 +407,7 @@ export default function ProjectsSidebar({
                 value={itemTitle}
                 onChange={(e) => setItemTitle(e.target.value)}
                 placeholder="My Framework for Deep Work & Design"
-                className="focus:border-brand-b focus:ring-brand-b w-full rounded-[10px] border border-[#EDEDED] px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:ring-1"
+                className="focus:border-brand-b focus:ring-brand-b w-full rounded-[10px] border border-border px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:ring-1"
                 required
               />
             </div>
@@ -399,7 +423,7 @@ export default function ProjectsSidebar({
                 maxLength={100}
                 placeholder="A complete breakdown of..."
                 rows={4}
-                className="focus:border-brand-b focus:ring-brand-b w-full resize-none rounded-[10px] border border-[#EDEDED] px-4 py-3 text-sm text-[#050505] outline-none focus:ring-1"
+                className="focus:border-brand-b focus:ring-brand-b w-full resize-none rounded-[10px] border border-border px-4 py-3 text-sm text-[#050505] outline-none focus:ring-1"
                 required
               />
               <p className="text-right text-[11px] text-[#A2A2A2]">
@@ -418,7 +442,7 @@ export default function ProjectsSidebar({
                 className="hidden"
               />
 
-              <div className="flex h-[50px] overflow-hidden rounded-[8px] border border-[#EDEDED] bg-white">
+              <div className="flex h-[50px] overflow-hidden rounded-[8px] border border-border bg-background">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
@@ -454,7 +478,7 @@ export default function ProjectsSidebar({
                       fileInputRef.current?.click();
                     }
                   }}
-                  className="flex w-[50px] shrink-0 items-center justify-center border-l border-[#EDEDED] text-gray-400 transition-colors hover:bg-gray-50 hover:text-red-600"
+                  className="flex w-[50px] shrink-0 items-center justify-center border-l border-border text-gray-400 transition-colors hover:bg-gray-50 hover:text-red-600"
                 >
                   {itemImage ? <Trash2 size={16} /> : <Upload size={16} />}
                 </button>
@@ -466,18 +490,34 @@ export default function ProjectsSidebar({
               <label className="text-xs font-bold text-[#050505]">
                 Project URL
               </label>
-              <div className="flex flex-col overflow-hidden rounded-[10px] border border-[#EDEDED]">
+              <div className="flex flex-col overflow-hidden rounded-[10px] border border-border">
                 <input
                   type="text"
                   value={itemButtonText}
                   onChange={(e) => setItemButtonText(e.target.value)}
                   placeholder="View project"
-                  className="w-full border-b border-[#EDEDED] px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:bg-gray-50/30"
+                  className="w-full border-b border-border px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:bg-gray-50/30"
                 />
                 <input
                   type="text"
                   value={itemUrl}
-                  onChange={(e) => setItemUrl(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setItemUrl(val);
+                    if (urlError) {
+                      if (!val.trim() || isValidUrl(val.trim())) {
+                        setUrlError("");
+                      }
+                    }
+                  }}
+                  onBlur={(e) => {
+                    const val = e.target.value;
+                    if (val.trim() && !isValidUrl(val.trim())) {
+                      setUrlError("Please enter a valid link (e.g. yoursite.com)");
+                    } else {
+                      setUrlError("");
+                    }
+                  }}
                   placeholder="Paste link (e.g. yoursite.com)..."
                   className={`w-full px-4 py-3 text-sm outline-none focus:bg-gray-50/30 ${
                     urlError ? "text-red-500" : "text-gray-600"
@@ -488,7 +528,7 @@ export default function ProjectsSidebar({
             </div>
 
             {/* Project Item Highlight Toggle */}
-            {/* <div className="flex items-center justify-between rounded-[10px] border border-[#EDEDED] bg-white p-3.5">
+            {/* <div className="flex items-center justify-between rounded-[10px] border border-border bg-background p-3.5">
               <span className="text-sm font-bold text-[#050505]">
                 Highlight
               </span>
@@ -499,7 +539,7 @@ export default function ProjectsSidebar({
                   onChange={(e) => setItemHighlighted(e.target.checked)}
                   className="peer sr-only"
                 />
-                <div className="peer peer-checked:bg-brand-hover-bg h-6 w-11 rounded-full bg-gray-200 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white" />
+                <div className="peer peer-checked:bg-brand-hover-bg h-6 w-11 rounded-full bg-gray-200 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-background after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white" />
               </label>
             </div> */}
 
@@ -512,20 +552,27 @@ export default function ProjectsSidebar({
                   setEditingProject(null);
                   setSelectedTab("content");
                 }}
-                className="h-[46px] flex-1 rounded-[10px] border-[#EDEDED] font-semibold text-gray-500"
+                className="h-[46px] flex-1 rounded-[10px] border-border font-semibold text-gray-500"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                disabled={uploading || !itemTitle.trim() || !itemDesc.trim()}
+                disabled={
+                  uploading ||
+                  validatingUrl ||
+                  !itemTitle.trim() ||
+                  !itemDesc.trim()
+                }
                 className="bg-brand-hover-bg hover:bg-brand h-[46px] flex-1 rounded-[10px] font-semibold text-white disabled:opacity-50"
               >
-                {uploading
-                  ? "Uploading..."
-                  : editingProject
-                    ? "Update Project"
-                    : "Save Project"}
+                {validatingUrl
+                  ? "Validating..."
+                  : uploading
+                    ? "Uploading..."
+                    : editingProject
+                      ? "Update Project"
+                      : "Save Project"}
               </Button>
             </div>
           </form>

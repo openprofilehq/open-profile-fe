@@ -71,18 +71,18 @@ export default function DashboardSidebar({
             "--topbar-height": TOPBAR_HEIGHT,
           } as CSSProperties
         }
-        className={`fixed top-0 bottom-0 left-0 z-50 flex w-[210px] shrink-0 flex-col border-r border-[#EDEDED] bg-white transition-transform duration-300 sm:w-70 lg:sticky lg:top-[var(--topbar-height)] lg:z-30 lg:h-[calc(100vh-var(--topbar-height))] lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 flex w-[210px] shrink-0 flex-col border-r border-border bg-background transition-transform duration-300 sm:w-70 lg:sticky lg:top-(--topbar-height) lg:z-30 lg:h-[calc(100vh-var(--topbar-height))] lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-19 items-center justify-between border-b border-[#EDEDED] px-4 lg:hidden">
+        <div className="flex h-19 items-center justify-between border-b border-border px-4 lg:hidden">
           <span className="font-bold text-[#087583]">Menu</span>
 
           <button
             type="button"
             onClick={onClose}
             aria-label="Close dashboard menu"
-            className="cursor-pointer rounded-[8px] border border-[#EDEDED] p-2"
+            className="cursor-pointer rounded-[8px] border border-border p-2"
           >
             <X size={20} />
           </button>
