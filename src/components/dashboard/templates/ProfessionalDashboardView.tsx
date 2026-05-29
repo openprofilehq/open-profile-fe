@@ -44,7 +44,7 @@ export default function ProfessionalDashboardView({ profile, content }: Props) {
     : "/profile-preview/avatar.png";
 
   return (
-    <div className="text-primary-text bg-secondary-bg flex w-full flex-col font-sans antialiased">
+    <div className="text-primary-text flex w-full flex-col bg-white antialiased">
       <div className="mx-auto w-full max-w-5xl px-6 py-16 sm:py-24">
         {/* HEADER SECTION */}
         <header className="flex w-full flex-col justify-between gap-6 sm:flex-row sm:items-start">

@@ -4,7 +4,11 @@ const APP_BASE_URL = env.NEXT_PUBLIC_APP_BASE_URL;
 
 export function getProfileUrl(username?: string) {
   if (!username) return "";
-  return `${APP_BASE_URL.replace(/\/$/, "")}/${username}`;
+  const baseUrl =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : APP_BASE_URL.replace(/\/$/, "");
+  return `${baseUrl}/${username}`;
 }
 
 export function getDisplayUrl(url: string) {

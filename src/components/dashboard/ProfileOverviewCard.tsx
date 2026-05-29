@@ -172,6 +172,7 @@ export default function ProfileOverviewCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-brand-hover-bg text-right break-all hover:underline"
+                suppressHydrationWarning
               >
                 {getDisplayUrl(publicProfileUrl)}
               </a>
