@@ -7,9 +7,12 @@ import {
   Eye,
   EyeOff,
   Trash2,
+  MoreHorizontal,
+  ExternalLink,
 } from "lucide-react";
 import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
+import { TemplateLinkCard } from "../../shared/TemplateLinkCard";
 
 interface ProfessionalPreviewProps {
   sections: Section[];
@@ -32,39 +35,56 @@ export default function ProfessionalPreview({
   const ctaSection = sections.find((s) => s.type === "experience");
   const bioSectionId = bioSection?.id ?? "bio";
 
+  const renderControls = (section?: Section, isBio: boolean = false) => {
+    if (!section) return null;
+    return (
+      <div className="group/menu absolute -top-12 right-0 z-50">
+        <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
+          <MoreHorizontal size={18} />
+        </button>
+        
+        <div className="border-border bg-background absolute top-full right-0 mt-2 flex w-40 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all invisible group-hover/menu:visible group-hover/menu:opacity-100">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleSectionVisibility(section.id);
+            }}
+            className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors"
+          >
+            {section.visible ? (
+              <><EyeOff size={16} /> Hide Section</>
+            ) : (
+              <><Eye size={16} /> Show Section</>
+            )}
+          </button>
+          <button
+            onClick={(e) => {
+              if (!isBio) {
+                e.stopPropagation();
+                onRemoveSection(section.id);
+              }
+            }}
+            disabled={isBio}
+            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? 'text-negative-text opacity-50 cursor-not-allowed' : 'text-negative-text hover:bg-negative-bg/20'}`}
+          >
+            <Trash2 size={16} /> Delete
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="text-primary-text mx-auto flex w-full max-w-4xl flex-col py-8 pt-12">
+    <div className="text-primary-text mx-auto flex w-full max-w-4xl flex-col py-8 pt-6">
       {/* HEADER SECTION (Bio) */}
       <div
-        className={`group relative mb-12 transition-opacity duration-200 ${selectedSectionId && selectedSectionId !== bioSectionId ? "opacity-50" : ""}`}
+        className="group relative mb-12 transition-opacity duration-200"
       >
-        {bioSection && (
-          <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleSectionVisibility(bioSection.id);
-              }}
-              className="text-secondary-text transition-opacity hover:opacity-80"
-            >
-              {bioSection.visible ? (
-                <Eye size={18} strokeWidth={2} />
-              ) : (
-                <EyeOff size={18} strokeWidth={2} />
-              )}
-            </button>
-            <button
-              disabled
-              className="text-secondary-text cursor-not-allowed opacity-50"
-            >
-              <Trash2 size={18} strokeWidth={2} />
-            </button>
-          </div>
-        )}
+        {renderControls(bioSection, true)}
 
         <header className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between gap-6 rounded-2xl border border-transparent p-6 transition-colors sm:flex-row sm:items-start">
           <div className="flex items-center gap-6">
-            <div className="border-border bg-secondary-bg relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-full border">
+            <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
               {getImageUrl(profile?.photoUrl) ? (
                 <Image
                   src={getImageUrl(profile?.photoUrl) || ""}
@@ -74,12 +94,10 @@ export default function ProfessionalPreview({
                   unoptimized
                 />
               ) : (
-                <div className="text-brand-text flex h-full items-center justify-center text-3xl font-bold">
+                <div className="text-brand-text flex h-full items-center justify-center text-[40px] font-bold">
                   {(profile?.fullName || "M").charAt(0).toUpperCase()}
                 </div>
               )}
-              {/* Online indicator dot */}
-              <div className="border-background absolute right-1 bottom-1 h-3.5 w-3.5 rounded-full border-2 bg-green-500" />
             </div>
 
             <div className="flex flex-col">
@@ -112,65 +130,23 @@ export default function ProfessionalPreview({
       {/* LINKS SECTION */}
       {linksSection && (
         <section
-          className={`group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors ${selectedSectionId && selectedSectionId !== linksSection.id ? "opacity-50" : ""}`}
+          className="group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors"
         >
-          <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleSectionVisibility(linksSection.id);
-              }}
-              className="text-secondary-text hover:opacity-80"
-            >
-              {linksSection.visible ? (
-                <Eye size={18} strokeWidth={2} />
-              ) : (
-                <EyeOff size={18} strokeWidth={2} />
-              )}
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemoveSection(linksSection.id);
-              }}
-              className="text-negative-text hover:opacity-80"
-            >
-              <Trash2 size={18} strokeWidth={2} />
-            </button>
-          </div>
+          {renderControls(linksSection)}
 
           <h2 className="text-tertiary-text mb-4 text-[13px]">
             {linksSection.subtitle || "Links"}
           </h2>
-          <div className="flex flex-col">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {linksSection.links && linksSection.links.length > 0 ? (
-              linksSection.links.map((link, idx) => {
-                const displayUrl =
-                  link.url
-                    ?.replace(/^https?:\/\/(www\.)?/, "")
-                    ?.replace(/\/$/, "") || "link";
-                return (
-                  <a
-                    key={link.id}
-                    href={sanitizeUrl(link.url)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`group/link hover:bg-hover-bg flex items-center justify-between py-4 transition-colors ${
-                      idx === 0
-                        ? "border-border border-y"
-                        : "border-border border-b"
-                    }`}
-                  >
-                    <span className="text-primary-text text-[15px] font-bold">
-                      {link.title || link.label}
-                    </span>
-                    <span className="text-secondary-text group-hover/link:text-brand-hover-bg flex items-center gap-2 text-[14px] transition-colors">
-                      {displayUrl}
-                      <LinkIcon size={14} />
-                    </span>
-                  </a>
-                );
-              })
+              linksSection.links.map((link) => (
+                <TemplateLinkCard
+                  key={link.id}
+                  id={link.id}
+                  title={link.title || link.label || ""}
+                  url={sanitizeUrl(link.url || "")}
+                />
+              ))
             ) : (
               <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
                 No links added yet.
@@ -183,32 +159,9 @@ export default function ProfessionalPreview({
       {/* PROJECTS SECTION */}
       {projectsSection && (
         <section
-          className={`group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors ${selectedSectionId && selectedSectionId !== projectsSection.id ? "opacity-50" : ""}`}
+          className="group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors"
         >
-          <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleSectionVisibility(projectsSection.id);
-              }}
-              className="text-secondary-text hover:opacity-80"
-            >
-              {projectsSection.visible ? (
-                <Eye size={18} strokeWidth={2} />
-              ) : (
-                <EyeOff size={18} strokeWidth={2} />
-              )}
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemoveSection(projectsSection.id);
-              }}
-              className="text-negative-text hover:opacity-80"
-            >
-              <Trash2 size={18} strokeWidth={2} />
-            </button>
-          </div>
+          {renderControls(projectsSection)}
 
           <h2 className="text-tertiary-text mb-4 text-[13px]">
             {projectsSection.subtitle || "Selected Work"}
@@ -218,7 +171,7 @@ export default function ProfessionalPreview({
               projectsSection.projects.map((project) => (
                 <div
                   key={project.id}
-                  className="border-border bg-background flex flex-col items-start rounded-xl border p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
+                  className="border-border bg-background flex flex-col items-start rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
                 >
                   <div className="bg-secondary-bg border-border relative mb-4 h-[80px] w-full shrink-0 overflow-hidden rounded-lg border sm:mb-0 sm:w-[120px]">
                     {getImageUrl(project.imageSrc) ? (
@@ -268,32 +221,9 @@ export default function ProfessionalPreview({
       {/* CTA SECTION */}
       {ctaSection && (
         <section
-          className={`group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors ${selectedSectionId && selectedSectionId !== ctaSection.id ? "opacity-50" : ""}`}
+          className="group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors"
         >
-          <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleSectionVisibility(ctaSection.id);
-              }}
-              className="text-secondary-text hover:opacity-80"
-            >
-              {ctaSection.visible ? (
-                <Eye size={18} strokeWidth={2} />
-              ) : (
-                <EyeOff size={18} strokeWidth={2} />
-              )}
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemoveSection(ctaSection.id);
-              }}
-              className="text-negative-text hover:opacity-80"
-            >
-              <Trash2 size={18} strokeWidth={2} />
-            </button>
-          </div>
+          {renderControls(ctaSection)}
 
           <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
             {ctaSection.title || "Open to new projects."}

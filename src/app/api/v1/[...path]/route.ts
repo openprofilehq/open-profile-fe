@@ -92,8 +92,12 @@ async function proxyRequest(
   let loginSuccess = false;
   for (const cookieStr of setCookies) {
     const { name, value, cookieOptions } = parseSetCookie(cookieStr);
+    
+    // Ensure path is "/" so cookies are accessible on /api/internal endpoints
+    cookieOptions.path = "/";
+    
     response.cookies.set(name, value, cookieOptions);
-    if (name === "accessToken") loginSuccess = true;
+    if (name === "accessToken" || name === "_at") loginSuccess = true;
   }
 
   if (loginSuccess) {

@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
-import { Mail, Link as LinkIcon, ArrowRight } from "lucide-react";
+import { Mail, ArrowRight, ExternalLink } from "lucide-react";
+import { TemplateLinkCard } from "../shared/TemplateLinkCard";
 import {
   DashboardProfileResponse,
   ProfileContentResponse,
@@ -72,25 +73,29 @@ export default function ProfessionalDashboardView({ profile, content }: Props) {
   const photoSrc = rawPhotoSrc
     ? rawPhotoSrc.startsWith("/profile-preview/")
       ? rawPhotoSrc
-      : getImageUrl(rawPhotoSrc)!
-    : "/profile-preview/avatar.png";
+      : getImageUrl(rawPhotoSrc)
+    : null;
 
   return (
     <div className="text-primary-text bg-secondary-bg flex w-full flex-col font-sans antialiased">
-      <div className="mx-auto w-full max-w-5xl px-6 py-16 sm:py-24">
+      <div className="mx-auto w-full max-w-5xl px-6 pb-16 sm:pb-24">
         {/* HEADER SECTION */}
         <header className="flex w-full flex-col justify-between gap-6 sm:flex-row sm:items-start">
           <div className="flex items-center gap-6">
-            <div className="border-border bg-secondary-bg relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-full border">
-              <Image
-                src={photoSrc}
-                alt={name}
-                fill
-                className="object-cover"
-                unoptimized
-              />
-              {/* Online indicator dot */}
-              <div className="border-background absolute right-1 bottom-1 h-3.5 w-3.5 rounded-full border-2 bg-green-500" />
+            <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
+              {photoSrc ? (
+                <Image
+                  src={photoSrc}
+                  alt={name}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-brand-subtle-bg text-[40px] font-bold text-brand-hover-bg">
+                  {name.charAt(0).toUpperCase()}
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col">
@@ -123,36 +128,15 @@ export default function ProfessionalDashboardView({ profile, content }: Props) {
         {details?.links?.visible !== false && links.length > 0 && (
           <section className="mt-16 w-full">
             <h2 className="text-tertiary-text mb-4 text-[13px]">Links</h2>
-            <div className="flex flex-col">
-              {links.map((link, idx) => {
-                // Strip protocols and www for a cleaner display URL
-                const displayUrl =
-                  link.url
-                    ?.replace(/^https?:\/\/(www\.)?/, "")
-                    ?.replace(/\/$/, "") || "link";
-
-                return (
-                  <a
-                    key={link.id}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`group hover:bg-hover-bg flex items-center justify-between py-4 transition-colors ${
-                      idx === 0
-                        ? "border-border border-y"
-                        : "border-border border-b"
-                    }`}
-                  >
-                    <span className="text-primary-text text-[15px] font-bold">
-                      {link.title || link.label}
-                    </span>
-                    <span className="text-secondary-text group-hover:text-brand-hover-bg flex items-center gap-2 text-[14px] transition-colors">
-                      {displayUrl}
-                      <LinkIcon size={14} />
-                    </span>
-                  </a>
-                );
-              })}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {links.map((link) => (
+                <TemplateLinkCard
+                  key={link.id}
+                  id={link.id}
+                  title={link.title || link.label || ""}
+                  url={link.url || ""}
+                />
+              ))}
             </div>
           </section>
         )}
@@ -167,7 +151,7 @@ export default function ProfessionalDashboardView({ profile, content }: Props) {
               {projects.map((project) => (
                 <div
                   key={project.id}
-                  className="border-border bg-background flex flex-col items-start rounded-xl border p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
+                  className="border-border bg-background flex flex-col items-start rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
                 >
                   <div className="bg-secondary-bg border-border relative mb-4 h-[80px] w-full shrink-0 overflow-hidden rounded-lg border sm:mb-0 sm:w-[120px]">
                     {project.imageSrc ? (

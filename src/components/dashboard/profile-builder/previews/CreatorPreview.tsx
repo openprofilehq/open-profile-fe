@@ -1,18 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Eye, EyeOff, Trash2, MessageSquare } from "lucide-react";
-import { getImageUrl } from "@/utils/profile";
+import { Eye, EyeOff, Trash2, MessageSquare, ArrowRight, MoreHorizontal, ExternalLink } from "lucide-react";
+import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
-import {
-  XIcon,
-  InstagramIcon,
-  LinkedInIcon,
-  GithubIcon,
-  YoutubeIcon,
-  FacebookIcon,
-  DribbbleIcon,
-  GlobeIcon,
-} from "@/components/icons/BrandIcons";
+import { TemplateLinkCard, getLinkIcon } from "../../shared/TemplateLinkCard";
+
 
 interface CreatorPreviewProps {
   sections: Section[];
@@ -21,19 +13,6 @@ interface CreatorPreviewProps {
   onToggleSectionVisibility: (id: string) => void;
   onRemoveSection: (id: string) => void;
 }
-
-const getIconForUrl = (url: string = "") => {
-  const lowerUrl = url.toLowerCase();
-  if (lowerUrl.includes("twitter.com") || lowerUrl.includes("x.com"))
-    return XIcon;
-  if (lowerUrl.includes("instagram.com")) return InstagramIcon;
-  if (lowerUrl.includes("linkedin.com")) return LinkedInIcon;
-  if (lowerUrl.includes("github.com")) return GithubIcon;
-  if (lowerUrl.includes("youtube.com")) return YoutubeIcon;
-  if (lowerUrl.includes("facebook.com")) return FacebookIcon;
-  if (lowerUrl.includes("dribbble.com")) return DribbbleIcon;
-  return GlobeIcon;
-};
 
 export default function CreatorPreview({
   sections,
@@ -62,6 +41,45 @@ export default function CreatorPreview({
   const ctaSection = sections.find((s) => s.type === "experience");
   const bioSectionId = bioSection?.id ?? "bio";
 
+  const renderControls = (section?: Section, isBio: boolean = false) => {
+    if (!section) return null;
+    return (
+      <div className="group/menu absolute -top-12 right-0 z-50">
+        <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
+          <MoreHorizontal size={18} />
+        </button>
+        
+        <div className="border-border bg-background absolute top-full right-0 mt-2 flex w-40 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all invisible group-hover/menu:visible group-hover/menu:opacity-100">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleSectionVisibility(section.id);
+            }}
+            className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors"
+          >
+            {section.visible ? (
+              <><EyeOff size={16} /> Hide Section</>
+            ) : (
+              <><Eye size={16} /> Show Section</>
+            )}
+          </button>
+          <button
+            onClick={(e) => {
+              if (!isBio) {
+                e.stopPropagation();
+                onRemoveSection(section.id);
+              }
+            }}
+            disabled={isBio}
+            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? 'text-negative-text opacity-50 cursor-not-allowed' : 'text-negative-text hover:bg-negative-bg/20'}`}
+          >
+            <Trash2 size={16} /> Delete
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   // Filter links for the header social row in Creator layout
   const allLinks = linksSection?.links || [];
   const socialLinks = allLinks
@@ -85,30 +103,8 @@ export default function CreatorPreview({
       {(!selectedSectionId ||
         selectedSectionId === bioSectionId ||
         selectedSectionId === ctaSection?.id) && (
-        <div className="relative mt-8 flex w-full flex-col items-center gap-4 p-6 text-center">
-          {bioSection && (
-            <div className="border-border bg-background absolute top-2 right-2 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleSectionVisibility(bioSection.id);
-                }}
-                className="text-secondary-text transition-opacity hover:opacity-80"
-              >
-                {bioSection.visible ? (
-                  <Eye size={18} strokeWidth={2} />
-                ) : (
-                  <EyeOff size={18} strokeWidth={2} />
-                )}
-              </button>
-              <button
-                disabled
-                className="text-secondary-text cursor-not-allowed opacity-50"
-              >
-                <Trash2 size={18} strokeWidth={2} />
-              </button>
-            </div>
-          )}
+        <div className="relative mt-6 flex w-full flex-col items-center gap-4 p-6 text-center">
+          {renderControls(bioSection, true)}
 
           <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
             {getImageUrl(profile?.photoUrl) ? (
@@ -120,23 +116,15 @@ export default function CreatorPreview({
                 unoptimized
               />
             ) : (
-              <div className="text-brand-text flex h-full items-center justify-center text-3xl font-bold">
+              <div className="text-brand-text flex h-full items-center justify-center text-[40px] font-bold">
                 {(profile?.fullName || "M").charAt(0).toUpperCase()}
               </div>
             )}
-            <div className="border-background absolute right-[6px] bottom-[6px] h-4 w-4 rounded-full border-2 bg-green-400" />
           </div>
 
           <div className="flex flex-col items-center">
             <h1 className="text-primary-text flex items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
               {profile?.fullName || "Micaela Robinson"}
-              <svg
-                className="text-brand-hover-bg h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z" />
-              </svg>
             </h1>
             <p className="text-secondary-text mt-1 text-[15px]">
               openprofile.app/{profile?.username || "micaela"}
@@ -146,13 +134,12 @@ export default function CreatorPreview({
           {socialLinks.length > 0 && (
             <div className="mt-2 flex items-center gap-4">
               {socialLinks.map((link, i) => {
-                const Icon = getIconForUrl(link.url);
                 return (
                   <div
                     key={i}
                     className="text-secondary-text transition-colors"
                   >
-                    <Icon className="h-5 w-5" />
+                    {getLinkIcon((link.url || "") + " " + (link.title || link.label || ""))}
                   </div>
                 );
               })}
@@ -161,29 +148,38 @@ export default function CreatorPreview({
 
           {ctaSection && ctaSection.visible && (
             <div className="group relative mt-4">
-              <div className="border-border bg-background absolute -top-12 -right-12 z-10 flex items-center gap-2 rounded-[10px] border p-2 opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onToggleSectionVisibility(ctaSection.id);
-                  }}
-                  className="text-secondary-text p-1 transition-opacity hover:opacity-80"
-                >
-                  {ctaSection.visible ? (
-                    <Eye size={16} />
-                  ) : (
-                    <EyeOff size={16} />
-                  )}
+              <div className="group/menu absolute -top-8 left-1/2 z-50 -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100">
+                <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
+                  <MoreHorizontal size={16} />
                 </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRemoveSection(ctaSection.id);
-                  }}
-                  className="text-negative-text p-1 transition-opacity hover:opacity-80"
-                >
-                  <Trash2 size={16} />
-                </button>
+                
+                <div className="border-border bg-background absolute top-full left-1/2 mt-2 flex w-36 -translate-x-1/2 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all invisible group-hover/menu:visible group-hover/menu:opacity-100">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleSectionVisibility(ctaSection.id);
+                    }}
+                    className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-3 py-2 text-[13px] font-medium transition-colors"
+                  >
+                    {ctaSection.visible ? (
+                      <><EyeOff size={14} /> Hide</>
+                    ) : (
+                      <><Eye size={14} /> Show</>
+                    )}
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      if (ctaSection.type !== "bio") {
+                        e.stopPropagation();
+                        onRemoveSection(ctaSection.id);
+                      }
+                    }}
+                    disabled={ctaSection.type === "bio"}
+                    className={`flex w-full items-center gap-3 px-3 py-2 text-[13px] font-medium transition-colors ${ctaSection.type === 'bio' ? 'text-negative-text opacity-50 cursor-not-allowed' : 'text-negative-text hover:bg-negative-bg/20'}`}
+                  >
+                    <Trash2 size={14} /> Delete
+                  </button>
+                </div>
               </div>
               <a
                 href="#"
@@ -209,7 +205,7 @@ export default function CreatorPreview({
             >
               Projects
               {activeTab === "projects" && (
-                <span className="bg-brand-hover-bg absolute right-0 bottom-[-1px] left-0 h-[2px]" />
+                <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
               )}
             </button>
             <button
@@ -218,7 +214,7 @@ export default function CreatorPreview({
             >
               Links
               {activeTab === "links" && (
-                <span className="bg-brand-hover-bg absolute right-0 bottom-[-1px] left-0 h-[2px]" />
+                <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
               )}
             </button>
             <button
@@ -227,7 +223,7 @@ export default function CreatorPreview({
             >
               About
               {activeTab === "about" && (
-                <span className="bg-brand-hover-bg absolute right-0 bottom-[-1px] left-0 h-[2px]" />
+                <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
               )}
             </button>
           </div>
@@ -247,36 +243,13 @@ export default function CreatorPreview({
               if (section.type === "projects" && activeTab === "projects") {
                 return (
                   <div key={section.id} className="relative w-full">
-                    <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onToggleSectionVisibility(section.id);
-                        }}
-                        className="text-secondary-text hover:opacity-80"
-                      >
-                        {section.visible ? (
-                          <Eye size={18} />
-                        ) : (
-                          <EyeOff size={18} />
-                        )}
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onRemoveSection(section.id);
-                        }}
-                        className="text-negative-text hover:opacity-80"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
+                    {renderControls(section)}
                     {section.projects && section.projects.length > 0 ? (
                       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                         {section.projects.map((project) => (
                           <div
                             key={project.id}
-                            className="border-border bg-background flex flex-col overflow-hidden rounded-2xl border transition-shadow"
+                            className="border-border bg-background flex flex-col overflow-hidden rounded-[12px] border transition-shadow"
                           >
                             <div className="bg-secondary-bg relative h-[160px] w-full shrink-0">
                               {getImageUrl(project.imageSrc) ? (
@@ -323,68 +296,20 @@ export default function CreatorPreview({
                 return (
                   <div
                     key={section.id}
-                    className="relative mx-auto flex w-full max-w-xl flex-col gap-4"
+                    className="relative mx-auto flex w-full flex-col gap-4"
                   >
-                    <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onToggleSectionVisibility(section.id);
-                        }}
-                        className="text-secondary-text hover:opacity-80"
-                      >
-                        {section.visible ? (
-                          <Eye size={18} />
-                        ) : (
-                          <EyeOff size={18} />
-                        )}
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onRemoveSection(section.id);
-                        }}
-                        className="text-negative-text hover:opacity-80"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
+                    {renderControls(section)}
                     {allLinks.length > 0 ? (
-                      allLinks.map((link) => {
-                        const Icon = getIconForUrl(link.url);
-                        const isWebsite =
-                          !link.url?.includes("twitter") &&
-                          !link.url?.includes("instagram") &&
-                          !link.url?.includes("linkedin") &&
-                          !link.url?.includes("facebook") &&
-                          !link.url?.includes("youtube") &&
-                          !link.url?.includes("github");
-                        const subtitle = isWebsite
-                          ? link.url
-                              ?.replace(/^https?:\/\/(www\.)?/, "")
-                              ?.replace(/\/$/, "")
-                          : `@${profile?.username}`;
-                        return (
-                          <div
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full">
+                        {allLinks.map((link) => (
+                          <TemplateLinkCard
                             key={link.id}
-                            className="border-border bg-background flex items-center justify-between rounded-2xl border p-4 sm:px-6"
-                          >
-                            <div className="flex items-center gap-4">
-                              <div className="bg-brand-light-subtle-bg text-brand-hover-bg flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
-                                <Icon className="h-5 w-5" />
-                              </div>
-                              <div className="flex flex-col">
-                                <span className="text-primary-text text-[15px] font-bold">
-                                  {link.title || link.label}
-                                </span>
-                                <span className="text-tertiary-text text-[13px]">
-                                  {subtitle}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })
+                            id={link.id}
+                            title={link.title || link.label || ""}
+                            url={link.url ? sanitizeUrl(link.url) : "#"}
+                          />
+                        ))}
+                      </div>
                     ) : (
                       <p className="text-tertiary-text border-border rounded-xl border border-dashed py-8 text-center text-sm">
                         No links added yet.
@@ -399,7 +324,7 @@ export default function CreatorPreview({
                 return (
                   <div
                     key={section.id}
-                    className="border-border bg-background mx-auto max-w-2xl rounded-3xl border p-8 sm:p-10"
+                    className="border-border mx-auto max-w-2xl rounded-3xl border p-8 sm:p-10"
                   >
                     <p className="text-secondary-text text-center text-[15px] leading-relaxed whitespace-pre-wrap">
                       {section.bio ||

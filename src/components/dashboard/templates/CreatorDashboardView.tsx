@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Mail, ArrowRight } from "lucide-react";
+import { Mail, ArrowRight, ExternalLink } from "lucide-react";
+import { TemplateLinkCard, getLinkIcon } from "../shared/TemplateLinkCard";
 import {
   DashboardProfileResponse,
   ProfileContentResponse,
@@ -11,16 +12,7 @@ import {
 } from "@/api/profile/profile.type";
 import { getImageUrl } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
-import {
-  XIcon,
-  InstagramIcon,
-  LinkedInIcon,
-  GithubIcon,
-  YoutubeIcon,
-  FacebookIcon,
-  DribbbleIcon,
-  GlobeIcon,
-} from "@/components/icons/BrandIcons";
+
 
 type Props = {
   profile?: DashboardProfileResponse;
@@ -73,19 +65,6 @@ const DEFAULT_PROJECTS = [
   },
 ] as ProjectItem[];
 
-const getIconForUrl = (url: string = "") => {
-  const lowerUrl = url.toLowerCase();
-  if (lowerUrl.includes("twitter.com") || lowerUrl.includes("x.com"))
-    return XIcon;
-  if (lowerUrl.includes("instagram.com")) return InstagramIcon;
-  if (lowerUrl.includes("linkedin.com")) return LinkedInIcon;
-  if (lowerUrl.includes("github.com")) return GithubIcon;
-  if (lowerUrl.includes("youtube.com")) return YoutubeIcon;
-  if (lowerUrl.includes("facebook.com")) return FacebookIcon;
-  if (lowerUrl.includes("dribbble.com")) return DribbbleIcon;
-  return GlobeIcon;
-};
-
 export default function CreatorDashboardView({ profile, content }: Props) {
   const [activeTab, setActiveTab] = useState<"projects" | "links" | "about">(
     "projects"
@@ -113,8 +92,8 @@ export default function CreatorDashboardView({ profile, content }: Props) {
   const photoSrc = rawPhotoSrc
     ? rawPhotoSrc.startsWith("/profile-preview/")
       ? rawPhotoSrc
-      : getImageUrl(rawPhotoSrc)!
-    : "/profile-preview/avatar.png";
+      : getImageUrl(rawPhotoSrc)
+    : null;
 
   const socialLinks = links
     .filter((link) => {
@@ -131,30 +110,29 @@ export default function CreatorDashboardView({ profile, content }: Props) {
     })
     .slice(0, 4);
   return (
-    <div className="text-primary-text bg-primary-bg flex min-h-screen w-full flex-col font-sans antialiased">
+    <div className="text-primary-text flex min-h-screen w-full flex-col font-sans antialiased">
       <div className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-24">
         <header className="flex w-full flex-col items-center gap-4 text-center">
-          <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
-            <Image
-              src={photoSrc}
-              alt={name}
-              fill
-              className="object-cover"
-              unoptimized
-            />
-            <div className="border-background absolute right-[6px] bottom-[6px] h-4 w-4 rounded-full border-2 bg-green-400" />
+          <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
+            {photoSrc ? (
+              <Image
+                src={photoSrc}
+                alt={name}
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-brand-subtle-bg text-[40px] font-bold text-brand-hover-bg">
+                {name.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div className="border-background absolute right-[10px] bottom-[10px] h-6 w-6 rounded-full border-4 bg-green-400" />
           </div>
 
           <div className="flex flex-col items-center">
             <h1 className="text-primary-text flex items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
               {name}
-              <svg
-                className="text-brand-hover-bg h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z" />
-              </svg>
             </h1>
             <p className="text-secondary-text mt-1 text-[15px]">
               openprofile.app/{username}
@@ -164,7 +142,6 @@ export default function CreatorDashboardView({ profile, content }: Props) {
           {socialLinks.length > 0 && (
             <div className="mt-2 flex items-center gap-4">
               {socialLinks.map((link, i) => {
-                const Icon = getIconForUrl(link.url);
                 return (
                   <a
                     key={i}
@@ -173,7 +150,7 @@ export default function CreatorDashboardView({ profile, content }: Props) {
                     rel="noopener noreferrer"
                     className="text-secondary-text hover:text-primary-text transition-colors"
                   >
-                    <Icon className="h-5 w-5" />
+                    {getLinkIcon((link.url || "") + " " + (link.title || link.label || ""))}
                   </a>
                 );
               })}
@@ -201,7 +178,7 @@ export default function CreatorDashboardView({ profile, content }: Props) {
           >
             Projects
             {activeTab === "projects" && (
-              <span className="bg-brand-hover-bg absolute right-0 bottom-[-1px] left-0 h-[2px]" />
+              <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
             )}
           </button>
           <button
@@ -210,7 +187,7 @@ export default function CreatorDashboardView({ profile, content }: Props) {
           >
             Links
             {activeTab === "links" && (
-              <span className="bg-brand-hover-bg absolute right-0 bottom-[-1px] left-0 h-[2px]" />
+              <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
             )}
           </button>
           <button
@@ -219,7 +196,7 @@ export default function CreatorDashboardView({ profile, content }: Props) {
           >
             About
             {activeTab === "about" && (
-              <span className="bg-brand-hover-bg absolute right-0 bottom-[-1px] left-0 h-[2px]" />
+              <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
             )}
           </button>
         </div>
@@ -231,7 +208,7 @@ export default function CreatorDashboardView({ profile, content }: Props) {
               {projects.map((project) => (
                 <div
                   key={project.id}
-                  className="border-border bg-background flex flex-col overflow-hidden rounded-2xl border transition-shadow hover:shadow-md"
+                  className="border-border bg-background flex flex-col overflow-hidden rounded-[12px] border transition-shadow hover:shadow-md"
                 >
                   <div className="bg-secondary-bg relative h-[200px] w-full shrink-0">
                     {project.imageSrc ? (
@@ -277,52 +254,22 @@ export default function CreatorDashboardView({ profile, content }: Props) {
           )}
 
           {activeTab === "links" && (
-            <div className="mx-auto flex max-w-xl flex-col gap-4">
-              {links.map((link) => {
-                const Icon = getIconForUrl(link.url);
-                const isWebsite =
-                  !link.url?.includes("twitter") &&
-                  !link.url?.includes("instagram") &&
-                  !link.url?.includes("linkedin") &&
-                  !link.url?.includes("facebook") &&
-                  !link.url?.includes("youtube") &&
-                  !link.url?.includes("github");
-                const subtitle = isWebsite
-                  ? link.url
-                      ?.replace(/^https?:\/\/(www\.)?/, "")
-                      ?.replace(/\/$/, "")
-                  : `@${username}`;
-
-                return (
-                  <a
+            <div className="mx-auto flex w-full flex-col gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full">
+                {links.map((link) => (
+                  <TemplateLinkCard
                     key={link.id}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group border-border bg-background hover:border-brand-hover-bg flex items-center justify-between rounded-2xl border p-4 transition-all hover:shadow-sm sm:px-6"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="bg-brand-light-subtle-bg text-brand-hover-bg flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
-                        <Icon className="h-5 w-5" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-primary-text text-[15px] font-bold">
-                          {link.title || link.label}
-                        </span>
-                        <span className="text-tertiary-text text-[13px]">
-                          {subtitle}
-                        </span>
-                      </div>
-                    </div>
-                    <ArrowRight className="text-tertiary-text group-hover:text-brand-hover-bg h-5 w-5 transition-transform group-hover:translate-x-1" />
-                  </a>
-                );
-              })}
+                    id={link.id}
+                    title={link.title || link.label || ""}
+                    url={link.url || ""}
+                  />
+                ))}
+              </div>
             </div>
           )}
 
           {activeTab === "about" && (
-            <div className="border-border bg-background mx-auto max-w-2xl rounded-3xl border p-8 sm:p-12">
+            <div className="border-border bg-background mx-auto max-w-2xl rounded-[12px] border p-8 sm:p-12">
               <p className="text-secondary-text text-center text-[16px] leading-relaxed whitespace-pre-wrap">
                 {bio}
               </p>

@@ -33,7 +33,7 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
 
   return (
     <div
-      className={`animate-in fade-in flex h-full min-h-0 flex-1 justify-center overflow-y-auto px-4 transition-colors duration-200 lg:px-12 ${isDark ? "bg-inverse-bg" : "bg-transparent"} ${selectedFontClass}`}
+      className={`animate-in fade-in flex h-full min-h-0 flex-1 justify-center overflow-y-auto px-4 py-12 transition-colors duration-200 lg:px-4 ${isDark ? "bg-inverse-bg" : "bg-transparent"} ${selectedFontClass}`}
     >
       <div className="flex w-full max-w-5xl flex-col gap-6 pb-32">
         {props.template === "creator" && <CreatorPreview {...props} />}
