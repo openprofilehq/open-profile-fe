@@ -307,7 +307,7 @@ export default function CreatorDashboardView({ profile, content }: Props) {
                       </div>
                       <div className="flex flex-col">
                         <span className="text-primary-text text-[15px] font-bold">
-                          {link.title}
+                          {link.title || link.label}
                         </span>
                         <span className="text-tertiary-text text-[13px]">
                           {subtitle}

@@ -61,6 +61,7 @@ export type LinkItem = {
   id: string | number;
   url?: string;
   title?: string;
+  label?: string;
   imageSrc?: string;
   iconSrc?: string;
   iconLabel?: string;

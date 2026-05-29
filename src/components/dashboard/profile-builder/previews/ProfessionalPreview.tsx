@@ -162,7 +162,7 @@ export default function ProfessionalPreview({
                     }`}
                   >
                     <span className="text-primary-text text-[15px] font-bold">
-                      {link.title}
+                      {link.title || link.label}
                     </span>
                     <span className="text-secondary-text group-hover/link:text-brand-hover-bg flex items-center gap-2 text-[14px] transition-colors">
                       {displayUrl}

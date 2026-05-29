@@ -185,10 +185,10 @@ export default function PortfolioPreview({
                 >
                   <div className="flex items-center gap-3">
                     <div className="text-primary-text group-hover/link:text-brand-hover-bg transition-colors">
-                      {getLinkIcon(link.title)}
+                      {getLinkIcon(link.title || link.label || "")}
                     </div>
                     <span className="text-primary-text text-[14px] font-medium">
-                      {link.title}
+                      {link.title || link.label}
                     </span>
                   </div>
                   <ExternalLink

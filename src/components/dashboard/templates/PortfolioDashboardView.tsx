@@ -1,15 +1,26 @@
 import React from "react";
 import Image from "next/image";
-import { 
-  BadgeCheck, 
-  Mail, 
-  Globe, 
+import {
+  BadgeCheck,
+  Mail,
+  Globe,
   ExternalLink,
   ArrowRight,
-  Rocket
+  Rocket,
 } from "lucide-react";
-import { XIcon, InstagramIcon, LinkedInIcon, GithubIcon, YoutubeIcon } from "@/components/icons/BrandIcons";
-import { DashboardProfileResponse, ProfileContentResponse, LinkItem, ProjectItem } from "@/api/profile/profile.type";
+import {
+  XIcon,
+  InstagramIcon,
+  LinkedInIcon,
+  GithubIcon,
+  YoutubeIcon,
+} from "@/components/icons/BrandIcons";
+import {
+  DashboardProfileResponse,
+  ProfileContentResponse,
+  LinkItem,
+  ProjectItem,
+} from "@/api/profile/profile.type";
 import { getImageUrl } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
 
@@ -28,54 +39,101 @@ const DEFAULT_LINKS = [
 ] as LinkItem[];
 
 const DEFAULT_PROJECTS = [
-  { id: "proj-1", title: "Fintech Dashboard", description: "A financial analytics dashboard that helps users track their investments", buttonText: "View Project", url: "#", imageSrc: "/profile-preview/feature1.jpg" },
-  { id: "proj-2", title: "Landing page Design", description: "A minimal landing page design for an e-commerce website", buttonText: "View Project", url: "#", imageSrc: "/profile-preview/feature2.jpg" },
-  { id: "proj-3", title: "Nova Health SaaS", description: "A minimalist SaaS platform designed for doctors.", buttonText: "View Project", url: "#", imageSrc: "/profile-preview/feature3.jpg" },
-  { id: "proj-4", title: "Origin Collective", description: "A minimalist e-commerce website for a high-end furniture brand.", buttonText: "View Project", url: "#", imageSrc: "/profile-preview/feature2.jpg" },
-  { id: "proj-5", title: "Apex Banking App", description: "Redesigning the core user journey of a modern banking app.", buttonText: "View Project", url: "#", imageSrc: "/profile-preview/feature1.jpg" },
-  { id: "proj-6", title: "Form Branding System", description: "A cohesive visual identity and branding system.", buttonText: "View Project", url: "#", imageSrc: "/profile-preview/feature3.jpg" },
+  {
+    id: "proj-1",
+    title: "Fintech Dashboard",
+    description:
+      "A financial analytics dashboard that helps users track their investments",
+    buttonText: "View Project",
+    url: "#",
+    imageSrc: "/profile-preview/feature1.jpg",
+  },
+  {
+    id: "proj-2",
+    title: "Landing page Design",
+    description: "A minimal landing page design for an e-commerce website",
+    buttonText: "View Project",
+    url: "#",
+    imageSrc: "/profile-preview/feature2.jpg",
+  },
+  {
+    id: "proj-3",
+    title: "Nova Health SaaS",
+    description: "A minimalist SaaS platform designed for doctors.",
+    buttonText: "View Project",
+    url: "#",
+    imageSrc: "/profile-preview/feature3.jpg",
+  },
+  {
+    id: "proj-4",
+    title: "Origin Collective",
+    description:
+      "A minimalist e-commerce website for a high-end furniture brand.",
+    buttonText: "View Project",
+    url: "#",
+    imageSrc: "/profile-preview/feature2.jpg",
+  },
+  {
+    id: "proj-5",
+    title: "Apex Banking App",
+    description: "Redesigning the core user journey of a modern banking app.",
+    buttonText: "View Project",
+    url: "#",
+    imageSrc: "/profile-preview/feature1.jpg",
+  },
+  {
+    id: "proj-6",
+    title: "Form Branding System",
+    description: "A cohesive visual identity and branding system.",
+    buttonText: "View Project",
+    url: "#",
+    imageSrc: "/profile-preview/feature3.jpg",
+  },
 ] as ProjectItem[];
 
 const getLinkIcon = (title: string = "") => {
   const t = title.toLowerCase();
-  if (t.includes("instagram")) return <InstagramIcon style={{ fontSize: 18 }} />;
-  if (t.includes("twitter") || t === "x") return <XIcon style={{ fontSize: 18 }} />;
+  if (t.includes("instagram"))
+    return <InstagramIcon style={{ fontSize: 18 }} />;
+  if (t.includes("twitter") || t === "x")
+    return <XIcon style={{ fontSize: 18 }} />;
   if (t.includes("linkedin")) return <LinkedInIcon style={{ fontSize: 18 }} />;
   if (t.includes("github")) return <GithubIcon style={{ fontSize: 18 }} />;
   if (t.includes("youtube")) return <YoutubeIcon style={{ fontSize: 18 }} />;
   return <Globe size={18} />;
 };
 
-export default function PortfolioDashboardView({
-  profile,
-  content,
-}: Props) {
+export default function PortfolioDashboardView({ profile, content }: Props) {
   const name = profile?.fullName ?? profile?.username ?? "John Smith";
   const username = profile?.username ?? "johnsmith";
   const details = content?.content;
-  const bio = profile?.bio ?? details?.bio?.content ?? "I help teams craft thoughtful, user-centered products — from the first sketch to a polished design system. Currently shaping fintech and SaaS experiences.";
-  
+  const bio =
+    profile?.bio ??
+    details?.bio?.content ??
+    "I help teams craft thoughtful, user-centered products — from the first sketch to a polished design system. Currently shaping fintech and SaaS experiences.";
+
   const rawLinks = (details?.links?.items ?? []) as LinkItem[];
   const links = rawLinks.length > 0 ? rawLinks : DEFAULT_LINKS;
-  
+
   const rawProjects = (details?.projects?.items ?? []) as ProjectItem[];
   const projects = rawProjects.length > 0 ? rawProjects : DEFAULT_PROJECTS;
-  
+
   const cta = details?.cta;
 
   const rawPhotoSrc = profile?.photoUrl;
-  const photoSrc = rawPhotoSrc 
-    ? (rawPhotoSrc.startsWith('/profile-preview/') ? rawPhotoSrc : (getImageUrl(rawPhotoSrc) || "/profile-preview/avatar.png"))
+  const photoSrc = rawPhotoSrc
+    ? rawPhotoSrc.startsWith("/profile-preview/")
+      ? rawPhotoSrc
+      : getImageUrl(rawPhotoSrc) || "/profile-preview/avatar.png"
     : "/profile-preview/avatar.png";
 
   return (
-    <div className="flex w-full flex-col font-sans text-primary-text antialiased bg-secondary-bg">
+    <div className="text-primary-text bg-secondary-bg flex w-full flex-col font-sans antialiased">
       <div className="mx-auto w-full max-w-5xl px-6 py-16 sm:py-24">
-        
         {/* HEADER SECTION */}
-        <header className="flex w-full flex-col sm:flex-row sm:items-start justify-between gap-6 mb-8">
+        <header className="mb-8 flex w-full flex-col justify-between gap-6 sm:flex-row sm:items-start">
           <div className="flex flex-col gap-6">
-            <div className="relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-full border border-border bg-secondary-bg">
+            <div className="border-border bg-secondary-bg relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-full border">
               <Image
                 src={photoSrc}
                 alt={name}
@@ -84,17 +142,23 @@ export default function PortfolioDashboardView({
                 unoptimized
               />
               {/* Online indicator dot */}
-              <div className="absolute bottom-1 right-1 h-4 w-4 rounded-full border-[3px] border-background bg-green-500" />
+              <div className="border-background absolute right-1 bottom-1 h-4 w-4 rounded-full border-[3px] bg-green-500" />
             </div>
-            
+
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <h1 className="text-[26px] font-bold tracking-tight text-primary-text leading-tight">
+                <h1 className="text-primary-text text-[26px] leading-tight font-bold tracking-tight">
                   {name}
                 </h1>
-                <BadgeCheck className="text-brand-hover-bg" size={20} fill="currentColor" stroke="var(--background)" strokeWidth={1.5} />
+                <BadgeCheck
+                  className="text-brand-hover-bg"
+                  size={20}
+                  fill="currentColor"
+                  stroke="var(--background)"
+                  strokeWidth={1.5}
+                />
               </div>
-              <p className="text-[14px] text-secondary-text mt-1">
+              <p className="text-secondary-text mt-1 text-[14px]">
                 openprofile.app/{username}
               </p>
             </div>
@@ -102,7 +166,7 @@ export default function PortfolioDashboardView({
 
           <a
             href="mailto:hello@example.com"
-            className="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-brand-hover-bg bg-background px-4 text-[13px] font-semibold text-brand-hover-bg transition-colors hover:bg-brand-hover-bg/5"
+            className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
           >
             <Mail size={16} />
             Email
@@ -111,7 +175,7 @@ export default function PortfolioDashboardView({
 
         {/* BIO SECTION */}
         <section className="mb-16">
-          <p className="text-[15px] leading-relaxed text-secondary-text max-w-3xl">
+          <p className="text-secondary-text max-w-3xl text-[15px] leading-relaxed">
             {bio}
           </p>
         </section>
@@ -119,7 +183,7 @@ export default function PortfolioDashboardView({
         {/* LINKS SECTION */}
         {details?.links?.visible !== false && links.length > 0 && (
           <section className="mb-20 w-full">
-            <h2 className="mb-4 text-[13px] text-tertiary-text">Links</h2>
+            <h2 className="text-tertiary-text mb-4 text-[13px]">Links</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {links.map((link) => (
                 <a
@@ -127,15 +191,20 @@ export default function PortfolioDashboardView({
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center justify-between rounded-xl border border-border bg-background p-4 shadow-sm transition-all hover:border-brand-hover-bg/30 hover:shadow-md"
+                  className="group border-border bg-background hover:border-brand-hover-bg/30 flex items-center justify-between rounded-xl border p-4 shadow-sm transition-all hover:shadow-md"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="text-primary-text transition-colors group-hover:text-brand-hover-bg">
-                      {getLinkIcon(link.title)}
+                    <div className="text-primary-text group-hover:text-brand-hover-bg transition-colors">
+                      {getLinkIcon(link.title || link.label)}
                     </div>
-                    <span className="text-[14px] font-medium text-primary-text">{link.title}</span>
+                    <span className="text-primary-text text-[14px] font-medium">
+                      {link.title || link.label}
+                    </span>
                   </div>
-                  <ExternalLink size={14} className="text-tertiary-text transition-colors group-hover:text-brand-hover-bg" />
+                  <ExternalLink
+                    size={14}
+                    className="text-tertiary-text group-hover:text-brand-hover-bg transition-colors"
+                  />
                 </a>
               ))}
             </div>
@@ -145,21 +214,24 @@ export default function PortfolioDashboardView({
         {/* PROJECTS SECTION */}
         {details?.projects?.visible !== false && projects.length > 0 && (
           <section className="mb-20 w-full">
-            <h2 className="mb-6 text-[13px] text-tertiary-text">
+            <h2 className="text-tertiary-text mb-6 text-[13px]">
               {details?.projects?.sectionTitle || "Featured Projects"}
             </h2>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {projects.map((project, idx) => {
                 const numberStr = String(idx + 1).padStart(2, "0");
                 return (
-                  <div key={project.id} className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-sm transition-shadow hover:shadow-md">
+                  <div
+                    key={project.id}
+                    className="group border-border bg-background flex flex-col overflow-hidden rounded-2xl border shadow-sm transition-shadow hover:shadow-md"
+                  >
                     {/* Project Image Placeholder */}
-                    <div className="relative aspect-16/10 w-full overflow-hidden bg-secondary-bg border-b border-border">
+                    <div className="bg-secondary-bg border-border relative aspect-16/10 w-full overflow-hidden border-b">
                       {project.imageSrc ? (
                         <Image
                           src={
-                            project.imageSrc.startsWith('/profile-preview/') 
-                              ? project.imageSrc 
+                            project.imageSrc.startsWith("/profile-preview/")
+                              ? project.imageSrc
                               : getImageUrl(project.imageSrc)!
                           }
                           alt={project.title || "Project"}
@@ -179,19 +251,21 @@ export default function PortfolioDashboardView({
                     </div>
 
                     <div className="flex flex-col p-6">
-                      <div className="flex items-start gap-2 mb-1">
-                        <span className="text-[16px] font-bold text-primary-text">{numberStr}</span>
-                        <h3 className="text-[16px] font-bold text-primary-text">
+                      <div className="mb-1 flex items-start gap-2">
+                        <span className="text-primary-text text-[16px] font-bold">
+                          {numberStr}
+                        </span>
+                        <h3 className="text-primary-text text-[16px] font-bold">
                           {project.title}
                         </h3>
                       </div>
-                      
-                      <span className="text-[11px] text-tertiary-text ml-6 mb-3">
+
+                      <span className="text-tertiary-text mb-3 ml-6 text-[11px]">
                         Product Design
                       </span>
 
                       {project.description && (
-                        <p className="ml-6 text-[13px] text-secondary-text mb-6 line-clamp-2">
+                        <p className="text-secondary-text mb-6 ml-6 line-clamp-2 text-[13px]">
                           {project.description}
                         </p>
                       )}
@@ -201,7 +275,7 @@ export default function PortfolioDashboardView({
                           href={project.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="ml-6 mt-auto inline-flex items-center gap-1.5 text-[13px] font-bold text-brand-hover-bg hover:underline"
+                          className="text-brand-hover-bg mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
                         >
                           {project.buttonText || "View Project"}
                           <ArrowRight size={14} strokeWidth={2.5} />
@@ -218,17 +292,18 @@ export default function PortfolioDashboardView({
         {/* CTA SECTION */}
         {details?.cta?.visible !== false && (
           <section className="mb-24 w-full py-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
               <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-hover-bg text-white shadow-sm">
+                <div className="bg-brand-hover-bg flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-white shadow-sm">
                   <Rocket size={24} strokeWidth={2} />
                 </div>
                 <div className="flex flex-col">
-                  <h3 className="text-[16px] font-bold text-primary-text">
+                  <h3 className="text-primary-text text-[16px] font-bold">
                     {cta?.title || "Interested in working together?"}
                   </h3>
-                  <p className="text-[13px] text-secondary-text mt-0.5">
-                    {cta?.subtitle || "I am currently available for freelance project"}
+                  <p className="text-secondary-text mt-0.5 text-[13px]">
+                    {cta?.subtitle ||
+                      "I am currently available for freelance project"}
                   </p>
                 </div>
               </div>
@@ -236,7 +311,7 @@ export default function PortfolioDashboardView({
                 href={cta?.url || "mailto:hello@example.com"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-10 items-center justify-center rounded-md bg-brand-hover-bg px-6 text-[14px] font-bold text-white shadow-sm transition-all hover:bg-button-brand-bg active:scale-95 whitespace-nowrap"
+                className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-[14px] font-bold whitespace-nowrap text-white shadow-sm transition-all active:scale-95"
               >
                 {cta?.label || "Let's Connect"}
               </a>
@@ -246,7 +321,6 @@ export default function PortfolioDashboardView({
 
         {/* FOOTER */}
         <TemplateFooter />
-
       </div>
     </div>
   );

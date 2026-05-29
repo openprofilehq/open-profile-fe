@@ -25,6 +25,10 @@ const nextConfig: NextConfig = {
         protocol: "https" as const,
         hostname: "api.staging.open-profile.hng14.com",
       },
+      {
+        protocol: "http" as const,
+        hostname: "localhost",
+      },
     ],
   },
 };
