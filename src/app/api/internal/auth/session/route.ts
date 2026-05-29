@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { accessToken, refreshToken, action } = body;
+    const { action } = body;
 
     const response = NextResponse.json({ success: true });
     const store = await cookies();

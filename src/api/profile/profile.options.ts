@@ -88,15 +88,15 @@ export const saveTemplateOption = mutationOptions({
   mutationFn: async (templateType: TemplateType) => {
     const template = templateType.toLowerCase();
 
-    let currentAppearance = {};
+    let currentAppearance: Partial<ProfileAppearanceRequest> = {};
     try {
       const res = await getProfileAppearance();
-      if (res?.data) {
-        // Read appearance (canonical) before the deprecated data field (CR2)
-        currentAppearance = (res.data as any).appearance || (res.data as any).data || res.data;
-      }
+      currentAppearance = res?.appearance ?? res?.data ?? {};
     } catch (e) {
-      console.warn("Could not fetch current appearance, proceeding with minimal payload", e);
+      console.warn(
+        "Could not fetch current appearance, proceeding with minimal payload",
+        e
+      );
     }
 
     const appearanceRes = await updateProfileAppearance({

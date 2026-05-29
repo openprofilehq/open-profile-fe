@@ -19,9 +19,12 @@ export async function POST(request: NextRequest) {
     try {
       data = JSON.parse(textData);
     } catch {
-      data = { message: "The backend returned an invalid response.", details: textData };
+      data = {
+        message: "The backend returned an invalid response.",
+        details: textData,
+      };
     }
-    
+
     const response = NextResponse.json(data, { status: upstream.status });
 
     // Forward Set-Cookie headers properly using getSetCookie() to prevent comma-merging
@@ -41,7 +44,13 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const excludedHeaders = ["set-cookie", "content-encoding", "content-length", "transfer-encoding", "content-type"];
+    const excludedHeaders = [
+      "set-cookie",
+      "content-encoding",
+      "content-length",
+      "transfer-encoding",
+      "content-type",
+    ];
     upstream.headers.forEach((value, key) => {
       if (!excludedHeaders.includes(key.toLowerCase())) {
         response.headers.append(key, value);
@@ -53,10 +62,13 @@ export async function POST(request: NextRequest) {
     const err = error as Error;
     console.error("[Login Proxy] Network/Fetch Error:", err.message);
     return NextResponse.json(
-      { 
-        message: "The proxy failed to connect to the backend server. The backend might be offline.", 
-        error: err.message 
-      }, 
+      {
+        message:
+          "The proxy failed to connect to the backend server. The backend might be offline.",
+        ...(process.env.NODE_ENV !== "production"
+          ? { error: err.message }
+          : {}),
+      },
       { status: 502 }
     );
   }

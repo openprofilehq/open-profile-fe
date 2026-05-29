@@ -95,7 +95,7 @@ export function Opportunities() {
             Make your profile searchable so people can find you when it matters.
           </p>
         </div>
-        <Button className="h-12 rounded-[12px] bg-[#8850EE] px-10 text-[15px] font-bold text-white shadow-sm hover:bg-[#8850EE]">
+        <Button className="bg-purple-brand hover:bg-purple-brand-hover h-12 rounded-[12px] px-10 text-[15px] font-bold text-white shadow-sm">
           Get started
         </Button>
       </div>
