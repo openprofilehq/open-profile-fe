@@ -13,6 +13,7 @@ import {
   ProfileContentResponse,
   LinkItem,
   ProjectItem,
+  ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
 import { getImageUrl } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
@@ -22,6 +23,7 @@ type Props = {
   content?: ProfileContentResponse;
   isLoadingProfile?: boolean;
   isLoadingContent?: boolean;
+  appearance?: ProfileAppearanceSettings | null;
 };
 
 const DEFAULT_LINKS = [
