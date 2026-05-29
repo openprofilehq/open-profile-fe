@@ -13,8 +13,12 @@ declare module "axios" {
   }
 }
 
+const isServer = typeof window === "undefined";
+
 export const api = axios.create({
-  baseURL: `${env.NEXT_PUBLIC_API_URL || ""}/api/v1`,
+  baseURL: isServer
+    ? `${env.NEXT_PUBLIC_API_URL || "https://api.staging.open-profile.hng14.com"}/api/v1`
+    : "/api/v1",
   timeout: 60 * 1000,
   withCredentials: true,
 });
@@ -48,6 +52,7 @@ api.interceptors.response.use(
       !originalRequest.url?.match(/\/auth\/me(?:$|\?|\/)/);
 
     if (
+      isServer || // Prevent server-side silent token refresh (CR1)
       error.response?.status !== 401 ||
       originalRequest._retry ||
       isAuthEndpoint
@@ -68,10 +73,17 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      await api.post("/auth/refresh-token");
+      await axios.post("/api/internal/auth/refresh", {}, { withCredentials: true });
       processQueue(null);
-      return api(originalRequest);
-    } catch (refreshError) {
+
+      return await api(originalRequest);
+    } catch (refreshError: unknown) {
+      const err = refreshError as AxiosError;
+      console.error(
+        "[Interceptor] Refresh failed!",
+        err?.response?.status,
+        err?.response?.data
+      );
       processQueue(refreshError);
       const isSilent = originalRequest.silent === true;
 
@@ -92,8 +104,15 @@ api.interceptors.response.use(
 
 function getApiErrorMessage(message?: unknown): string {
   if (typeof message === "string") return message;
-
-  // IF THIS ERROR HAPPENS, IT IS MOST LIKELY DUE TO VALIDATION ERRORS. THE MESSAGE CAN BE REFINED TILL IT IS RIGHT FOR THE USER.
+  if (Array.isArray(message) && message.length > 0) {
+    const first = message[0];
+    if (typeof first === "string") return first;
+    if (first && typeof first === "object" && "message" in first)
+      return String(first.message);
+  }
+  if (message && typeof message === "object" && "message" in message) {
+    return String((message as Record<string, unknown>).message);
+  }
   return "An error occurred. Please check your input and try again.";
 }
 
@@ -133,6 +152,27 @@ export async function callApi<TResData>({
     return (response.data.data ?? response.data) as TResData;
   } catch (e) {
     if (e instanceof AxiosError) {
+      if (e.code === "ERR_CANCELED") throw e; // silently propagate aborts
+      if (process.env.NODE_ENV === "development") {
+        console.error(
+          "[callApi] error",
+          e.response?.status,
+          JSON.stringify(e.response?.data),
+          "code:",
+          e.code,
+          "msg:",
+          e.message
+        );
+      } else {
+        console.error(
+          "[callApi] error",
+          e.response?.status,
+          "code:",
+          e.code,
+          "msg:",
+          e.message
+        );
+      }
       throw new ApiError(
         e.response ? getApiErrorMessage(e.response.data?.message) : e.message,
         e.response?.data?.message,

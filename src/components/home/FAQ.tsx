@@ -60,7 +60,7 @@ export function FAQ() {
   };
 
   return (
-    <section className="w-full bg-span-text py-16">
+    <section className="w-full bg-[#FEFEFE] py-16">
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -71,7 +71,7 @@ export function FAQ() {
         <div className="mb-10 text-center">
           <motion.h2
             variants={itemVariants}
-            className="text-[32px] font-semibold tracking-tight text-primary-text md:text-[40px]"
+            className="text-[32px] font-semibold tracking-tight text-[#050505] md:text-[40px]"
           >
             Frequently asked questions
           </motion.h2>
@@ -83,12 +83,12 @@ export function FAQ() {
               <motion.div key={index} variants={itemVariants}>
                 <AccordionItem
                   value={`item-${index}`}
-                  className="border-tertiary-b"
+                  className="border-[#E5E5E5]"
                 >
                   <AccordionTrigger className="px-0 hover:no-underline">
                     <span className="pr-4">{item.question}</span>
                   </AccordionTrigger>
-                  <AccordionContent className="px-0 pb-6 text-[15px] leading-relaxed text-secondary-text">
+                  <AccordionContent className="px-0 pb-6 text-[15px] leading-relaxed text-[#525252]">
                     {item.answer}
                   </AccordionContent>
                 </AccordionItem>

@@ -86,7 +86,7 @@ export default function ResetPasswordPage() {
                 confirm && password !== confirm ? "Passwords do not match" : ""
               )
             }
-            className={`border-input-b placeholder:text-input-text h-11 border bg-primary-bg shadow-none ${confirmError ? "border-red-400" : ""}`}
+            className={`border-input-b placeholder:text-input-text h-11 border bg-[#FAFAFA] shadow-none ${confirmError ? "border-red-400" : ""}`}
           />
           {confirmError && (
             <p className="text-xs text-red-500">{confirmError}</p>
@@ -96,7 +96,7 @@ export default function ResetPasswordPage() {
         <Button
           type="submit"
           disabled={!isValid || resetMutation.isPending}
-          className="bg-brand h-11 w-full rounded-lg border-0 font-semibold text-white shadow-none transition-opacity hover:bg-button-brand-bg disabled:opacity-50"
+          className="bg-brand h-11 w-full rounded-lg border-0 font-semibold text-white shadow-none transition-opacity hover:bg-[#065E69] disabled:opacity-50"
         >
           {resetMutation.isPending ? "Resetting…" : "Continue"}
         </Button>

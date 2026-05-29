@@ -25,7 +25,7 @@ export function LeftAuthCard() {
       </div>
 
       <div className="text-center">
-        <p className="text-sm font-semibold text-primary-text">
+        <p className="text-sm font-semibold text-[#050505]">
           Create Your Profile
         </p>
         <p className="mt-1 text-xs leading-relaxed text-gray-400">
@@ -96,7 +96,7 @@ export function RightAuthCard() {
       </div>
 
       <div className="text-center">
-        <p className="text-sm font-semibold text-primary-text">
+        <p className="text-sm font-semibold text-[#050505]">
           Verify Your Identity
         </p>
         <p className="mt-1 text-xs leading-relaxed text-gray-400">

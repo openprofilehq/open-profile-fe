@@ -52,7 +52,7 @@ export default function VerifyEmailPage() {
         <Button
           type="submit"
           disabled={!isComplete || verifyMutation.isPending}
-          className="bg-brand-hover-bg h-11 w-full rounded-lg border-0 font-semibold text-white shadow-none transition-opacity hover:bg-button-brand-bg disabled:opacity-50"
+          className="bg-brand-hover-bg h-11 w-full rounded-lg border-0 font-semibold text-white shadow-none transition-opacity hover:bg-[#065E69] disabled:opacity-50"
         >
           {verifyMutation.isPending ? "Verifying…" : "Continue"}
         </Button>

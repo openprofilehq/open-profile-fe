@@ -81,7 +81,7 @@ export function Pricing() {
   };
 
   return (
-    <section id="pricing" className="w-full bg-primary-bg py-16">
+    <section id="pricing" className="w-full bg-[#FAFAFA] py-16">
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -91,7 +91,7 @@ export function Pricing() {
       >
         <motion.h2
           variants={itemVariants}
-          className="mb-10 text-center text-[28px] font-semibold text-primary-text md:text-[40px]"
+          className="mb-10 text-center text-[28px] font-semibold text-[#050505] md:text-[40px]"
         >
           Choose the plan that fits your needs.
         </motion.h2>
@@ -106,27 +106,27 @@ export function Pricing() {
               variants={itemVariants}
               className={`flex h-full flex-col rounded-[16px] border p-4 xl:p-8 ${
                 plan.highlighted
-                  ? "bg-brand-hover-bg border-link-hover-text text-white"
-                  : "border-tertiary-b bg-white text-primary-text"
+                  ? "bg-brand-hover-bg border-[#087583] text-white"
+                  : "border-[#E5E5E5] bg-white text-[#050505]"
               }`}
             >
               <div className="mb-8">
                 <p
                   className={`mb-4 text-[16px] font-medium ${
-                    plan.highlighted ? "text-white" : "text-secondary-text"
+                    plan.highlighted ? "text-white" : "text-[#525252]"
                   }`}
                 >
                   {plan.name}
                 </p>
                 <div
                   className={`flex items-baseline gap-1 border-b ${
-                    plan.highlighted ? "border-white/20" : "border-tertiary-b"
+                    plan.highlighted ? "border-white/20" : "border-[#E5E5E5]"
                   }`}
                 >
                   <span className="text-[36px] font-bold">${plan.price}</span>
                   <span
                     className={`text-[15px] ${
-                      plan.highlighted ? "text-white/80" : "text-secondary-text"
+                      plan.highlighted ? "text-white/80" : "text-[#525252]"
                     }`}
                   >
                     /month
@@ -137,7 +137,7 @@ export function Pricing() {
               <div className="flex-1">
                 <p
                   className={`mb-6 text-[14px] font-bold ${
-                    plan.highlighted ? "text-white" : "text-primary-text"
+                    plan.highlighted ? "text-white" : "text-[#050505]"
                   }`}
                 >
                   {plan.featureTitle || "Includes:"}
@@ -157,7 +157,7 @@ export function Pricing() {
                       />
                       <span
                         className={
-                          plan.highlighted ? "text-white" : "text-secondary-text"
+                          plan.highlighted ? "text-white" : "text-[#525252]"
                         }
                       >
                         {feature}
@@ -172,7 +172,7 @@ export function Pricing() {
                 className={`flex h-auto w-full items-center justify-center rounded-[8px] py-4 text-[14px] font-bold transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50 ${
                   plan.highlighted
                     ? "text-link-hover-text border border-transparent bg-white"
-                    : "text-link-hover-text border border-link-hover-text bg-white"
+                    : "text-link-hover-text border border-[#087583] bg-white"
                 }`}
               >
                 {plan.buttonText}

@@ -19,7 +19,7 @@ export default function ResetPasswordSuccessPage() {
         <BadgeCheck size={80} className="text-link-hover-text" />
 
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-primary-text">
+          <h1 className="text-2xl font-bold text-[#050505]">
             Password Reset Successful
           </h1>
           <p className="mt-2 text-sm text-gray-500">
@@ -30,7 +30,7 @@ export default function ResetPasswordSuccessPage() {
 
         <Button
           asChild
-          className="bg-brand-hover-bg h-11 w-full rounded-lg border-0 font-semibold text-white shadow-none hover:bg-button-brand-bg"
+          className="bg-brand-hover-bg h-11 w-full rounded-lg border-0 font-semibold text-white shadow-none hover:bg-[#065E69]"
         >
           <Link href={loginHref}>Continue</Link>
         </Button>

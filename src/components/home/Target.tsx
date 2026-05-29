@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 
 const audiences = [
   {
-    bg: "bg-brand-light-subtle-bg",
+    bg: "#EFF6F8",
     right: "right-[-7px]",
     icon: "/target_assets/icon-code.svg",
     checkIcon: "/target_assets/icon-check.svg",
@@ -19,7 +19,7 @@ const audiences = [
     ],
   },
   {
-    bg: "bg-notice-subtle-bg",
+    bg: "#FFF6EF",
     right: "right-[-20px]",
     icon: "/target_assets/icon-pencil.svg",
     checkIcon: "/target_assets/icon-orange-check.svg",
@@ -33,7 +33,7 @@ const audiences = [
     ],
   },
   {
-    bg: "bg-positive-subtle-bg",
+    bg: "#F3FEF7",
     right: "right-[-21px]",
     icon: "/target_assets/icon-artboard.svg",
     checkIcon: "/target_assets/icon-green-check.svg",
@@ -64,7 +64,7 @@ export default function Target() {
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
-        <div className="mx-auto flex h-7.5 w-fit items-center gap-1 rounded-[24px] bg-brand-light-subtle-bg pr-5.5 pl-3.5">
+        <div className="mx-auto flex h-7.5 w-fit items-center gap-1 rounded-[24px] bg-[#F2FDFE] pr-5.5 pl-3.5">
           <Image
             src="/target_assets/icon-flash.svg"
             alt="target"
@@ -87,12 +87,13 @@ export default function Target() {
           ({ bg, right, icon, checkIcon, title, description, items }, i) => (
             <motion.div
               key={title}
+              style={{ backgroundColor: bg }}
               variants={fadeUp}
               initial="hidden"
               whileInView="show"
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.15 }}
-              className={`relative mx-auto flex h-full w-full max-w-[450px] flex-col space-y-4 overflow-hidden rounded-[16px] px-6 pt-20 pb-6 ${bg}`}
+              className="relative mx-auto flex h-full w-full max-w-[450px] flex-col space-y-4 overflow-hidden rounded-[16px] px-6 pt-20 pb-6"
             >
               {/* top icon */}
               <div className={`absolute top-0 ${right}`}>

@@ -4,7 +4,7 @@ const STEP_CLASSES =
 export default function ProgressBar({ currentStep }: { currentStep: number }) {
   function findActiveTab(step: number) {
     return currentStep === step
-      ? "h-16 w-16 border-brand-subtle-b bg-brand-subtle-bg text-link-hover-text text-[28px]"
+      ? "h-16 w-16 border-brand-subtle-b bg-brand-progress-bg text-link-hover-text text-[28px]"
       : "h-10 w-10 border-disabled-text bg-span-text text-disabled-text text-[24px]";
   }
 
@@ -13,7 +13,7 @@ export default function ProgressBar({ currentStep }: { currentStep: number }) {
   return (
     <div className="flex w-full items-center justify-center">
       <div className={`${STEP_CLASSES} ${findActiveTab(1)}`}>1</div>
-      <span className="mx-4 h-4 w-20 border-b-2 border-b-secondary-b" />
+      <span className="mx-4 h-4 w-20 border-b-2 border-b-[#8C8F98]" />
       <div className={`${STEP_CLASSES} ${findActiveTab(2)}`}>2</div>
     </div>
   );

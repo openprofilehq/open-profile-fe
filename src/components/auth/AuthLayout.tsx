@@ -10,7 +10,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex min-h-screen flex-col bg-primary-bg">
+    <div className="flex min-h-screen flex-col bg-[#FAFAFA]">
       <div className="flex justify-center pt-6">
         <Link href="/">
           <Image
@@ -41,13 +41,13 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="border-input-b relative z-10 flex w-full max-w-2xl flex-col gap-5 rounded-2xl border bg-span-text px-6 py-8 shadow-none sm:px-20 sm:py-14"
+          className="border-input-b relative z-10 flex w-full max-w-2xl flex-col gap-5 rounded-2xl border bg-[#FEFEFE] px-6 py-8 shadow-none sm:px-20 sm:py-14"
         >
           <Button
             variant="links"
             onClick={() => router.back()}
             aria-label="Go back"
-            className={`text-link-hover-text flex w-fit cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors hover:text-button-brand-bg ${pathname !== "/login" ? "hidden" : "flex"}`}
+            className={`text-link-hover-text flex w-fit cursor-pointer items-center gap-1.5 text-sm font-medium transition-colors hover:text-[#065E69] ${pathname !== "/login" ? "hidden" : "flex"}`}
           >
             <svg
               width="16"

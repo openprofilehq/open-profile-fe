@@ -25,7 +25,9 @@ import type {
   UpsertDraftResponse,
 } from "@/api/profile/profile.type";
 import { contentToSections, sectionsToContent } from "./builder.utils";
+import { isApiError } from "@/api/base";
 import { ROUTES } from "@/constants/routes";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const createSection = (type: string, customTitle?: string): Section | null => {
   const allowedTypes: Record<string, Section["type"]> = {
@@ -83,9 +85,6 @@ const createSection = (type: string, customTitle?: string): Section | null => {
   };
 };
 
-const DEFAULT_TEMPLATE = "professional" as const;
-// Only the professional template is currently supported by the builder UI.
-
 const normalizeColorForApi = (color: string) => {
   if (!color) return "#087583";
 
@@ -120,8 +119,8 @@ const mapCornerStyleToApi = (
     ProfileAppearanceCornerStyle
   > = {
     sharp: "sharp",
-    medium: "rounded",
-    round: "pill",
+    medium: "medium",
+    round: "round",
   };
 
   return cornerStyleMap[borderRadius];
@@ -150,12 +149,13 @@ const mapCornerStyleFromApi = (cornerStyle: string) => {
     "sharp" | "medium" | "round"
   > = {
     sharp: "sharp",
-    rounded: "medium",
-    pill: "round",
+    medium: "medium",
+    round: "round",
   };
 
   return (
-    cornerStyleMap[cornerStyle as ProfileAppearanceCornerStyle] ?? "medium"
+    cornerStyleMap[cornerStyle as ProfileAppearanceCornerStyle] ?? 
+    (cornerStyle === "pill" ? "round" : "medium")
   );
 };
 
@@ -183,6 +183,12 @@ export default function ProfileBuilderContent() {
 
   const profile = dashboardProfile.data;
 
+  const isLoading =
+    dashboardProfile.isPending ||
+    profileContent.isPending ||
+    draftState.isPending ||
+    profileAppearance.isPending;
+
   const [font, setFont] = useState("Afacad");
   const [textColor, setTextColor] = useState<string>(THEME_DEFAULTS.TEXT_COLOR);
   const [bgColor, setBgColor] = useState<string>(THEME_DEFAULTS.BG_COLOR);
@@ -194,6 +200,7 @@ export default function ProfileBuilderContent() {
     "sharp" | "medium" | "round"
   >("medium");
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [template, setTemplate] = useState<string>("creator");
   const [sections, setSections] = useState<Section[]>([]);
 
   const contentLoadedRef = useRef(false);
@@ -274,6 +281,17 @@ export default function ProfileBuilderContent() {
       });
     }
 
+    const themeSettings = (profileContent.data as Record<string, unknown>)?.themeSettings as Record<string, unknown> | undefined;
+    const rawTemplate = 
+      appearanceSettings?.template || 
+      themeSettings?.template || 
+      dashboardProfile.data?.templateType ||
+      "professional";
+
+    if (typeof rawTemplate === "string") {
+      setTemplate(rawTemplate.toLowerCase());
+    }
+
     // Automatically initialize section if requested via URL search param and missing
     if (sectionParam) {
       const exists = loadedSections.some((s) => s.id === sectionParam);
@@ -337,9 +355,20 @@ export default function ProfileBuilderContent() {
       });
     },
     onError(error: unknown) {
+      const errObj = error as Record<string, unknown>;
+
+      // Backend verifies link URLs and returns 422 INVALID_LINKS when some fail
+      // (e.g. Twitter 403, Instagram blocks crawlers) but still saves the data.
+      // Treat this as a soft warning — the save succeeded.
+      if (isApiError(error) && error.status === 422 && error.message?.includes('INVALID_LINKS')) {
+        queryClient.invalidateQueries({
+          queryKey: profileContentOption().queryKey,
+        });
+        return;
+      }
+
       console.error("[draft] Save FAILED! Full error object:", error);
 
-      const errObj = error as Record<string, unknown>;
       if (
         errObj?.status === 409 ||
         errObj?.statusCode === 409 ||
@@ -390,7 +419,7 @@ export default function ProfileBuilderContent() {
 
     appearanceTimerRef.current = setTimeout(() => {
       saveAppearance({
-        template: DEFAULT_TEMPLATE,
+        template,
         accentColour: normalizeColorForApi(iconColor),
         font: mapFontToApi(font),
         cornerStyle: mapCornerStyleToApi(borderRadius),
@@ -405,7 +434,7 @@ export default function ProfileBuilderContent() {
         clearTimeout(appearanceTimerRef.current);
       }
     };
-  }, [font, iconColor, spacing, borderRadius, theme, saveAppearance]);
+  }, [template, font, iconColor, spacing, borderRadius, theme, saveAppearance]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
@@ -543,6 +572,46 @@ export default function ProfileBuilderContent() {
   const selectedSection =
     resolvedSections.find((s) => s.id === selectedSectionId) || null;
 
+  if (isLoading) {
+    return (
+      <>
+        <div className="flex min-h-screen flex-col items-center justify-center bg-[#FAFAFA] px-6 text-center lg:hidden">
+          <div className="border-muted-foreground/30 border-t-foreground h-8 w-8 animate-spin rounded-full border-2 mb-4" />
+          <h1 className="text-2xl font-bold text-[#050505]">
+            Loading profile editor...
+          </h1>
+        </div>
+
+        <div className="hidden flex-1 w-full lg:flex gap-4 bg-[#FAFAFA] p-4 lg:p-6 lg:px-8">
+          {/* Left Sidebar Skeleton */}
+          <div className="w-[320px] shrink-0 rounded-2xl bg-white flex flex-col gap-6 p-6">
+            <Skeleton className="h-8 w-1/2" />
+            <div className="flex flex-col gap-3 mt-4">
+              <Skeleton className="h-16 w-full rounded-xl" />
+              <Skeleton className="h-16 w-full rounded-xl" />
+              <Skeleton className="h-16 w-full rounded-xl" />
+            </div>
+          </div>
+
+          {/* Preview Canvas Skeleton */}
+          <div className="flex-1 rounded-2xl flex items-center justify-center">
+            <Skeleton className="h-[750px] w-[350px] rounded-[3rem]" />
+          </div>
+
+          {/* Right Panel Skeleton */}
+          <div className="w-[320px] shrink-0 rounded-2xl bg-white flex flex-col gap-6 p-6">
+            <Skeleton className="h-8 w-1/2" />
+            <div className="flex flex-col gap-4 mt-4">
+              <Skeleton className="h-20 w-full rounded-xl" />
+              <Skeleton className="h-20 w-full rounded-xl" />
+              <Skeleton className="h-20 w-full rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <div className="bg-secondary-bg flex min-h-screen flex-col items-center justify-center px-6 text-center lg:hidden">
@@ -560,7 +629,7 @@ export default function ProfileBuilderContent() {
         </Link>
       </div>
 
-      <div className="bg-primary-bg hidden h-screen w-full flex-col overflow-hidden lg:flex">
+      <div className="bg-primary-bg hidden flex-1 w-full flex-col overflow-hidden lg:flex">
         {/* <BuilderHeader onPublish={handlePublish} isPublishing={isPublishing} /> */}
 
         <div className="bg-secondary-bg flex flex-1 gap-4 overflow-hidden p-4 lg:p-6 lg:px-8">
@@ -587,6 +656,7 @@ export default function ProfileBuilderContent() {
             spacing={spacing}
             borderRadius={borderRadius}
             theme={theme}
+            template={template}
             sections={resolvedSections}
             profile={profile}
             selectedSectionId={selectedSectionId}
