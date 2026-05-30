@@ -229,11 +229,15 @@ export default function ProfileBuilderContent() {
           setFont(mapFontFromApi(appearanceSettings.font));
         }
 
-        if (typeof appearanceSettings.textColor === "string") {
+        if (typeof appearanceSettings.textColour === "string") {
+          setTextColor(appearanceSettings.textColour);
+        } else if (typeof appearanceSettings.textColor === "string") {
           setTextColor(appearanceSettings.textColor);
         }
 
-        if (typeof appearanceSettings.bgColor === "string") {
+        if (typeof appearanceSettings.backgroundColour === "string") {
+          setBgColor(appearanceSettings.backgroundColour);
+        } else if (typeof appearanceSettings.bgColor === "string") {
           setBgColor(appearanceSettings.bgColor);
         }
 
@@ -406,6 +410,8 @@ export default function ProfileBuilderContent() {
       saveAppearance({
         template,
         accentColour: normalizeColorForApi(iconColor),
+        backgroundColour: normalizeColorForApi(bgColor),
+        textColour: normalizeColorForApi(textColor),
         font: mapFontToApi(font),
         cornerStyle: mapCornerStyleToApi(borderRadius),
         spacing: clampSpacingForApi(spacing),
@@ -635,8 +641,8 @@ export default function ProfileBuilderContent() {
           <PreviewCanvas
             font={font}
             textColor={textColor}
-            bgColor={iconColor}
-            iconColor={bgColor}
+            bgColor={bgColor}
+            iconColor={iconColor}
             spacing={spacing}
             borderRadius={borderRadius}
             template={template}
@@ -652,10 +658,10 @@ export default function ProfileBuilderContent() {
             onChangeFont={setFont}
             textColor={textColor}
             onChangeTextColor={setTextColor}
-            bgColor={iconColor}
-            onChangeBgColor={setIconColor}
-            iconColor={bgColor}
-            onChangeIconColor={setBgColor}
+            bgColor={bgColor}
+            onChangeBgColor={setBgColor}
+            iconColor={iconColor}
+            onChangeIconColor={setIconColor}
             spacing={spacing}
             onChangeSpacing={setSpacing}
             borderRadius={borderRadius}
