@@ -57,91 +57,93 @@ export default function PortfolioPreview({
   return (
     <div className="text-primary-text mx-auto flex w-full max-w-5xl flex-col py-8 pt-12">
       {/* HEADER SECTION (Bio) */}
-      <div
-        className={`group relative mb-12 transition-opacity duration-200 ${selectedSectionId && selectedSectionId !== bioSectionId ? "opacity-50" : ""}`}
-      >
-        {bioSection && (
-          <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleSectionVisibility(bioSection.id);
-              }}
-              className="text-secondary-text transition-opacity hover:opacity-80"
-            >
-              {bioSection.visible ? (
-                <Eye size={18} strokeWidth={2} />
-              ) : (
-                <EyeOff size={18} strokeWidth={2} />
-              )}
-            </button>
-            <button
-              disabled
-              className="text-secondary-text cursor-not-allowed opacity-50"
-            >
-              <Trash2 size={18} strokeWidth={2} />
-            </button>
-          </div>
-        )}
-
-        <header className="hover:border-border hover:bg-background/50 relative mb-8 flex w-full flex-col justify-between gap-6 rounded-2xl border border-transparent p-6 transition-colors sm:flex-row sm:items-start">
-          <div className="flex flex-col gap-6">
-            <div className="border-border bg-secondary-bg relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-full border">
-              {getImageUrl(profile?.photoUrl) ? (
-                <Image
-                  src={getImageUrl(profile?.photoUrl) || ""}
-                  alt={profile?.fullName ?? "Profile avatar"}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                <div className="text-brand-text flex h-full items-center justify-center text-3xl font-bold">
-                  {(profile?.fullName || "M").charAt(0).toUpperCase()}
-                </div>
-              )}
-              {/* Online indicator dot */}
-              <div className="border-background absolute right-1 bottom-1 h-4 w-4 rounded-full border-[3px] bg-green-500" />
+      {bioSection?.visible && (
+        <div
+          className={`group relative mb-12 transition-opacity duration-200 ${selectedSectionId && selectedSectionId !== bioSectionId ? "opacity-50" : ""}`}
+        >
+          {bioSection && (
+            <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleSectionVisibility(bioSection.id);
+                }}
+                className="text-secondary-text transition-opacity hover:opacity-80"
+              >
+                {bioSection.visible ? (
+                  <Eye size={18} strokeWidth={2} />
+                ) : (
+                  <EyeOff size={18} strokeWidth={2} />
+                )}
+              </button>
+              <button
+                disabled
+                className="text-secondary-text cursor-not-allowed opacity-50"
+              >
+                <Trash2 size={18} strokeWidth={2} />
+              </button>
             </div>
+          )}
 
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <h1 className="text-primary-text text-[26px] leading-tight font-bold tracking-tight">
-                  {profile?.fullName || "John Smith"}
-                </h1>
-                <BadgeCheck
-                  className="text-brand-hover-bg"
-                  size={20}
-                  fill="currentColor"
-                  stroke="var(--background)"
-                  strokeWidth={1.5}
-                />
+          <header className="hover:border-border hover:bg-background/50 relative mb-8 flex w-full flex-col justify-between gap-6 rounded-2xl border border-transparent p-6 transition-colors sm:flex-row sm:items-start">
+            <div className="flex flex-col gap-6">
+              <div className="border-border bg-secondary-bg relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-full border">
+                {getImageUrl(profile?.photoUrl) ? (
+                  <Image
+                    src={getImageUrl(profile?.photoUrl) || ""}
+                    alt={profile?.fullName ?? "Profile avatar"}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="text-brand-text flex h-full items-center justify-center text-3xl font-bold">
+                    {(profile?.fullName || "M").charAt(0).toUpperCase()}
+                  </div>
+                )}
+                {/* Online indicator dot */}
+                <div className="border-background absolute right-1 bottom-1 h-4 w-4 rounded-full border-[3px] bg-green-500" />
               </div>
-              <p className="text-secondary-text mt-1 text-[14px]">
-                openprofile.app/{profile?.username || "johnsmith"}
-              </p>
+
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <h1 className="text-primary-text text-[26px] leading-tight font-bold tracking-tight">
+                    {profile?.fullName || "John Smith"}
+                  </h1>
+                  <BadgeCheck
+                    className="text-brand-hover-bg"
+                    size={20}
+                    fill="currentColor"
+                    stroke="var(--background)"
+                    strokeWidth={1.5}
+                  />
+                </div>
+                <p className="text-secondary-text mt-1 text-[14px]">
+                  openprofile.app/{profile?.username || "johnsmith"}
+                </p>
+              </div>
             </div>
-          </div>
 
-          <a
-            href="#"
-            onClick={(e) => e.preventDefault()}
-            className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
-          >
-            <Mail size={16} />
-            Email
-          </a>
-        </header>
+            <a
+              href="#"
+              onClick={(e) => e.preventDefault()}
+              className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
+            >
+              <Mail size={16} />
+              Email
+            </a>
+          </header>
 
-        <section className="mt-2 px-6">
-          <p className="text-secondary-text max-w-3xl text-[15px] leading-relaxed whitespace-pre-wrap">
-            {bioSection?.bio || "Write a little bit about yourself here..."}
-          </p>
-        </section>
-      </div>
+          <section className="mt-2 px-6">
+            <p className="text-secondary-text max-w-3xl text-[15px] leading-relaxed whitespace-pre-wrap">
+              {bioSection?.bio || "Write a little bit about yourself here..."}
+            </p>
+          </section>
+        </div>
+      )}
 
       {/* LINKS SECTION */}
-      {linksSection && (
+      {linksSection?.visible && (
         <section
           className={`group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors ${selectedSectionId && selectedSectionId !== linksSection.id ? "opacity-50" : ""}`}
         >
@@ -207,7 +209,7 @@ export default function PortfolioPreview({
       )}
 
       {/* PROJECTS SECTION */}
-      {projectsSection && (
+      {projectsSection?.visible && (
         <section
           className={`group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors ${selectedSectionId && selectedSectionId !== projectsSection.id ? "opacity-50" : ""}`}
         >
@@ -307,7 +309,7 @@ export default function PortfolioPreview({
       )}
 
       {/* CTA SECTION */}
-      {ctaSection && (
+      {ctaSection?.visible && (
         <section
           className={`group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors ${selectedSectionId && selectedSectionId !== ctaSection.id ? "opacity-50" : ""}`}
         >

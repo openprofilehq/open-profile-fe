@@ -181,6 +181,12 @@ export function sectionsToContent(
               description: p.description || "",
               visible: true,
             };
+            if (p.imageSrc) {
+              mappedProject.imageSrc = p.imageSrc;
+            }
+            if (p.buttonText) {
+              mappedProject.buttonText = p.buttonText;
+            }
             if (p.url) {
               mappedProject.repoUrl = encodeUrlForBackend(p.url);
             }

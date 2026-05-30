@@ -10,7 +10,7 @@ import {
   ProjectItem,
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
-import { getImageUrl } from "@/utils/profile";
+import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
 import {
   XIcon,
@@ -30,50 +30,6 @@ type Props = {
   isLoadingContent?: boolean;
   appearance?: ProfileAppearanceSettings | null;
 };
-
-const DEFAULT_LINKS = [
-  { id: "link-1", title: "Instagram", url: "https://instagram.com/johnsmith" },
-  { id: "link-2", title: "Twitter / X", url: "https://twitter.com/johnsmith" },
-  { id: "link-3", title: "LinkedIn", url: "https://linkedin.com/in/johnsmith" },
-  { id: "link-4", title: "Facebook", url: "https://facebook.com/johnsmith" },
-  { id: "link-5", title: "Website", url: "https://johnsmithdesign.com" },
-] as LinkItem[];
-
-const DEFAULT_PROJECTS = [
-  {
-    id: "proj-1",
-    title: "Summer Campaign x [Pitaya]",
-    description:
-      "A cross-platform content series reaching over 2M views, focusing on sustainable lifestyle.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature1.jpg",
-  },
-  {
-    id: "proj-2",
-    title: "The 30-Day Creative Challenge",
-    description: "Launched a guided workshop series for 10,000+ creators.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature2.jpg",
-  },
-  {
-    id: "proj-3",
-    title: "Documentary Series",
-    description: "A 3-part YouTube series exploring the creator economy.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature3.jpg",
-  },
-  {
-    id: "proj-4",
-    title: "Documentary Series",
-    description: "A 3-part YouTube series exploring the creator economy.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature3.jpg",
-  },
-] as ProjectItem[];
 
 const getIconForUrl = (url: string = "") => {
   const lowerUrl = url.toLowerCase();
@@ -104,10 +60,10 @@ export default function CreatorDashboardView({ profile, content }: Props) {
     "I'm John Smith—a creator focused on building and sharing things that feel simple and useful. I spend most of my time working on ideas, collaborating with others, and turning rough concepts into something real. Some of it sticks, some of it doesn't, but that's part of the process.\n\nThis is where everything lives—my work, my links, and a way to get in touch if you want to build something together.";
 
   const rawLinks = (details?.links?.items ?? []) as LinkItem[];
-  const links = rawLinks.length > 0 ? rawLinks : DEFAULT_LINKS;
+  const links = rawLinks;
 
   const rawProjects = (details?.projects?.items ?? []) as ProjectItem[];
-  const projects = rawProjects.length > 0 ? rawProjects : DEFAULT_PROJECTS;
+  const projects = rawProjects;
 
   const cta = details?.cta;
 
@@ -170,7 +126,7 @@ export default function CreatorDashboardView({ profile, content }: Props) {
                 return (
                   <a
                     key={i}
-                    href={link.url}
+                    href={sanitizeUrl(link.url)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-secondary-text hover:text-primary-text transition-colors"
@@ -184,7 +140,7 @@ export default function CreatorDashboardView({ profile, content }: Props) {
 
           {details?.cta?.visible !== false && (
             <a
-              href={cta?.url || "mailto:hello@example.com"}
+              href={sanitizeUrl(cta?.url || "mailto:hello@example.com")}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-brand-hover-bg hover:bg-button-brand-bg mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all active:scale-95"
@@ -263,7 +219,7 @@ export default function CreatorDashboardView({ profile, content }: Props) {
                     )}
                     {project.url && (
                       <a
-                        href={project.url}
+                        href={sanitizeUrl(project.url)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-brand-hover-bg mt-6 inline-flex items-center gap-1.5 text-[14px] font-bold hover:underline"
@@ -298,7 +254,7 @@ export default function CreatorDashboardView({ profile, content }: Props) {
                 return (
                   <a
                     key={link.id}
-                    href={link.url}
+                    href={sanitizeUrl(link.url)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group border-border bg-background hover:border-brand-hover-bg flex items-center justify-between rounded-2xl border p-4 transition-all hover:shadow-sm sm:px-6"
