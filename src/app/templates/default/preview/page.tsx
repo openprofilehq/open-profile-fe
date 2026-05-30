@@ -26,7 +26,7 @@ export default function DefaultTemplatePreviewPage() {
     source: "draft" as const,
     updatedAt: new Date().toISOString(),
     content: {
-      sectionOrder: ["bio", "links", "projects"],
+      sectionOrder: ["bio", "links", "projects", "experience"],
       bio: {
         visible: true,
         content: "I'm a designer and developer. I build things for the web.",

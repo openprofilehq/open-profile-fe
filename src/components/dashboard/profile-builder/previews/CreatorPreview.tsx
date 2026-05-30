@@ -45,38 +45,36 @@ export default function CreatorPreview({
     if (!section) return null;
     return (
       <div className="group/menu absolute -top-12 right-0 z-50">
-        <button aria-label="Section options" className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
+        <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
           <MoreHorizontal size={18} />
         </button>
         
-        <div className="absolute top-full right-0 pt-2 opacity-0 invisible transition-all group-hover/menu:visible group-hover/menu:opacity-100">
-          <div className="border-border bg-background flex w-40 flex-col overflow-hidden rounded-xl border shadow-lg">
-            <button
-              onClick={(e) => {
+        <div className="border-border bg-background absolute top-full right-0 mt-2 flex w-40 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all invisible group-hover/menu:visible group-hover/menu:opacity-100">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleSectionVisibility(section.id);
+            }}
+            className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors"
+          >
+            {section.visible ? (
+              <><EyeOff size={16} /> Hide Section</>
+            ) : (
+              <><Eye size={16} /> Show Section</>
+            )}
+          </button>
+          <button
+            onClick={(e) => {
+              if (!isBio) {
                 e.stopPropagation();
-                onToggleSectionVisibility(section.id);
-              }}
-              className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors"
-            >
-              {section.visible ? (
-                <><EyeOff size={16} /> Hide Section</>
-              ) : (
-                <><Eye size={16} /> Show Section</>
-              )}
-            </button>
-            <button
-              onClick={(e) => {
-                if (!isBio) {
-                  e.stopPropagation();
-                  onRemoveSection(section.id);
-                }
-              }}
-              disabled={isBio}
-              className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? 'text-negative-text opacity-50 cursor-not-allowed' : 'text-negative-text hover:bg-negative-bg/20'}`}
-            >
-              <Trash2 size={16} /> Delete
-            </button>
-          </div>
+                onRemoveSection(section.id);
+              }
+            }}
+            disabled={isBio}
+            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? 'text-negative-text opacity-50 cursor-not-allowed' : 'text-negative-text hover:bg-negative-bg/20'}`}
+          >
+            <Trash2 size={16} /> Delete
+          </button>
         </div>
       </div>
     );
@@ -151,38 +149,36 @@ export default function CreatorPreview({
           {ctaSection && ctaSection.visible && (
             <div className="group relative mt-4">
               <div className="group/menu absolute -top-8 left-1/2 z-50 -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100">
-                <button aria-label="Section options" className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
+                <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
                   <MoreHorizontal size={16} />
                 </button>
                 
-                <div className="absolute top-full left-1/2 pt-2 -translate-x-1/2 opacity-0 invisible transition-all group-hover/menu:visible group-hover/menu:opacity-100">
-                  <div className="border-border bg-background flex w-36 flex-col overflow-hidden rounded-xl border shadow-lg">
-                    <button
-                      onClick={(e) => {
+                <div className="border-border bg-background absolute top-full left-1/2 mt-2 flex w-36 -translate-x-1/2 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all invisible group-hover/menu:visible group-hover/menu:opacity-100">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleSectionVisibility(ctaSection.id);
+                    }}
+                    className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-3 py-2 text-[13px] font-medium transition-colors"
+                  >
+                    {ctaSection.visible ? (
+                      <><EyeOff size={14} /> Hide</>
+                    ) : (
+                      <><Eye size={14} /> Show</>
+                    )}
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      if (ctaSection.type !== "bio") {
                         e.stopPropagation();
-                        onToggleSectionVisibility(ctaSection.id);
-                      }}
-                      className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-3 py-2 text-[13px] font-medium transition-colors"
-                    >
-                      {ctaSection.visible ? (
-                        <><EyeOff size={14} /> Hide</>
-                      ) : (
-                        <><Eye size={14} /> Show</>
-                      )}
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        if (ctaSection.type !== "bio") {
-                          e.stopPropagation();
-                          onRemoveSection(ctaSection.id);
-                        }
-                      }}
-                      disabled={ctaSection.type === "bio"}
-                      className={`flex w-full items-center gap-3 px-3 py-2 text-[13px] font-medium transition-colors ${ctaSection.type === 'bio' ? 'text-negative-text opacity-50 cursor-not-allowed' : 'text-negative-text hover:bg-negative-bg/20'}`}
-                    >
-                      <Trash2 size={14} /> Delete
-                    </button>
-                  </div>
+                        onRemoveSection(ctaSection.id);
+                      }
+                    }}
+                    disabled={ctaSection.type === "bio"}
+                    className={`flex w-full items-center gap-3 px-3 py-2 text-[13px] font-medium transition-colors ${ctaSection.type === 'bio' ? 'text-negative-text opacity-50 cursor-not-allowed' : 'text-negative-text hover:bg-negative-bg/20'}`}
+                  >
+                    <Trash2 size={14} /> Delete
+                  </button>
                 </div>
               </div>
               <a
@@ -290,10 +286,10 @@ export default function CreatorPreview({
                               
                               {/* CONTENT */}
                               <div className="flex flex-col items-start min-w-0 flex-1">
-                                <h5 className="text-xl font-bold text-primary-text break-words">
+                                <h5 className="text-xl font-bold text-primary-text break-all">
                                   {project.title}
                                 </h5>
-                                <p className={`text-secondary-text break-words mt-1 ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"}`}>
+                                <p className={`text-secondary-text break-all mt-1 ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"}`}>
                                   {project.description}
                                 </p>
                                 {layoutType !== "1" && (
@@ -380,7 +376,7 @@ export default function CreatorPreview({
                     key={section.id}
                     className="border-border mx-auto max-w-2xl rounded-3xl border p-8 sm:p-10"
                   >
-                    <p className="text-secondary-text break-words text-center text-[15px] leading-relaxed whitespace-pre-wrap">
+                    <p className="text-secondary-text break-all text-center text-[15px] leading-relaxed whitespace-pre-wrap">
                       {section.bio ||
                         "Write a little bit about yourself here..."}
                     </p>
