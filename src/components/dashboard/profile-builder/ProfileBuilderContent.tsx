@@ -670,6 +670,8 @@ export default function ProfileBuilderContent() {
             onChangeTab={setActiveTab}
             selectedSection={selectedSection}
             onUpdateSection={handleUpdateSection}
+            template={template}
+            onChangeTemplate={(val) => setTemplate(val || "professional")}
           />
         </div>
       </div>

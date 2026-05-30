@@ -47,11 +47,11 @@ export async function POST() {
 
     const setCookies = res.headers.getSetCookie?.() || [];
     for (const cookie of setCookies) {
-      if (cookie.startsWith("accessToken=")) {
+      if (cookie.startsWith("accessToken=") || cookie.startsWith("_at=")) {
         const fullValue = cookie.split(";")[0];
         accessToken = fullValue.substring(fullValue.indexOf("=") + 1);
       }
-      if (cookie.startsWith("refreshToken=")) {
+      if (cookie.startsWith("refreshToken=") || cookie.startsWith("_rt=")) {
         const fullValue = cookie.split(";")[0];
         newRefreshToken = fullValue.substring(fullValue.indexOf("=") + 1);
       }

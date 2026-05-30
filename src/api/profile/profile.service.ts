@@ -13,7 +13,6 @@ import {
   ProfileAppearanceRequest,
   ProfileAppearanceResponse,
   GetProfileAppearanceResponse,
-  ValidateProfileLinkData,
 } from "./profile.type";
 
 export function createProfile(data: CreateProfileRequest) {
@@ -73,21 +72,6 @@ export function getProfileContent(signal?: AbortSignal) {
   });
 }
 
-export function validateProfileLink(
-  url: string,
-  iconId?: string | null,
-  signal?: AbortSignal
-) {
-  return callApi<ValidateProfileLinkData>({
-    url: "/profiles/validate/link",
-    method: "GET",
-    params: {
-      url,
-      ...(iconId ? { iconId } : {}),
-    },
-    signal,
-  });
-}
 
 export function getDraftState(signal?: AbortSignal) {
   return callApi<DraftStateResponse>({

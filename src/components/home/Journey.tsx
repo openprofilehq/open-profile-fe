@@ -163,7 +163,7 @@ export function Journey() {
               alt="step number"
               width={160}
               height={160}
-              className="absolute -top-[105px] left-[130px] z-0 opacity-100"
+              className="absolute top-[-105px] left-[130px] z-0 opacity-100"
             />
 
             <div className="absolute top-[150px] left-[100px] z-20 -translate-x-1/2 -translate-y-1/2">
@@ -199,10 +199,10 @@ export function Journey() {
               alt="step number"
               width={160}
               height={160}
-              className="absolute -top-[40px] left-[130px] z-0 opacity-100"
+              className="absolute top-[-40px] left-[130px] z-0 opacity-100"
             />
 
-            <div className="absolute -top-[130px] left-[145px] z-20">
+            <div className="absolute top-[-130px] left-[145px] z-20">
               <Image
                 src={steps[1].icon}
                 alt="step icon"
@@ -235,10 +235,10 @@ export function Journey() {
               alt="step number"
               width={160}
               height={160}
-              className="absolute -top-[35px] left-[250px] z-0 opacity-100"
+              className="absolute top-[-35px] left-[250px] z-0 opacity-100"
             />
 
-            <div className="absolute -top-[60px] left-[165px] z-20">
+            <div className="absolute top-[-60px] left-[165px] z-20">
               <Image
                 src={steps[2].icon}
                 alt="step icon"

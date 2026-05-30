@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, X, Eye } from "lucide-react";
+import { Check, X, Eye, ExternalLink } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   dashboardProfileOption,
@@ -13,8 +13,9 @@ import { TemplateType } from "@/api/profile/profile.type";
 
 type Props = {
   initialTemplate: TemplateType;
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
   onPreviewChange?: (template: TemplateType | null) => void;
+  defaultOpen?: boolean;
 };
 
 const TEMPLATES: { type: TemplateType; description: string }[] = [
@@ -44,8 +45,9 @@ export function TemplateSelectionModal({
   initialTemplate,
   trigger,
   onPreviewChange,
+  defaultOpen = false,
 }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const [localSelectedTemplate, setLocalSelectedTemplate] =
     useState<TemplateType>(initialTemplate);
   const queryClient = useQueryClient();
@@ -58,7 +60,7 @@ export function TemplateSelectionModal({
       queryClient.invalidateQueries({ queryKey: profileAppearanceOption().queryKey });
       toast.success("Template saved successfully.");
       setIsOpen(false);
-      onPreviewChange?.(null);
+      onPreviewChange?.(localSelectedTemplate);
     },
     onError: () => {
       toast.error("Failed to save template.");
@@ -95,10 +97,12 @@ export function TemplateSelectionModal({
 
   return (
     <>
-      {React.isValidElement(trigger) 
-        ? React.cloneElement(trigger as React.ReactElement<any>, { onClick: handleOpen }) 
-        : <div onClick={handleOpen} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') handleOpen(); }}>{trigger}</div>
-      }
+
+      {trigger && (
+        <div onClick={handleOpen} className="w-full">
+          {trigger}
+        </div>
+      )}
       {isOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm"
@@ -152,14 +156,14 @@ export function TemplateSelectionModal({
                       onPreviewChange?.(template.type);
                     }
                   }}
-                  className={`relative flex cursor-pointer flex-col items-start rounded-xl border-2 p-4 text-left transition-all focus-visible:ring-2 focus-visible:ring-brand-hover-bg focus-visible:outline-none ${
+                  className={`relative flex cursor-pointer flex-col items-start rounded-xl border-2 p-4 text-left transition-all focus-visible:ring-2 focus-visible:ring-[#087583] focus-visible:outline-none ${
                     isSelected
-                      ? "border-brand-hover-bg bg-brand-hover-bg/5"
-                      : "border-border hover:border-brand-hover-bg/40 hover:bg-hover-bg"
+                      ? "border-[#087583] bg-[#087583]/5"
+                      : "border-border hover:border-[#087583]/40 hover:bg-hover-bg"
                   }`}
                 >
                   {isSelected && (
-                    <div className="absolute top-3 right-3 z-10 rounded-full bg-brand-hover-bg p-1 text-white">
+                    <div className="absolute top-3 right-3 z-10 rounded-full bg-[#087583] p-1 text-white">
                       <Check size={14} />
                     </div>
                   )}
@@ -171,10 +175,10 @@ export function TemplateSelectionModal({
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
                       onKeyDown={(e) => e.stopPropagation()}
-                      className="z-25 mt-3 flex items-center gap-1 rounded-md bg-brand-hover-bg px-3 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:scale-105 hover:bg-button-brand-bg active:scale-95"
+                      className="z-25 mt-3 flex items-center gap-1 rounded-md bg-[#087583] px-3 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:scale-105 hover:bg-[#065f6b] active:scale-95"
                     >
                       <Eye size={12} />
-                      Live Preview ↗
+                      Live Preview <ExternalLink size={10} className="ml-0.5" />
                     </a>
                   </div>
                   <h3 className="flex items-center gap-2 text-lg font-bold text-primary-text">
@@ -193,7 +197,7 @@ export function TemplateSelectionModal({
               Cancel
             </Button>
             <Button
-              className="bg-brand-hover-bg px-6 font-bold text-white hover:bg-button-brand-bg"
+              className="bg-[#087583] px-6 font-bold text-white hover:bg-[#065f6b]"
               onClick={handleConfirm}
               disabled={isSaving}
             >

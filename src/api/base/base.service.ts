@@ -88,12 +88,14 @@ api.interceptors.response.use(
       const isSilent = originalRequest.silent === true;
 
       if (typeof window !== "undefined" && !isSilent) {
-        const returnTo = encodeURIComponent(
-          window.location.pathname +
-            window.location.search +
-            window.location.hash
-        );
-        window.location.href = `/login?returnTo=${returnTo}`;
+        if (!window.location.pathname.startsWith("/login")) {
+          const returnTo = encodeURIComponent(
+            window.location.pathname +
+              window.location.search +
+              window.location.hash
+          );
+          window.location.href = `/login?returnTo=${returnTo}`;
+        }
       }
       return Promise.reject(refreshError);
     } finally {

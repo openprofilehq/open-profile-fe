@@ -75,6 +75,9 @@ export default function CtaSidebar({
   );
   const [buttonUrl, setButtonUrl] = useState(section?.url || "");
   const [urlError, setUrlError] = useState("");
+  const [titleError, setTitleError] = useState("");
+  const [subtitleError, setSubtitleError] = useState("");
+  const [btnTextError, setBtnTextError] = useState("");
   const [selectedIconId, setSelectedIconId] = useState<string | null>(
     section?.iconId || "chat"
   );
@@ -102,12 +105,22 @@ export default function CtaSidebar({
 
   const handleTitleChange = (val: string) => {
     setSectionTitle(val);
-    syncSection({ title: val });
+    if (!val.trim()) {
+      setTitleError("Title is required.");
+    } else {
+      setTitleError("");
+      syncSection({ title: val });
+    }
   };
 
   const handleSubtitleChange = (val: string) => {
     setSectionSubtitle(val);
-    syncSection({ subtitle: val });
+    if (!val.trim()) {
+      setSubtitleError("Subtitle is required.");
+    } else {
+      setSubtitleError("");
+      syncSection({ subtitle: val });
+    }
   };
 
   const handleLayoutChange = (lay: string) => {
@@ -117,12 +130,19 @@ export default function CtaSidebar({
 
   const handleButtonTextChange = (val: string) => {
     setButtonText(val);
-    syncSection({ buttonText: val });
+    if (!val.trim()) {
+      setBtnTextError("Button text is required.");
+    } else {
+      setBtnTextError("");
+      syncSection({ buttonText: val });
+    }
   };
 
   const handleButtonUrlChange = (val: string) => {
     setButtonUrl(val);
-    if (!val.trim() || isValidUrl(val.trim(), selectedIconId)) {
+    if (!val.trim()) {
+      setUrlError("URL is required.");
+    } else if (isValidUrl(val.trim(), selectedIconId)) {
       setUrlError("");
       syncSection({ url: val });
     } else {
@@ -205,8 +225,13 @@ export default function CtaSidebar({
               value={sectionTitle}
               onChange={(e) => handleTitleChange(e.target.value)}
               placeholder="Let's build something"
-              className="focus:border-brand-b focus:ring-brand-b w-full rounded-[10px] border border-border px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:ring-1"
+              className={`w-full rounded-[10px] border px-4 py-3 text-sm font-semibold text-[#050505] outline-none transition-colors ${
+                titleError
+                  ? "border-red-500 focus:border-red-500"
+                  : "border-border focus:border-brand-b"
+              }`}
             />
+            {titleError && <p className="text-xs text-red-500">{titleError}</p>}
           </div>
 
           {/* Subtitle Section */}
@@ -218,11 +243,20 @@ export default function CtaSidebar({
               maxLength={200}
               placeholder="I'm currently accepting new projects and consulting opportunities..."
               rows={4}
-              className="focus:border-brand-b focus:ring-brand-b w-full resize-none rounded-[10px] border border-border px-4 py-3 text-sm text-[#050505] outline-none focus:ring-1"
+              className={`w-full resize-none rounded-[10px] border px-4 py-3 text-sm text-[#050505] outline-none transition-colors ${
+                subtitleError
+                  ? "border-red-500 focus:border-red-500"
+                  : "border-border focus:border-brand-b"
+              }`}
             />
-            <p className="text-right text-[11px] text-[#A2A2A2]">
-              {sectionSubtitle.length}/200
-            </p>
+            <div className="flex justify-between items-center">
+              {subtitleError ? (
+                <p className="text-xs text-red-500">{subtitleError}</p>
+              ) : <span />}
+              <p className="text-right text-[11px] text-[#A2A2A2]">
+                {sectionSubtitle.length}/200
+              </p>
+            </div>
           </div>
 
           {/* Icon Selector Section */}
@@ -301,7 +335,9 @@ export default function CtaSidebar({
           {/* Button Section */}
           <div className="flex flex-col gap-2">
             <label className="text-xs font-bold text-[#050505]">Button</label>
-            <div className="flex flex-col overflow-hidden rounded-[10px] border border-border bg-background">
+            <div className={`flex flex-col overflow-hidden rounded-[10px] border ${
+              btnTextError || urlError ? "border-red-500" : "border-border bg-background"
+            }`}>
               <input
                 type="text"
                 value={buttonText}
@@ -309,13 +345,13 @@ export default function CtaSidebar({
                 placeholder="Start a Conversation"
                 className="w-full border-b border-border px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:bg-gray-50/30"
               />
-              <div className="relative flex items-center">
+              <div className="relative flex items-center bg-background">
                 <input
                   type="text"
                   value={buttonUrl}
                   onChange={(e) => handleButtonUrlChange(e.target.value)}
                   placeholder="Paste link, email, or phone (e.g., +1234567890)..."
-                  className={`w-full px-4 py-3 pr-10 text-sm outline-none focus:bg-gray-50/30 ${
+                  className={`w-full bg-background px-4 py-3 pr-10 text-sm outline-none focus:bg-gray-50/30 ${
                     urlError ? "text-red-500" : "text-gray-600"
                   }`}
                 />
@@ -324,6 +360,7 @@ export default function CtaSidebar({
                 </span>
               </div>
             </div>
+            {btnTextError && <p className="text-xs text-red-500">{btnTextError}</p>}
             {urlError && <p className="text-xs text-red-500">{urlError}</p>}
           </div>
         </div>

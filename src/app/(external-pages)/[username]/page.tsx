@@ -160,8 +160,16 @@ export default async function UserProfilePage({ params }: Props) {
       updatedAt: new Date().toISOString(),
     };
 
+    const renderWithPreviewLayout = (children: React.ReactNode) => (
+      <div className="bg-secondary-bg text-primary-text flex min-h-screen flex-col pb-24 font-sans antialiased">
+        <div className="mx-auto w-full max-w-4xl px-4 pt-6 sm:px-6">
+          <div className="">{children}</div>
+        </div>
+      </div>
+    );
+
     if (activeTemplate === "creator") {
-      return (
+      return renderWithPreviewLayout(
         <TemplateAppearanceProvider appearance={themeSettings}>
           <CreatorDashboardView
             profile={dashboardProfile}
@@ -173,7 +181,7 @@ export default async function UserProfilePage({ params }: Props) {
     }
 
     if (activeTemplate === "professional") {
-      return (
+      return renderWithPreviewLayout(
         <TemplateAppearanceProvider appearance={themeSettings}>
           <ProfessionalDashboardView
             profile={dashboardProfile}
@@ -185,7 +193,7 @@ export default async function UserProfilePage({ params }: Props) {
     }
 
     if (activeTemplate === "portfolio") {
-      return (
+      return renderWithPreviewLayout(
         <TemplateAppearanceProvider appearance={themeSettings}>
           <PortfolioDashboardView
             profile={dashboardProfile}

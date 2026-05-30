@@ -29,6 +29,7 @@ type Props = {
   isLoadingProfile?: boolean;
   isLoadingContent?: boolean;
   appearance?: ProfileAppearanceSettings | null;
+  isPreview?: boolean;
 };
 
 const getIconForUrl = (url: string = "") => {

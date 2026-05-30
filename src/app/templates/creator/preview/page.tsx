@@ -21,7 +21,7 @@ export default function CreatorTemplatePreviewPage() {
 
   return (
     <TemplatePreviewLayout templateName="Creator">
-      <CreatorDashboardView profile={dummyProfile} />
+      <CreatorDashboardView profile={dummyProfile} isPreview={true} />
     </TemplatePreviewLayout>
   );
 }

@@ -6,7 +6,7 @@ import { getDisplayUrl, getProfileUrl } from "@/utils/profile";
 import { Skeleton } from "../ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { userQueryOptions } from "@/api/auth/auth.options";
-import { TemplateSelectionModal } from "./TemplateSelectionModal";
+
 import {
   DashboardProfileResponse,
   TemplateType,
@@ -48,7 +48,7 @@ type Props = {
 export default function ProfileOverviewCard({
   profile,
   isLoading,
-  onPreviewChange,
+  onPreviewChange: _onPreviewChange,
   previewTemplate,
 }: Props) {
   const { data: user } = useQuery(userQueryOptions);
@@ -87,11 +87,11 @@ export default function ProfileOverviewCard({
           {isLoading ? (
             <Skeleton className="h-8" />
           ) : (
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-2xl font-bold break-all">
               Welcome, {profile?.fullName ?? user?.fullName ?? "User"}
             </h1>
           )}
-          <p className="text-secondary-text mt-3 max-w-[390px]">
+          <p className="text-secondary-text mt-3 max-w-[390px] wrap-break-word">
             Your profile is live and ready to share. Manage your public page,
             update key sections, and keep things current from one place
           </p>
@@ -117,17 +117,6 @@ export default function ProfileOverviewCard({
                 Edit
               </Link>
             </Button>
-
-            <TemplateSelectionModal
-              initialTemplate={activeTemplate}
-              onPreviewChange={onPreviewChange}
-              trigger={
-                <Button variant="outline">
-                  <Palette size={16} className="mr-2" />
-                  Choose Template
-                </Button>
-              }
-            />
           </div>
         </div>
       </section>

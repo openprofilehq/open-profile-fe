@@ -18,6 +18,7 @@ type Props = {
   isLoadingProfile?: boolean;
   isLoadingContent?: boolean;
   appearance?: ProfileAppearanceSettings | null;
+  isPreview?: boolean;
 };
 
 export default function ProfessionalDashboardView({
