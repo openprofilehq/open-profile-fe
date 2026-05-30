@@ -89,7 +89,7 @@ export default function CreatorDashboardView({ profile, content }: Props) {
     })
     .slice(0, 4);
   return (
-    <div className="text-primary-text bg-primary-bg flex min-h-screen w-full flex-col font-sans antialiased">
+    <div className="text-primary-text flex min-h-screen w-full flex-col bg-white antialiased">
       <div className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-24">
         <header className="flex w-full flex-col items-center gap-4 text-center">
           <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
