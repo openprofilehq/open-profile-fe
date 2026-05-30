@@ -9,7 +9,11 @@ import {
   MoreHorizontal,
   ArrowRight,
 } from "lucide-react";
-import { getImageUrl, sanitizeUrl } from "@/utils/profile";
+import {
+  getImageUrl,
+  sanitizeUrl,
+  getDisplayProfileUrl,
+} from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 import { getLinkIcon } from "../../shared/TemplateLinkCard";
 
@@ -41,12 +45,21 @@ export default function CreatorPreview({
     }
   }, [selectedSectionId]);
 
-  const visibleSections = sections.filter((section) => section.visible);
-
   const bioSection = sections.find((s) => s.type === "bio");
   const linksSection = sections.find((s) => s.type === "links");
   const ctaSection = sections.find((s) => s.type === "experience");
   const bioSectionId = bioSection?.id ?? "bio";
+
+  const sectionStyle = (section: Section): React.CSSProperties => ({
+    ...(section.bgColor && { backgroundColor: section.bgColor }),
+    ...(section.textColor && { color: section.textColor }),
+    ...(section.padding != null && { padding: section.padding }),
+    ...(section.paddingTop != null && { paddingTop: section.paddingTop }),
+    ...(section.paddingBottom != null && {
+      paddingBottom: section.paddingBottom,
+    }),
+    ...(section.gap != null && { gap: section.gap }),
+  });
 
   const renderControls = (section?: Section, isBio: boolean = false) => {
     if (!section) return null;
@@ -82,7 +95,11 @@ export default function CreatorPreview({
               }
             }}
             disabled={isBio}
-            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? "text-negative-text cursor-not-allowed opacity-50" : "text-negative-text hover:bg-negative-bg/20"}`}
+            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${
+              isBio
+                ? "text-negative-text cursor-not-allowed opacity-50"
+                : "text-negative-text hover:bg-negative-bg/20"
+            }`}
           >
             <Trash2 size={16} /> Delete
           </button>
@@ -109,12 +126,21 @@ export default function CreatorPreview({
     .slice(0, 4);
 
   return (
-    <div className="flex w-full flex-col">
+    <div
+      className="flex w-full flex-col"
+      style={{ gap: "calc(var(--op-spacing, 24px) * 1.5)" }}
+    >
       {/* CREATOR HEADER (Bio Section) */}
       {(!selectedSectionId ||
         selectedSectionId === bioSectionId ||
         selectedSectionId === ctaSection?.id) && (
-        <div className="relative mt-6 flex w-full flex-col items-center gap-4 p-6 text-center">
+        <div
+          className="relative flex w-full flex-col items-center text-center"
+          style={{
+            gap: "var(--op-spacing, 24px)",
+            padding: "var(--op-spacing, 24px)",
+          }}
+        >
           {renderControls(bioSection, true)}
 
           <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
@@ -138,12 +164,15 @@ export default function CreatorPreview({
               {profile?.fullName || "Micaela Robinson"}
             </h1>
             <p className="text-secondary-text mt-1 text-[15px]">
-              openprofile.app/{profile?.username || "micaela"}
+              {getDisplayProfileUrl(profile?.username || "micaela")}
             </p>
           </div>
 
           {socialLinks.length > 0 && (
-            <div className="mt-2 flex items-center gap-4">
+            <div
+              className="flex items-center"
+              style={{ gap: "calc(var(--op-spacing, 24px) * 0.75)" }}
+            >
               {socialLinks.map((link, i) => {
                 return (
                   <div
@@ -160,7 +189,7 @@ export default function CreatorPreview({
           )}
 
           {ctaSection && ctaSection.visible && (
-            <div className="group relative mt-4">
+            <div className="group relative">
               <div className="group/menu absolute -top-8 left-1/2 z-50 -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100">
                 <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
                   <MoreHorizontal size={16} />
@@ -192,7 +221,11 @@ export default function CreatorPreview({
                       }
                     }}
                     disabled={ctaSection.type === "bio"}
-                    className={`flex w-full items-center gap-3 px-3 py-2 text-[13px] font-medium transition-colors ${ctaSection.type === "bio" ? "text-negative-text cursor-not-allowed opacity-50" : "text-negative-text hover:bg-negative-bg/20"}`}
+                    className={`flex w-full items-center gap-3 px-3 py-2 text-[13px] font-medium transition-colors ${
+                      ctaSection.type === "bio"
+                        ? "text-negative-text cursor-not-allowed opacity-50"
+                        : "text-negative-text hover:bg-negative-bg/20"
+                    }`}
                   >
                     <Trash2 size={14} /> Delete
                   </button>
@@ -225,10 +258,17 @@ export default function CreatorPreview({
       {(!selectedSectionId ||
         ["projects", "links", "bio"].includes(selectedSectionId)) && (
         <>
-          <div className="border-border mt-8 flex items-center justify-center gap-8 border-b">
+          <div
+            className="border-border flex items-center justify-center border-b"
+            style={{ gap: "calc(var(--op-spacing, 24px) * 1.5)" }}
+          >
             <button
               onClick={() => setActiveTab("projects")}
-              className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "projects" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
+              className={`relative pb-3 text-[15px] font-semibold transition-colors ${
+                activeTab === "projects"
+                  ? "text-brand-hover-bg"
+                  : "text-secondary-text hover:text-primary-text"
+              }`}
             >
               Projects
               {activeTab === "projects" && (
@@ -237,7 +277,11 @@ export default function CreatorPreview({
             </button>
             <button
               onClick={() => setActiveTab("links")}
-              className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "links" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
+              className={`relative pb-3 text-[15px] font-semibold transition-colors ${
+                activeTab === "links"
+                  ? "text-brand-hover-bg"
+                  : "text-secondary-text hover:text-primary-text"
+              }`}
             >
               Links
               {activeTab === "links" && (
@@ -246,7 +290,11 @@ export default function CreatorPreview({
             </button>
             <button
               onClick={() => setActiveTab("about")}
-              className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "about" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
+              className={`relative pb-3 text-[15px] font-semibold transition-colors ${
+                activeTab === "about"
+                  ? "text-brand-hover-bg"
+                  : "text-secondary-text hover:text-primary-text"
+              }`}
             >
               About
               {activeTab === "about" && (
@@ -255,9 +303,9 @@ export default function CreatorPreview({
             </button>
           </div>
 
-          <div className="mt-8 w-full">
+          <div className="w-full">
             {/* CREATOR TAB CONTENT */}
-            {visibleSections.map((section) => {
+            {sections.map((section) => {
               if (
                 selectedSectionId &&
                 selectedSectionId !== section.id &&
@@ -266,14 +314,37 @@ export default function CreatorPreview({
               )
                 return null;
 
+              // Hidden section placeholder — always rendered so 3-dots menu stays reachable
+              const isCurrentTab =
+                (section.type === "projects" && activeTab === "projects") ||
+                (section.type === "links" && activeTab === "links") ||
+                (section.type === "bio" && activeTab === "about");
+
+              if (!section.visible && isCurrentTab) {
+                return (
+                  <div key={section.id} className="relative">
+                    {renderControls(section, section.type === "bio")}
+                    <div className="text-secondary-text border-border flex items-center justify-center rounded-2xl border border-dashed py-10 text-sm opacity-50">
+                      {section.title} section is hidden
+                    </div>
+                  </div>
+                );
+              }
+
+              if (!section.visible) return null;
+
               // Projects Tab
               if (section.type === "projects" && activeTab === "projects") {
                 return (
-                  <div key={section.id} className="relative w-full">
+                  <div
+                    key={section.id}
+                    className="relative w-full"
+                    style={sectionStyle(section)}
+                  >
                     {renderControls(section)}
                     {section.projects && section.projects.length > 0 ? (
                       <div
-                        className={`grid gap-6 ${
+                        className={`grid ${
                           section.layout === "1"
                             ? "grid-cols-1"
                             : section.layout === "3"
@@ -282,6 +353,7 @@ export default function CreatorPreview({
                                 ? "grid-cols-1 sm:grid-cols-2"
                                 : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
                         }`}
+                        style={{ gap: "var(--op-spacing, 24px)" }}
                       >
                         {section.projects.map((project) => {
                           const layoutType = section.layout || "2";
@@ -290,15 +362,16 @@ export default function CreatorPreview({
 
                           const card = (
                             <div
-                              className={`group border-border bg-background hover:border-brand-hover-bg/30 flex rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md ${
+                              className={`group border-border bg-background hover:border-brand-hover-bg/30 flex rounded-[12px] border shadow-sm transition-shadow hover:shadow-md ${
                                 layoutType === "1"
                                   ? "flex-col justify-between sm:flex-row sm:items-center"
                                   : layoutType === "3"
                                     ? "flex-col sm:flex-row sm:items-start"
                                     : layoutType === "4"
                                       ? "flex-col sm:flex-row-reverse sm:items-start"
-                                      : "flex-col" // Layout 2
+                                      : "flex-col"
                               }`}
+                              style={{ padding: "var(--op-spacing, 24px)" }}
                             >
                               {/* IMAGE */}
                               {layoutType !== "1" && (
@@ -307,7 +380,9 @@ export default function CreatorPreview({
                                     layoutType === "2"
                                       ? "aspect-video w-full"
                                       : "h-[120px] w-full sm:mb-0 sm:w-[140px]"
-                                  } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
+                                  } ${layoutType === "3" ? "sm:mr-5" : ""} ${
+                                    layoutType === "4" ? "sm:ml-5" : ""
+                                  }`}
                                 >
                                   {displayImg ? (
                                     <Image
@@ -331,7 +406,11 @@ export default function CreatorPreview({
                                   {project.title}
                                 </h5>
                                 <p
-                                  className={`text-secondary-text mt-1 break-all ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"}`}
+                                  className={`text-secondary-text mt-1 break-all ${
+                                    layoutType === "1"
+                                      ? "line-clamp-1"
+                                      : "line-clamp-2"
+                                  }`}
                                 >
                                   {project.description}
                                 </p>
@@ -387,11 +466,18 @@ export default function CreatorPreview({
                 return (
                   <div
                     key={section.id}
-                    className="relative mx-auto flex w-full flex-col gap-4"
+                    className="relative mx-auto flex w-full flex-col"
+                    style={{
+                      gap: "var(--op-spacing, 24px)",
+                      ...sectionStyle(section),
+                    }}
                   >
                     {renderControls(section)}
                     {allLinks.length > 0 ? (
-                      <div className="mx-auto flex w-full max-w-xl flex-col gap-4">
+                      <div
+                        className="mx-auto flex w-full max-w-xl flex-col"
+                        style={{ gap: "var(--op-spacing, 24px)" }}
+                      >
                         {allLinks.map((link) => {
                           const url = link.url || "";
                           const isWebsite =
@@ -410,9 +496,18 @@ export default function CreatorPreview({
                           return (
                             <div
                               key={link.id}
-                              className="border-border bg-background flex items-center justify-between rounded-2xl border p-4 sm:px-6"
+                              className="border-border bg-background flex items-center justify-between rounded-2xl border"
+                              style={{
+                                gap: "var(--op-spacing, 24px)",
+                                padding: "var(--op-spacing, 24px)",
+                              }}
                             >
-                              <div className="flex items-center gap-4">
+                              <div
+                                className="flex items-center"
+                                style={{
+                                  gap: "calc(var(--op-spacing, 24px) * 0.75)",
+                                }}
+                              >
                                 <div className="bg-brand-light-subtle-bg text-brand-hover-bg flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
                                   {getLinkIcon(
                                     url + " " + (link.title || link.label || "")
@@ -446,7 +541,11 @@ export default function CreatorPreview({
                 return (
                   <div
                     key={section.id}
-                    className="border-border mx-auto max-w-2xl rounded-3xl border p-8 sm:p-10"
+                    className="border-border mx-auto max-w-2xl rounded-3xl border"
+                    style={{
+                      padding: "calc(var(--op-spacing, 24px) * 1.5)",
+                      ...sectionStyle(section),
+                    }}
                   >
                     <p className="text-secondary-text text-center text-[15px] leading-relaxed break-all whitespace-pre-wrap">
                       {section.bio ||

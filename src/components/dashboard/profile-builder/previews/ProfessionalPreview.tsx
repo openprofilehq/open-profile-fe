@@ -8,7 +8,11 @@ import {
   EyeOff,
   Trash2,
 } from "lucide-react";
-import { getImageUrl, sanitizeUrl } from "@/utils/profile";
+import {
+  getImageUrl,
+  sanitizeUrl,
+  getDisplayProfileUrl,
+} from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 
 interface ProfessionalPreviewProps {
@@ -32,12 +36,27 @@ export default function ProfessionalPreview({
   const ctaSection = sections.find((s) => s.type === "experience");
   const bioSectionId = bioSection?.id ?? "bio";
 
+  const sectionStyle = (section: Section): React.CSSProperties => ({
+    ...(section.bgColor && { backgroundColor: section.bgColor }),
+    ...(section.textColor && { color: section.textColor }),
+    ...(section.padding != null && { padding: section.padding }),
+    ...(section.paddingTop != null && { paddingTop: section.paddingTop }),
+    ...(section.paddingBottom != null && {
+      paddingBottom: section.paddingBottom,
+    }),
+    ...(section.gap != null && { gap: section.gap }),
+  });
+
   return (
-    <div className="text-primary-text mx-auto flex w-full max-w-4xl flex-col py-8 pt-12">
+    <div
+      className="text-primary-text mx-auto flex w-full max-w-4xl flex-col py-8 pt-12"
+      style={{ gap: "calc(var(--op-spacing, 24px) * 2)" }}
+    >
       {/* HEADER SECTION (Bio) */}
       {bioSection?.visible && (
         <div
-          className={`group relative mb-12 transition-opacity duration-200 ${selectedSectionId && selectedSectionId !== bioSectionId ? "opacity-50" : ""}`}
+          className={`group relative transition-opacity duration-200 ${selectedSectionId && selectedSectionId !== bioSectionId ? "opacity-50" : ""}`}
+          style={sectionStyle(bioSection)}
         >
           {bioSection && (
             <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
@@ -63,8 +82,17 @@ export default function ProfessionalPreview({
             </div>
           )}
 
-          <header className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between gap-6 rounded-2xl border border-transparent p-6 transition-colors sm:flex-row sm:items-start">
-            <div className="flex items-center gap-6">
+          <header
+            className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between rounded-2xl border border-transparent transition-colors sm:flex-row sm:items-start"
+            style={{
+              gap: "var(--op-spacing, 24px)",
+              padding: "var(--op-spacing, 24px)",
+            }}
+          >
+            <div
+              className="flex items-center"
+              style={{ gap: "var(--op-spacing, 24px)" }}
+            >
               <div className="border-border bg-secondary-bg relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-full border">
                 {getImageUrl(profile?.photoUrl) ? (
                   <Image
@@ -88,22 +116,34 @@ export default function ProfessionalPreview({
                   {profile?.fullName || "Micaela Robinson"}
                 </h1>
                 <p className="text-secondary-text mt-1 text-[15px]">
-                  openprofile.app/{profile?.username || "micaela"}
+                  {getDisplayProfileUrl(profile?.username || "micaela")}
                 </p>
               </div>
             </div>
 
-            <a
-              href="#"
-              onClick={(e) => e.preventDefault()}
-              className="border-brand-hover-bg bg-brand-hover-bg/5 text-brand-hover-bg hover:bg-brand-hover-bg/10 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-sm font-semibold transition-colors"
-            >
-              <Mail size={16} />
-              Email
-            </a>
+            {ctaSection?.visible && ctaSection?.url && (
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                className="border-brand-hover-bg bg-brand-hover-bg/5 text-brand-hover-bg hover:bg-brand-hover-bg/10 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-sm font-semibold transition-colors"
+              >
+                {ctaSection.iconSrc ? (
+                  <Image
+                    src={ctaSection.iconSrc}
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="object-contain"
+                  />
+                ) : (
+                  <Mail size={16} />
+                )}
+                {ctaSection.buttonText || "Email"}
+              </a>
+            )}
           </header>
 
-          <section className="mt-6 px-6">
+          <section style={{ paddingInline: "var(--op-spacing, 24px)" }}>
             <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed whitespace-pre-wrap">
               {bioSection?.bio || "Write a little bit about yourself here..."}
             </p>
@@ -114,7 +154,11 @@ export default function ProfessionalPreview({
       {/* LINKS SECTION */}
       {linksSection?.visible && (
         <section
-          className={`group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors ${selectedSectionId && selectedSectionId !== linksSection.id ? "opacity-50" : ""}`}
+          className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent transition-colors ${selectedSectionId && selectedSectionId !== linksSection.id ? "opacity-50" : ""}`}
+          style={{
+            padding: "var(--op-spacing, 24px)",
+            ...sectionStyle(linksSection),
+          }}
         >
           <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
             <button
@@ -185,7 +229,11 @@ export default function ProfessionalPreview({
       {/* PROJECTS SECTION */}
       {projectsSection?.visible && (
         <section
-          className={`group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors ${selectedSectionId && selectedSectionId !== projectsSection.id ? "opacity-50" : ""}`}
+          className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent transition-colors ${selectedSectionId && selectedSectionId !== projectsSection.id ? "opacity-50" : ""}`}
+          style={{
+            padding: "var(--op-spacing, 24px)",
+            ...sectionStyle(projectsSection),
+          }}
         >
           <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
             <button
@@ -215,62 +263,98 @@ export default function ProfessionalPreview({
           <h2 className="text-tertiary-text mb-4 text-[13px]">
             {projectsSection.subtitle || "Selected Work"}
           </h2>
-          <div className="flex flex-col gap-4">
-            {projectsSection.projects && projectsSection.projects.length > 0 ? (
-              projectsSection.projects.map((project) => (
-                <div
-                  key={project.id}
-                  className="border-border bg-background flex flex-col items-start rounded-xl border p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
-                >
-                  <div className="bg-secondary-bg border-border relative mb-4 h-[80px] w-full shrink-0 overflow-hidden rounded-lg border sm:mb-0 sm:w-[120px]">
-                    {getImageUrl(project.imageSrc) ? (
-                      <Image
-                        src={getImageUrl(project.imageSrc)!}
-                        alt={project.title || "Project"}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
-                    ) : (
-                      <div className="h-full w-full bg-neutral-200" />
-                    )}
-                  </div>
-                  <div className="flex w-full flex-col sm:ml-6">
-                    <h3 className="text-primary-text text-[16px] font-bold">
-                      {project.title}
-                    </h3>
-                    {project.description && (
-                      <p className="text-secondary-text mt-1 line-clamp-2 text-[13px]">
-                        {project.description}
-                      </p>
-                    )}
-                    {project.url && (
-                      <a
-                        href={sanitizeUrl(project.url)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
+          {projectsSection.projects && projectsSection.projects.length > 0 ? (
+            <div
+              className={`grid ${projectsSection.layout === "1" ? "grid-cols-1" : projectsSection.layout === "3" || projectsSection.layout === "4" ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1 sm:grid-cols-2"}`}
+              style={{ gap: "var(--op-spacing, 24px)" }}
+            >
+              {projectsSection.projects.map((project) => {
+                const layoutType = projectsSection.layout || "1";
+                const img = getImageUrl(project.imageSrc);
+                return (
+                  <div
+                    key={project.id}
+                    className={`border-border bg-background flex rounded-xl border shadow-sm transition-shadow hover:shadow-md ${
+                      layoutType === "4"
+                        ? "flex-col sm:flex-row-reverse sm:items-start"
+                        : layoutType === "3"
+                          ? "flex-col sm:flex-row sm:items-start"
+                          : layoutType === "2"
+                            ? "flex-col"
+                            : "flex-col items-start sm:flex-row sm:items-center"
+                    }`}
+                    style={{ padding: "var(--op-spacing, 24px)" }}
+                  >
+                    {layoutType !== "1" && (
+                      <div
+                        className={`bg-secondary-bg border-border relative shrink-0 overflow-hidden rounded-lg border ${layoutType === "2" ? "mb-4 aspect-video w-full" : "mb-4 h-[100px] w-full sm:mb-0 sm:w-[120px]"} ${layoutType === "3" ? "sm:mr-4" : ""} ${layoutType === "4" ? "sm:ml-4" : ""}`}
                       >
-                        {project.buttonText || "View Project"}
-                        <ArrowRight size={14} strokeWidth={2.5} />
-                      </a>
+                        {img ? (
+                          <Image
+                            src={img}
+                            alt={project.title || ""}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="h-full w-full bg-neutral-200" />
+                        )}
+                      </div>
                     )}
+                    {layoutType === "1" && (
+                      <div className="bg-secondary-bg border-border relative mb-4 h-[80px] w-full shrink-0 overflow-hidden rounded-lg border sm:mb-0 sm:w-[120px]">
+                        {img ? (
+                          <Image
+                            src={img}
+                            alt={project.title || ""}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="h-full w-full bg-neutral-200" />
+                        )}
+                      </div>
+                    )}
+                    <div
+                      className={`flex min-w-0 flex-1 flex-col ${layoutType === "1" ? "sm:ml-6" : ""}`}
+                    >
+                      <h3 className="text-primary-text text-[15px] font-bold">
+                        {project.title}
+                      </h3>
+                      {project.description && (
+                        <p className="text-secondary-text mt-1 line-clamp-2 text-[13px]">
+                          {project.description}
+                        </p>
+                      )}
+                      <span className="text-brand-hover-bg mt-3 inline-flex items-center gap-1 text-[13px] font-bold">
+                        {project.url
+                          ? project.buttonText || "View Project"
+                          : "Edit project"}
+                        <ArrowRight size={14} strokeWidth={2.5} />
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
-                No projects added yet.
-              </p>
-            )}
-          </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
+              No projects added yet.
+            </p>
+          )}
         </section>
       )}
 
       {/* CTA SECTION */}
       {ctaSection?.visible && (
         <section
-          className={`group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors ${selectedSectionId && selectedSectionId !== ctaSection.id ? "opacity-50" : ""}`}
+          className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent transition-colors ${selectedSectionId && selectedSectionId !== ctaSection.id ? "opacity-50" : ""}`}
+          style={{
+            padding: "var(--op-spacing, 24px)",
+            ...sectionStyle(ctaSection),
+          }}
         >
           <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
             <button
@@ -297,20 +381,53 @@ export default function ProfessionalPreview({
             </button>
           </div>
 
-          <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
-            {ctaSection.title || "Open to new projects."}
-          </h2>
-          <p className="text-secondary-text mt-2 mb-6 max-w-[500px] text-[15px]">
-            {ctaSection.subtitle || "Have an idea or product you're building?"}
-          </p>
-          <a
-            href={sanitizeUrl(ctaSection.url)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm transition-all active:scale-95"
-          >
-            {ctaSection.buttonText || "Work with me"}
-          </a>
+          {ctaSection.layout === "2" ? (
+            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+              <div>
+                <h3 className="text-primary-text text-[16px] font-bold">
+                  {ctaSection.title || "Open to new projects."}
+                </h3>
+                <p className="text-secondary-text mt-0.5 text-[13px]">
+                  {ctaSection.subtitle ||
+                    "Have an idea or product you're building?"}
+                </p>
+              </div>
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                className="bg-brand-hover-bg inline-flex h-10 shrink-0 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm"
+              >
+                {ctaSection.buttonText || "Work with me"}
+              </a>
+            </div>
+          ) : ctaSection.layout === "3" ? (
+            <div className="flex justify-center">
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                className="bg-brand-hover-bg inline-flex h-10 items-center justify-center rounded-md px-8 text-sm font-bold text-white shadow-sm"
+              >
+                {ctaSection.buttonText || "Work with me"}
+              </a>
+            </div>
+          ) : (
+            <>
+              <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
+                {ctaSection.title || "Open to new projects."}
+              </h2>
+              <p className="text-secondary-text mt-2 mb-6 max-w-[500px] text-[15px]">
+                {ctaSection.subtitle ||
+                  "Have an idea or product you're building?"}
+              </p>
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                className="bg-brand-hover-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm transition-all"
+              >
+                {ctaSection.buttonText || "Work with me"}
+              </a>
+            </>
+          )}
         </section>
       )}
     </div>

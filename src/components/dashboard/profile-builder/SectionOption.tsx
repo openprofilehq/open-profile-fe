@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Trash2, Upload } from "lucide-react";
+import { ChevronDown, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import type { SavedLink } from "./LinkSidebar";
-import { uploadImage } from "@/api/uploads/uploads.service";
 import { isValidUrl } from "./builder.utils";
 
 const presetIcons = [
@@ -117,45 +116,13 @@ export default function SectionOption({
     editingLink?.iconId ?? null
   );
   const [isIconMenuOpen, setIsIconMenuOpen] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState<string | null>(
-    editingLink?.imageSrc ?? null
-  );
   const [titleError, setTitleError] = useState("");
   const [urlError, setUrlError] = useState("");
   const [iconError, setIconError] = useState("");
-  const [uploading, setUploading] = useState(false);
   const [_validatingUrl, setValidatingUrl] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const selectedIcon =
     presetIcons.find((icon) => icon.id === selectedIconId) ?? null;
-
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result;
-      if (typeof result === "string") {
-        setUploadedImage(result);
-      }
-    };
-    reader.readAsDataURL(file);
-    event.target.value = "";
-
-    try {
-      setUploading(true);
-      const { url } = await uploadImage(file, "profiles");
-      setUploadedImage(url);
-    } catch (err) {
-      console.error("Failed to upload link image:", err);
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const handleSaveLink = async () => {
     let hasError = false;
@@ -174,8 +141,8 @@ export default function SectionOption({
       setUrlError("");
     }
 
-    if (!selectedIconId && !uploadedImage) {
-      setIconError("Either an icon or an uploaded image is required.");
+    if (!selectedIconId) {
+      setIconError("An icon is required.");
       hasError = true;
     } else {
       setIconError("");
@@ -199,7 +166,7 @@ export default function SectionOption({
           iconId: selectedIcon?.id ?? null,
           iconLabel: selectedIcon?.label ?? null,
           iconSrc: selectedIcon?.icon ?? null,
-          imageSrc: uploadedImage,
+          imageSrc: null,
         },
         editingLink?.id ?? null
       );
@@ -209,7 +176,6 @@ export default function SectionOption({
       setUrlError("");
       setSelectedIconId(null);
       setIsIconMenuOpen(false);
-      setUploadedImage(null);
       setIconError("");
       returnTab();
     } catch {
@@ -242,7 +208,7 @@ export default function SectionOption({
               if (event.target.value.trim()) setTitleError("");
             }}
             placeholder="Add title"
-            className={`w-full rounded-[10px] border px-4 py-3 text-sm font-semibold text-[#050505] outline-none transition-colors ${
+            className={`w-full rounded-[10px] border px-4 py-3 text-sm font-semibold text-[#050505] transition-colors outline-none ${
               titleError
                 ? "border-red-500 focus:border-red-500"
                 : "border-border focus:border-brand-b"
@@ -257,14 +223,14 @@ export default function SectionOption({
           </label>
           <div className="relative">
             <div
-              className={`border-tertiary-b flex overflow-hidden rounded-md border bg-background ${
-                iconError && !selectedIconId && !uploadedImage ? "border-red-500" : ""
+              className={`border-tertiary-b bg-background flex overflow-hidden rounded-md border ${
+                iconError && !selectedIconId ? "border-red-500" : ""
               }`}
             >
               <button
                 type="button"
                 onClick={() => setIsIconMenuOpen((current) => !current)}
-                className="flex min-w-0 flex-1 items-center gap-3 p-3 text-left transition-colors hover:bg-secondary-bg"
+                className="hover:bg-secondary-bg flex min-w-0 flex-1 items-center gap-3 p-3 text-left transition-colors"
                 aria-haspopup="listbox"
                 aria-expanded={isIconMenuOpen}
               >
@@ -301,7 +267,7 @@ export default function SectionOption({
 
                   setIsIconMenuOpen((current) => !current);
                 }}
-                className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-secondary-bg"
+                className="text-muted-foreground border-tertiary-b hover:bg-secondary-bg flex w-14 shrink-0 items-center justify-center border-l transition-colors"
                 aria-label={
                   selectedIcon ? "Remove selected icon" : "Open icon list"
                 }
@@ -316,8 +282,8 @@ export default function SectionOption({
             </div>
 
             {isIconMenuOpen && (
-              <div className="border-tertiary-b absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-xl border bg-background p-2 shadow-lg">
-                <div className="mb-2 px-2 text-xs font-semibold tracking-wide text-secondary-text uppercase">
+              <div className="border-tertiary-b bg-background absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-xl border p-2 shadow-lg">
+                <div className="text-secondary-text mb-2 px-2 text-xs font-semibold tracking-wide uppercase">
                   Preset icons
                 </div>
                 <div className="grid grid-cols-4 gap-2">
@@ -332,7 +298,7 @@ export default function SectionOption({
                           setSelectedIconId(icon.id);
                           setIsIconMenuOpen(false);
                         }}
-                        className={`flex flex-col items-center gap-2 rounded-md border p-2 transition-all ${isActive ? "border-brand-b bg-brand-light-subtle-bg" : "hover:border-tertiary-b border-transparent hover:bg-secondary-bg"}`}
+                        className={`flex flex-col items-center gap-2 rounded-md border p-2 transition-all ${isActive ? "border-brand-b bg-brand-light-subtle-bg" : "hover:border-tertiary-b hover:bg-secondary-bg border-transparent"}`}
                         aria-label={icon.label}
                       >
                         <Image
@@ -362,74 +328,9 @@ export default function SectionOption({
               </div>
             )}
           </div>
-        </span>
-
-        <span className="flex w-full flex-col gap-2">
-          <label className="text-sm font-semibold">Image</label>
-          <div className="relative">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-              aria-hidden
-            />
-
-            <div
-              className={`border-tertiary-b flex overflow-hidden rounded-md border bg-background ${
-                iconError && !selectedIconId && !uploadedImage ? "border-red-500" : ""
-              }`}
-            >
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="flex min-w-0 flex-1 items-center gap-3 p-3 text-left transition-colors hover:bg-secondary-bg"
-              >
-                {uploadedImage ? (
-                  <Image
-                    src={uploadedImage}
-                    alt="Uploaded"
-                    width={40}
-                    height={40}
-                    unoptimized
-                    className="h-10 w-10 shrink-0 rounded-md object-cover"
-                  />
-                ) : (
-                  <Image
-                    src="/profilebuilder_home/icons/placeholder.svg"
-                    alt="placeholder"
-                    width={24}
-                    height={24}
-                    className="shrink-0"
-                  />
-                )}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  if (uploadedImage) {
-                    setUploadedImage(null);
-                    if (fileInputRef.current) {
-                      fileInputRef.current.value = "";
-                    }
-                    return;
-                  }
-
-                  fileInputRef.current?.click();
-                }}
-                className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-secondary-bg"
-                aria-label={
-                  uploadedImage ? "Remove uploaded image" : "Upload image"
-                }
-                title={uploadedImage ? "Remove image" : "Upload image"}
-              >
-                {uploadedImage ? <Trash2 size={16} /> : <Upload size={16} />}
-              </button>
-            </div>
-            {iconError && <p className="mt-1 text-xs text-red-500">{iconError}</p>}
-          </div>
+          {iconError && (
+            <p className="mt-1 text-xs text-red-500">{iconError}</p>
+          )}
         </span>
 
         <span className="flex w-full flex-col gap-2">
@@ -459,7 +360,7 @@ export default function SectionOption({
               }
             }}
             placeholder="Paste link (e.g. yoursite.com)..."
-            className={`w-full rounded-[10px] border px-4 py-3 text-sm font-semibold text-[#050505] outline-none transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+            className={`w-full rounded-[10px] border px-4 py-3 text-sm font-semibold text-[#050505] transition-colors outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
               urlError
                 ? "border-red-500 focus:border-red-500"
                 : "border-border focus:border-brand-b"
@@ -482,16 +383,9 @@ export default function SectionOption({
           type="submit"
           size="lg"
           variant="primary"
-          disabled={
-            uploading ||
-            (!editingLink?.title && !canAddMoreLinks)
-          }
+          disabled={!editingLink?.title && !canAddMoreLinks}
         >
-          {uploading
-            ? "Uploading..."
-              : editingLink
-                ? "Update Link"
-                : "Save Link"}
+          {editingLink ? "Update Link" : "Save Link"}
         </Button>
       </form>
     </div>
