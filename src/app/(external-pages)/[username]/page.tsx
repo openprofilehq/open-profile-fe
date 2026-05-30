@@ -215,13 +215,10 @@ export default async function UserProfilePage({ params }: Props) {
   const selectedFontClass =
     fontStyles[globalFontNormalized] || fontStyles[globalFont] || "font-afacad";
 
-  const isDark = themeSettings.theme === "dark";
-  const globalBgColor =
-    themeSettings.bgColor ||
-    (isDark ? THEME_DEFAULTS.DARK_MODE.BG_COLOR : THEME_DEFAULTS.BG_COLOR);
-  const globalTextColor =
-    themeSettings.textColor ||
-    (isDark ? THEME_DEFAULTS.DARK_MODE.TEXT_COLOR : THEME_DEFAULTS.TEXT_COLOR);
+  const globalBgColor = themeSettings.bgColor || THEME_DEFAULTS.BG_COLOR;
+
+  const globalTextColor = themeSettings.textColor || THEME_DEFAULTS.TEXT_COLOR;
+
   const globalIconColor =
     themeSettings.iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT;
   const globalSpacing =
@@ -239,23 +236,15 @@ export default async function UserProfilePage({ params }: Props) {
     backgroundColor: globalBgColor,
     borderRadius: activeRadius,
     color: globalTextColor,
-    borderColor: isDark
-      ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR
-      : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
+    borderColor: THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
     marginBottom: `${globalSpacing}px`,
   };
 
   const textStyle = {
     color:
-      globalTextColor ===
-      (isDark ? THEME_DEFAULTS.DARK_MODE.TEXT_COLOR : THEME_DEFAULTS.TEXT_COLOR)
-        ? isDark
-          ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT
-          : THEME_DEFAULTS.LIGHT_MODE.MUTED_TEXT
-        : globalTextColor ||
-          (isDark
-            ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT
-            : THEME_DEFAULTS.LIGHT_MODE.MUTED_TEXT),
+      globalTextColor === THEME_DEFAULTS.TEXT_COLOR
+        ? THEME_DEFAULTS.LIGHT_MODE.MUTED_TEXT
+        : globalTextColor || THEME_DEFAULTS.TEXT_COLOR,
   };
 
   return (
@@ -323,13 +312,8 @@ export default async function UserProfilePage({ params }: Props) {
                       <p
                         style={{
                           color:
-                            secTextColor ===
-                            (isDark
-                              ? THEME_DEFAULTS.DARK_MODE.TEXT_COLOR
-                              : THEME_DEFAULTS.TEXT_COLOR)
-                              ? isDark
-                                ? THEME_DEFAULTS.DARK_MODE.MUTED_TEXT
-                                : THEME_DEFAULTS.LIGHT_MODE.MUTED_TEXT
+                            secTextColor === THEME_DEFAULTS.TEXT_COLOR
+                              ? THEME_DEFAULTS.LIGHT_MODE.MUTED_TEXT
                               : secTextColor || textStyle.color,
                         }}
                         className="mt-3 text-[15px] leading-relaxed whitespace-pre-wrap opacity-90 transition-colors"
@@ -376,12 +360,9 @@ export default async function UserProfilePage({ params }: Props) {
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{
-                              borderColor: isDark
-                                ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR
-                                : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
-                              backgroundColor: isDark
-                                ? "rgba(255,255,255,0.05)"
-                                : "rgba(255,255,255,0.6)",
+                              borderColor:
+                                THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
+                              backgroundColor: "rgba(255,255,255,0.6)",
                             }}
                             className="flex items-center justify-between rounded-xl border p-4 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
                           >
@@ -399,9 +380,8 @@ export default async function UserProfilePage({ params }: Props) {
                                 <span
                                   className="rounded-md border p-2"
                                   style={{
-                                    borderColor: isDark
-                                      ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR
-                                      : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
+                                    borderColor:
+                                      THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
                                   }}
                                 >
                                   <Image
@@ -432,9 +412,8 @@ export default async function UserProfilePage({ params }: Props) {
                             <span
                               className="rounded-full border p-2 opacity-70"
                               style={{
-                                borderColor: isDark
-                                  ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR
-                                  : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
+                                borderColor:
+                                  THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
                               }}
                             >
                               <ExternalLink size={14} className="shrink-0" />
@@ -470,10 +449,7 @@ export default async function UserProfilePage({ params }: Props) {
 
               const iconStyle = {
                 color: secIconColor,
-                backgroundColor: getRgbaColor(
-                  secIconColor,
-                  isDark ? 0.15 : 0.08
-                ),
+                backgroundColor: getRgbaColor(secIconColor, 0.08),
               };
 
               return (
@@ -485,9 +461,7 @@ export default async function UserProfilePage({ params }: Props) {
                   <div
                     className="mb-4 flex items-center justify-between border-b pb-4"
                     style={{
-                      borderColor: isDark
-                        ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR
-                        : THEME_DEFAULTS.LIGHT_MODE.BORDER_LIGHT,
+                      borderColor: THEME_DEFAULTS.LIGHT_MODE.BORDER_LIGHT,
                     }}
                   >
                     <div className="flex items-center gap-3">
@@ -516,9 +490,7 @@ export default async function UserProfilePage({ params }: Props) {
                           const projectCardStyle = {
                             borderColor: isHighlighted
                               ? secIconColor
-                              : isDark
-                                ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR
-                                : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
+                              : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
                             boxShadow: isHighlighted
                               ? `0 4px 12px ${secIconColor}20`
                               : undefined,
@@ -746,9 +718,7 @@ export default async function UserProfilePage({ params }: Props) {
                     {secProps.iconSrc && (
                       <div
                         style={{
-                          borderColor: isDark
-                            ? THEME_DEFAULTS.DARK_MODE.BORDER_COLOR
-                            : THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
+                          borderColor: THEME_DEFAULTS.LIGHT_MODE.BORDER_COLOR,
                         }}
                         className="mb-5 flex h-16 w-16 shrink-0 items-center justify-center rounded-[16px] border bg-white shadow-[0_2px_8px_rgba(0,0,0,0.03)]"
                       >

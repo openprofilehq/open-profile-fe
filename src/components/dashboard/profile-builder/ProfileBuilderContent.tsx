@@ -120,7 +120,7 @@ const mapCornerStyleToApi = (
   > = {
     sharp: "sharp",
     medium: "medium",
-    round: "round",
+    round: "rounded", // Backend likely expects 'rounded' instead of 'round'
   };
 
   return cornerStyleMap[borderRadius];
@@ -144,29 +144,22 @@ const mapFontFromApi = (font: string) => {
 };
 
 const mapCornerStyleFromApi = (cornerStyle: string) => {
-  const cornerStyleMap: Record<
-    ProfileAppearanceCornerStyle,
-    "sharp" | "medium" | "round"
-  > = {
+  const cornerStyleMap: Record<string, "sharp" | "medium" | "round"> = {
     sharp: "sharp",
     medium: "medium",
     round: "round",
+    rounded: "round",
+    pill: "round",
   };
 
-  return (
-    cornerStyleMap[cornerStyle as ProfileAppearanceCornerStyle] ??
-    (cornerStyle === "pill" ? "round" : "medium")
-  );
+  return cornerStyleMap[cornerStyle] ?? "medium";
 };
-
-const isTheme = (value: unknown): value is "light" | "dark" =>
-  value === "light" || value === "dark";
 
 export default function ProfileBuilderContent() {
   const queryClient = useQueryClient();
 
   const searchParams = useSearchParams();
-  const sectionParam = searchParams.get("section"); // e.g. "links" | "projects"
+  const sectionParam = searchParams.get("section");
 
   const [_activeTab, setActiveTab] = useState<"general" | "section">(
     sectionParam ? "section" : "general"
@@ -199,7 +192,7 @@ export default function ProfileBuilderContent() {
   const [borderRadius, setBorderRadius] = useState<
     "sharp" | "medium" | "round"
   >("medium");
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+
   const [template, setTemplate] = useState<string>("creator");
   const [sections, setSections] = useState<Section[]>([]);
 
@@ -268,10 +261,6 @@ export default function ProfileBuilderContent() {
           setBorderRadius(
             mapCornerStyleFromApi(appearanceSettings.cornerStyle)
           );
-        }
-
-        if (isTheme(appearanceSettings.theme)) {
-          setTheme(appearanceSettings.theme);
         }
 
         queueMicrotask(() => {
@@ -429,7 +418,6 @@ export default function ProfileBuilderContent() {
         font: mapFontToApi(font),
         cornerStyle: mapCornerStyleToApi(borderRadius),
         spacing: clampSpacingForApi(spacing),
-        theme,
       });
       appearanceTimerRef.current = null;
     }, 1000);
@@ -439,7 +427,7 @@ export default function ProfileBuilderContent() {
         clearTimeout(appearanceTimerRef.current);
       }
     };
-  }, [template, font, iconColor, spacing, borderRadius, theme, saveAppearance]);
+  }, [template, font, iconColor, spacing, borderRadius, saveAppearance]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
@@ -660,7 +648,6 @@ export default function ProfileBuilderContent() {
             iconColor={bgColor}
             spacing={spacing}
             borderRadius={borderRadius}
-            theme={theme}
             template={template}
             sections={resolvedSections}
             profile={profile}
@@ -682,8 +669,6 @@ export default function ProfileBuilderContent() {
             onChangeSpacing={setSpacing}
             borderRadius={borderRadius}
             onChangeBorderRadius={setBorderRadius}
-            theme={theme}
-            onChangeTheme={setTheme}
             activeTab={_activeTab}
             onChangeTab={setActiveTab}
             selectedSection={selectedSection}

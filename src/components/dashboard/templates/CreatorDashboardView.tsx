@@ -92,12 +92,11 @@ export default function CreatorDashboardView({
       );
     })
     .slice(0, 4);
-  const isDark = appearance?.theme === "dark";
   const hasCustomBg = !!(appearance?.bgColor || appearance?.accentColour);
   const customBgStyle = hasCustomBg
     ? undefined
     : ({
-        "--primary-bg": isDark ? "#171717" : "#FFFFFF",
+        "--primary-bg": "#FFFFFF",
       } as React.CSSProperties);
 
   return (

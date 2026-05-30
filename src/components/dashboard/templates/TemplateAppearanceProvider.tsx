@@ -85,25 +85,22 @@ export default function TemplateAppearanceProvider({
   children,
   className = "",
 }: Props) {
-  const isDark = appearance?.theme === "dark";
-
   const accentColor =
     normalizeColor(appearance?.accentColour || appearance?.iconColor) ||
     "#087583";
 
   const bgColor =
     normalizeColor(appearance?.bgColor || appearance?.accentColour) ||
-    (isDark ? "#171717" : "#FAFAFA");
+    "#FAFAFA";
 
-  const surfaceColor = isDark ? "#1E1E1E" : "#FFFFFF";
-  const secondarySurfaceColor = isDark ? "#262626" : "#F6F6F6";
+  const surfaceColor = "#FFFFFF";
+  const secondarySurfaceColor = "#F6F6F6";
 
-  const textColor =
-    normalizeColor(appearance?.textColor) || (isDark ? "#FAFAFA" : "#050505");
+  const textColor = normalizeColor(appearance?.textColor) || "#050505";
 
-  const secondaryTextColor = isDark ? "#E0E0E0" : "#454545";
-  const tertiaryTextColor = isDark ? "#A3A3A3" : "#747474";
-  const borderColor = isDark ? "#2D2D2D" : "#EDEDED";
+  const secondaryTextColor = "#454545";
+  const tertiaryTextColor = "#747474";
+  const borderColor = "#EDEDED";
   const radius = getRadius(appearance?.cornerStyle, appearance?.borderRadius);
   const spacing =
     typeof appearance?.spacing === "number" ? appearance.spacing : 20;
@@ -117,7 +114,7 @@ export default function TemplateAppearanceProvider({
     "--primary-bg": bgColor,
     "--secondary-bg": secondarySurfaceColor,
     "--background": surfaceColor,
-    "--hover-bg": isDark ? "#2D2D2D" : "#F1F1F1",
+    "--hover-bg": "#F1F1F1",
 
     "--brand": accentColor,
     "--brand-text": accentColor,
