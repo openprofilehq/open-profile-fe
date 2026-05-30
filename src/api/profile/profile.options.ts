@@ -104,12 +104,18 @@ export const saveTemplateOption = mutationOptions({
       template,
     });
 
-    // Sync theme settings to the draft state ONLY if live appearance succeeds
-    // Treat draft sync as best-effort so partial failures do not block the UI
     try {
+      const {
+        cornerStyle: _cornerStyle,
+        spacing: _spacing,
+        theme: _theme,
+        backgroundColour: _backgroundColour,
+        textColour: _textColour,
+        ...allowedThemeSettings
+      } = currentAppearance as Record<string, unknown>;
       await upsertDraft({
         themeSettings: {
-          ...currentAppearance,
+          ...allowedThemeSettings,
           template,
         },
       });

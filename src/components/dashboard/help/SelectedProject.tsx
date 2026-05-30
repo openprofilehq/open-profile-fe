@@ -40,7 +40,7 @@ export default function SelectedProject({ content, isLoading }: Props) {
         </div>
       ) : projects.length === 0 ? (
         <span className="flex items-center justify-between p-4 text-sm text-secondary-text">
-          No projects added yet
+          Add your projects
         </span>
       ) : (
         <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2">
@@ -65,11 +65,11 @@ export default function SelectedProject({ content, isLoading }: Props) {
                     </div>
                   )}
                 </div>
-                <div className="flex flex-col items-start">
-                  <h5 className="text-xl font-bold text-primary-text">
+                <div className="flex flex-col items-start min-w-0">
+                  <h5 className="text-xl font-bold text-primary-text break-all">
                     {project.title}
                   </h5>
-                  <p className="text-secondary-text">{project.description}</p>
+                  <p className="text-secondary-text break-all">{project.description}</p>
                   <span className="mt-2 flex items-center gap-1 text-sm font-semibold text-brand-hover-bg">
                     {hasUrl ? "View project" : "Edit project"}
                     <ChevronRight size={16} />

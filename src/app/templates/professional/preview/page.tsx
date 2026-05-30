@@ -21,7 +21,7 @@ export default function ProfessionalTemplatePreviewPage() {
 
   return (
     <TemplatePreviewLayout templateName="Professional">
-      <ProfessionalDashboardView profile={dummyProfile} />
+      <ProfessionalDashboardView profile={dummyProfile} isPreview={true} />
     </TemplatePreviewLayout>
   );
 }

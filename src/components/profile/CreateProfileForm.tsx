@@ -88,7 +88,7 @@ export default function CreateProfileForm() {
   });
 
   function submitProfile() {
-    if (currentStep !== 2 || !displayName.trim()) return;
+    if (currentStep !== 2 || !displayName.trim() || !bio.trim() || bio.length > 300) return;
 
     createProfile.mutate({
       username,
@@ -152,7 +152,7 @@ export default function CreateProfileForm() {
             displayName={displayName}
             bio={bio}
             photoUrl={photoUrl || undefined}
-            onContinue={() => router.replace(ROUTES.dashboard.home)}
+            onContinue={() => router.replace(`${ROUTES.dashboard.home}?new=true`)}
           />
         )}
       </form>

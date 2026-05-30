@@ -41,7 +41,7 @@ export default function TemplatePreviewLayout({ templateName, children }: Templa
       </div>
 
       <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 pt-12">
-        <div className="overflow-hidden rounded-[24px] border border-border bg-background shadow-sm p-6">
+        <div className="">
           {children}
         </div>
       </div>

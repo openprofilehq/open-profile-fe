@@ -1,6 +1,5 @@
 "use client";
 
-import { Sun, Moon, Type } from "lucide-react";
 import type { Section } from "./types";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { isValidHex } from "@/utils/color";
@@ -12,6 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TemplateSelectionModal } from "../TemplateSelectionModal";
+import { Button } from "@/components/ui/button";
+import { Palette, ChevronDown, Type } from "lucide-react";
 
 interface RightPanelProps {
   font: string;
@@ -24,14 +26,14 @@ interface RightPanelProps {
   onChangeIconColor: (color: string) => void;
   spacing: number;
   onChangeSpacing: (spacing: number) => void;
-  borderRadius: "sharp" | "medium" | "round";
-  onChangeBorderRadius: (radius: "sharp" | "medium" | "round") => void;
-  theme: "light" | "dark";
-  onChangeTheme: (theme: "light" | "dark") => void;
+  borderRadius: "sharp" | "rounded" | "pill";
+  onChangeBorderRadius: (radius: "sharp" | "rounded" | "pill") => void;
   activeTab: "general" | "section";
   onChangeTab: (tab: "general" | "section") => void;
   selectedSection: Section | null;
   onUpdateSection: (id: string, updates: Partial<Section>) => void;
+  template: string;
+  onChangeTemplate?: (template: string | null) => void;
 }
 
 const FONT_OPTIONS = [
@@ -56,15 +58,15 @@ export default function RightPanel({
   onChangeSpacing,
   borderRadius,
   onChangeBorderRadius,
-  theme,
-  onChangeTheme,
   activeTab,
   onChangeTab,
   selectedSection,
   onUpdateSection,
+  template,
+  onChangeTemplate,
 }: RightPanelProps) {
   return (
-    <aside className="border-tertiary-b animate-in fade-in hidden h-full w-[290px] shrink-0 flex-col rounded-2xl border bg-background p-6 shadow-sm duration-200 select-none lg:flex">
+    <aside className="border-tertiary-b animate-in fade-in bg-background hidden h-full w-[290px] shrink-0 flex-col rounded-2xl border p-6 shadow-sm duration-200 select-none lg:flex">
       {/* Tabs Header */}
       <div className="border-tertiary-b flex border-b">
         <button
@@ -100,13 +102,52 @@ export default function RightPanel({
         <div>
           {activeTab === "general" ? (
             <div className="flex flex-col gap-6">
+              {/* Template Selection */}
+              <div>
+                <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
+                  Template
+                </label>
+                <TemplateSelectionModal
+                  initialTemplate={
+                    (template
+                      ? template.charAt(0).toUpperCase() + template.slice(1)
+                      : "Professional") as
+                      | "Professional"
+                      | "Creator"
+                      | "Portfolio"
+                      | "Default"
+                  }
+                  onPreviewChange={onChangeTemplate}
+                  trigger={
+                    <Button
+                      variant="outline"
+                      className="border-tertiary-b hover:bg-hover-bg bg-background text-primary-text h-auto w-full justify-between rounded-[12px] border px-4 py-3.5 text-sm font-semibold"
+                    >
+                      <span className="flex items-center">
+                        <Palette
+                          size={16}
+                          className="text-secondary-text mr-2"
+                        />
+                        {template
+                          ? template.charAt(0).toUpperCase() + template.slice(1)
+                          : "Choose Template"}
+                      </span>
+                      <ChevronDown
+                        size={16}
+                        className="text-secondary-text opacity-50"
+                      />
+                    </Button>
+                  }
+                />
+              </div>
+
               {/* Font Selection */}
               <div>
                 <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
                   Font
                 </label>
                 <Select value={font} onValueChange={onChangeFont}>
-                  <SelectTrigger className="border-tertiary-b rounded-[12px] border bg-background px-4 py-3.5 text-sm font-semibold">
+                  <SelectTrigger className="border-tertiary-b bg-background rounded-[12px] border px-4 py-3.5 text-sm font-semibold">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -125,7 +166,7 @@ export default function RightPanel({
                   Colors
                 </label>
 
-                <div className="border-tertiary-b flex flex-col gap-3 rounded-[16px] border bg-background p-4">
+                <div className="border-tertiary-b bg-background flex flex-col gap-3 rounded-[16px] border p-4">
                   <ColorPicker
                     label="Text"
                     color={textColor}
@@ -149,7 +190,7 @@ export default function RightPanel({
                 <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
                   Spacing
                 </label>
-                <div className="border-tertiary-b relative flex h-[48px] w-full items-center overflow-hidden rounded-[12px] border bg-background">
+                <div className="border-tertiary-b bg-background relative flex h-[48px] w-full items-center overflow-hidden rounded-[12px] border">
                   {/* Left background fill block up to the active value */}
                   <div
                     className="bg-hover-bg pointer-events-none absolute top-0 bottom-0 left-0 transition-all duration-75"
@@ -178,32 +219,7 @@ export default function RightPanel({
                 <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
                   Border Radius
                 </label>
-                <div className="border-tertiary-b flex gap-1 rounded-[12px] border bg-background p-1">
-                  <button
-                    type="button"
-                    onClick={() => onChangeBorderRadius("medium")}
-                    className={`flex flex-1 items-center justify-center rounded-[8px] py-3 transition-all duration-200 ${
-                      borderRadius === "medium"
-                        ? "bg-hover-bg text-primary-text"
-                        : "text-tertiary-text hover:bg-primary-bg hover:text-primary-text"
-                    }`}
-                    title="Medium"
-                  >
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M6 18V12C6 8.68629 8.68629 6 12 6H18"
-                        stroke="currentColor"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                  </button>
+                <div className="border-tertiary-b bg-background flex gap-1 rounded-[12px] border p-1">
                   <button
                     type="button"
                     onClick={() => onChangeBorderRadius("sharp")}
@@ -231,13 +247,38 @@ export default function RightPanel({
                   </button>
                   <button
                     type="button"
-                    onClick={() => onChangeBorderRadius("round")}
+                    onClick={() => onChangeBorderRadius("rounded")}
                     className={`flex flex-1 items-center justify-center rounded-[8px] py-3 transition-all duration-200 ${
-                      borderRadius === "round"
+                      borderRadius === "rounded"
                         ? "bg-hover-bg text-primary-text"
                         : "text-tertiary-text hover:bg-primary-bg hover:text-primary-text"
                     }`}
-                    title="Round"
+                    title="Rounded"
+                  >
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M6 18V12C6 8.68629 8.68629 6 12 6H18"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onChangeBorderRadius("pill")}
+                    className={`flex flex-1 items-center justify-center rounded-[8px] py-3 transition-all duration-200 ${
+                      borderRadius === "pill"
+                        ? "bg-hover-bg text-primary-text"
+                        : "text-tertiary-text hover:bg-primary-bg hover:text-primary-text"
+                    }`}
+                    title="Pill"
                   >
                     <svg
                       width="24"
@@ -253,37 +294,6 @@ export default function RightPanel({
                         strokeLinecap="round"
                       />
                     </svg>
-                  </button>
-                </div>
-              </div>
-
-              {/* Theme Selector */}
-              <div>
-                <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
-                  Theme
-                </label>
-                <div className="border-tertiary-b flex gap-1 rounded-[12px] border bg-background p-1">
-                  <button
-                    type="button"
-                    onClick={() => onChangeTheme("light")}
-                    className={`flex flex-1 items-center justify-center rounded-[8px] py-3 transition-all duration-200 ${
-                      theme === "light"
-                        ? "bg-hover-bg text-primary-text"
-                        : "text-tertiary-text hover:bg-primary-bg hover:text-primary-text"
-                    }`}
-                  >
-                    <Sun size={18} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onChangeTheme("dark")}
-                    className={`flex flex-1 items-center justify-center rounded-[8px] py-3 transition-all duration-200 ${
-                      theme === "dark"
-                        ? "bg-hover-bg text-primary-text"
-                        : "text-tertiary-text hover:bg-primary-bg hover:text-primary-text"
-                    }`}
-                  >
-                    <Moon size={18} />
                   </button>
                 </div>
               </div>
@@ -303,7 +313,7 @@ export default function RightPanel({
                         onUpdateSection(selectedSection.id, { font: val })
                       }
                     >
-                      <SelectTrigger className="border-tertiary-b rounded-[12px] border bg-background px-4 py-3.5 text-sm font-semibold">
+                      <SelectTrigger className="border-tertiary-b bg-background rounded-[12px] border px-4 py-3.5 text-sm font-semibold">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -322,7 +332,7 @@ export default function RightPanel({
                       Color
                     </label>
 
-                    <div className="border-tertiary-b flex flex-col gap-3 rounded-[16px] border bg-background p-4">
+                    <div className="border-tertiary-b bg-background flex flex-col gap-3 rounded-[16px] border p-4">
                       <ColorPicker
                         label="Text"
                         color={
@@ -396,7 +406,7 @@ export default function RightPanel({
                             <span className="text-primary-text text-sm font-semibold">
                               {item.label}
                             </span>
-                            <div className="border-tertiary-b relative flex h-[48px] w-full items-center overflow-hidden rounded-[12px] border bg-background">
+                            <div className="border-tertiary-b bg-background relative flex h-[48px] w-full items-center overflow-hidden rounded-[12px] border">
                               <div
                                 className="bg-hover-bg pointer-events-none absolute top-0 bottom-0 left-0 transition-all duration-75"
                                 style={{ width: `${(val / 48) * 100}%` }}

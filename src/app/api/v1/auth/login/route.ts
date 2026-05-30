@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
     let loginSuccess = false;
     for (const cookieStr of setCookies) {
       const { name, value, cookieOptions } = parseSetCookie(cookieStr);
+      delete cookieOptions.domain;
       response.cookies.set(name, value, cookieOptions);
       if (name === "accessToken") loginSuccess = true;
     }

@@ -116,7 +116,7 @@ export default function LeftSidebar({
 
   if (isAddingSection) {
     return (
-      <aside className="border-tertiary-b animate-in fade-in hidden h-full w-72.5 shrink-0 flex-col rounded-2xl border bg-background p-6 shadow-sm duration-200 select-none lg:flex">
+      <aside className="border-tertiary-b animate-in fade-in hidden h-full w-[290px] shrink-0 flex-col rounded-2xl border bg-background p-6 shadow-sm duration-200 select-none lg:flex">
         {/* Back Button */}
         <div className="mb-6">
           <button
@@ -495,7 +495,7 @@ export default function LeftSidebar({
   }
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in hidden h-full w-72.5 shrink-0 flex-col rounded-2xl border bg-background p-6 shadow-sm duration-200 select-none lg:flex">
+    <aside className="border-tertiary-b animate-in fade-in hidden h-full w-[290px] shrink-0 flex-col rounded-2xl border bg-background p-6 shadow-sm duration-200 select-none lg:flex">
       {/* Back Button */}
       <div className="mb-6">
         <Link
@@ -517,7 +517,7 @@ export default function LeftSidebar({
           placeholder="Search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="border-tertiary-b text-primary-text placeholder-tertiary-text focus:border-brand-b focus:ring-brand-b w-full rounded-[10px] border bg-background py-3 pr-4 pl-10 text-sm font-medium transition-all outline-none focus:ring-1"
+          className="border-tertiary-b text-primary-text placeholder-tertiary-text focus:border-brand-b w-full rounded-[10px] border bg-background py-3 pr-4 pl-10 text-sm font-medium transition-colors outline-none"
         />
       </div>
 
@@ -559,10 +559,10 @@ export default function LeftSidebar({
                 }}
                 role="button"
                 tabIndex={0}
-                className={`group focus:ring-brand-b flex cursor-pointer items-center justify-between overflow-hidden rounded-xl border transition-all duration-200 focus:ring-2 focus:outline-none ${
+                className={`group flex cursor-pointer items-center justify-between overflow-hidden rounded-xl border transition-all duration-200 focus:outline-none ${
                   isSelected
                     ? "border-brand-b bg-brand-light-subtle-bg shadow-sm"
-                    : "border-tertiary-b hover:border-secondary-b hover:bg-primary-bg bg-background"
+                    : "border-tertiary-b hover:border-brand-b hover:bg-primary-bg bg-background"
                 }`}
               >
                 <div className="flex min-w-0 flex-1 items-center justify-between px-4 py-3">

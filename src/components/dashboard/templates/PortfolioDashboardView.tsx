@@ -32,6 +32,7 @@ type Props = {
   isLoadingProfile?: boolean;
   isLoadingContent?: boolean;
   appearance?: ProfileAppearanceSettings | null;
+  isPreview?: boolean;
 };
 
 const getLinkIcon = (title: string = "") => {
@@ -46,7 +47,11 @@ const getLinkIcon = (title: string = "") => {
   return <Globe size={18} />;
 };
 
-export default function PortfolioDashboardView({ profile, content }: Props) {
+export default function PortfolioDashboardView({
+  profile,
+  content,
+  appearance,
+}: Props) {
   const name = profile?.fullName ?? profile?.username ?? "John Smith";
   const username = profile?.username ?? "johnsmith";
   const details = content?.content;
@@ -68,8 +73,22 @@ export default function PortfolioDashboardView({ profile, content }: Props) {
       : getImageUrl(rawPhotoSrc) || "/profile-preview/avatar.png"
     : "/profile-preview/avatar.png";
 
+  const hasCustomBg = !!(
+    appearance?.backgroundColour ||
+    appearance?.bgColor ||
+    appearance?.accentColour
+  );
+  const customBgStyle = hasCustomBg
+    ? undefined
+    : ({
+        "--primary-bg": "#FFFFFF",
+      } as React.CSSProperties);
+
   return (
-    <div className="text-primary-text bg-secondary-bg flex w-full flex-col font-sans antialiased">
+    <div
+      className="text-primary-text bg-primary-bg flex min-h-screen w-full flex-col antialiased"
+      style={customBgStyle}
+    >
       <div className="mx-auto w-full max-w-5xl px-6 py-16 sm:py-24">
         {/* HEADER SECTION */}
         <header className="mb-8 flex w-full flex-col justify-between gap-6 sm:flex-row sm:items-start">

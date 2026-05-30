@@ -44,12 +44,6 @@ export type DashboardProfileResponse = {
   components: unknown[];
 };
 
-export type ValidateProfileLinkData = {
-  original: string;
-  sanitized: string;
-  encoded: string;
-};
-
 export type ProfileContentSectionBio = {
   visible: boolean;
   content: string;
@@ -91,8 +85,10 @@ export type ProfileContentSectionProjects = {
 
 export type ProfileContentSectionCta = {
   visible: boolean;
+  type?: "link" | "email";
   label: string;
-  url: string | null;
+  url?: string | null;
+  value?: string | null;
   title?: string;
   subtitle?: string;
   layout?: string;
@@ -162,26 +158,34 @@ export type ProfileAppearanceFont =
   | "geologica"
   | "manrope";
 
-export type ProfileAppearanceCornerStyle = "sharp" | "medium" | "round";
+export type ProfileAppearanceCornerStyle =
+  | "sharp"
+  | "medium"
+  | "round"
+  | "rounded"
+  | "pill"
+  | string;
 
 export type ProfileAppearanceSettings = {
   template: string;
   accentColour: string;
+  backgroundColour?: string;
+  textColour?: string;
   textColor?: string;
   bgColor?: string;
   font: ProfileAppearanceFont;
   cornerStyle: ProfileAppearanceCornerStyle;
   spacing: number;
-  theme: "light" | "dark";
 };
 
 export type ProfileAppearanceRequest = {
   template?: string;
   accentColour?: string;
+  backgroundColour?: string;
+  textColour?: string;
   font?: ProfileAppearanceFont;
   cornerStyle?: ProfileAppearanceCornerStyle;
   spacing?: number;
-  theme?: "light" | "dark";
 };
 
 export type ProfileAppearanceResponse = {

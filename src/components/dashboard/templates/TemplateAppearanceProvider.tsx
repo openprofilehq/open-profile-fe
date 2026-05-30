@@ -5,7 +5,9 @@ type TemplateAppearanceInput = {
   accentColour?: string | null;
   iconColor?: string | null;
   textColor?: string | null;
+  textColour?: string | null;
   bgColor?: string | null;
+  backgroundColour?: string | null;
   cornerStyle?: string | null;
   borderRadius?: string | null;
   spacing?: number | null;
@@ -75,7 +77,7 @@ function getRadius(cornerStyle?: string | null, borderRadius?: string | null) {
   const value = cornerStyle || borderRadius;
 
   if (value === "sharp") return "0px";
-  if (value === "round" || value === "pill") return "32px";
+  if (value === "pill" || value === "round") return "32px";
 
   return "16px";
 }
@@ -85,24 +87,27 @@ export default function TemplateAppearanceProvider({
   children,
   className = "",
 }: Props) {
-  const isDark = appearance?.theme === "dark";
-
   const accentColor =
     normalizeColor(appearance?.accentColour || appearance?.iconColor) ||
     "#087583";
 
   const bgColor =
-    normalizeColor(appearance?.bgColor) || (isDark ? "#171717" : "#FAFAFA");
+    normalizeColor(
+      appearance?.backgroundColour ||
+        appearance?.bgColor ||
+        appearance?.accentColour
+    ) || "#FAFAFA";
 
-  const surfaceColor = isDark ? "#1E1E1E" : "#FFFFFF";
-  const secondarySurfaceColor = isDark ? "#262626" : "#F6F6F6";
+  const surfaceColor = "#FFFFFF";
+  const secondarySurfaceColor = "#F6F6F6";
 
   const textColor =
-    normalizeColor(appearance?.textColor) || (isDark ? "#FAFAFA" : "#050505");
+    normalizeColor(appearance?.textColour || appearance?.textColor) ||
+    "#050505";
 
-  const secondaryTextColor = isDark ? "#E0E0E0" : "#454545";
-  const tertiaryTextColor = isDark ? "#A3A3A3" : "#747474";
-  const borderColor = isDark ? "#2D2D2D" : "#EDEDED";
+  const secondaryTextColor = "#454545";
+  const tertiaryTextColor = "#747474";
+  const borderColor = "#EDEDED";
   const radius = getRadius(appearance?.cornerStyle, appearance?.borderRadius);
   const spacing =
     typeof appearance?.spacing === "number" ? appearance.spacing : 20;
@@ -116,7 +121,7 @@ export default function TemplateAppearanceProvider({
     "--primary-bg": bgColor,
     "--secondary-bg": secondarySurfaceColor,
     "--background": surfaceColor,
-    "--hover-bg": isDark ? "#2D2D2D" : "#F1F1F1",
+    "--hover-bg": "#F1F1F1",
 
     "--brand": accentColor,
     "--brand-text": accentColor,
