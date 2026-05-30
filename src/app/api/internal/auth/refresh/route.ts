@@ -78,6 +78,7 @@ export async function POST() {
     for (const cookieStr of setCookies) {
       const { name, value, cookieOptions } = parseSetCookie(cookieStr);
       delete cookieOptions.domain;
+      cookieOptions.secure = process.env.NODE_ENV === "production";
       response.cookies.set(name, value, cookieOptions);
       if (name === "accessToken") gotAccessToken = true;
 

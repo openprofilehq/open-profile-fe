@@ -159,12 +159,22 @@ export default function CreatorDashboardView({
 
           {details?.cta?.visible !== false && (
             <a
-              href={sanitizeUrl(cta?.url || "mailto:hello@example.com")}
+              href={sanitizeUrl(cta?.value ?? cta?.url)}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-brand-hover-bg hover:bg-button-brand-bg mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all active:scale-95"
             >
-              <Mail size={16} />
+              {cta?.iconSrc ? (
+                <Image
+                  src={cta.iconSrc}
+                  alt=""
+                  width={16}
+                  height={16}
+                  className="object-contain brightness-0 invert"
+                />
+              ) : (
+                <Mail size={16} />
+              )}
               {cta?.label || "Let's Collaborate"}
             </a>
           )}
