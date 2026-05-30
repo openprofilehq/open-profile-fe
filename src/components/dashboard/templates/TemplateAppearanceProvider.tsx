@@ -92,7 +92,8 @@ export default function TemplateAppearanceProvider({
     "#087583";
 
   const bgColor =
-    normalizeColor(appearance?.bgColor) || (isDark ? "#171717" : "#FAFAFA");
+    normalizeColor(appearance?.bgColor || appearance?.accentColour) ||
+    (isDark ? "#171717" : "#FAFAFA");
 
   const surfaceColor = isDark ? "#1E1E1E" : "#FFFFFF";
   const secondarySurfaceColor = isDark ? "#262626" : "#F6F6F6";

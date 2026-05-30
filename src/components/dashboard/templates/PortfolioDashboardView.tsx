@@ -46,7 +46,11 @@ const getLinkIcon = (title: string = "") => {
   return <Globe size={18} />;
 };
 
-export default function PortfolioDashboardView({ profile, content }: Props) {
+export default function PortfolioDashboardView({
+  profile,
+  content,
+  appearance,
+}: Props) {
   const name = profile?.fullName ?? profile?.username ?? "John Smith";
   const username = profile?.username ?? "johnsmith";
   const details = content?.content;
@@ -68,8 +72,19 @@ export default function PortfolioDashboardView({ profile, content }: Props) {
       : getImageUrl(rawPhotoSrc) || "/profile-preview/avatar.png"
     : "/profile-preview/avatar.png";
 
+  const isDark = appearance?.theme === "dark";
+  const hasCustomBg = !!(appearance?.bgColor || appearance?.accentColour);
+  const customBgStyle = hasCustomBg
+    ? undefined
+    : ({
+        "--primary-bg": isDark ? "#171717" : "#FFFFFF",
+      } as React.CSSProperties);
+
   return (
-    <div className="text-primary-text flex w-full flex-col bg-white antialiased">
+    <div
+      className="text-primary-text bg-primary-bg flex min-h-screen w-full flex-col antialiased"
+      style={customBgStyle}
+    >
       <div className="mx-auto w-full max-w-5xl px-6 py-16 sm:py-24">
         {/* HEADER SECTION */}
         <header className="mb-8 flex w-full flex-col justify-between gap-6 sm:flex-row sm:items-start">

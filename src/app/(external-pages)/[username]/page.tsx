@@ -6,6 +6,7 @@ import {
   type ProfileResponse,
   type LinkItem,
   type ProjectItem,
+  type ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
 import { env as serverEnv } from "@/env/server";
 import { Folder, ExternalLink } from "lucide-react";
@@ -161,6 +162,7 @@ export default async function UserProfilePage({ params }: Props) {
           <CreatorDashboardView
             profile={dashboardProfile}
             content={profileContent}
+            appearance={themeSettings as unknown as ProfileAppearanceSettings}
           />
         </TemplateAppearanceProvider>
       );
@@ -172,6 +174,7 @@ export default async function UserProfilePage({ params }: Props) {
           <ProfessionalDashboardView
             profile={dashboardProfile}
             content={profileContent}
+            appearance={themeSettings as unknown as ProfileAppearanceSettings}
           />
         </TemplateAppearanceProvider>
       );
@@ -183,6 +186,7 @@ export default async function UserProfilePage({ params }: Props) {
           <PortfolioDashboardView
             profile={dashboardProfile}
             content={profileContent}
+            appearance={themeSettings as unknown as ProfileAppearanceSettings}
           />
         </TemplateAppearanceProvider>
       );
@@ -256,11 +260,7 @@ export default async function UserProfilePage({ params }: Props) {
 
   return (
     <TemplateAppearanceProvider appearance={themeSettings}>
-      <div
-        className={`flex min-h-screen flex-col transition-colors duration-200 ${
-          isDark ? "bg-inverse-bg" : "bg-primary-bg"
-        }`}
-      >
+      <div className="bg-primary-bg flex min-h-screen flex-col transition-colors duration-200">
         <div className="flex justify-center pt-6">
           <Link href="/">
             <Image
