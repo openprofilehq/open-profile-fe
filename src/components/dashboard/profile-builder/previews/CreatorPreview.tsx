@@ -7,10 +7,11 @@ import {
   MessageSquare,
   ChevronRight,
   MoreHorizontal,
+  ArrowRight,
 } from "lucide-react";
 import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
-import { TemplateLinkCard, getLinkIcon } from "../../shared/TemplateLinkCard";
+import { getLinkIcon } from "../../shared/TemplateLinkCard";
 
 interface CreatorPreviewProps {
   sections: Section[];
@@ -81,7 +82,11 @@ export default function CreatorPreview({
               }
             }}
             disabled={isBio}
-            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? "text-negative-text cursor-not-allowed opacity-50" : "text-negative-text hover:bg-negative-bg/20"}`}
+            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${
+              isBio
+                ? "text-negative-text cursor-not-allowed opacity-50"
+                : "text-negative-text hover:bg-negative-bg/20"
+            }`}
           >
             <Trash2 size={16} /> Delete
           </button>
@@ -203,7 +208,11 @@ export default function CreatorPreview({
                       }
                     }}
                     disabled={ctaSection.type === "bio"}
-                    className={`flex w-full items-center gap-3 px-3 py-2 text-[13px] font-medium transition-colors ${ctaSection.type === "bio" ? "text-negative-text cursor-not-allowed opacity-50" : "text-negative-text hover:bg-negative-bg/20"}`}
+                    className={`flex w-full items-center gap-3 px-3 py-2 text-[13px] font-medium transition-colors ${
+                      ctaSection.type === "bio"
+                        ? "text-negative-text cursor-not-allowed opacity-50"
+                        : "text-negative-text hover:bg-negative-bg/20"
+                    }`}
                   >
                     <Trash2 size={14} /> Delete
                   </button>
@@ -214,7 +223,17 @@ export default function CreatorPreview({
                 onClick={(e) => e.preventDefault()}
                 className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
               >
-                <MessageSquare size={16} />
+                {ctaSection.iconSrc ? (
+                  <Image
+                    src={ctaSection.iconSrc}
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="object-contain brightness-0 invert"
+                  />
+                ) : (
+                  <MessageSquare size={16} />
+                )}
                 {ctaSection.buttonText || "Let's Collaborate"}
               </a>
             </div>
@@ -232,7 +251,11 @@ export default function CreatorPreview({
           >
             <button
               onClick={() => setActiveTab("projects")}
-              className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "projects" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
+              className={`relative pb-3 text-[15px] font-semibold transition-colors ${
+                activeTab === "projects"
+                  ? "text-brand-hover-bg"
+                  : "text-secondary-text hover:text-primary-text"
+              }`}
             >
               Projects
               {activeTab === "projects" && (
@@ -241,7 +264,11 @@ export default function CreatorPreview({
             </button>
             <button
               onClick={() => setActiveTab("links")}
-              className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "links" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
+              className={`relative pb-3 text-[15px] font-semibold transition-colors ${
+                activeTab === "links"
+                  ? "text-brand-hover-bg"
+                  : "text-secondary-text hover:text-primary-text"
+              }`}
             >
               Links
               {activeTab === "links" && (
@@ -250,7 +277,11 @@ export default function CreatorPreview({
             </button>
             <button
               onClick={() => setActiveTab("about")}
-              className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "about" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
+              className={`relative pb-3 text-[15px] font-semibold transition-colors ${
+                activeTab === "about"
+                  ? "text-brand-hover-bg"
+                  : "text-secondary-text hover:text-primary-text"
+              }`}
             >
               About
               {activeTab === "about" && (
@@ -313,7 +344,9 @@ export default function CreatorPreview({
                                     layoutType === "2"
                                       ? "aspect-video w-full"
                                       : "h-[120px] w-full sm:mb-0 sm:w-[140px]"
-                                  } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
+                                  } ${layoutType === "3" ? "sm:mr-5" : ""} ${
+                                    layoutType === "4" ? "sm:ml-5" : ""
+                                  }`}
                                 >
                                   {displayImg ? (
                                     <Image
@@ -337,7 +370,11 @@ export default function CreatorPreview({
                                   {project.title}
                                 </h5>
                                 <p
-                                  className={`text-secondary-text mt-1 break-all ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"}`}
+                                  className={`text-secondary-text mt-1 break-all ${
+                                    layoutType === "1"
+                                      ? "line-clamp-1"
+                                      : "line-clamp-2"
+                                  }`}
                                 >
                                   {project.description}
                                 </p>
@@ -399,17 +436,57 @@ export default function CreatorPreview({
                     {renderControls(section)}
                     {allLinks.length > 0 ? (
                       <div
-                        className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                        className="mx-auto flex w-full max-w-xl flex-col"
                         style={{ gap: "var(--op-spacing, 24px)" }}
                       >
-                        {allLinks.map((link) => (
-                          <TemplateLinkCard
-                            key={link.id}
-                            id={link.id}
-                            title={link.title || link.label || ""}
-                            url={link.url ? sanitizeUrl(link.url) : "#"}
-                          />
-                        ))}
+                        {allLinks.map((link) => {
+                          const url = link.url || "";
+                          const isWebsite =
+                            !url.includes("twitter") &&
+                            !url.includes("x.com") &&
+                            !url.includes("instagram") &&
+                            !url.includes("linkedin") &&
+                            !url.includes("facebook") &&
+                            !url.includes("youtube") &&
+                            !url.includes("github");
+                          const subtitle = isWebsite
+                            ? url
+                                .replace(/^https?:\/\/(www\.)?/, "")
+                                .replace(/\/$/, "")
+                            : `@${profile?.username || ""}`;
+                          return (
+                            <div
+                              key={link.id}
+                              className="border-border bg-background flex items-center justify-between rounded-2xl border"
+                              style={{
+                                gap: "var(--op-spacing, 24px)",
+                                padding: "var(--op-spacing, 24px)",
+                              }}
+                            >
+                              <div
+                                className="flex items-center"
+                                style={{
+                                  gap: "calc(var(--op-spacing, 24px) * 0.75)",
+                                }}
+                              >
+                                <div className="bg-brand-light-subtle-bg text-brand-hover-bg flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+                                  {getLinkIcon(
+                                    url + " " + (link.title || link.label || "")
+                                  )}
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-primary-text text-[15px] font-bold">
+                                    {link.title || link.label}
+                                  </span>
+                                  <span className="text-tertiary-text text-[13px]">
+                                    {subtitle}
+                                  </span>
+                                </div>
+                              </div>
+                              <ArrowRight className="text-tertiary-text h-5 w-5" />
+                            </div>
+                          );
+                        })}
                       </div>
                     ) : (
                       <p className="text-tertiary-text border-border rounded-xl border border-dashed py-8 text-center text-sm">

@@ -81,7 +81,8 @@ export function contentToSections(
       subtitle: content?.cta?.subtitle ?? "",
       layout: content?.cta?.layout ?? "1",
       buttonText: content?.cta?.label ?? "",
-      url: decodeUrlForFrontend(content?.cta?.url),
+      url: decodeUrlForFrontend(content?.cta?.value),
+      ctaType: (content?.cta?.type as "link" | "email") ?? "link",
       iconId: content?.cta?.iconId ?? null,
       iconSrc: content?.cta?.iconSrc ?? null,
       iconLabel: content?.cta?.iconLabel ?? null,
@@ -197,8 +198,14 @@ export function sectionsToContent(
     cta: ctaSection
       ? {
           visible: ctaSection.visible,
+          type:
+            ctaSection.ctaType ??
+            (ctaSection.url?.includes("@") ||
+            ctaSection.url?.startsWith("mailto:")
+              ? "email"
+              : "link"),
           label: ctaSection.buttonText ?? "",
-          url: ctaSection.url
+          value: ctaSection.url
             ? encodeUrlForBackend(ctaSection.url, ctaSection.iconId)
             : null,
           title: ctaSection.title ?? "",
