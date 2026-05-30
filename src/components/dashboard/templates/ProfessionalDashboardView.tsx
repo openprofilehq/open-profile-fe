@@ -64,10 +64,19 @@ export default function ProfessionalDashboardView({
       className="text-primary-text bg-primary-bg flex min-h-screen w-full flex-col antialiased"
       style={customBgStyle}
     >
-      <div className="mx-auto w-full max-w-5xl px-6 py-16 sm:py-24">
+      <div
+        className="mx-auto flex w-full max-w-5xl flex-col px-6 py-16 sm:py-24"
+        style={{ gap: "calc(var(--op-spacing, 24px) * 2)" }}
+      >
         {/* HEADER SECTION */}
-        <header className="flex w-full flex-col justify-between gap-6 sm:flex-row sm:items-start">
-          <div className="flex items-center gap-6">
+        <header
+          className="flex w-full flex-col justify-between sm:flex-row sm:items-start"
+          style={{ gap: "var(--op-spacing, 24px)" }}
+        >
+          <div
+            className="flex items-center"
+            style={{ gap: "var(--op-spacing, 24px)" }}
+          >
             <div className="border-border bg-secondary-bg relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-full border">
               <Image
                 src={photoSrc}
@@ -100,7 +109,7 @@ export default function ProfessionalDashboardView({
         </header>
 
         {/* BIO SECTION */}
-        <section className="mt-8">
+        <section>
           <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed">
             {bio}
           </p>
@@ -108,7 +117,7 @@ export default function ProfessionalDashboardView({
 
         {/* LINKS SECTION */}
         {details?.links?.visible !== false && links.length > 0 && (
-          <section className="mt-16 w-full">
+          <section className="w-full">
             <h2 className="text-tertiary-text mb-4 text-[13px]">Links</h2>
             <div className="flex flex-col">
               {links.map((link, idx) => {
@@ -169,11 +178,14 @@ export default function ProfessionalDashboardView({
 
         {/* PROJECTS SECTION */}
         {details?.projects?.visible !== false && projects.length > 0 && (
-          <section className="mt-16 w-full">
+          <section className="w-full">
             <h2 className="text-tertiary-text mb-4 text-[13px]">
               {details?.projects?.sectionTitle || "Selected Work"}
             </h2>
-            <div className="flex flex-col gap-4">
+            <div
+              className="flex flex-col"
+              style={{ gap: "var(--op-spacing, 24px)" }}
+            >
               {projects.map((project) => {
                 const safeHref = normalizeHref(project.url);
 
@@ -203,7 +215,8 @@ export default function ProfessionalDashboardView({
                 return (
                   <div
                     key={project.id}
-                    className="border-border bg-background flex flex-col items-start rounded-xl border p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
+                    className="border-border bg-background flex flex-col items-start rounded-xl border shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
+                    style={{ padding: "var(--op-spacing, 24px)" }}
                   >
                     <div className="bg-secondary-bg border-border relative mb-4 h-[80px] w-full shrink-0 overflow-hidden rounded-lg border sm:mb-0 sm:w-[120px]">
                       {project.imageSrc ? (
@@ -249,7 +262,7 @@ export default function ProfessionalDashboardView({
 
         {/* CTA SECTION */}
         {details?.cta?.visible !== false && (
-          <section className="mt-20 w-full">
+          <section className="w-full">
             <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
               {cta?.title || "Open to new projects."}
             </h2>

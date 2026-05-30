@@ -33,11 +33,14 @@ export default function ProfessionalPreview({
   const bioSectionId = bioSection?.id ?? "bio";
 
   return (
-    <div className="text-primary-text mx-auto flex w-full max-w-4xl flex-col py-8 pt-12">
+    <div
+      className="text-primary-text mx-auto flex w-full max-w-4xl flex-col py-8 pt-12"
+      style={{ gap: "calc(var(--op-spacing, 24px) * 2)" }}
+    >
       {/* HEADER SECTION (Bio) */}
       {bioSection?.visible && (
         <div
-          className={`group relative mb-12 transition-opacity duration-200 ${selectedSectionId && selectedSectionId !== bioSectionId ? "opacity-50" : ""}`}
+          className={`group relative transition-opacity duration-200 ${selectedSectionId && selectedSectionId !== bioSectionId ? "opacity-50" : ""}`}
         >
           {bioSection && (
             <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
@@ -63,8 +66,17 @@ export default function ProfessionalPreview({
             </div>
           )}
 
-          <header className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between gap-6 rounded-2xl border border-transparent p-6 transition-colors sm:flex-row sm:items-start">
-            <div className="flex items-center gap-6">
+          <header
+            className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between rounded-2xl border border-transparent transition-colors sm:flex-row sm:items-start"
+            style={{
+              gap: "var(--op-spacing, 24px)",
+              padding: "var(--op-spacing, 24px)",
+            }}
+          >
+            <div
+              className="flex items-center"
+              style={{ gap: "var(--op-spacing, 24px)" }}
+            >
               <div className="border-border bg-secondary-bg relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-full border">
                 {getImageUrl(profile?.photoUrl) ? (
                   <Image
@@ -103,7 +115,7 @@ export default function ProfessionalPreview({
             </a>
           </header>
 
-          <section className="mt-6 px-6">
+          <section style={{ paddingInline: "var(--op-spacing, 24px)" }}>
             <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed whitespace-pre-wrap">
               {bioSection?.bio || "Write a little bit about yourself here..."}
             </p>
@@ -114,7 +126,8 @@ export default function ProfessionalPreview({
       {/* LINKS SECTION */}
       {linksSection?.visible && (
         <section
-          className={`group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors ${selectedSectionId && selectedSectionId !== linksSection.id ? "opacity-50" : ""}`}
+          className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent transition-colors ${selectedSectionId && selectedSectionId !== linksSection.id ? "opacity-50" : ""}`}
+          style={{ padding: "var(--op-spacing, 24px)" }}
         >
           <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
             <button
@@ -185,7 +198,8 @@ export default function ProfessionalPreview({
       {/* PROJECTS SECTION */}
       {projectsSection?.visible && (
         <section
-          className={`group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors ${selectedSectionId && selectedSectionId !== projectsSection.id ? "opacity-50" : ""}`}
+          className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent transition-colors ${selectedSectionId && selectedSectionId !== projectsSection.id ? "opacity-50" : ""}`}
+          style={{ padding: "var(--op-spacing, 24px)" }}
         >
           <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
             <button
@@ -215,12 +229,16 @@ export default function ProfessionalPreview({
           <h2 className="text-tertiary-text mb-4 text-[13px]">
             {projectsSection.subtitle || "Selected Work"}
           </h2>
-          <div className="flex flex-col gap-4">
+          <div
+            className="flex flex-col"
+            style={{ gap: "var(--op-spacing, 24px)" }}
+          >
             {projectsSection.projects && projectsSection.projects.length > 0 ? (
               projectsSection.projects.map((project) => (
                 <div
                   key={project.id}
-                  className="border-border bg-background flex flex-col items-start rounded-xl border p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
+                  className="border-border bg-background flex flex-col items-start rounded-xl border shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
+                  style={{ padding: "var(--op-spacing, 24px)" }}
                 >
                   <div className="bg-secondary-bg border-border relative mb-4 h-[80px] w-full shrink-0 overflow-hidden rounded-lg border sm:mb-0 sm:w-[120px]">
                     {getImageUrl(project.imageSrc) ? (
@@ -270,7 +288,8 @@ export default function ProfessionalPreview({
       {/* CTA SECTION */}
       {ctaSection?.visible && (
         <section
-          className={`group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors ${selectedSectionId && selectedSectionId !== ctaSection.id ? "opacity-50" : ""}`}
+          className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent transition-colors ${selectedSectionId && selectedSectionId !== ctaSection.id ? "opacity-50" : ""}`}
+          style={{ padding: "var(--op-spacing, 24px)" }}
         >
           <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
             <button

@@ -89,10 +89,19 @@ export default function PortfolioDashboardView({
       className="text-primary-text bg-primary-bg flex min-h-screen w-full flex-col antialiased"
       style={customBgStyle}
     >
-      <div className="mx-auto w-full max-w-5xl px-6 py-16 sm:py-24">
+      <div
+        className="mx-auto flex w-full max-w-5xl flex-col px-6 py-16 sm:py-24"
+        style={{ gap: "calc(var(--op-spacing, 24px) * 2)" }}
+      >
         {/* HEADER SECTION */}
-        <header className="mb-8 flex w-full flex-col justify-between gap-6 sm:flex-row sm:items-start">
-          <div className="flex flex-col gap-6">
+        <header
+          className="flex w-full flex-col justify-between sm:flex-row sm:items-start"
+          style={{ gap: "var(--op-spacing, 24px)" }}
+        >
+          <div
+            className="flex flex-col"
+            style={{ gap: "var(--op-spacing, 24px)" }}
+          >
             <div className="border-border bg-secondary-bg relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-full border">
               <Image
                 src={photoSrc}
@@ -134,7 +143,7 @@ export default function PortfolioDashboardView({
         </header>
 
         {/* BIO SECTION */}
-        <section className="mb-16">
+        <section>
           <p className="text-secondary-text max-w-3xl text-[15px] leading-relaxed">
             {bio}
           </p>
@@ -142,9 +151,12 @@ export default function PortfolioDashboardView({
 
         {/* LINKS SECTION */}
         {details?.links?.visible !== false && links.length > 0 && (
-          <section className="mb-20 w-full">
+          <section className="w-full">
             <h2 className="text-tertiary-text mb-4 text-[13px]">Links</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+              style={{ gap: "var(--op-spacing, 24px)" }}
+            >
               {links.map((link) => {
                 const safeHref = normalizeHref(link.url);
 
@@ -155,7 +167,8 @@ export default function PortfolioDashboardView({
                       href={safeHref}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group border-border bg-background hover:border-brand-hover-bg/30 flex items-center justify-between rounded-xl border p-4 shadow-sm transition-all hover:shadow-md"
+                      className="group border-border bg-background hover:border-brand-hover-bg/30 flex items-center justify-between rounded-xl border shadow-sm transition-all hover:shadow-md"
+                      style={{ padding: "var(--op-spacing, 24px)" }}
                     >
                       <div className="flex items-center gap-3">
                         <div className="text-primary-text group-hover:text-brand-hover-bg transition-colors">
@@ -176,7 +189,8 @@ export default function PortfolioDashboardView({
                 return (
                   <div
                     key={link.id}
-                    className="group border-border bg-background flex items-center justify-between rounded-xl border p-4 shadow-sm transition-all"
+                    className="group border-border bg-background flex items-center justify-between rounded-xl border shadow-sm transition-all"
+                    style={{ padding: "var(--op-spacing, 24px)" }}
                   >
                     <div className="flex items-center gap-3">
                       <div className="text-primary-text transition-colors">
@@ -196,11 +210,14 @@ export default function PortfolioDashboardView({
 
         {/* PROJECTS SECTION */}
         {details?.projects?.visible !== false && projects.length > 0 && (
-          <section className="mb-20 w-full">
+          <section className="w-full">
             <h2 className="text-tertiary-text mb-6 text-[13px]">
               {details?.projects?.sectionTitle || "Featured Projects"}
             </h2>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+              style={{ gap: "var(--op-spacing, 24px)" }}
+            >
               {projects.map((project, idx) => {
                 const numberStr = String(idx + 1).padStart(2, "0");
                 return (
@@ -233,7 +250,10 @@ export default function PortfolioDashboardView({
                       )}
                     </div>
 
-                    <div className="flex flex-col p-6">
+                    <div
+                      className="flex flex-col"
+                      style={{ padding: "var(--op-spacing, 24px)" }}
+                    >
                       <div className="mb-1 flex items-start gap-2">
                         <span className="text-primary-text text-[16px] font-bold">
                           {numberStr}
@@ -286,8 +306,11 @@ export default function PortfolioDashboardView({
 
         {/* CTA SECTION */}
         {details?.cta?.visible !== false && (
-          <section className="mb-24 w-full py-8">
-            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
+          <section className="w-full py-8">
+            <div
+              className="flex flex-col justify-between md:flex-row md:items-center"
+              style={{ gap: "var(--op-spacing, 24px)" }}
+            >
               <div className="flex items-center gap-4">
                 <div className="bg-brand-hover-bg flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-white shadow-sm">
                   <Rocket size={24} strokeWidth={2} />

@@ -28,7 +28,7 @@ export default function DefaultPreview({
   return (
     <div
       className="mx-auto flex w-full max-w-4xl flex-col py-8 pt-12"
-      style={{ gap: "var(--template-spacing, 24px)" }}
+      style={{ gap: "var(--op-spacing, 24px)" }}
     >
       <ProfileSummaryCard
         profile={profile as unknown as DashboardProfileResponse}
