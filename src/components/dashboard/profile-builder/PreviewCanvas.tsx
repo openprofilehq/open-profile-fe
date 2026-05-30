@@ -51,6 +51,7 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
         spacing: props.spacing,
         theme: props.theme,
       }}
+      className="flex h-full w-full min-w-0 flex-1 flex-col"
     >
       <div
         className={`animate-in fade-in flex h-full min-h-0 flex-1 justify-center overflow-y-auto px-4 transition-colors duration-200 lg:px-12 ${
