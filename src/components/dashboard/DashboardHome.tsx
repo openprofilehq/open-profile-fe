@@ -65,53 +65,54 @@ export default function DashboardHome() {
       : "default";
 
   return (
-    <TemplateAppearanceProvider appearance={appearance}>
-      <div className="mx-auto grid w-full max-w-[1180px] grid-cols-1 gap-6 overflow-x-hidden xl:grid-cols-[0.8fr_1.2fr]">
-        <div className="flex flex-col gap-4">
-          <ProfileOverviewCard
-            profile={profile}
-            isLoading={isProfileLoading}
-            onPreviewChange={setPreviewTemplate}
-            previewTemplate={previewTemplate}
-          />
-        </div>
-
-        <div className="flex flex-col gap-6">
-          {activeTemplate === "portfolio" ? (
-            <PortfolioDashboardView
-              profile={profile}
-              content={content}
-              appearance={appearance}
-              isLoadingProfile={isProfileLoading}
-              isLoadingContent={isContentLoading}
-            />
-          ) : activeTemplate === "professional" ? (
-            <ProfessionalDashboardView
-              profile={profile}
-              content={content}
-              appearance={appearance}
-              isLoadingProfile={isProfileLoading}
-              isLoadingContent={isContentLoading}
-            />
-          ) : activeTemplate === "creator" ? (
-            <CreatorDashboardView
-              profile={profile}
-              content={content}
-              appearance={appearance}
-              isLoadingProfile={isProfileLoading}
-              isLoadingContent={isContentLoading}
-            />
-          ) : (
-            <DefaultDashboardView
-              profile={profile}
-              content={content}
-              appearance={appearance}
-              isLoadingProfile={isProfileLoading}
-              isLoadingContent={isContentLoading}
-            />
-          )}
-        </div>
+    <div className="mx-auto grid w-full max-w-[1180px] grid-cols-1 gap-6 overflow-x-hidden xl:grid-cols-[0.8fr_1.2fr]">
+      <div className="flex flex-col gap-4">
+        <ProfileOverviewCard
+          profile={profile}
+          isLoading={isProfileLoading}
+          onPreviewChange={setPreviewTemplate}
+          previewTemplate={previewTemplate}
+        />
       </div>
-    </TemplateAppearanceProvider>
+
+      <TemplateAppearanceProvider
+        appearance={appearance}
+        className="flex flex-col gap-6"
+      >
+        {activeTemplate === "portfolio" ? (
+          <PortfolioDashboardView
+            profile={profile}
+            content={content}
+            appearance={appearance}
+            isLoadingProfile={isProfileLoading}
+            isLoadingContent={isContentLoading}
+          />
+        ) : activeTemplate === "professional" ? (
+          <ProfessionalDashboardView
+            profile={profile}
+            content={content}
+            appearance={appearance}
+            isLoadingProfile={isProfileLoading}
+            isLoadingContent={isContentLoading}
+          />
+        ) : activeTemplate === "creator" ? (
+          <CreatorDashboardView
+            profile={profile}
+            content={content}
+            appearance={appearance}
+            isLoadingProfile={isProfileLoading}
+            isLoadingContent={isContentLoading}
+          />
+        ) : (
+          <DefaultDashboardView
+            profile={profile}
+            content={content}
+            appearance={appearance}
+            isLoadingProfile={isProfileLoading}
+            isLoadingContent={isContentLoading}
+          />
+        )}
+      </TemplateAppearanceProvider>
+    </div>
   );
 }
