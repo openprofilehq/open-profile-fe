@@ -26,7 +26,10 @@ export default function DefaultPreview({
   } as unknown as ProfileContentResponse;
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 py-8 pt-12">
+    <div
+      className="mx-auto flex w-full max-w-4xl flex-col py-8 pt-12"
+      style={{ gap: "var(--template-spacing, 24px)" }}
+    >
       <ProfileSummaryCard
         profile={profile as unknown as DashboardProfileResponse}
       />
