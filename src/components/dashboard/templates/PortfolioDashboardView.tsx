@@ -1,13 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import {
-  BadgeCheck,
-  Mail,
-  Globe,
-  ExternalLink,
-  ArrowRight,
-  Rocket,
-} from "lucide-react";
+import { Mail, Globe, ExternalLink, ArrowRight } from "lucide-react";
 import {
   XIcon,
   InstagramIcon,
@@ -22,7 +15,7 @@ import {
   ProjectItem,
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
-import { getImageUrl } from "@/utils/profile";
+import { getImageUrl, getDisplayProfileUrl } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
 import { normalizeHref } from "@/utils/url";
 
@@ -119,27 +112,34 @@ export default function PortfolioDashboardView({
                 <h1 className="text-primary-text text-[26px] leading-tight font-bold tracking-tight">
                   {name}
                 </h1>
-                <BadgeCheck
-                  className="text-brand-hover-bg"
-                  size={20}
-                  fill="currentColor"
-                  stroke="var(--background)"
-                  strokeWidth={1.5}
-                />
               </div>
               <p className="text-secondary-text mt-1 text-[14px]">
-                openprofile.app/{username}
+                {getDisplayProfileUrl(username)}
               </p>
             </div>
           </div>
 
-          <a
-            href="mailto:hello@example.com"
-            className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
-          >
-            <Mail size={16} />
-            Email
-          </a>
+          {details?.cta?.visible !== false && (cta?.value ?? cta?.url) && (
+            <a
+              href={cta?.value ?? cta?.url ?? ""}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
+            >
+              {cta?.iconSrc ? (
+                <Image
+                  src={cta.iconSrc}
+                  alt=""
+                  width={16}
+                  height={16}
+                  className="object-contain"
+                />
+              ) : (
+                <Mail size={16} />
+              )}
+              {cta?.label || "Email"}
+            </a>
+          )}
         </header>
 
         {/* BIO SECTION */}
@@ -307,33 +307,71 @@ export default function PortfolioDashboardView({
         {/* CTA SECTION */}
         {details?.cta?.visible !== false && (
           <section className="w-full py-8">
-            <div
-              className="flex flex-col justify-between md:flex-row md:items-center"
-              style={{ gap: "var(--op-spacing, 24px)" }}
-            >
-              <div className="flex items-center gap-4">
-                <div className="bg-brand-hover-bg flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-white shadow-sm">
-                  <Rocket size={24} strokeWidth={2} />
-                </div>
-                <div className="flex flex-col">
-                  <h3 className="text-primary-text text-[16px] font-bold">
-                    {cta?.title || "Interested in working together?"}
-                  </h3>
-                  <p className="text-secondary-text mt-0.5 text-[13px]">
-                    {cta?.subtitle ||
-                      "I am currently available for freelance project"}
-                  </p>
-                </div>
+            {cta?.layout === "1" ? (
+              <>
+                <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
+                  {cta?.title || "Interested in working together?"}
+                </h2>
+                <p className="text-secondary-text mt-2 mb-6 max-w-[500px] text-[15px]">
+                  {cta?.subtitle ||
+                    "I am currently available for freelance project"}
+                </p>
+                <a
+                  href={cta?.value ?? cta?.url ?? ""}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm transition-all active:scale-95"
+                >
+                  {cta?.label || "Let's Connect"}
+                </a>
+              </>
+            ) : cta?.layout === "3" ? (
+              <div className="flex justify-center">
+                <a
+                  href={cta?.value ?? cta?.url ?? ""}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-8 text-sm font-bold text-white shadow-sm transition-all"
+                >
+                  {cta?.label || "Let's Connect"}
+                </a>
               </div>
-              <a
-                href={cta?.url || "mailto:hello@example.com"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-[14px] font-bold whitespace-nowrap text-white shadow-sm transition-all active:scale-95"
-              >
-                {cta?.label || "Let's Connect"}
-              </a>
-            </div>
+            ) : (
+              <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+                <div className="flex items-center gap-4">
+                  <div className="bg-brand-hover-bg flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-white shadow-sm">
+                    {cta?.iconSrc ? (
+                      <Image
+                        src={cta.iconSrc}
+                        alt=""
+                        width={24}
+                        height={24}
+                        className="object-contain brightness-0 invert"
+                      />
+                    ) : (
+                      <Mail size={24} />
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <h3 className="text-primary-text text-[16px] font-bold">
+                      {cta?.title || "Interested in working together?"}
+                    </h3>
+                    <p className="text-secondary-text mt-0.5 text-[13px]">
+                      {cta?.subtitle ||
+                        "I am currently available for freelance project"}
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href={cta?.value ?? cta?.url ?? ""}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 shrink-0 items-center justify-center rounded-md px-6 text-[14px] font-bold whitespace-nowrap text-white shadow-sm transition-all active:scale-95"
+                >
+                  {cta?.label || "Let's Connect"}
+                </a>
+              </div>
+            )}
           </section>
         )}
 

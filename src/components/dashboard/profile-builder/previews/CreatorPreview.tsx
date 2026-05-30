@@ -9,7 +9,11 @@ import {
   MoreHorizontal,
   ArrowRight,
 } from "lucide-react";
-import { getImageUrl, sanitizeUrl } from "@/utils/profile";
+import {
+  getImageUrl,
+  sanitizeUrl,
+  getDisplayProfileUrl,
+} from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 import { getLinkIcon } from "../../shared/TemplateLinkCard";
 
@@ -41,12 +45,21 @@ export default function CreatorPreview({
     }
   }, [selectedSectionId]);
 
-  const visibleSections = sections.filter((section) => section.visible);
-
   const bioSection = sections.find((s) => s.type === "bio");
   const linksSection = sections.find((s) => s.type === "links");
   const ctaSection = sections.find((s) => s.type === "experience");
   const bioSectionId = bioSection?.id ?? "bio";
+
+  const sectionStyle = (section: Section): React.CSSProperties => ({
+    ...(section.bgColor && { backgroundColor: section.bgColor }),
+    ...(section.textColor && { color: section.textColor }),
+    ...(section.padding != null && { padding: section.padding }),
+    ...(section.paddingTop != null && { paddingTop: section.paddingTop }),
+    ...(section.paddingBottom != null && {
+      paddingBottom: section.paddingBottom,
+    }),
+    ...(section.gap != null && { gap: section.gap }),
+  });
 
   const renderControls = (section?: Section, isBio: boolean = false) => {
     if (!section) return null;
@@ -151,7 +164,7 @@ export default function CreatorPreview({
               {profile?.fullName || "Micaela Robinson"}
             </h1>
             <p className="text-secondary-text mt-1 text-[15px]">
-              openprofile.app/{profile?.username || "micaela"}
+              {getDisplayProfileUrl(profile?.username || "micaela")}
             </p>
           </div>
 
@@ -292,7 +305,7 @@ export default function CreatorPreview({
 
           <div className="w-full">
             {/* CREATOR TAB CONTENT */}
-            {visibleSections.map((section) => {
+            {sections.map((section) => {
               if (
                 selectedSectionId &&
                 selectedSectionId !== section.id &&
@@ -301,10 +314,33 @@ export default function CreatorPreview({
               )
                 return null;
 
+              // Hidden section placeholder — always rendered so 3-dots menu stays reachable
+              const isCurrentTab =
+                (section.type === "projects" && activeTab === "projects") ||
+                (section.type === "links" && activeTab === "links") ||
+                (section.type === "bio" && activeTab === "about");
+
+              if (!section.visible && isCurrentTab) {
+                return (
+                  <div key={section.id} className="relative">
+                    {renderControls(section, section.type === "bio")}
+                    <div className="text-secondary-text border-border flex items-center justify-center rounded-2xl border border-dashed py-10 text-sm opacity-50">
+                      {section.title} section is hidden
+                    </div>
+                  </div>
+                );
+              }
+
+              if (!section.visible) return null;
+
               // Projects Tab
               if (section.type === "projects" && activeTab === "projects") {
                 return (
-                  <div key={section.id} className="relative w-full">
+                  <div
+                    key={section.id}
+                    className="relative w-full"
+                    style={sectionStyle(section)}
+                  >
                     {renderControls(section)}
                     {section.projects && section.projects.length > 0 ? (
                       <div
@@ -431,7 +467,10 @@ export default function CreatorPreview({
                   <div
                     key={section.id}
                     className="relative mx-auto flex w-full flex-col"
-                    style={{ gap: "var(--op-spacing, 24px)" }}
+                    style={{
+                      gap: "var(--op-spacing, 24px)",
+                      ...sectionStyle(section),
+                    }}
                   >
                     {renderControls(section)}
                     {allLinks.length > 0 ? (
@@ -503,7 +542,10 @@ export default function CreatorPreview({
                   <div
                     key={section.id}
                     className="border-border mx-auto max-w-2xl rounded-3xl border"
-                    style={{ padding: "calc(var(--op-spacing, 24px) * 1.5)" }}
+                    style={{
+                      padding: "calc(var(--op-spacing, 24px) * 1.5)",
+                      ...sectionStyle(section),
+                    }}
                   >
                     <p className="text-secondary-text text-center text-[15px] leading-relaxed break-all whitespace-pre-wrap">
                       {section.bio ||

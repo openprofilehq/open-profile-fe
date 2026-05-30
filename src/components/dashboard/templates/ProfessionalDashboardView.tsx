@@ -8,7 +8,7 @@ import {
   ProjectItem,
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
-import { getImageUrl } from "@/utils/profile";
+import { getImageUrl, getDisplayProfileUrl } from "@/utils/profile";
 import normalizeHref from "@/utils/url";
 import { TemplateFooter } from "./TemplateFooter";
 
@@ -94,18 +94,32 @@ export default function ProfessionalDashboardView({
                 {name}
               </h1>
               <p className="text-secondary-text mt-1 text-[15px]">
-                openprofile.app/{username}
+                {getDisplayProfileUrl(username)}
               </p>
             </div>
           </div>
 
-          <a
-            href="mailto:hello@example.com"
-            className="border-brand-hover-bg bg-brand-hover-bg/5 text-brand-hover-bg hover:bg-brand-hover-bg/10 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-sm font-semibold transition-colors"
-          >
-            <Mail size={16} />
-            Email
-          </a>
+          {details?.cta?.visible !== false && (cta?.value ?? cta?.url) && (
+            <a
+              href={cta?.value ?? cta?.url ?? ""}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border-brand-hover-bg bg-brand-hover-bg/5 text-brand-hover-bg hover:bg-brand-hover-bg/10 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-sm font-semibold transition-colors"
+            >
+              {cta?.iconSrc ? (
+                <Image
+                  src={cta.iconSrc}
+                  alt=""
+                  width={16}
+                  height={16}
+                  className="object-contain"
+                />
+              ) : (
+                <Mail size={16} />
+              )}
+              {cta?.label || "Email"}
+            </a>
+          )}
         </header>
 
         {/* BIO SECTION */}
@@ -263,21 +277,56 @@ export default function ProfessionalDashboardView({
         {/* CTA SECTION */}
         {details?.cta?.visible !== false && (
           <section className="w-full">
-            <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
-              {cta?.title || "Open to new projects."}
-            </h2>
-            <p className="text-secondary-text mt-2 mb-6 max-w-[500px] text-[15px]">
-              {cta?.subtitle ||
-                "Have an idea or product you're building? I can help you design it the right way."}
-            </p>
-            <a
-              href={cta?.url || "mailto:hello@example.com"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm transition-all active:scale-95"
-            >
-              {cta?.label || "Work with me"}
-            </a>
+            {cta?.layout === "2" ? (
+              <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                <div>
+                  <h3 className="text-primary-text text-[16px] font-bold">
+                    {cta?.title || "Open to new projects."}
+                  </h3>
+                  <p className="text-secondary-text mt-0.5 text-[13px]">
+                    {cta?.subtitle ||
+                      "Have an idea or product you're building?"}
+                  </p>
+                </div>
+                <a
+                  href={cta?.value ?? cta?.url ?? ""}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 shrink-0 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm transition-all"
+                >
+                  {cta?.label || "Work with me"}
+                </a>
+              </div>
+            ) : cta?.layout === "3" ? (
+              <div className="flex justify-center">
+                <a
+                  href={cta?.value ?? cta?.url ?? ""}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-8 text-sm font-bold text-white shadow-sm transition-all"
+                >
+                  {cta?.label || "Work with me"}
+                </a>
+              </div>
+            ) : (
+              <>
+                <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
+                  {cta?.title || "Open to new projects."}
+                </h2>
+                <p className="text-secondary-text mt-2 mb-6 max-w-[500px] text-[15px]">
+                  {cta?.subtitle ||
+                    "Have an idea or product you're building? I can help you design it the right way."}
+                </p>
+                <a
+                  href={cta?.value ?? cta?.url ?? ""}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm transition-all active:scale-95"
+                >
+                  {cta?.label || "Work with me"}
+                </a>
+              </>
+            )}
           </section>
         )}
 

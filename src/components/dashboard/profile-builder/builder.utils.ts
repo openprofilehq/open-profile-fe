@@ -34,6 +34,29 @@ export function contentToSections(
         visible: content?.bio?.visible ?? true,
         bio: content?.bio?.content || profile?.bio || "",
         fullName: profile?.fullName ?? "",
+        textColor: (content?.bio as Record<string, unknown>)?.textColor as
+          | string
+          | undefined,
+        bgColor: (content?.bio as Record<string, unknown>)?.bgColor as
+          | string
+          | undefined,
+        font: (content?.bio as Record<string, unknown>)?.font as
+          | string
+          | undefined,
+        iconColor: (content?.bio as Record<string, unknown>)?.iconColor as
+          | string
+          | undefined,
+        paddingTop: (content?.bio as Record<string, unknown>)?.paddingTop as
+          | number
+          | undefined,
+        paddingBottom: (content?.bio as Record<string, unknown>)
+          ?.paddingBottom as number | undefined,
+        gap: (content?.bio as Record<string, unknown>)?.gap as
+          | number
+          | undefined,
+        padding: (content?.bio as Record<string, unknown>)?.padding as
+          | number
+          | undefined,
       };
     }
 
@@ -51,6 +74,29 @@ export function contentToSections(
             url: decodeUrlForFrontend(l.url as string),
           })
         ) as unknown as SavedLink[],
+        textColor: (content?.links as Record<string, unknown>)?.textColor as
+          | string
+          | undefined,
+        bgColor: (content?.links as Record<string, unknown>)?.bgColor as
+          | string
+          | undefined,
+        font: (content?.links as Record<string, unknown>)?.font as
+          | string
+          | undefined,
+        iconColor: (content?.links as Record<string, unknown>)?.iconColor as
+          | string
+          | undefined,
+        paddingTop: (content?.links as Record<string, unknown>)?.paddingTop as
+          | number
+          | undefined,
+        paddingBottom: (content?.links as Record<string, unknown>)
+          ?.paddingBottom as number | undefined,
+        gap: (content?.links as Record<string, unknown>)?.gap as
+          | number
+          | undefined,
+        padding: (content?.links as Record<string, unknown>)?.padding as
+          | number
+          | undefined,
       };
     }
 
@@ -69,6 +115,31 @@ export function contentToSections(
             ),
           })
         ) as unknown as ProjectItem[],
+        layout: (content?.projects as Record<string, unknown>)?.layout as
+          | string
+          | undefined,
+        textColor: (content?.projects as Record<string, unknown>)?.textColor as
+          | string
+          | undefined,
+        bgColor: (content?.projects as Record<string, unknown>)?.bgColor as
+          | string
+          | undefined,
+        font: (content?.projects as Record<string, unknown>)?.font as
+          | string
+          | undefined,
+        iconColor: (content?.projects as Record<string, unknown>)?.iconColor as
+          | string
+          | undefined,
+        paddingTop: (content?.projects as Record<string, unknown>)
+          ?.paddingTop as number | undefined,
+        paddingBottom: (content?.projects as Record<string, unknown>)
+          ?.paddingBottom as number | undefined,
+        gap: (content?.projects as Record<string, unknown>)?.gap as
+          | number
+          | undefined,
+        padding: (content?.projects as Record<string, unknown>)?.padding as
+          | number
+          | undefined,
       };
     }
 
@@ -154,10 +225,25 @@ export function sectionsToContent(
   const projectsSection = sections.find((s) => s.type === "projects");
   const ctaSection = sections.find((s) => s.type === "experience");
 
+  const sectionStyleFields = (s: Section) => ({
+    ...(s.textColor && { textColor: s.textColor }),
+    ...(s.bgColor && { bgColor: s.bgColor }),
+    ...(s.font && { font: s.font }),
+    ...(s.iconColor && { iconColor: s.iconColor }),
+    ...(s.paddingTop != null && { paddingTop: s.paddingTop }),
+    ...(s.paddingBottom != null && { paddingBottom: s.paddingBottom }),
+    ...(s.gap != null && { gap: s.gap }),
+    ...(s.padding != null && { padding: s.padding }),
+  });
+
   return {
     sectionOrder,
     bio: bioSection
-      ? { visible: bioSection.visible, content: bioSection.bio ?? "" }
+      ? {
+          visible: bioSection.visible,
+          content: bioSection.bio ?? "",
+          ...sectionStyleFields(bioSection),
+        }
       : undefined,
     links: linksSection
       ? {
@@ -169,12 +255,15 @@ export function sectionsToContent(
             url: l.url ? encodeUrlForBackend(l.url, l.iconId) : "",
             visible: true,
           })) as unknown as LinkItem[],
+          ...sectionStyleFields(linksSection),
         }
       : undefined,
     projects: projectsSection
       ? {
           visible: projectsSection.visible,
           sectionTitle: projectsSection.subtitle ?? "Projects",
+          ...(projectsSection.layout && { layout: projectsSection.layout }),
+          ...sectionStyleFields(projectsSection),
           items: (projectsSection.projects ?? []).map((p) => {
             const mappedProject: Record<string, unknown> = {
               id: p.id,
