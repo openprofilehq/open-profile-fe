@@ -82,7 +82,6 @@ export async function POST() {
       response.cookies.set(name, value, cookieOptions);
       if (name === "accessToken") gotAccessToken = true;
 
-      // Expire any old domain-scoped copy of this cookie
       if (env.COOKIE_DOMAIN) {
         response.headers.append(
           "Set-Cookie",
