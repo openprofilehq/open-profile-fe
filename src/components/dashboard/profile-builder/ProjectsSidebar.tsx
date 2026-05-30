@@ -198,7 +198,7 @@ export default function ProjectsSidebar({
 
     if (hasError) return;
 
-    const validatedProjectUrl = itemUrl.trim() || undefined;
+    const trimmedProjectUrl = itemUrl.trim() || undefined;
 
     if (editingProject) {
       const updated = projects.map((p) =>
@@ -208,7 +208,7 @@ export default function ProjectsSidebar({
               title: itemTitle.trim(),
               description: itemDesc.trim(),
               buttonText: itemButtonText.trim() || "View project",
-              url: validatedProjectUrl,
+              url: trimmedProjectUrl,
               imageSrc: itemImage,
               highlighted: itemHighlighted,
             }
@@ -221,7 +221,7 @@ export default function ProjectsSidebar({
         title: itemTitle.trim(),
         description: itemDesc.trim(),
         buttonText: itemButtonText.trim() || "View project",
-        url: validatedProjectUrl,
+        url: trimmedProjectUrl,
         imageSrc: itemImage,
         highlighted: itemHighlighted,
       };
@@ -426,6 +426,9 @@ export default function ProjectsSidebar({
             <div className="flex flex-col gap-2">
               <label className="text-xs font-bold text-[#050505]">Title</label>
               <input
+                id="item-title"
+                aria-invalid={!!titleError}
+                aria-describedby={titleError ? "title-error" : undefined}
                 type="text"
                 value={itemTitle}
                 onChange={(e) => {
@@ -440,7 +443,7 @@ export default function ProjectsSidebar({
                 }`}
                 required
               />
-              {titleError && <p className="text-xs text-red-500">{titleError}</p>}
+              {titleError && <p id="title-error" className="text-xs text-red-500">{titleError}</p>}
             </div>
 
             {/* Project Item Description/Subtitle */}
@@ -613,7 +616,10 @@ export default function ProjectsSidebar({
                 disabled={
                   uploading ||
                   !itemTitle.trim() ||
-                  !itemDesc.trim()
+                  !itemDesc.trim() ||
+                  !itemButtonText.trim() ||
+                  !itemUrl.trim() ||
+                  !itemImage
                 }
                 className="bg-brand-hover-bg hover:bg-brand h-[46px] flex-1 rounded-[10px] font-semibold text-white disabled:opacity-50"
               >

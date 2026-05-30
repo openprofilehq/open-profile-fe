@@ -107,6 +107,7 @@ export default function CtaSidebar({
     setSectionTitle(val);
     if (!val.trim()) {
       setTitleError("Title is required.");
+      syncSection({ title: val });
     } else {
       setTitleError("");
       syncSection({ title: val });
@@ -117,6 +118,7 @@ export default function CtaSidebar({
     setSectionSubtitle(val);
     if (!val.trim()) {
       setSubtitleError("Subtitle is required.");
+      syncSection({ subtitle: val });
     } else {
       setSubtitleError("");
       syncSection({ subtitle: val });
@@ -132,6 +134,7 @@ export default function CtaSidebar({
     setButtonText(val);
     if (!val.trim()) {
       setBtnTextError("Button text is required.");
+      syncSection({ buttonText: val });
     } else {
       setBtnTextError("");
       syncSection({ buttonText: val });

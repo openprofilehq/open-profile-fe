@@ -1,4 +1,5 @@
 import React from "react";
+import { sanitizeUrl } from "@/utils/profile";
 import { ExternalLink, Globe } from "lucide-react";
 import {
   XIcon,
@@ -8,8 +9,8 @@ import {
   YoutubeIcon,
 } from "@/components/icons/BrandIcons";
 
-export const getLinkIcon = (title: string = "") => {
-  const t = title.toLowerCase();
+export const getLinkIcon = (searchText: string = "") => {
+  const t = searchText.toLowerCase();
   if (t.includes("instagram"))
     return <InstagramIcon style={{ fontSize: 18 }} />;
   if (t.includes("twitter") || t.includes("x.com") || t === "x")
@@ -30,7 +31,7 @@ export function TemplateLinkCard({ id, title, url }: TemplateLinkCardProps) {
   return (
     <a
       key={id}
-      href={url}
+      href={sanitizeUrl(url)}
       target="_blank"
       rel="noopener noreferrer"
       className="group border-border bg-background hover:border-brand-hover-bg/30 flex items-center justify-between rounded-[12px] border p-4 shadow-sm transition-all hover:shadow-md"

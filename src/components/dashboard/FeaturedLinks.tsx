@@ -85,7 +85,7 @@ export default function FeaturedLinks({ content, isLoading }: Props) {
                     )}
                   </span>
                   <div className="min-w-0">
-                    <h3 className="font-bold text-primary-text break-all">{item.title}</h3>
+                    <h3 className="font-bold text-primary-text break-words">{item.title}</h3>
                     <p className="text-sm text-tertiary-text break-all">{item.url}</p>
                   </div>
                 </div>

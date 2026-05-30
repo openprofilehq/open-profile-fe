@@ -99,7 +99,18 @@ export function TemplateSelectionModal({
     <>
 
       {trigger && (
-        <div onClick={handleOpen} className="w-full">
+        <div 
+          onClick={handleOpen}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleOpen();
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          className="w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#087583] rounded-[12px]"
+        >
           {trigger}
         </div>
       )}

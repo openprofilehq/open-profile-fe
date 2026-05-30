@@ -48,9 +48,19 @@ async function proxyRequest(
   );
 
   const store = await cookies();
-  const cookieHeader = store
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
+  const rawCookies = store.getAll();
+  const normalizedCookies = new Map<string, string>();
+  for (const c of rawCookies) {
+    let name = c.name;
+    if (name === "_at") name = "accessToken";
+    if (name === "_rt") name = "refreshToken";
+    
+    if (!normalizedCookies.has(name) || (c.name === "accessToken" || c.name === "refreshToken")) {
+      normalizedCookies.set(name, c.value);
+    }
+  }
+  const cookieHeader = Array.from(normalizedCookies.entries())
+    .map(([k, v]) => `${k}=${v}`)
     .join("; ");
 
   const contentType = request.headers.get("content-type") ?? "";
@@ -93,8 +103,13 @@ async function proxyRequest(
   for (const cookieStr of setCookies) {
     const { name, value, cookieOptions } = parseSetCookie(cookieStr);
     delete cookieOptions.domain;
-    response.cookies.set(name, value, cookieOptions);
-    if (name === "accessToken") loginSuccess = true;
+
+    let finalName = name;
+    if (name === "_at") finalName = "accessToken";
+    if (name === "_rt") finalName = "refreshToken";
+
+    response.cookies.set(finalName, value, cookieOptions);
+    if (finalName === "accessToken") loginSuccess = true;
   }
 
   if (loginSuccess) {

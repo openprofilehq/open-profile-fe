@@ -109,13 +109,12 @@ export default function RightPanel({
                 </label>
                 <TemplateSelectionModal
                   initialTemplate={
-                    (template
-                      ? template.charAt(0).toUpperCase() + template.slice(1)
-                      : "Professional") as
-                      | "Professional"
-                      | "Creator"
-                      | "Portfolio"
-                      | "Default"
+                    (() => {
+                      const t = template ? template.charAt(0).toUpperCase() + template.slice(1) : "";
+                      return ["Professional", "Creator", "Portfolio", "Default"].includes(t)
+                        ? t
+                        : "Professional";
+                    })() as "Professional" | "Creator" | "Portfolio" | "Default"
                   }
                   onPreviewChange={onChangeTemplate}
                   trigger={
