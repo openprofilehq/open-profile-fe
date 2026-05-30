@@ -27,7 +27,7 @@ import type {
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { isApiError } from "@/api/base";
 import { ROUTES } from "@/constants/routes";
-import { Skeleton } from "@/components/ui/skeleton";
+
 
 const createSection = (type: string, customTitle?: string): Section | null => {
   const allowedTypes: Record<string, Section["type"]> = {
@@ -202,6 +202,21 @@ export default function ProfileBuilderContent() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [template, setTemplate] = useState<string>("creator");
   const [sections, setSections] = useState<Section[]>([]);
+
+  const handlePreviewChange = (newTemplate: string | null) => {
+    if (newTemplate) {
+      setTemplate(newTemplate.toLowerCase());
+    } else {
+      const appearanceSettings = profileAppearance.data?.appearance ?? profileAppearance.data?.data ?? null;
+      const themeSettings = (profileContent.data as Record<string, unknown>)?.themeSettings as Record<string, unknown> | undefined;
+      const rawTemplate = 
+        appearanceSettings?.template || 
+        themeSettings?.template || 
+        dashboardProfile.data?.templateType ||
+        "professional";
+      setTemplate((rawTemplate as string).toLowerCase());
+    }
+  };
 
   const contentLoadedRef = useRef(false);
   const userEditedRef = useRef(false);
@@ -574,75 +589,15 @@ export default function ProfileBuilderContent() {
 
   if (isLoading) {
     return (
-      <>
-        {/* Mobile Loading State */}
-        <div className="bg-secondary-bg flex min-h-screen flex-col items-center justify-center px-6 text-center lg:hidden">
-          <div className="border-border border-t-brand-hover-bg h-12 w-12 animate-spin rounded-full border-4 mb-6 shadow-sm" />
-          <h1 className="text-primary-text text-2xl font-bold tracking-tight">
-            Loading profile editor...
-          </h1>
-          <p className="text-secondary-text mt-3">
-            Preparing your dashboard and preview...
-          </p>
-        </div>
-
-        {/* Desktop Skeleton */}
-        <div className="bg-primary-bg hidden flex-1 w-full flex-col overflow-hidden lg:flex">
-          <div className="bg-secondary-bg flex flex-1 gap-4 overflow-hidden p-4 lg:p-6 lg:px-8">
-            
-            {/* Left Sidebar Skeleton */}
-            <div className="w-[340px] shrink-0 rounded-[16px] bg-background border border-border flex flex-col gap-6 p-6 shadow-sm">
-              <Skeleton className="h-8 w-[140px] rounded-md opacity-70" />
-              <div className="flex flex-col gap-4 mt-2">
-                <Skeleton className="h-[76px] w-full rounded-[12px] opacity-60" />
-                <Skeleton className="h-[76px] w-full rounded-[12px] opacity-60" />
-                <Skeleton className="h-[76px] w-full rounded-[12px] opacity-60" />
-                <Skeleton className="h-[76px] w-full rounded-[12px] opacity-60" />
-              </div>
-            </div>
-
-            {/* Preview Canvas Skeleton */}
-            <div className="flex flex-1 flex-col items-center justify-center py-4">
-              <div className="relative flex h-full max-h-[850px] w-full max-w-[420px] flex-col overflow-hidden rounded-[40px] border-12 border-background bg-secondary-bg shadow-xl">
-                <div className="flex w-full flex-col items-center gap-6 p-10 mt-10">
-                  <Skeleton className="h-[120px] w-[120px] rounded-full opacity-70" />
-                  <div className="flex flex-col items-center gap-3 w-full mt-2">
-                    <Skeleton className="h-8 w-3/4 rounded-md opacity-80" />
-                    <Skeleton className="h-4 w-1/2 rounded-md opacity-60" />
-                  </div>
-                  <div className="flex flex-col gap-4 w-full mt-10">
-                    <Skeleton className="h-16 w-full rounded-[12px] opacity-60" />
-                    <Skeleton className="h-16 w-full rounded-[12px] opacity-60" />
-                    <Skeleton className="h-16 w-full rounded-[12px] opacity-60" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Panel Skeleton */}
-            <div className="w-[340px] shrink-0 rounded-[16px] bg-background border border-border flex flex-col gap-6 p-6 shadow-sm">
-              <div className="flex items-center gap-8 border-b border-border pb-4">
-                <Skeleton className="h-6 w-20 rounded-md opacity-70" />
-                <Skeleton className="h-6 w-20 rounded-md opacity-70" />
-              </div>
-              <div className="flex flex-col gap-8 mt-2">
-                <div className="flex flex-col gap-3">
-                  <Skeleton className="h-5 w-24 rounded-md opacity-70" />
-                  <Skeleton className="h-[120px] w-full rounded-[12px] opacity-60" />
-                </div>
-                <div className="flex flex-col gap-3">
-                  <Skeleton className="h-5 w-24 rounded-md opacity-70" />
-                  <div className="flex gap-3">
-                    <Skeleton className="h-12 w-12 rounded-full opacity-60" />
-                    <Skeleton className="h-12 w-12 rounded-full opacity-60" />
-                    <Skeleton className="h-12 w-12 rounded-full opacity-60" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
+      <div className="bg-secondary-bg flex min-h-screen flex-col items-center justify-center px-6 text-center">
+        <div className="border-border border-t-brand-hover-bg h-12 w-12 animate-spin rounded-full border-4 mb-6 shadow-sm" />
+        <h1 className="text-primary-text text-2xl font-bold tracking-tight">
+          Loading profile editor...
+        </h1>
+        <p className="text-secondary-text mt-3">
+          Preparing your dashboard and preview...
+        </p>
+      </div>
     );
   }
 
@@ -699,6 +654,8 @@ export default function ProfileBuilderContent() {
           />
 
           <RightPanel
+            template={template}
+            onChangeTemplate={handlePreviewChange}
             font={font}
             onChangeFont={setFont}
             textColor={textColor}

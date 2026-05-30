@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { Mail, ArrowRight, ExternalLink } from "lucide-react";
-import { TemplateLinkCard } from "../shared/TemplateLinkCard";
+
 import {
   DashboardProfileResponse,
   ProfileContentResponse,
@@ -18,6 +18,7 @@ type Props = {
   isLoadingProfile?: boolean;
   isLoadingContent?: boolean;
   appearance?: ProfileAppearanceSettings | null;
+  isPreview?: boolean;
 };
 
 const DEFAULT_LINKS = [
@@ -53,7 +54,7 @@ const DEFAULT_PROJECTS = [
   },
 ] as ProjectItem[];
 
-export default function ProfessionalDashboardView({ profile, content }: Props) {
+export default function ProfessionalDashboardView({ profile, content, isPreview }: Props) {
   const name = profile?.fullName ?? profile?.username ?? "John Smith";
   const username = profile?.username ?? "johnsmith";
 
@@ -64,10 +65,10 @@ export default function ProfessionalDashboardView({ profile, content }: Props) {
     "Product Designer helping early-stage startups build meaningful, trustworthy experiences. Previously at Linear and Loom";
 
   const rawLinks = (details?.links?.items ?? []) as LinkItem[];
-  const links = rawLinks.length > 0 ? rawLinks : DEFAULT_LINKS;
+  const links = rawLinks.length > 0 ? rawLinks : (isPreview ? DEFAULT_LINKS : []);
 
   const rawProjects = (details?.projects?.items ?? []) as ProjectItem[];
-  const projects = rawProjects.length > 0 ? rawProjects : DEFAULT_PROJECTS;
+  const projects = rawProjects.length > 0 ? rawProjects : (isPreview ? DEFAULT_PROJECTS : []);
 
   const cta = details?.cta;
 
@@ -127,82 +128,111 @@ export default function ProfessionalDashboardView({ profile, content }: Props) {
         </section>
 
         {/* LINKS SECTION */}
-        {details?.links?.visible !== false && links.length > 0 && (
+        {details?.links?.visible !== false && (
           <section className="mt-16 w-full">
             <h2 className="text-tertiary-text mb-4 text-[13px]">Links</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {links.map((link) => (
-                <TemplateLinkCard
-                  key={link.id}
-                  id={link.id}
-                  title={link.title || link.label || ""}
-                  url={link.url || ""}
-                />
-              ))}
-            </div>
+            {links.length > 0 ? (
+              <div className="flex flex-col border-t border-border">
+                {links.map((link, idx) => (
+                  <a
+                    key={link.id ?? idx}
+                    href={link.url || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center justify-between border-b border-border py-4 transition-colors hover:bg-hover-bg/30"
+                  >
+                    <span className="text-[15px] font-bold text-primary-text group-hover:text-brand-hover-bg transition-colors">
+                      {link.title || link.label}
+                    </span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-secondary-text text-[14px]">
+                        {(() => {
+                          try {
+                            return link.url ? new URL(link.url.startsWith('http') ? link.url : `https://${link.url}`).hostname.replace('www.', '') : '';
+                          } catch {
+                            return link.url || '';
+                          }
+                        })()}
+                      </span>
+                      <ExternalLink size={16} className="text-tertiary-text group-hover:text-brand-hover-bg transition-colors" />
+                    </div>
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
+                Add your links
+              </p>
+            )}
           </section>
         )}
 
         {/* PROJECTS SECTION */}
-        {details?.projects?.visible !== false && projects.length > 0 && (
+        {details?.projects?.visible !== false && (
           <section className="mt-16 w-full">
             <h2 className="text-tertiary-text mb-4 text-[13px]">
               {details?.projects?.sectionTitle || "Selected Work"}
             </h2>
-            <div className="flex flex-col gap-4">
-              {projects.map((project) => (
-                <div
-                  key={project.id}
-                  className="border-border bg-background flex flex-col items-start rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
-                >
-                  <div className="bg-secondary-bg border-border relative mb-4 h-[80px] w-full shrink-0 overflow-hidden rounded-lg border sm:mb-0 sm:w-[120px]">
-                    {project.imageSrc ? (
-                      <Image
-                        src={
-                          project.imageSrc.startsWith("/profile-preview/")
-                            ? project.imageSrc
-                            : getImageUrl(project.imageSrc)!
-                        }
-                        alt={project.title || "Project"}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
-                    ) : (
-                      <Image
-                        src="/profile-preview/feature1.jpg"
-                        alt="Project placeholder"
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                        unoptimized
-                      />
-                    )}
-                  </div>
+            {projects.length > 0 ? (
+              <div className="flex flex-col gap-4">
+                {projects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="border-border bg-background flex flex-col items-start rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
+                  >
+                    <div className="bg-secondary-bg border-border relative mb-4 h-[80px] w-full shrink-0 overflow-hidden rounded-lg border sm:mb-0 sm:w-[120px]">
+                      {project.imageSrc ? (
+                        <Image
+                          src={
+                            project.imageSrc.startsWith("/profile-preview/")
+                              ? project.imageSrc
+                              : getImageUrl(project.imageSrc)!
+                          }
+                          alt={project.title || "Project"}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      ) : (
+                        <Image
+                          src="/profile-preview/feature1.jpg"
+                          alt="Project placeholder"
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                          unoptimized
+                        />
+                      )}
+                    </div>
 
-                  <div className="flex w-full flex-col sm:ml-6">
-                    <h3 className="text-primary-text text-[16px] font-bold">
-                      {project.title}
-                    </h3>
-                    {project.description && (
-                      <p className="text-secondary-text mt-1 text-[13px]">
-                        {project.description}
-                      </p>
-                    )}
-                    {project.url && (
-                      <a
-                        href={project.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
-                      >
-                        {project.buttonText || "View Project"}
-                        <ArrowRight size={14} strokeWidth={2.5} />
-                      </a>
-                    )}
+                    <div className="flex w-full flex-col sm:ml-6">
+                      <h3 className="text-primary-text text-[16px] font-bold">
+                        {project.title}
+                      </h3>
+                      {project.description && (
+                        <p className="text-secondary-text mt-1 text-[13px]">
+                          {project.description}
+                        </p>
+                      )}
+                      {project.url && (
+                        <a
+                          href={project.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
+                        >
+                          {project.buttonText || "View Project"}
+                          <ArrowRight size={14} strokeWidth={2.5} />
+                        </a>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
+                Add your projects
+              </p>
+            )}
           </section>
         )}
 

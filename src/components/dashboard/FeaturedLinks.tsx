@@ -46,7 +46,7 @@ export default function FeaturedLinks({ content, isLoading }: Props) {
         </div>
       ) : links.length === 0 ? (
         <span className="mt-4 flex items-center justify-between text-sm text-secondary-text">
-          No links added yet
+          Add your links
         </span>
       ) : (
         <div className="mt-6 flex flex-col gap-4">
@@ -84,9 +84,9 @@ export default function FeaturedLinks({ content, isLoading }: Props) {
                       <ImageIcon className="text-tertiary-text" size={24} />
                     )}
                   </span>
-                  <div>
-                    <h3 className="font-bold text-primary-text">{item.title}</h3>
-                    <p className="text-sm text-tertiary-text">{item.url}</p>
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-primary-text break-all">{item.title}</h3>
+                    <p className="text-sm text-tertiary-text break-all">{item.url}</p>
                   </div>
                 </div>
                 <span className="flex h-10 w-10 items-center justify-center rounded-full border border-border">

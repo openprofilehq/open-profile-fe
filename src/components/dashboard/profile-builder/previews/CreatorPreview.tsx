@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Eye, EyeOff, Trash2, MessageSquare, ArrowRight, MoreHorizontal, ExternalLink } from "lucide-react";
+import { Eye, EyeOff, Trash2, MessageSquare, ChevronRight, MoreHorizontal } from "lucide-react";
 import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 import { TemplateLinkCard, getLinkIcon } from "../../shared/TemplateLinkCard";
@@ -245,42 +245,92 @@ export default function CreatorPreview({
                   <div key={section.id} className="relative w-full">
                     {renderControls(section)}
                     {section.projects && section.projects.length > 0 ? (
-                      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                        {section.projects.map((project) => (
-                          <div
-                            key={project.id}
-                            className="border-border bg-background flex flex-col overflow-hidden rounded-[12px] border transition-shadow"
-                          >
-                            <div className="bg-secondary-bg relative h-[160px] w-full shrink-0">
-                              {getImageUrl(project.imageSrc) ? (
-                                <Image
-                                  src={getImageUrl(project.imageSrc)!}
-                                  alt={project.title}
-                                  fill
-                                  className="object-cover"
-                                  unoptimized
-                                />
-                              ) : (
-                                <div className="h-full w-full bg-neutral-200" />
+                      <div className={`grid gap-6 ${
+                        section.layout === "1" ? "grid-cols-1" :
+                        section.layout === "3" ? "grid-cols-1 sm:grid-cols-2" :
+                        section.layout === "4" ? "grid-cols-1 sm:grid-cols-2" :
+                        "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+                      }`}>
+                        {section.projects.map((project) => {
+                          const layoutType = section.layout || "2";
+                          const hasUrl = Boolean(project.url);
+                          const displayImg = getImageUrl(project.imageSrc);
+
+                          const card = (
+                            <div className={`flex group rounded-[12px] border border-border bg-background p-4 shadow-sm transition-shadow hover:shadow-md hover:border-brand-hover-bg/30 ${
+                              layoutType === "1" ? "flex-col sm:flex-row sm:items-center justify-between" :
+                              layoutType === "3" ? "flex-col sm:flex-row sm:items-start" :
+                              layoutType === "4" ? "flex-col sm:flex-row-reverse sm:items-start" :
+                              "flex-col" // Layout 2
+                            }`}>
+                              {/* IMAGE */}
+                              {layoutType !== "1" && (
+                                <div className={`relative shrink-0 overflow-hidden rounded-lg border border-border bg-secondary-bg mb-4 ${
+                                  layoutType === "2" ? "w-full aspect-video" : "w-full h-[120px] sm:mb-0 sm:w-[140px]"
+                                } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}>
+                                  {displayImg ? (
+                                    <Image
+                                      src={displayImg}
+                                      alt={project.title ?? "Project"}
+                                      className="object-cover"
+                                      fill
+                                      unoptimized
+                                    />
+                                  ) : (
+                                    <div className="flex h-full w-full items-center justify-center text-xs text-tertiary-text">
+                                      No image
+                                    </div>
+                                  )}
+                                </div>
                               )}
-                            </div>
-                            <div className="flex flex-col p-5">
-                              <h3 className="text-primary-text text-[16px] font-bold">
-                                {project.title}
-                              </h3>
-                              {project.description && (
-                                <p className="text-secondary-text mt-2 line-clamp-2 text-[13px]">
+                              
+                              {/* CONTENT */}
+                              <div className="flex flex-col items-start min-w-0 flex-1">
+                                <h5 className="text-xl font-bold text-primary-text break-all">
+                                  {project.title}
+                                </h5>
+                                <p className={`text-secondary-text break-all mt-1 ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"}`}>
                                   {project.description}
                                 </p>
-                              )}
-                              {project.url && (
-                                <span className="text-brand-hover-bg mt-4 inline-flex items-center gap-1.5 text-[13px] font-bold">
-                                  {project.buttonText || "View Project"}
-                                </span>
+                                {layoutType !== "1" && (
+                                  <span className="mt-3 flex items-center gap-1 text-sm font-semibold text-brand-hover-bg hover:underline">
+                                    {hasUrl ? "View project" : "Edit project"}
+                                    <ChevronRight size={16} />
+                                  </span>
+                                )}
+                              </div>
+                              
+                              {/* BUTTON FOR LAYOUT 1 */}
+                              {layoutType === "1" && (
+                                <div className="mt-4 sm:mt-0 sm:ml-6 shrink-0">
+                                  <span className="flex items-center gap-1 text-sm font-bold text-brand-hover-bg hover:underline">
+                                    {hasUrl ? "View project" : "Edit project"}
+                                    <ChevronRight size={16} />
+                                  </span>
+                                </div>
                               )}
                             </div>
-                          </div>
-                        ))}
+                          );
+
+                          return (
+                            <div key={project.id} className="w-full">
+                              {hasUrl ? (
+                                <a
+                                  href={sanitizeUrl(project.url || "")}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="no-underline block h-full"
+                                >
+                                  {card}
+                                </a>
+                              ) : (
+                                <div className="h-full">
+                                  {card}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     ) : (
                       <p className="text-tertiary-text border-border rounded-xl border border-dashed py-8 text-center text-sm">
@@ -326,7 +376,7 @@ export default function CreatorPreview({
                     key={section.id}
                     className="border-border mx-auto max-w-2xl rounded-3xl border p-8 sm:p-10"
                   >
-                    <p className="text-secondary-text text-center text-[15px] leading-relaxed whitespace-pre-wrap">
+                    <p className="text-secondary-text break-all text-center text-[15px] leading-relaxed whitespace-pre-wrap">
                       {section.bio ||
                         "Write a little bit about yourself here..."}
                     </p>

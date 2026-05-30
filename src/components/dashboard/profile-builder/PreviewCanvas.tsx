@@ -1,6 +1,7 @@
 import type { Section, ProfilePreview } from "./types";
 import CreatorPreview from "./previews/CreatorPreview";
 import ProfessionalPreview from "./previews/ProfessionalPreview";
+import DefaultPreview from "./previews/DefaultPreview";
 import PortfolioPreview from "./previews/PortfolioPreview";
 import TemplateAppearanceProvider from "../templates/TemplateAppearanceProvider";
 
@@ -47,6 +48,7 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
         spacing: props.spacing,
         theme: props.theme,
       }}
+      className="flex flex-col flex-1 min-w-0 h-full"
     >
       <div
         className={`animate-in fade-in flex h-full min-h-0 flex-1 justify-center overflow-y-auto px-4 py-12 transition-colors duration-200 lg:px-4 ${isDark ? "bg-inverse-bg" : "bg-transparent"} ${selectedFontClass}`}
@@ -54,6 +56,7 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
         <div className="flex w-full max-w-5xl flex-col gap-6 pb-32">
           {props.template === "creator" && <CreatorPreview {...props} />}
           {props.template === "portfolio" && <PortfolioPreview {...props} />}
+          {props.template === "default" && <DefaultPreview {...props} />}
           {(!props.template || props.template === "professional") && (
             <ProfessionalPreview {...props} />
           )}

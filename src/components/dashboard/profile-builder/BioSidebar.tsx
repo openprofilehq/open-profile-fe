@@ -126,7 +126,7 @@ export default function BioSidebar({
                 className="text-primary-text mb-2 block text-sm font-semibold"
                 htmlFor="bio-fullname"
               >
-                Full name
+                <span className="text-[#D92D20]">*</span> Full name
               </label>
               <input
                 type="text"
@@ -146,7 +146,7 @@ export default function BioSidebar({
                 className="text-primary-text mb-2 block text-sm font-semibold"
                 htmlFor="bio-text"
               >
-                Bio
+                <span className="text-[#D92D20]">*</span> Bio
               </label>
               <textarea
                 id="bio-text"
@@ -155,12 +155,11 @@ export default function BioSidebar({
                   onUpdateSection(section.id, { bio: e.target.value })
                 }
                 rows={5}
-                maxLength={200}
                 placeholder="Write a short bio..."
-                className="border-tertiary-b focus:border-brand-b w-full resize-none rounded-[10px] border bg-background px-4 py-3 text-sm text-[#050505] transition-colors outline-none"
+                className={`border-tertiary-b focus:border-brand-b w-full resize-none rounded-[10px] border bg-background px-4 py-3 text-sm transition-colors outline-none ${bio.length > 300 ? "border-[#D92D20] focus:border-[#D92D20] text-[#D92D20]" : "text-[#050505]"}`}
               />
-              <p className="mt-1 text-right text-xs text-[#A2A2A2]">
-                {bio.length}/200
+              <p className={`mt-1 text-right text-xs ${bio.length > 300 ? "text-[#D92D20] font-medium" : "text-[#A2A2A2]"}`}>
+                {bio.length <= 300 ? `${bio.length} / 300 characters` : `-${bio.length - 300} characters`}
               </p>
             </div>
 

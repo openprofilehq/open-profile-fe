@@ -32,8 +32,8 @@ export function contentToSections(
         title: "Bio",
         type: "bio" as const,
         visible: content?.bio?.visible ?? true,
-        bio: content?.bio?.content || profile.bio || "",
-        fullName: profile.fullName ?? "",
+        bio: content?.bio?.content || profile?.bio || "",
+        fullName: profile?.fullName ?? "",
       };
     }
 

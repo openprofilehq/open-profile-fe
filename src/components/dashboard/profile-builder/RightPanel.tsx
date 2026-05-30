@@ -1,6 +1,6 @@
 "use client";
 
-import { Sun, Moon, Type } from "lucide-react";
+import { Sun, Moon, Type, Palette, ChevronDown } from "lucide-react";
 import type { Section } from "./types";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { isValidHex } from "@/utils/color";
@@ -12,6 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TemplateSelectionModal } from "../TemplateSelectionModal";
+import { Button } from "@/components/ui/button";
+
 
 interface RightPanelProps {
   font: string;
@@ -32,6 +35,8 @@ interface RightPanelProps {
   onChangeTab: (tab: "general" | "section") => void;
   selectedSection: Section | null;
   onUpdateSection: (id: string, updates: Partial<Section>) => void;
+  template: string;
+  onChangeTemplate?: (template: string | null) => void;
 }
 
 const FONT_OPTIONS = [
@@ -62,6 +67,8 @@ export default function RightPanel({
   onChangeTab,
   selectedSection,
   onUpdateSection,
+  template,
+  onChangeTemplate,
 }: RightPanelProps) {
   return (
     <aside className="border-tertiary-b animate-in fade-in hidden h-full w-[290px] shrink-0 flex-col rounded-2xl border bg-background p-6 shadow-sm duration-200 select-none lg:flex">
@@ -100,6 +107,30 @@ export default function RightPanel({
         <div>
           {activeTab === "general" ? (
             <div className="flex flex-col gap-6">
+              {/* Template Selection */}
+              <div>
+                <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
+                  Template
+                </label>
+                <TemplateSelectionModal
+                  initialTemplate={
+                    (template 
+                      ? (template.charAt(0).toUpperCase() + template.slice(1)) 
+                      : "Professional") as "Professional" | "Creator" | "Portfolio" | "Default"
+                  }
+                  onPreviewChange={onChangeTemplate}
+                  trigger={
+                    <Button variant="outline" className="border-tertiary-b hover:bg-hover-bg h-auto w-full justify-between rounded-[12px] border bg-background px-4 py-3.5 text-sm font-semibold text-primary-text">
+                      <span className="flex items-center">
+                        <Palette size={16} className="mr-2 text-secondary-text" />
+                        {template ? template.charAt(0).toUpperCase() + template.slice(1) : "Choose Template"}
+                      </span>
+                      <ChevronDown size={16} className="text-secondary-text opacity-50" />
+                    </Button>
+                  }
+                />
+              </div>
+
               {/* Font Selection */}
               <div>
                 <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">

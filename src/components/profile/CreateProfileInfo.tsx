@@ -43,6 +43,29 @@ export default function CreateProfileInfo({
 
   const displayPhoto = preview ?? photoUrl;
 
+  const [errors, setErrors] = useState<{ displayName?: string; bio?: string }>({});
+
+  const characterCount = bio?.length || 0;
+
+  function handleContinue() {
+    const newErrors: { displayName?: string; bio?: string } = {};
+    if (!displayName.trim()) {
+      newErrors.displayName = "Full name is required.";
+    }
+    if (!bio.trim()) {
+      newErrors.bio = "Bio is required.";
+    } else if (characterCount > 300) {
+      newErrors.bio = "Maximum 300 characters allowed.";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    setErrors({});
+    onUpdateStep();
+  }
+
   function handleFile(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -114,34 +137,47 @@ export default function CreateProfileInfo({
         <div className="mt-16 flex flex-col gap-1.5">
           <div className="mt-4">
             <label className="mb-1 inline-block font-bold text-[#454545]">
-              Full Name
+              <span className="text-[#D92D20]">*</span> Full Name
             </label>
             <Input
               value={displayName}
-              onChange={onUpdateDisplayName}
+              onChange={(e) => {
+                onUpdateDisplayName(e);
+                if (errors.displayName) setErrors({ ...errors, displayName: undefined });
+              }}
               placeholder="Enter your full name"
-              className="border-2 border-[#ededed] bg-white shadow-none"
+              className={`border-2 bg-white shadow-none ${errors.displayName ? "border-[#D92D20] focus-visible:ring-[#D92D20]" : "border-[#ededed]"}`}
             />
+            {errors.displayName && <p className="mt-1 text-sm text-[#D92D20]">{errors.displayName}</p>}
           </div>
 
           <div className="mt-4">
             <label className="mb-1 inline-block font-bold text-[#454545]">
-              Bio
+              <span className="text-[#D92D20]">*</span> Bio
             </label>
             <textarea
-              className="w-full resize-none rounded-lg border-2 border-[#ededed] bg-white p-3"
+              className={`w-full resize-none rounded-lg border-2 bg-white p-3 focus:outline-none ${errors.bio ? "border-[#D92D20] focus:ring-1 focus:ring-[#D92D20]" : "border-[#ededed]"}`}
               value={bio}
-              onChange={onUpdateBio}
+              onChange={(e) => {
+                onUpdateBio(e);
+                if (errors.bio) setErrors({ ...errors, bio: undefined });
+              }}
               rows={5}
               placeholder="Product designer & side project builder based in lagos"
             />
+            <div className="flex justify-between items-center mt-1">
+              <span className={`text-xs ${characterCount > 300 ? 'text-[#D92D20] font-medium' : 'text-[#747474]'}`}>
+                {characterCount <= 300 ? `${characterCount} / 300 characters` : `-${characterCount - 300} characters`}
+              </span>
+              {errors.bio && <span className="text-sm text-[#D92D20]">{errors.bio}</span>}
+            </div>
           </div>
 
           <Button
             type="button"
-            disabled={isPending || !displayName.trim()}
+            disabled={isPending || !displayName.trim() || !bio.trim() || characterCount > 300}
             className="mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-medium shadow-none transition-colors"
-            onClick={onUpdateStep}
+            onClick={handleContinue}
           >
             {isPending ? "Please wait…" : "Continue"}
           </Button>

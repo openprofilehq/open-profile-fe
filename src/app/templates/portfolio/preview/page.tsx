@@ -21,7 +21,7 @@ export default function PortfolioTemplatePreviewPage() {
 
   return (
     <TemplatePreviewLayout templateName="Portfolio">
-      <PortfolioDashboardView profile={dummyProfile} />
+      <PortfolioDashboardView profile={dummyProfile} isPreview={true} />
     </TemplatePreviewLayout>
   );
 }

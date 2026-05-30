@@ -6,16 +6,7 @@ import { ChevronLeft, GripVertical, Trash2, Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ProjectItem, Section } from "./types";
 import { uploadImage } from "@/api/uploads/uploads.service";
-import { validateProfileLink } from "@/api/profile/profile.service";
 import { isValidUrl } from "./builder.utils";
-
-import { isApiError } from "@/api/base";
-
-const isLinkValidationError = (error: unknown) => {
-  if (!isApiError(error)) return false;
-
-  return error.status === 400 || error.status === 422;
-};
 
 interface ProjectsSidebarProps {
   returnTab: () => void;
@@ -61,7 +52,11 @@ export default function ProjectsSidebar({
   const [itemImage, setItemImage] = useState<string | null>(null);
   const [itemHighlighted, setItemHighlighted] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [validatingUrl, setValidatingUrl] = useState(false);
+
+  const [titleError, setTitleError] = useState("");
+  const [descError, setDescError] = useState("");
+  const [btnTextError, setBtnTextError] = useState("");
+  const [imageError, setImageError] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -102,6 +97,10 @@ export default function ProjectsSidebar({
     setItemButtonText(proj.buttonText || "View project");
     setItemUrl(proj.url || "");
     setUrlError("");
+    setTitleError("");
+    setDescError("");
+    setBtnTextError("");
+    setImageError("");
     setItemImage(proj.imageSrc || null);
     setItemHighlighted(proj.highlighted ?? false);
     setSelectedTab("section");
@@ -119,6 +118,10 @@ export default function ProjectsSidebar({
     setItemButtonText("View project");
     setItemUrl("");
     setUrlError("");
+    setTitleError("");
+    setDescError("");
+    setBtnTextError("");
+    setImageError("");
     setItemImage(null);
     setItemHighlighted(false);
     setSelectedTab("section");
@@ -152,30 +155,50 @@ export default function ProjectsSidebar({
 
   const handleSaveProject = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!itemTitle.trim() || !itemDesc.trim()) return;
 
-    let validatedProjectUrl: string | undefined;
+    let hasError = false;
 
-    if (itemUrl.trim()) {
-      try {
-        setValidatingUrl(true);
-        setUrlError("");
-
-        const validatedLink = await validateProfileLink(itemUrl.trim());
-        validatedProjectUrl = validatedLink.encoded;
-      } catch (error) {
-        if (isLinkValidationError(error)) {
-          setUrlError("Please enter a valid link for the selected icon.");
-        } else {
-          console.error("[profile-builder] Link validation failed:", error);
-          setUrlError(
-            "Unable to verify link. Please check your connection and try again."
-          );
-        }
-      } finally {
-        setValidatingUrl(false);
-      }
+    if (!itemTitle.trim()) {
+      setTitleError("Title is required.");
+      hasError = true;
+    } else {
+      setTitleError("");
     }
+
+    if (!itemDesc.trim()) {
+      setDescError("Description is required.");
+      hasError = true;
+    } else {
+      setDescError("");
+    }
+
+    if (!itemButtonText.trim()) {
+      setBtnTextError("Button text is required.");
+      hasError = true;
+    } else {
+      setBtnTextError("");
+    }
+
+    if (!itemUrl.trim()) {
+      setUrlError("URL is required.");
+      hasError = true;
+    } else if (!isValidUrl(itemUrl.trim())) {
+      setUrlError("Please enter a valid link (e.g. yoursite.com)");
+      hasError = true;
+    } else {
+      setUrlError("");
+    }
+
+    if (!itemImage) {
+      setImageError("Image is required.");
+      hasError = true;
+    } else {
+      setImageError("");
+    }
+
+    if (hasError) return;
+
+    const validatedProjectUrl = itemUrl.trim() || undefined;
 
     if (editingProject) {
       const updated = projects.map((p) =>
@@ -303,7 +326,7 @@ export default function ProjectsSidebar({
                 value={sectionTitle}
                 onChange={(e) => handleTitleChange(e.target.value)}
                 placeholder="Selected Projects"
-                className="focus:border-brand-b focus:ring-brand-b w-full rounded-[10px] border border-border px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:ring-1"
+                className="focus:border-brand-b w-full rounded-[10px] border border-border px-4 py-3 text-sm font-semibold text-[#050505] outline-none transition-colors"
               />
             </div>
 
@@ -318,7 +341,7 @@ export default function ProjectsSidebar({
                 maxLength={200}
                 placeholder="Add Text here"
                 rows={3}
-                className="focus:border-brand-b focus:ring-brand-b w-full resize-none rounded-[10px] border border-border px-4 py-3 text-sm text-[#050505] outline-none focus:ring-1"
+                className="focus:border-brand-b w-full resize-none rounded-[10px] border border-border px-4 py-3 text-sm text-[#050505] outline-none transition-colors"
               />
               <p className="text-right text-[11px] text-[#A2A2A2]">
                 {sectionSubtitle.length}/200
@@ -405,11 +428,19 @@ export default function ProjectsSidebar({
               <input
                 type="text"
                 value={itemTitle}
-                onChange={(e) => setItemTitle(e.target.value)}
+                onChange={(e) => {
+                  setItemTitle(e.target.value);
+                  if (e.target.value.trim()) setTitleError("");
+                }}
                 placeholder="My Framework for Deep Work & Design"
-                className="focus:border-brand-b focus:ring-brand-b w-full rounded-[10px] border border-border px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:ring-1"
+                className={`w-full rounded-[10px] border px-4 py-3 text-sm font-semibold text-[#050505] outline-none transition-colors ${
+                  titleError
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-border focus:border-brand-b"
+                }`}
                 required
               />
+              {titleError && <p className="text-xs text-red-500">{titleError}</p>}
             </div>
 
             {/* Project Item Description/Subtitle */}
@@ -419,16 +450,28 @@ export default function ProjectsSidebar({
               </label>
               <textarea
                 value={itemDesc}
-                onChange={(e) => setItemDesc(e.target.value)}
+                onChange={(e) => {
+                  setItemDesc(e.target.value);
+                  if (e.target.value.trim()) setDescError("");
+                }}
                 maxLength={100}
                 placeholder="A complete breakdown of..."
                 rows={4}
-                className="focus:border-brand-b focus:ring-brand-b w-full resize-none rounded-[10px] border border-border px-4 py-3 text-sm text-[#050505] outline-none focus:ring-1"
+                className={`w-full resize-none rounded-[10px] border px-4 py-3 text-sm text-[#050505] outline-none transition-colors ${
+                  descError
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-border focus:border-brand-b"
+                }`}
                 required
               />
-              <p className="text-right text-[11px] text-[#A2A2A2]">
-                {itemDesc.length}/100
-              </p>
+              <div className="flex justify-between items-center">
+                {descError ? (
+                  <p className="text-xs text-red-500">{descError}</p>
+                ) : <span />}
+                <p className="text-right text-[11px] text-[#A2A2A2]">
+                  {itemDesc.length}/100
+                </p>
+              </div>
             </div>
 
             {/* Image Uploader */}
@@ -442,7 +485,9 @@ export default function ProjectsSidebar({
                 className="hidden"
               />
 
-              <div className="flex h-[50px] overflow-hidden rounded-[8px] border border-border bg-background">
+              <div className={`flex h-[50px] overflow-hidden rounded-[8px] border bg-background ${
+                imageError && !itemImage ? "border-red-500" : "border-border"
+              }`}>
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
@@ -483,6 +528,7 @@ export default function ProjectsSidebar({
                   {itemImage ? <Trash2 size={16} /> : <Upload size={16} />}
                 </button>
               </div>
+              {imageError && <p className="text-xs text-red-500">{imageError}</p>}
             </div>
 
             {/* Project URL */}
@@ -490,11 +536,16 @@ export default function ProjectsSidebar({
               <label className="text-xs font-bold text-[#050505]">
                 Project URL
               </label>
-              <div className="flex flex-col overflow-hidden rounded-[10px] border border-border">
+              <div className={`flex flex-col overflow-hidden rounded-[10px] border ${
+                btnTextError || urlError ? "border-red-500" : "border-border"
+              }`}>
                 <input
                   type="text"
                   value={itemButtonText}
-                  onChange={(e) => setItemButtonText(e.target.value)}
+                  onChange={(e) => {
+                    setItemButtonText(e.target.value);
+                    if (e.target.value.trim()) setBtnTextError("");
+                  }}
                   placeholder="View project"
                   className="w-full border-b border-border px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:bg-gray-50/30"
                 />
@@ -524,6 +575,7 @@ export default function ProjectsSidebar({
                   }`}
                 />
               </div>
+              {btnTextError && <p className="text-xs text-red-500">{btnTextError}</p>}
               {urlError && <p className="text-xs text-red-500">{urlError}</p>}
             </div>
 
@@ -560,16 +612,13 @@ export default function ProjectsSidebar({
                 type="submit"
                 disabled={
                   uploading ||
-                  validatingUrl ||
                   !itemTitle.trim() ||
                   !itemDesc.trim()
                 }
                 className="bg-brand-hover-bg hover:bg-brand h-[46px] flex-1 rounded-[10px] font-semibold text-white disabled:opacity-50"
               >
-                {validatingUrl
-                  ? "Validating..."
-                  : uploading
-                    ? "Uploading..."
+                {uploading
+                  ? "Uploading..."
                     : editingProject
                       ? "Update Project"
                       : "Save Project"}

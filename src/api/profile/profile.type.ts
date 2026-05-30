@@ -44,11 +44,6 @@ export type DashboardProfileResponse = {
   components: unknown[];
 };
 
-export type ValidateProfileLinkData = {
-  original: string;
-  sanitized: string;
-  encoded: string;
-};
 
 export type ProfileContentSectionBio = {
   visible: boolean;

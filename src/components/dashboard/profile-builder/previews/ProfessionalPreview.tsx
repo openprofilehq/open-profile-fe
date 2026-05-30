@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import {
   Mail,
-  Link as LinkIcon,
+
   ArrowRight,
   Eye,
   EyeOff,
@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
-import { TemplateLinkCard } from "../../shared/TemplateLinkCard";
+
 
 interface ProfessionalPreviewProps {
   sections: Section[];
@@ -25,7 +25,7 @@ interface ProfessionalPreviewProps {
 export default function ProfessionalPreview({
   sections,
   profile,
-  selectedSectionId,
+  selectedSectionId: _selectedSectionId,
   onToggleSectionVisibility,
   onRemoveSection,
 }: ProfessionalPreviewProps) {
@@ -33,7 +33,7 @@ export default function ProfessionalPreview({
   const linksSection = sections.find((s) => s.type === "links");
   const projectsSection = sections.find((s) => s.type === "projects");
   const ctaSection = sections.find((s) => s.type === "experience");
-  const bioSectionId = bioSection?.id ?? "bio";
+  const _bioSectionId = bioSection?.id ?? "bio";
 
   const renderControls = (section?: Section, isBio: boolean = false) => {
     if (!section) return null;
@@ -83,7 +83,7 @@ export default function ProfessionalPreview({
         {renderControls(bioSection, true)}
 
         <header className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between gap-6 rounded-2xl border border-transparent p-6 transition-colors sm:flex-row sm:items-start">
-          <div className="flex items-center gap-6">
+          <div className="flex flex-1 min-w-0 items-center gap-6">
             <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
               {getImageUrl(profile?.photoUrl) ? (
                 <Image
@@ -100,11 +100,11 @@ export default function ProfessionalPreview({
               )}
             </div>
 
-            <div className="flex flex-col">
-              <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight">
+            <div className="flex flex-col min-w-0 flex-1">
+              <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight break-all">
                 {profile?.fullName || "Micaela Robinson"}
               </h1>
-              <p className="text-secondary-text mt-1 text-[15px]">
+              <p className="text-secondary-text mt-1 text-[15px] break-all">
                 openprofile.app/{profile?.username || "micaela"}
               </p>
             </div>
@@ -121,7 +121,7 @@ export default function ProfessionalPreview({
         </header>
 
         <section className="mt-6 px-6">
-          <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed whitespace-pre-wrap">
+          <p className="text-secondary-text max-w-2xl break-all text-[16px] leading-relaxed whitespace-pre-wrap">
             {bioSection?.bio || "Write a little bit about yourself here..."}
           </p>
         </section>
@@ -137,18 +137,35 @@ export default function ProfessionalPreview({
           <h2 className="text-tertiary-text mb-4 text-[13px]">
             {linksSection.subtitle || "Links"}
           </h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="flex flex-col border-t border-border">
             {linksSection.links && linksSection.links.length > 0 ? (
-              linksSection.links.map((link) => (
-                <TemplateLinkCard
-                  key={link.id}
-                  id={link.id}
-                  title={link.title || link.label || ""}
-                  url={sanitizeUrl(link.url || "")}
-                />
+              linksSection.links.map((link, idx) => (
+                <a
+                  key={link.id ?? idx}
+                  href={sanitizeUrl(link.url || "")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center justify-between border-b border-border py-4 transition-colors hover:bg-hover-bg/30"
+                >
+                  <span className="text-[15px] font-bold text-primary-text group-hover:text-brand-hover-bg transition-colors">
+                    {link.title || link.label}
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-secondary-text text-[14px]">
+                      {(() => {
+                        try {
+                          return link.url ? new URL(link.url.startsWith('http') ? link.url : `https://${link.url}`).hostname.replace('www.', '') : '';
+                        } catch {
+                          return link.url || '';
+                        }
+                      })()}
+                    </span>
+                    <ExternalLink size={16} className="text-tertiary-text group-hover:text-brand-hover-bg transition-colors" />
+                  </div>
+                </a>
               ))
             ) : (
-              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
+              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm mt-4">
                 No links added yet.
               </p>
             )}
@@ -166,49 +183,93 @@ export default function ProfessionalPreview({
           <h2 className="text-tertiary-text mb-4 text-[13px]">
             {projectsSection.subtitle || "Selected Work"}
           </h2>
-          <div className="flex flex-col gap-4">
+          <div className={`grid gap-6 ${
+            !projectsSection.layout || projectsSection.layout === "1" ? "grid-cols-1" :
+            projectsSection.layout === "3" ? "grid-cols-1 sm:grid-cols-2" :
+            projectsSection.layout === "4" ? "grid-cols-1 sm:grid-cols-2" :
+            "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+          }`}>
             {projectsSection.projects && projectsSection.projects.length > 0 ? (
-              projectsSection.projects.map((project) => (
-                <div
-                  key={project.id}
-                  className="border-border bg-background flex flex-col items-start rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
-                >
-                  <div className="bg-secondary-bg border-border relative mb-4 h-[80px] w-full shrink-0 overflow-hidden rounded-lg border sm:mb-0 sm:w-[120px]">
-                    {getImageUrl(project.imageSrc) ? (
-                      <Image
-                        src={getImageUrl(project.imageSrc)!}
-                        alt={project.title || "Project"}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
-                    ) : (
-                      <div className="h-full w-full bg-neutral-200" />
+              projectsSection.projects.map((project) => {
+                const layoutType = projectsSection.layout || "2";
+                const hasUrl = Boolean(project.url);
+                const displayImg = getImageUrl(project.imageSrc);
+
+                const card = (
+                  <div className={`flex group rounded-[12px] border border-border bg-background p-4 shadow-sm transition-shadow hover:shadow-md hover:border-brand-hover-bg/30 ${
+                    layoutType === "1" ? "flex-col sm:flex-row sm:items-center justify-between" :
+                    layoutType === "3" ? "flex-col sm:flex-row sm:items-start" :
+                    layoutType === "4" ? "flex-col sm:flex-row-reverse sm:items-start" :
+                    "flex-col" // Layout 2
+                  }`}>
+                    {/* IMAGE */}
+                    {layoutType !== "1" && (
+                      <div className={`relative shrink-0 overflow-hidden rounded-lg border border-border bg-secondary-bg mb-4 ${
+                        layoutType === "2" ? "w-full aspect-video" : "w-full h-[120px] sm:mb-0 sm:w-[140px]"
+                      } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}>
+                        {displayImg ? (
+                          <Image
+                            src={displayImg}
+                            alt={project.title ?? "Project"}
+                            className="object-cover"
+                            fill
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-xs text-tertiary-text">
+                            No image
+                          </div>
+                        )}
+                      </div>
                     )}
-                  </div>
-                  <div className="flex w-full flex-col sm:ml-6">
-                    <h3 className="text-primary-text text-[16px] font-bold">
-                      {project.title}
-                    </h3>
-                    {project.description && (
-                      <p className="text-secondary-text mt-1 line-clamp-2 text-[13px]">
+                    
+                    {/* CONTENT */}
+                    <div className="flex flex-col items-start min-w-0 flex-1">
+                      <h3 className="text-primary-text text-[16px] font-bold">
+                        {project.title}
+                      </h3>
+                      <p className={`text-secondary-text break-all mt-1 ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"} text-[13px]`}>
                         {project.description}
                       </p>
-                    )}
-                    {project.url && (
-                      <a
-                        href={sanitizeUrl(project.url)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
-                      >
-                        {project.buttonText || "View Project"}
-                        <ArrowRight size={14} strokeWidth={2.5} />
-                      </a>
+                      {layoutType !== "1" && hasUrl && (
+                        <span className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
+                          {project.buttonText || "View Project"}
+                          <ArrowRight size={14} strokeWidth={2.5} />
+                        </span>
+                      )}
+                    </div>
+                    
+                    {/* BUTTON FOR LAYOUT 1 */}
+                    {layoutType === "1" && hasUrl && (
+                      <div className="mt-4 sm:mt-0 sm:ml-6 shrink-0">
+                        <span className="text-brand-hover-bg inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
+                          {project.buttonText || "View Project"}
+                          <ArrowRight size={14} strokeWidth={2.5} />
+                        </span>
+                      </div>
                     )}
                   </div>
-                </div>
-              ))
+                );
+
+                return (
+                  <div key={project.id} className="w-full">
+                    {hasUrl ? (
+                      <a
+                        href={sanitizeUrl(project.url || "")}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="no-underline block h-full"
+                      >
+                        {card}
+                      </a>
+                    ) : (
+                      <div className="h-full">
+                        {card}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
             ) : (
               <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
                 No projects added yet.

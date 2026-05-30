@@ -2,8 +2,7 @@ import React from "react";
 import Image from "next/image";
 import {
   Mail,
-  Globe,
-  ExternalLink,
+
   ArrowRight,
   Rocket,
   Eye,
@@ -26,7 +25,7 @@ interface PortfolioPreviewProps {
 export default function PortfolioPreview({
   sections,
   profile,
-  selectedSectionId,
+  selectedSectionId: _selectedSectionId,
   onToggleSectionVisibility,
   onRemoveSection,
 }: PortfolioPreviewProps) {
@@ -34,7 +33,7 @@ export default function PortfolioPreview({
   const linksSection = sections.find((s) => s.type === "links");
   const projectsSection = sections.find((s) => s.type === "projects");
   const ctaSection = sections.find((s) => s.type === "experience");
-  const bioSectionId = bioSection?.id ?? "bio";
+  const _bioSectionId = bioSection?.id ?? "bio";
 
   const renderControls = (section?: Section, isBio: boolean = false) => {
     if (!section) return null;

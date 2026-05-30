@@ -2,8 +2,7 @@ import React from "react";
 import Image from "next/image";
 import {
   Mail,
-  Globe,
-  ExternalLink,
+
   ArrowRight,
   Rocket,
 } from "lucide-react";
@@ -24,6 +23,7 @@ type Props = {
   isLoadingProfile?: boolean;
   isLoadingContent?: boolean;
   appearance?: ProfileAppearanceSettings | null;
+  isPreview?: boolean;
 };
 
 const DEFAULT_LINKS = [
@@ -86,7 +86,7 @@ const DEFAULT_PROJECTS = [
   },
 ] as ProjectItem[];
 
-export default function PortfolioDashboardView({ profile, content }: Props) {
+export default function PortfolioDashboardView({ profile, content, isPreview }: Props) {
   const name = profile?.fullName ?? profile?.username ?? "John Smith";
   const username = profile?.username ?? "johnsmith";
   const details = content?.content;
@@ -96,10 +96,10 @@ export default function PortfolioDashboardView({ profile, content }: Props) {
     "I help teams craft thoughtful, user-centered products — from the first sketch to a polished design system. Currently shaping fintech and SaaS experiences.";
 
   const rawLinks = (details?.links?.items ?? []) as LinkItem[];
-  const links = rawLinks.length > 0 ? rawLinks : DEFAULT_LINKS;
+  const links = rawLinks.length > 0 ? rawLinks : (isPreview ? DEFAULT_LINKS : []);
 
   const rawProjects = (details?.projects?.items ?? []) as ProjectItem[];
-  const projects = rawProjects.length > 0 ? rawProjects : DEFAULT_PROJECTS;
+  const projects = rawProjects.length > 0 ? rawProjects : (isPreview ? DEFAULT_PROJECTS : []);
 
   const cta = details?.cta;
 
@@ -159,97 +159,109 @@ export default function PortfolioDashboardView({ profile, content }: Props) {
         </section>
 
         {/* LINKS SECTION */}
-        {details?.links?.visible !== false && links.length > 0 && (
+        {details?.links?.visible !== false && (
           <section className="mb-20 w-full">
             <h2 className="text-tertiary-text mb-4 text-[13px]">Links</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {links.map((link) => (
-                <TemplateLinkCard
-                  key={link.id}
-                  id={link.id}
-                  title={link.title || link.label || ""}
-                  url={link.url || ""}
-                />
-              ))}
-            </div>
+            {links.length > 0 ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {links.map((link) => (
+                  <TemplateLinkCard
+                    key={link.id}
+                    id={link.id}
+                    title={link.title || link.label || ""}
+                    url={link.url || ""}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
+                Add your links
+              </p>
+            )}
           </section>
         )}
 
         {/* PROJECTS SECTION */}
-        {details?.projects?.visible !== false && projects.length > 0 && (
+        {details?.projects?.visible !== false && (
           <section className="mb-20 w-full">
             <h2 className="text-tertiary-text mb-6 text-[13px]">
               {details?.projects?.sectionTitle || "Featured Projects"}
             </h2>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {projects.map((project, idx) => {
-                const numberStr = String(idx + 1).padStart(2, "0");
-                return (
-                  <div
-                    key={project.id}
-                    className="group border-border bg-background flex flex-col overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md"
-                  >
-                    {/* Project Image Placeholder */}
-                    <div className="bg-secondary-bg border-border relative aspect-16/10 w-full overflow-hidden border-b">
-                      {project.imageSrc ? (
-                        <Image
-                          src={
-                            project.imageSrc.startsWith("/profile-preview/")
-                              ? project.imageSrc
-                              : getImageUrl(project.imageSrc)!
-                          }
-                          alt={project.title || "Project"}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                          unoptimized
-                        />
-                      ) : (
-                        <Image
-                          src="/profile-preview/feature1.jpg"
-                          alt="Project placeholder"
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                          unoptimized
-                        />
-                      )}
-                    </div>
-
-                    <div className="flex flex-col p-6">
-                      <div className="mb-1 flex items-start gap-2">
-                        <span className="text-primary-text text-[16px] font-bold">
-                          {numberStr}
-                        </span>
-                        <h3 className="text-primary-text text-[16px] font-bold">
-                          {project.title}
-                        </h3>
+            {projects.length > 0 ? (
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {projects.map((project, idx) => {
+                  const numberStr = String(idx + 1).padStart(2, "0");
+                  return (
+                    <div
+                      key={project.id}
+                      className="group border-border bg-background flex flex-col overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md"
+                    >
+                      {/* Project Image Placeholder */}
+                      <div className="bg-secondary-bg border-border relative aspect-16/10 w-full overflow-hidden border-b">
+                        {project.imageSrc ? (
+                          <Image
+                            src={
+                              project.imageSrc.startsWith("/profile-preview/")
+                                ? project.imageSrc
+                                : getImageUrl(project.imageSrc)!
+                            }
+                            alt={project.title || "Project"}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                            unoptimized
+                          />
+                        ) : (
+                          <Image
+                            src="/profile-preview/feature1.jpg"
+                            alt="Project placeholder"
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                            unoptimized
+                          />
+                        )}
                       </div>
 
-                      <span className="text-tertiary-text mb-3 ml-6 text-[11px]">
-                        Product Design
-                      </span>
+                      <div className="flex flex-col p-6">
+                        <div className="mb-1 flex items-start gap-2">
+                          <span className="text-primary-text text-[16px] font-bold">
+                            {numberStr}
+                          </span>
+                          <h3 className="text-primary-text text-[16px] font-bold">
+                            {project.title}
+                          </h3>
+                        </div>
 
-                      {project.description && (
-                        <p className="text-secondary-text mb-6 ml-6 line-clamp-2 text-[13px]">
-                          {project.description}
-                        </p>
-                      )}
+                        <span className="text-tertiary-text mb-3 ml-6 text-[11px]">
+                          Product Design
+                        </span>
 
-                      {project.url && (
-                        <a
-                          href={project.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-brand-hover-bg mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
-                        >
-                          {project.buttonText || "View Project"}
-                          <ArrowRight size={14} strokeWidth={2.5} />
-                        </a>
-                      )}
+                        {project.description && (
+                          <p className="text-secondary-text mb-6 ml-6 line-clamp-2 text-[13px]">
+                            {project.description}
+                          </p>
+                        )}
+
+                        {project.url && (
+                          <a
+                            href={project.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-brand-hover-bg mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
+                          >
+                            {project.buttonText || "View Project"}
+                            <ArrowRight size={14} strokeWidth={2.5} />
+                          </a>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
+                Add your projects
+              </p>
+            )}
           </section>
         )}
 

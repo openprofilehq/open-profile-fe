@@ -96,7 +96,17 @@ async function proxyRequest(
     // Ensure path is "/" so cookies are accessible on /api/internal endpoints
     cookieOptions.path = "/";
     
-    response.cookies.set(name, value, cookieOptions);
+    // Remove domain to prevent cookie rejection on localhost
+    delete cookieOptions.domain;
+    
+    // Remove secure flag on localhost HTTP to ensure browser accepts it
+    if (process.env.NODE_ENV === "development") {
+      delete cookieOptions.secure;
+      cookieOptions.sameSite = "lax"; // "none" requires secure=true
+    }
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    response.cookies.set(name, value, cookieOptions as any);
     if (name === "accessToken" || name === "_at") loginSuccess = true;
   }
 

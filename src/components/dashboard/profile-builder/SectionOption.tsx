@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import type { SavedLink } from "./LinkSidebar";
 import { uploadImage } from "@/api/uploads/uploads.service";
-import { validateProfileLink } from "@/api/profile/profile.service";
 import { isValidUrl } from "./builder.utils";
 
 const presetIcons = [
@@ -121,9 +120,11 @@ export default function SectionOption({
   const [uploadedImage, setUploadedImage] = useState<string | null>(
     editingLink?.imageSrc ?? null
   );
+  const [titleError, setTitleError] = useState("");
   const [urlError, setUrlError] = useState("");
+  const [iconError, setIconError] = useState("");
   const [uploading, setUploading] = useState(false);
-  const [validatingUrl, setValidatingUrl] = useState(false);
+  const [_validatingUrl, setValidatingUrl] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const selectedIcon =
@@ -157,23 +158,44 @@ export default function SectionOption({
   };
 
   const handleSaveLink = async () => {
-    if (!title.trim() || !url.trim()) return;
+    let hasError = false;
+
+    if (!title.trim()) {
+      setTitleError("Title is required.");
+      hasError = true;
+    } else {
+      setTitleError("");
+    }
+
+    if (!url.trim()) {
+      setUrlError("URL is required.");
+      hasError = true;
+    } else {
+      setUrlError("");
+    }
+
+    if (!selectedIconId && !uploadedImage) {
+      setIconError("Either an icon or an uploaded image is required.");
+      hasError = true;
+    } else {
+      setIconError("");
+    }
+
+    if (hasError) return;
 
     const trimmedUrl = url.trim();
 
     try {
       setValidatingUrl(true);
-      setUrlError("");
-
-      const validatedLink = await validateProfileLink(
-        trimmedUrl,
-        selectedIconId
-      );
+      if (!isValidUrl(trimmedUrl, selectedIconId)) {
+        setUrlError("Please enter a valid link for the selected icon.");
+        return;
+      }
 
       onSaveLink(
         {
           title: title.trim(),
-          url: validatedLink.encoded,
+          url: trimmedUrl,
           iconId: selectedIcon?.id ?? null,
           iconLabel: selectedIcon?.label ?? null,
           iconSrc: selectedIcon?.icon ?? null,
@@ -182,12 +204,13 @@ export default function SectionOption({
         editingLink?.id ?? null
       );
 
-      setTitle("");
+      setTitleError("");
       setUrl("");
       setUrlError("");
       setSelectedIconId(null);
       setIsIconMenuOpen(false);
       setUploadedImage(null);
+      setIconError("");
       returnTab();
     } catch {
       setUrlError("Please enter a valid link for the selected icon.");
@@ -214,10 +237,18 @@ export default function SectionOption({
             id="title"
             name="title"
             value={title}
-            onChange={(event) => setTitle(event.target.value)}
+            onChange={(event) => {
+              setTitle(event.target.value);
+              if (event.target.value.trim()) setTitleError("");
+            }}
             placeholder="Add title"
-            className="border-accent-foreground/30 focus:ring-accent rounded-md border p-2 focus:ring-2 focus:ring-offset-1 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            className={`w-full rounded-[10px] border px-4 py-3 text-sm font-semibold text-[#050505] outline-none transition-colors ${
+              titleError
+                ? "border-red-500 focus:border-red-500"
+                : "border-border focus:border-brand-b"
+            }`}
           />
+          {titleError && <p className="text-xs text-red-500">{titleError}</p>}
         </span>
 
         <span className="flex w-full flex-col gap-2">
@@ -225,7 +256,11 @@ export default function SectionOption({
             Icon
           </label>
           <div className="relative">
-            <div className="border-tertiary-b flex overflow-hidden rounded-md border bg-background">
+            <div
+              className={`border-tertiary-b flex overflow-hidden rounded-md border bg-background ${
+                iconError && !selectedIconId && !uploadedImage ? "border-red-500" : ""
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => setIsIconMenuOpen((current) => !current)}
@@ -341,7 +376,11 @@ export default function SectionOption({
               aria-hidden
             />
 
-            <div className="border-tertiary-b flex overflow-hidden rounded-md border bg-background">
+            <div
+              className={`border-tertiary-b flex overflow-hidden rounded-md border bg-background ${
+                iconError && !selectedIconId && !uploadedImage ? "border-red-500" : ""
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
@@ -389,6 +428,7 @@ export default function SectionOption({
                 {uploadedImage ? <Trash2 size={16} /> : <Upload size={16} />}
               </button>
             </div>
+            {iconError && <p className="mt-1 text-xs text-red-500">{iconError}</p>}
           </div>
         </span>
 
@@ -419,10 +459,10 @@ export default function SectionOption({
               }
             }}
             placeholder="Paste link (e.g. yoursite.com)..."
-            className={`rounded-md border p-2 focus:ring-2 focus:ring-offset-1 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
+            className={`w-full rounded-[10px] border px-4 py-3 text-sm font-semibold text-[#050505] outline-none transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
               urlError
-                ? "border-red-500 focus:ring-red-500"
-                : "border-accent-foreground/30 focus:ring-accent"
+                ? "border-red-500 focus:border-red-500"
+                : "border-border focus:border-brand-b"
             }`}
           />
           {urlError && <p className="text-xs text-red-500">{urlError}</p>}
@@ -444,14 +484,11 @@ export default function SectionOption({
           variant="primary"
           disabled={
             uploading ||
-            validatingUrl ||
             (!editingLink?.title && !canAddMoreLinks)
           }
         >
-          {validatingUrl
-            ? "Validating..."
-            : uploading
-              ? "Uploading..."
+          {uploading
+            ? "Uploading..."
               : editingLink
                 ? "Update Link"
                 : "Save Link"}

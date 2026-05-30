@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
 
 import ProfileOverviewCard from "./ProfileOverviewCard";
+import { TemplateSelectionModal } from "./TemplateSelectionModal";
 
 import DefaultDashboardView from "./templates/DefaultDashboardView";
 import CreatorDashboardView from "./templates/CreatorDashboardView";
@@ -18,10 +20,13 @@ import {
 } from "@/api/profile/profile.options";
 import { TemplateType } from "@/api/profile/profile.type";
 
-export default function DashboardHome() {
+function DashboardHomeContent() {
   const [previewTemplate, setPreviewTemplate] = useState<TemplateType | null>(
     null
   );
+
+  const searchParams = useSearchParams();
+  const isNew = searchParams.get("new") === "true";
 
   const dashboardProfile = useQuery(dashboardProfileOption());
   const profileContent = useQuery(profileContentOption());
@@ -66,7 +71,7 @@ export default function DashboardHome() {
   return (
     <TemplateAppearanceProvider appearance={appearance}>
       <div className="mx-auto grid w-full max-w-[1180px] grid-cols-1 gap-6 overflow-x-hidden xl:grid-cols-[0.8fr_1.2fr]">
-        <div className="flex flex-col gap-4">
+        <div className="flex min-w-0 flex-col gap-4">
           <ProfileOverviewCard
             profile={profile}
             isLoading={isProfileLoading}
@@ -75,7 +80,7 @@ export default function DashboardHome() {
           />
         </div>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex min-w-0 flex-col gap-6">
           {activeTemplate === "portfolio" ? (
             <PortfolioDashboardView
               profile={profile}
@@ -111,6 +116,21 @@ export default function DashboardHome() {
           )}
         </div>
       </div>
+      {isNew && (
+        <TemplateSelectionModal
+          initialTemplate={(activeTemplate.charAt(0).toUpperCase() + activeTemplate.slice(1)) as TemplateType}
+          defaultOpen={true}
+          onPreviewChange={setPreviewTemplate}
+        />
+      )}
     </TemplateAppearanceProvider>
+  );
+}
+
+export default function DashboardHome() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DashboardHomeContent />
+    </Suspense>
   );
 }

@@ -33,11 +33,11 @@ export default function HighlightCard({ profile }: Props) {
           )}
         </div>
 
-        <div className="flex-1">
-          <h3 className="text-2xl font-bold">
+        <div className="flex-1 min-w-0">
+          <h3 className="text-2xl font-bold break-all">
             {profile?.fullName ?? "No title yet"}
           </h3>
-          <p className="mt-4 text-lg text-secondary-text">
+          <p className="mt-4 break-all text-lg text-secondary-text">
             {profile?.bio ?? "No bio added yet."}
           </p>
         </div>
