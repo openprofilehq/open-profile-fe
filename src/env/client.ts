@@ -5,7 +5,10 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_APP_URL: z.url().default("http://localhost:3000"),
     NEXT_PUBLIC_APP_NAME: z.string().min(1).default("OpenProfile"),
-    NEXT_PUBLIC_API_URL: z.url().optional(),
+    NEXT_PUBLIC_API_URL: z
+      .url()
+      .optional()
+      .default("https://api.staging.open-profile.hng14.com"),
     NEXT_PUBLIC_APP_BASE_URL: z.url().default("https://open-profile.hng14.com"),
   },
   experimental__runtimeEnv: {
