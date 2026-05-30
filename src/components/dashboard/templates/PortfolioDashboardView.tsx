@@ -1,12 +1,20 @@
 import React from "react";
 import Image from "next/image";
 import {
+  BadgeCheck,
   Mail,
-
+  Globe,
+  ExternalLink,
   ArrowRight,
   Rocket,
 } from "lucide-react";
-import { TemplateLinkCard } from "../shared/TemplateLinkCard";
+import {
+  XIcon,
+  InstagramIcon,
+  LinkedInIcon,
+  GithubIcon,
+  YoutubeIcon,
+} from "@/components/icons/BrandIcons";
 import {
   DashboardProfileResponse,
   ProfileContentResponse,
@@ -16,6 +24,7 @@ import {
 } from "@/api/profile/profile.type";
 import { getImageUrl } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
+import { normalizeHref } from "@/utils/url";
 
 type Props = {
   profile?: DashboardProfileResponse;
@@ -26,67 +35,23 @@ type Props = {
   isPreview?: boolean;
 };
 
-const DEFAULT_LINKS = [
-  { id: "link-1", title: "Website", url: "https://john.studio" },
-  { id: "link-2", title: "Instagram", url: "https://instagram.com/johnsmith" },
-  { id: "link-3", title: "Twitter/X", url: "https://twitter.com/johnsmith" },
-  { id: "link-4", title: "LinkedIn", url: "https://linkedin.com/in/johnsmith" },
-] as LinkItem[];
+const getLinkIcon = (title: string = "") => {
+  const t = title.toLowerCase();
+  if (t.includes("instagram"))
+    return <InstagramIcon style={{ fontSize: 18 }} />;
+  if (t.includes("twitter") || t === "x")
+    return <XIcon style={{ fontSize: 18 }} />;
+  if (t.includes("linkedin")) return <LinkedInIcon style={{ fontSize: 18 }} />;
+  if (t.includes("github")) return <GithubIcon style={{ fontSize: 18 }} />;
+  if (t.includes("youtube")) return <YoutubeIcon style={{ fontSize: 18 }} />;
+  return <Globe size={18} />;
+};
 
-const DEFAULT_PROJECTS = [
-  {
-    id: "proj-1",
-    title: "Fintech Dashboard",
-    description:
-      "A financial analytics dashboard that helps users track their investments",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature1.jpg",
-  },
-  {
-    id: "proj-2",
-    title: "Landing page Design",
-    description: "A minimal landing page design for an e-commerce website",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature2.jpg",
-  },
-  {
-    id: "proj-3",
-    title: "Nova Health SaaS",
-    description: "A minimalist SaaS platform designed for doctors.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature3.jpg",
-  },
-  {
-    id: "proj-4",
-    title: "Origin Collective",
-    description:
-      "A minimalist e-commerce website for a high-end furniture brand.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature2.jpg",
-  },
-  {
-    id: "proj-5",
-    title: "Apex Banking App",
-    description: "Redesigning the core user journey of a modern banking app.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature1.jpg",
-  },
-  {
-    id: "proj-6",
-    title: "Form Branding System",
-    description: "A cohesive visual identity and branding system.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature3.jpg",
-  },
-] as ProjectItem[];
-
-export default function PortfolioDashboardView({ profile, content, isPreview }: Props) {
+export default function PortfolioDashboardView({
+  profile,
+  content,
+  appearance,
+}: Props) {
   const name = profile?.fullName ?? profile?.username ?? "John Smith";
   const username = profile?.username ?? "johnsmith";
   const details = content?.content;
@@ -95,11 +60,9 @@ export default function PortfolioDashboardView({ profile, content, isPreview }: 
     details?.bio?.content ??
     "I help teams craft thoughtful, user-centered products — from the first sketch to a polished design system. Currently shaping fintech and SaaS experiences.";
 
-  const rawLinks = (details?.links?.items ?? []) as LinkItem[];
-  const links = rawLinks.length > 0 ? rawLinks : (isPreview ? DEFAULT_LINKS : []);
+  const links = (details?.links?.items ?? []) as LinkItem[];
 
-  const rawProjects = (details?.projects?.items ?? []) as ProjectItem[];
-  const projects = rawProjects.length > 0 ? rawProjects : (isPreview ? DEFAULT_PROJECTS : []);
+  const projects = (details?.projects?.items ?? []) as ProjectItem[];
 
   const cta = details?.cta;
 
@@ -107,35 +70,50 @@ export default function PortfolioDashboardView({ profile, content, isPreview }: 
   const photoSrc = rawPhotoSrc
     ? rawPhotoSrc.startsWith("/profile-preview/")
       ? rawPhotoSrc
-      : getImageUrl(rawPhotoSrc)
-    : null;
+      : getImageUrl(rawPhotoSrc) || "/profile-preview/avatar.png"
+    : "/profile-preview/avatar.png";
+
+  const hasCustomBg = !!(appearance?.bgColor || appearance?.accentColour);
+  const customBgStyle = hasCustomBg
+    ? undefined
+    : ({
+        "--primary-bg": "#FFFFFF",
+      } as React.CSSProperties);
 
   return (
-    <div className="text-primary-text flex w-full flex-col font-sans antialiased">
-      <div className="mx-auto w-full max-w-5xl px-6 pb-16 sm:pb-24">
+    <div
+      className="text-primary-text bg-primary-bg flex min-h-screen w-full flex-col antialiased"
+      style={customBgStyle}
+    >
+      <div className="mx-auto w-full max-w-5xl px-6 py-16 sm:py-24">
         {/* HEADER SECTION */}
         <header className="mb-8 flex w-full flex-col justify-between gap-6 sm:flex-row sm:items-start">
           <div className="flex flex-col gap-6">
-            <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
-              {photoSrc ? (
-                <Image
-                  src={photoSrc}
-                  alt={name}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center bg-brand-subtle-bg text-[40px] font-bold text-brand-hover-bg">
-                  {name.charAt(0).toUpperCase()}
-                </div>
-              )}
+            <div className="border-border bg-secondary-bg relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-full border">
+              <Image
+                src={photoSrc}
+                alt={name}
+                fill
+                className="object-cover"
+                unoptimized
+              />
+              {/* Online indicator dot */}
+              <div className="border-background absolute right-1 bottom-1 h-4 w-4 rounded-full border-[3px] bg-green-500" />
             </div>
 
             <div className="flex flex-col">
-              <h1 className="text-primary-text text-[26px] leading-tight font-bold tracking-tight">
-                {name}
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-primary-text text-[26px] leading-tight font-bold tracking-tight">
+                  {name}
+                </h1>
+                <BadgeCheck
+                  className="text-brand-hover-bg"
+                  size={20}
+                  fill="currentColor"
+                  stroke="var(--background)"
+                  strokeWidth={1.5}
+                />
+              </div>
               <p className="text-secondary-text mt-1 text-[14px]">
                 openprofile.app/{username}
               </p>
@@ -159,109 +137,146 @@ export default function PortfolioDashboardView({ profile, content, isPreview }: 
         </section>
 
         {/* LINKS SECTION */}
-        {details?.links?.visible !== false && (
+        {details?.links?.visible !== false && links.length > 0 && (
           <section className="mb-20 w-full">
             <h2 className="text-tertiary-text mb-4 text-[13px]">Links</h2>
-            {links.length > 0 ? (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {links.map((link) => (
-                  <TemplateLinkCard
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {links.map((link) => {
+                const safeHref = normalizeHref(link.url);
+
+                if (safeHref) {
+                  return (
+                    <a
+                      key={link.id}
+                      href={safeHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group border-border bg-background hover:border-brand-hover-bg/30 flex items-center justify-between rounded-xl border p-4 shadow-sm transition-all hover:shadow-md"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="text-primary-text group-hover:text-brand-hover-bg transition-colors">
+                          {getLinkIcon(link.title || link.label)}
+                        </div>
+                        <span className="text-primary-text text-[14px] font-medium">
+                          {link.title || link.label}
+                        </span>
+                      </div>
+                      <ExternalLink
+                        size={14}
+                        className="text-tertiary-text group-hover:text-brand-hover-bg transition-colors"
+                      />
+                    </a>
+                  );
+                }
+
+                return (
+                  <div
                     key={link.id}
-                    id={link.id}
-                    title={link.title || link.label || ""}
-                    url={link.url || ""}
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
-                Add your links
-              </p>
-            )}
+                    className="group border-border bg-background flex items-center justify-between rounded-xl border p-4 shadow-sm transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="text-primary-text transition-colors">
+                        {getLinkIcon(link.title || link.label)}
+                      </div>
+                      <span className="text-primary-text text-[14px] font-medium">
+                        {link.title || link.label}
+                      </span>
+                    </div>
+                    <ExternalLink size={14} className="text-tertiary-text" />
+                  </div>
+                );
+              })}
+            </div>
           </section>
         )}
 
         {/* PROJECTS SECTION */}
-        {details?.projects?.visible !== false && (
+        {details?.projects?.visible !== false && projects.length > 0 && (
           <section className="mb-20 w-full">
             <h2 className="text-tertiary-text mb-6 text-[13px]">
               {details?.projects?.sectionTitle || "Featured Projects"}
             </h2>
-            {projects.length > 0 ? (
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {projects.map((project, idx) => {
-                  const numberStr = String(idx + 1).padStart(2, "0");
-                  return (
-                    <div
-                      key={project.id}
-                      className="group border-border bg-background flex flex-col overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md"
-                    >
-                      {/* Project Image Placeholder */}
-                      <div className="bg-secondary-bg border-border relative aspect-16/10 w-full overflow-hidden border-b">
-                        {project.imageSrc ? (
-                          <Image
-                            src={
-                              project.imageSrc.startsWith("/profile-preview/")
-                                ? project.imageSrc
-                                : getImageUrl(project.imageSrc)!
-                            }
-                            alt={project.title || "Project"}
-                            fill
-                            className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                            unoptimized
-                          />
-                        ) : (
-                          <Image
-                            src="/profile-preview/feature1.jpg"
-                            alt="Project placeholder"
-                            fill
-                            className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                            unoptimized
-                          />
-                        )}
-                      </div>
-
-                      <div className="flex flex-col p-6">
-                        <div className="mb-1 flex items-start gap-2">
-                          <span className="text-primary-text text-[16px] font-bold">
-                            {numberStr}
-                          </span>
-                          <h3 className="text-primary-text text-[16px] font-bold">
-                            {project.title}
-                          </h3>
-                        </div>
-
-                        <span className="text-tertiary-text mb-3 ml-6 text-[11px]">
-                          Product Design
-                        </span>
-
-                        {project.description && (
-                          <p className="text-secondary-text mb-6 ml-6 line-clamp-2 text-[13px]">
-                            {project.description}
-                          </p>
-                        )}
-
-                        {project.url && (
-                          <a
-                            href={project.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-brand-hover-bg mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
-                          >
-                            {project.buttonText || "View Project"}
-                            <ArrowRight size={14} strokeWidth={2.5} />
-                          </a>
-                        )}
-                      </div>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {projects.map((project, idx) => {
+                const numberStr = String(idx + 1).padStart(2, "0");
+                return (
+                  <div
+                    key={project.id}
+                    className="group border-border bg-background flex flex-col overflow-hidden rounded-2xl border shadow-sm transition-shadow hover:shadow-md"
+                  >
+                    {/* Project Image Placeholder */}
+                    <div className="bg-secondary-bg border-border relative aspect-16/10 w-full overflow-hidden border-b">
+                      {project.imageSrc ? (
+                        <Image
+                          src={
+                            project.imageSrc.startsWith("/profile-preview/")
+                              ? project.imageSrc
+                              : getImageUrl(project.imageSrc)!
+                          }
+                          alt={project.title || "Project"}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                          unoptimized
+                        />
+                      ) : (
+                        <Image
+                          src="/profile-preview/feature1.jpg"
+                          alt="Project placeholder"
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                          unoptimized
+                        />
+                      )}
                     </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
-                Add your projects
-              </p>
-            )}
+
+                    <div className="flex flex-col p-6">
+                      <div className="mb-1 flex items-start gap-2">
+                        <span className="text-primary-text text-[16px] font-bold">
+                          {numberStr}
+                        </span>
+                        <h3 className="text-primary-text text-[16px] font-bold">
+                          {project.title}
+                        </h3>
+                      </div>
+
+                      <span className="text-tertiary-text mb-3 ml-6 text-[11px]">
+                        Product Design
+                      </span>
+
+                      {project.description && (
+                        <p className="text-secondary-text mb-6 ml-6 line-clamp-2 text-[13px]">
+                          {project.description}
+                        </p>
+                      )}
+
+                      {project.url &&
+                        (() => {
+                          const safe = normalizeHref(project.url);
+                          if (!safe) {
+                            return (
+                              <span className="text-tertiary-text mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold">
+                                {project.buttonText || "View Project"}
+                              </span>
+                            );
+                          }
+
+                          return (
+                            <a
+                              href={safe}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-brand-hover-bg mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
+                            >
+                              {project.buttonText || "View Project"}
+                              <ArrowRight size={14} strokeWidth={2.5} />
+                            </a>
+                          );
+                        })()}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </section>
         )}
 
@@ -270,7 +285,7 @@ export default function PortfolioDashboardView({ profile, content, isPreview }: 
           <section className="mb-24 w-full py-8">
             <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
               <div className="flex items-center gap-4">
-                <div className="bg-brand-hover-bg flex h-12 w-12 shrink-0 items-center justify-center rounded-[10px] text-white shadow-sm">
+                <div className="bg-brand-hover-bg flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-white shadow-sm">
                   <Rocket size={24} strokeWidth={2} />
                 </div>
                 <div className="flex flex-col">

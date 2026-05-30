@@ -74,7 +74,7 @@ export default function ProfileOverviewCard({
         : typeof rawTemplate === "string" &&
             rawTemplate.toLowerCase() === "default"
           ? "Default"
-          : "Professional";
+          : "Default";
 
   return (
     <>
@@ -117,8 +117,6 @@ export default function ProfileOverviewCard({
                 Edit
               </Link>
             </Button>
-
-
           </div>
         </div>
       </section>
@@ -163,6 +161,7 @@ export default function ProfileOverviewCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-brand-hover-bg text-right break-all hover:underline"
+                suppressHydrationWarning
               >
                 {getDisplayUrl(publicProfileUrl)}
               </a>

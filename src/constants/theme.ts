@@ -7,12 +7,7 @@ export const THEME_DEFAULTS = {
     AMBER: "#D97706",
     INDIGO: "#4F46E5",
   },
-  DARK_MODE: {
-    BG_COLOR: "#1E1E1E",
-    TEXT_COLOR: "#FAFAFA",
-    BORDER_COLOR: "#2D2D2D",
-    MUTED_TEXT: "#E0E0E0",
-  },
+
   LIGHT_MODE: {
     BORDER_COLOR: "#EDEDED",
     BORDER_LIGHT: "#F0F0F0",

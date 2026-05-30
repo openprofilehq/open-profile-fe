@@ -27,7 +27,7 @@ import type {
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { isApiError } from "@/api/base";
 import { ROUTES } from "@/constants/routes";
-
+import { Skeleton } from "@/components/ui/skeleton";
 
 const createSection = (type: string, customTitle?: string): Section | null => {
   const allowedTypes: Record<string, Section["type"]> = {
@@ -112,18 +112,9 @@ const mapFontToApi = (font: string): ProfileAppearanceFont => {
 };
 
 const mapCornerStyleToApi = (
-  borderRadius: "sharp" | "medium" | "round"
+  borderRadius: "sharp" | "rounded" | "pill"
 ): ProfileAppearanceCornerStyle => {
-  const cornerStyleMap: Record<
-    "sharp" | "medium" | "round",
-    ProfileAppearanceCornerStyle
-  > = {
-    sharp: "sharp",
-    medium: "medium",
-    round: "round",
-  };
-
-  return cornerStyleMap[borderRadius];
+  return borderRadius;
 };
 
 const clampSpacingForApi = (spacing: number) => {
@@ -144,29 +135,22 @@ const mapFontFromApi = (font: string) => {
 };
 
 const mapCornerStyleFromApi = (cornerStyle: string) => {
-  const cornerStyleMap: Record<
-    ProfileAppearanceCornerStyle,
-    "sharp" | "medium" | "round"
-  > = {
+  const cornerStyleMap: Record<string, "sharp" | "rounded" | "pill"> = {
     sharp: "sharp",
-    medium: "medium",
-    round: "round",
+    medium: "rounded",
+    rounded: "rounded",
+    round: "pill",
+    pill: "pill",
   };
 
-  return (
-    cornerStyleMap[cornerStyle as ProfileAppearanceCornerStyle] ?? 
-    (cornerStyle === "pill" ? "round" : "medium")
-  );
+  return cornerStyleMap[cornerStyle] ?? "rounded";
 };
-
-const isTheme = (value: unknown): value is "light" | "dark" =>
-  value === "light" || value === "dark";
 
 export default function ProfileBuilderContent() {
   const queryClient = useQueryClient();
 
   const searchParams = useSearchParams();
-  const sectionParam = searchParams.get("section"); // e.g. "links" | "projects"
+  const sectionParam = searchParams.get("section");
 
   const [_activeTab, setActiveTab] = useState<"general" | "section">(
     sectionParam ? "section" : "general"
@@ -197,26 +181,11 @@ export default function ProfileBuilderContent() {
   );
   const [spacing, setSpacing] = useState(20);
   const [borderRadius, setBorderRadius] = useState<
-    "sharp" | "medium" | "round"
-  >("medium");
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+    "sharp" | "rounded" | "pill"
+  >("rounded");
+
   const [template, setTemplate] = useState<string>("creator");
   const [sections, setSections] = useState<Section[]>([]);
-
-  const handlePreviewChange = (newTemplate: string | null) => {
-    if (newTemplate) {
-      setTemplate(newTemplate.toLowerCase());
-    } else {
-      const appearanceSettings = profileAppearance.data?.appearance ?? profileAppearance.data?.data ?? null;
-      const themeSettings = (profileContent.data as Record<string, unknown>)?.themeSettings as Record<string, unknown> | undefined;
-      const rawTemplate = 
-        appearanceSettings?.template || 
-        themeSettings?.template || 
-        dashboardProfile.data?.templateType ||
-        "professional";
-      setTemplate((rawTemplate as string).toLowerCase());
-    }
-  };
 
   const contentLoadedRef = useRef(false);
   const userEditedRef = useRef(false);
@@ -285,10 +254,6 @@ export default function ProfileBuilderContent() {
           );
         }
 
-        if (isTheme(appearanceSettings.theme)) {
-          setTheme(appearanceSettings.theme);
-        }
-
         queueMicrotask(() => {
           appearanceHydratingRef.current = false;
           appearanceEditedRef.current = true;
@@ -296,10 +261,11 @@ export default function ProfileBuilderContent() {
       });
     }
 
-    const themeSettings = (profileContent.data as Record<string, unknown>)?.themeSettings as Record<string, unknown> | undefined;
-    const rawTemplate = 
-      appearanceSettings?.template || 
-      themeSettings?.template || 
+    const themeSettings = (profileContent.data as Record<string, unknown>)
+      ?.themeSettings as Record<string, unknown> | undefined;
+    const rawTemplate =
+      appearanceSettings?.template ||
+      themeSettings?.template ||
       dashboardProfile.data?.templateType ||
       "professional";
 
@@ -375,7 +341,11 @@ export default function ProfileBuilderContent() {
       // Backend verifies link URLs and returns 422 INVALID_LINKS when some fail
       // (e.g. Twitter 403, Instagram blocks crawlers) but still saves the data.
       // Treat this as a soft warning — the save succeeded.
-      if (isApiError(error) && error.status === 422 && error.message?.includes('INVALID_LINKS')) {
+      if (
+        isApiError(error) &&
+        error.status === 422 &&
+        error.message?.includes("INVALID_LINKS")
+      ) {
         queryClient.invalidateQueries({
           queryKey: profileContentOption().queryKey,
         });
@@ -439,7 +409,6 @@ export default function ProfileBuilderContent() {
         font: mapFontToApi(font),
         cornerStyle: mapCornerStyleToApi(borderRadius),
         spacing: clampSpacingForApi(spacing),
-        theme,
       });
       appearanceTimerRef.current = null;
     }, 1000);
@@ -449,7 +418,7 @@ export default function ProfileBuilderContent() {
         clearTimeout(appearanceTimerRef.current);
       }
     };
-  }, [template, font, iconColor, spacing, borderRadius, theme, saveAppearance]);
+  }, [template, font, iconColor, spacing, borderRadius, saveAppearance]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
@@ -589,15 +558,41 @@ export default function ProfileBuilderContent() {
 
   if (isLoading) {
     return (
-      <div className="bg-secondary-bg flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        <div className="border-border border-t-brand-hover-bg h-12 w-12 animate-spin rounded-full border-4 mb-6 shadow-sm" />
-        <h1 className="text-primary-text text-2xl font-bold tracking-tight">
-          Loading profile editor...
-        </h1>
-        <p className="text-secondary-text mt-3">
-          Preparing your dashboard and preview...
-        </p>
-      </div>
+      <>
+        <div className="flex min-h-screen flex-col items-center justify-center bg-[#FAFAFA] px-6 text-center lg:hidden">
+          <div className="border-muted-foreground/30 border-t-foreground mb-4 h-8 w-8 animate-spin rounded-full border-2" />
+          <h1 className="text-2xl font-bold text-[#050505]">
+            Loading profile editor...
+          </h1>
+        </div>
+
+        <div className="hidden w-full flex-1 gap-4 bg-[#FAFAFA] p-4 lg:flex lg:p-6 lg:px-8">
+          {/* Left Sidebar Skeleton */}
+          <div className="flex w-[320px] shrink-0 flex-col gap-6 rounded-2xl bg-white p-6">
+            <Skeleton className="h-8 w-1/2" />
+            <div className="mt-4 flex flex-col gap-3">
+              <Skeleton className="h-16 w-full rounded-xl" />
+              <Skeleton className="h-16 w-full rounded-xl" />
+              <Skeleton className="h-16 w-full rounded-xl" />
+            </div>
+          </div>
+
+          {/* Preview Canvas Skeleton */}
+          <div className="flex flex-1 items-center justify-center rounded-2xl">
+            <Skeleton className="h-[750px] w-[350px] rounded-[3rem]" />
+          </div>
+
+          {/* Right Panel Skeleton */}
+          <div className="flex w-[320px] shrink-0 flex-col gap-6 rounded-2xl bg-white p-6">
+            <Skeleton className="h-8 w-1/2" />
+            <div className="mt-4 flex flex-col gap-4">
+              <Skeleton className="h-20 w-full rounded-xl" />
+              <Skeleton className="h-20 w-full rounded-xl" />
+              <Skeleton className="h-20 w-full rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </>
     );
   }
 
@@ -618,10 +613,10 @@ export default function ProfileBuilderContent() {
         </Link>
       </div>
 
-      <div className="bg-primary-bg hidden flex-1 w-full flex-col overflow-hidden lg:flex">
+      <div className="bg-primary-bg hidden w-full flex-1 flex-col overflow-hidden lg:flex">
         {/* <BuilderHeader onPublish={handlePublish} isPublishing={isPublishing} /> */}
 
-        <div className="bg-secondary-bg flex flex-1 gap-4 overflow-hidden p-4 lg:p-6 lg:px-4">
+        <div className="bg-secondary-bg flex flex-1 gap-4 overflow-hidden p-4 lg:p-6 lg:px-8">
           <LeftSidebar
             sections={resolvedSections}
             selectedSectionId={selectedSectionId}
@@ -640,11 +635,10 @@ export default function ProfileBuilderContent() {
           <PreviewCanvas
             font={font}
             textColor={textColor}
-            bgColor={bgColor}
-            iconColor={iconColor}
+            bgColor={iconColor}
+            iconColor={bgColor}
             spacing={spacing}
             borderRadius={borderRadius}
-            theme={theme}
             template={template}
             sections={resolvedSections}
             profile={profile}
@@ -654,26 +648,24 @@ export default function ProfileBuilderContent() {
           />
 
           <RightPanel
-            template={template}
-            onChangeTemplate={handlePreviewChange}
             font={font}
             onChangeFont={setFont}
             textColor={textColor}
             onChangeTextColor={setTextColor}
-            bgColor={bgColor}
-            onChangeBgColor={setBgColor}
-            iconColor={iconColor}
-            onChangeIconColor={setIconColor}
+            bgColor={iconColor}
+            onChangeBgColor={setIconColor}
+            iconColor={bgColor}
+            onChangeIconColor={setBgColor}
             spacing={spacing}
             onChangeSpacing={setSpacing}
             borderRadius={borderRadius}
             onChangeBorderRadius={setBorderRadius}
-            theme={theme}
-            onChangeTheme={setTheme}
             activeTab={_activeTab}
             onChangeTab={setActiveTab}
             selectedSection={selectedSection}
             onUpdateSection={handleUpdateSection}
+            template={template}
+            onChangeTemplate={(val) => setTemplate(val || "professional")}
           />
         </div>
       </div>

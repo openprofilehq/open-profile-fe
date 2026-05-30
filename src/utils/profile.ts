@@ -1,15 +1,14 @@
 import { env } from "@/env/client";
 
-export function getAppBaseUrl() {
-  if (typeof window !== "undefined") {
-    return window.location.origin;
-  }
-  return env.NEXT_PUBLIC_APP_URL || env.NEXT_PUBLIC_APP_BASE_URL;
-}
+const APP_BASE_URL = env.NEXT_PUBLIC_APP_BASE_URL;
 
 export function getProfileUrl(username?: string) {
   if (!username) return "";
-  return `${getAppBaseUrl().replace(/\/$/, "")}/${username}`;
+  const baseUrl =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : APP_BASE_URL.replace(/\/$/, "");
+  return `${baseUrl}/${username}`;
 }
 
 export function getDisplayUrl(url: string) {
@@ -17,7 +16,7 @@ export function getDisplayUrl(url: string) {
 }
 
 export function getBaseDisplayUrl() {
-  return getDisplayUrl(getAppBaseUrl());
+  return getDisplayUrl(APP_BASE_URL);
 }
 
 export function getImageUrl(path?: string | null) {
@@ -47,7 +46,7 @@ export function getImageUrl(path?: string | null) {
 
   if (path.startsWith("http")) return path;
 
-  return `${env.NEXT_PUBLIC_API_URL || ""}${path}`;
+  return `${env.NEXT_PUBLIC_API_URL}${path}`;
 }
 
 /**

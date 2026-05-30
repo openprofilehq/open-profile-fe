@@ -89,7 +89,6 @@
   --color-brand-active-bg: var(--brand-active-bg);
   --color-brand-subtle-bg: var(--brand-subtle-bg);
   --color-brand-progress-bg: var(--brand-progress-bg);
-  --color-brand-progress-bg: var(--brand-progress-bg);
   --color-brand-light-subtle-bg: var(--brand-light-subtle-bg);
   --color-info-bg: var(--info-bg);
   --color-info-subtle-bg: var(--info-subtle-bg);
@@ -307,7 +306,6 @@
   --brand-active-bg: #065862;
   --brand-dark-bg: #05464f;
   --brand-subtle-bg: #daf2f5;
-  --brand-progress-bg: #dbeff2;
   --brand-progress-bg: #dbeff2;
   --brand-light-subtle-bg: #f1fdfe;
   --info-bg: #95d2da;

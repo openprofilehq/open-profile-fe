@@ -1,7 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { Mail, ArrowRight, ExternalLink } from "lucide-react";
-
+import { Mail, Link as LinkIcon, ArrowRight } from "lucide-react";
 import {
   DashboardProfileResponse,
   ProfileContentResponse,
@@ -10,6 +9,7 @@ import {
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
 import { getImageUrl } from "@/utils/profile";
+import normalizeHref from "@/utils/url";
 import { TemplateFooter } from "./TemplateFooter";
 
 type Props = {
@@ -21,40 +21,11 @@ type Props = {
   isPreview?: boolean;
 };
 
-const DEFAULT_LINKS = [
-  { id: "link-1", title: "Portfolio", url: "https://john.studio" },
-  { id: "link-2", title: "Twitter", url: "https://twitter.com/johnsmith" },
-  { id: "link-3", title: "GitHub", url: "https://github.com/johnsmith" },
-] as LinkItem[];
-
-const DEFAULT_PROJECTS = [
-  {
-    id: "proj-1",
-    title: "Atlas - Onboarding kit for SaaS",
-    description: "A complete design system and onboarding flow",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature1.jpg",
-  },
-  {
-    id: "proj-2",
-    title: "Field - Mobile Journaling app",
-    description: "A calm journaling experience with a custom typography stack.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature2.jpg",
-  },
-  {
-    id: "proj-3",
-    title: "Northwind Analytics",
-    description: "Dashboard rework for a B2B analytics products.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature3.jpg",
-  },
-] as ProjectItem[];
-
-export default function ProfessionalDashboardView({ profile, content, isPreview }: Props) {
+export default function ProfessionalDashboardView({
+  profile,
+  content,
+  appearance,
+}: Props) {
   const name = profile?.fullName ?? profile?.username ?? "John Smith";
   const username = profile?.username ?? "johnsmith";
 
@@ -64,11 +35,9 @@ export default function ProfessionalDashboardView({ profile, content, isPreview 
     details?.bio?.content ??
     "Product Designer helping early-stage startups build meaningful, trustworthy experiences. Previously at Linear and Loom";
 
-  const rawLinks = (details?.links?.items ?? []) as LinkItem[];
-  const links = rawLinks.length > 0 ? rawLinks : (isPreview ? DEFAULT_LINKS : []);
+  const links = (details?.links?.items ?? []) as LinkItem[];
 
-  const rawProjects = (details?.projects?.items ?? []) as ProjectItem[];
-  const projects = rawProjects.length > 0 ? rawProjects : (isPreview ? DEFAULT_PROJECTS : []);
+  const projects = (details?.projects?.items ?? []) as ProjectItem[];
 
   const cta = details?.cta;
 
@@ -76,29 +45,35 @@ export default function ProfessionalDashboardView({ profile, content, isPreview 
   const photoSrc = rawPhotoSrc
     ? rawPhotoSrc.startsWith("/profile-preview/")
       ? rawPhotoSrc
-      : getImageUrl(rawPhotoSrc)
-    : null;
+      : getImageUrl(rawPhotoSrc)!
+    : "/profile-preview/avatar.png";
+
+  const hasCustomBg = !!(appearance?.bgColor || appearance?.accentColour);
+  const customBgStyle = hasCustomBg
+    ? undefined
+    : ({
+        "--primary-bg": "#FFFFFF",
+      } as React.CSSProperties);
 
   return (
-    <div className="text-primary-text bg-secondary-bg flex w-full flex-col font-sans antialiased">
-      <div className="mx-auto w-full max-w-5xl px-6 pb-16 sm:pb-24">
+    <div
+      className="text-primary-text bg-primary-bg flex min-h-screen w-full flex-col antialiased"
+      style={customBgStyle}
+    >
+      <div className="mx-auto w-full max-w-5xl px-6 py-16 sm:py-24">
         {/* HEADER SECTION */}
         <header className="flex w-full flex-col justify-between gap-6 sm:flex-row sm:items-start">
           <div className="flex items-center gap-6">
-            <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
-              {photoSrc ? (
-                <Image
-                  src={photoSrc}
-                  alt={name}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center bg-brand-subtle-bg text-[40px] font-bold text-brand-hover-bg">
-                  {name.charAt(0).toUpperCase()}
-                </div>
-              )}
+            <div className="border-border bg-secondary-bg relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-full border">
+              <Image
+                src={photoSrc}
+                alt={name}
+                fill
+                className="object-cover"
+                unoptimized
+              />
+              {/* Online indicator dot */}
+              <div className="border-background absolute right-1 bottom-1 h-3.5 w-3.5 rounded-full border-2 bg-green-500" />
             </div>
 
             <div className="flex flex-col">
@@ -128,57 +103,103 @@ export default function ProfessionalDashboardView({ profile, content, isPreview 
         </section>
 
         {/* LINKS SECTION */}
-        {details?.links?.visible !== false && (
+        {details?.links?.visible !== false && links.length > 0 && (
           <section className="mt-16 w-full">
             <h2 className="text-tertiary-text mb-4 text-[13px]">Links</h2>
-            {links.length > 0 ? (
-              <div className="flex flex-col border-t border-border">
-                {links.map((link, idx) => (
-                  <a
-                    key={link.id ?? idx}
-                    href={link.url || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-center justify-between border-b border-border py-4 transition-colors hover:bg-hover-bg/30"
+            <div className="flex flex-col">
+              {links.map((link, idx) => {
+                // Strip protocols and www for a cleaner display URL
+                const displayUrl =
+                  link.url
+                    ?.replace(/^https?:\/\/(www\.)?/, "")
+                    ?.replace(/\/$/, "") || "link";
+
+                const safeHref = normalizeHref(link.url);
+
+                if (safeHref) {
+                  return (
+                    <a
+                      key={link.id}
+                      href={safeHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={
+                        idx === 0
+                          ? "group hover:bg-hover-bg border-border flex items-center justify-between border-y py-4 transition-colors"
+                          : "group hover:bg-hover-bg border-border flex items-center justify-between border-b py-4 transition-colors"
+                      }
+                    >
+                      <span className="text-primary-text text-[15px] font-bold">
+                        {link.title || link.label}
+                      </span>
+                      <span className="text-secondary-text group-hover:text-brand-hover-bg flex items-center gap-2 text-[14px] transition-colors">
+                        {displayUrl}
+                        <LinkIcon size={14} />
+                      </span>
+                    </a>
+                  );
+                }
+
+                return (
+                  <div
+                    key={link.id}
+                    className={
+                      idx === 0
+                        ? "group border-border flex items-center justify-between border-y py-4 transition-colors"
+                        : "group border-border flex items-center justify-between border-b py-4 transition-colors"
+                    }
                   >
-                    <span className="text-[15px] font-bold text-primary-text group-hover:text-brand-hover-bg transition-colors">
+                    <span className="text-primary-text text-[15px] font-bold">
                       {link.title || link.label}
                     </span>
-                    <div className="flex items-center gap-3">
-                      <span className="text-secondary-text text-[14px]">
-                        {(() => {
-                          try {
-                            return link.url ? new URL(link.url.startsWith('http') ? link.url : `https://${link.url}`).hostname.replace('www.', '') : '';
-                          } catch {
-                            return link.url || '';
-                          }
-                        })()}
-                      </span>
-                      <ExternalLink size={16} className="text-tertiary-text group-hover:text-brand-hover-bg transition-colors" />
-                    </div>
-                  </a>
-                ))}
-              </div>
-            ) : (
-              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
-                Add your links
-              </p>
-            )}
+                    <span className="text-secondary-text flex items-center gap-2 text-[14px]">
+                      {displayUrl}
+                      <LinkIcon size={14} />
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </section>
         )}
 
         {/* PROJECTS SECTION */}
-        {details?.projects?.visible !== false && (
+        {details?.projects?.visible !== false && projects.length > 0 && (
           <section className="mt-16 w-full">
             <h2 className="text-tertiary-text mb-4 text-[13px]">
               {details?.projects?.sectionTitle || "Selected Work"}
             </h2>
-            {projects.length > 0 ? (
-              <div className="flex flex-col gap-4">
-                {projects.map((project) => (
+            <div className="flex flex-col gap-4">
+              {projects.map((project) => {
+                const safeHref = normalizeHref(project.url);
+
+                let ctaNode: React.ReactNode = null;
+                if (project.url) {
+                  if (safeHref) {
+                    ctaNode = (
+                      <a
+                        href={safeHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
+                      >
+                        {project.buttonText || "View Project"}
+                        <ArrowRight size={14} strokeWidth={2.5} />
+                      </a>
+                    );
+                  } else {
+                    ctaNode = (
+                      <span className="text-tertiary-text mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold">
+                        {project.buttonText || "View Project"}
+                      </span>
+                    );
+                  }
+                }
+
+                return (
                   <div
                     key={project.id}
-                    className="border-border bg-background flex flex-col items-start rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
+                    className="border-border bg-background flex flex-col items-start rounded-xl border p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
                   >
                     <div className="bg-secondary-bg border-border relative mb-4 h-[80px] w-full shrink-0 overflow-hidden rounded-lg border sm:mb-0 sm:w-[120px]">
                       {project.imageSrc ? (
@@ -213,26 +234,12 @@ export default function ProfessionalDashboardView({ profile, content, isPreview 
                           {project.description}
                         </p>
                       )}
-                      {project.url && (
-                        <a
-                          href={project.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
-                        >
-                          {project.buttonText || "View Project"}
-                          <ArrowRight size={14} strokeWidth={2.5} />
-                        </a>
-                      )}
+                      {ctaNode}
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
-                Add your projects
-              </p>
-            )}
+                );
+              })}
+            </div>
           </section>
         )}
 
