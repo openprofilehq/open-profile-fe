@@ -10,7 +10,11 @@ import {
   ProjectItem,
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
-import { getImageUrl, sanitizeUrl } from "@/utils/profile";
+import {
+  getImageUrl,
+  sanitizeUrl,
+  getDisplayProfileUrl,
+} from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
 import {
   XIcon,
@@ -50,8 +54,22 @@ export default function CreatorDashboardView({
   content,
   appearance,
 }: Props) {
+  const projectsVisible =
+    (content?.content?.projects?.visible ?? true) &&
+    (content?.content?.projects?.items?.length ?? 0) > 0;
+  const linksVisible =
+    (content?.content?.links?.visible ?? true) &&
+    (content?.content?.links?.items?.length ?? 0) > 0;
+  const bioVisible = content?.content?.bio?.visible ?? true;
+
+  const firstVisibleTab = projectsVisible
+    ? "projects"
+    : linksVisible
+      ? "links"
+      : "about";
+
   const [activeTab, setActiveTab] = useState<"projects" | "links" | "about">(
-    "projects"
+    firstVisibleTab
   );
 
   const name =
@@ -140,7 +158,7 @@ export default function CreatorDashboardView({
               </svg>
             </h1>
             <p className="text-secondary-text mt-1 text-[15px]">
-              openprofile.app/{username}
+              {getDisplayProfileUrl(username)}
             </p>
           </div>
 
@@ -194,38 +212,44 @@ export default function CreatorDashboardView({
           className="border-border flex items-center justify-center border-b"
           style={{ gap: "calc(var(--op-spacing, 24px) * 1.5)" }}
         >
-          <button
-            onClick={() => setActiveTab("projects")}
-            className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "projects" ? "text-primary-text" : "text-secondary-text hover:text-primary-text"}`}
-          >
-            Projects
-            {activeTab === "projects" && (
-              <span className="bg-primary-text absolute right-0 bottom-[-1px] left-0 h-[2px]" />
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("links")}
-            className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "links" ? "text-primary-text" : "text-secondary-text hover:text-primary-text"}`}
-          >
-            Links
-            {activeTab === "links" && (
-              <span className="bg-primary-text absolute right-0 bottom-[-1px] left-0 h-[2px]" />
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("about")}
-            className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "about" ? "text-primary-text" : "text-secondary-text hover:text-primary-text"}`}
-          >
-            About
-            {activeTab === "about" && (
-              <span className="bg-primary-text absolute right-0 bottom-[-1px] left-0 h-[2px]" />
-            )}
-          </button>
+          {projectsVisible && (
+            <button
+              onClick={() => setActiveTab("projects")}
+              className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "projects" ? "text-primary-text" : "text-secondary-text hover:text-primary-text"}`}
+            >
+              Projects
+              {activeTab === "projects" && (
+                <span className="bg-primary-text absolute right-0 bottom-[-1px] left-0 h-[2px]" />
+              )}
+            </button>
+          )}
+          {linksVisible && (
+            <button
+              onClick={() => setActiveTab("links")}
+              className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "links" ? "text-primary-text" : "text-secondary-text hover:text-primary-text"}`}
+            >
+              Links
+              {activeTab === "links" && (
+                <span className="bg-primary-text absolute right-0 bottom-[-1px] left-0 h-[2px]" />
+              )}
+            </button>
+          )}
+          {bioVisible && (
+            <button
+              onClick={() => setActiveTab("about")}
+              className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "about" ? "text-primary-text" : "text-secondary-text hover:text-primary-text"}`}
+            >
+              About
+              {activeTab === "about" && (
+                <span className="bg-primary-text absolute right-0 bottom-[-1px] left-0 h-[2px]" />
+              )}
+            </button>
+          )}
         </div>
 
         {/* TABS CONTENT */}
         <div className="min-h-[400px] w-full">
-          {activeTab === "projects" && (
+          {activeTab === "projects" && projectsVisible && (
             <div
               className="grid grid-cols-1 sm:grid-cols-2"
               style={{ gap: "var(--op-spacing, 24px)" }}
@@ -281,7 +305,7 @@ export default function CreatorDashboardView({
             </div>
           )}
 
-          {activeTab === "links" && (
+          {activeTab === "links" && linksVisible && (
             <div
               className="mx-auto flex max-w-xl flex-col"
               style={{ gap: "var(--op-spacing, 24px)" }}
@@ -330,7 +354,7 @@ export default function CreatorDashboardView({
             </div>
           )}
 
-          {activeTab === "about" && (
+          {activeTab === "about" && bioVisible && (
             <div
               className="border-border bg-background mx-auto max-w-2xl rounded-3xl border"
               style={{ padding: "calc(var(--op-spacing, 24px) * 1.5)" }}

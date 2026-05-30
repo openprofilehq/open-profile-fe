@@ -424,7 +424,16 @@ export default function ProfileBuilderContent() {
         clearTimeout(appearanceTimerRef.current);
       }
     };
-  }, [template, font, iconColor, spacing, borderRadius, saveAppearance]);
+  }, [
+    template,
+    font,
+    bgColor,
+    textColor,
+    iconColor,
+    spacing,
+    borderRadius,
+    saveAppearance,
+  ]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
@@ -531,7 +540,9 @@ export default function ProfileBuilderContent() {
     if (!newSection) return;
 
     setSections((prev) => {
-      const exists = prev.some((s) => s.id === newSection.id);
+      const exists = prev.some(
+        (s) => s.id === newSection.id || s.type === newSection.type
+      );
       if (exists) return prev;
       return [...prev, newSection];
     });

@@ -19,6 +19,10 @@ export function getBaseDisplayUrl() {
   return getDisplayUrl(APP_BASE_URL);
 }
 
+export function getDisplayProfileUrl(username?: string) {
+  return getDisplayUrl(getProfileUrl(username));
+}
+
 export function getImageUrl(path?: string | null) {
   if (!path) return "";
 
