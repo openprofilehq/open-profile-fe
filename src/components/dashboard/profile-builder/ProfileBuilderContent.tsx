@@ -671,7 +671,9 @@ export default function ProfileBuilderContent() {
             selectedSection={selectedSection}
             onUpdateSection={handleUpdateSection}
             template={template}
-            onChangeTemplate={(val) => setTemplate(val || "professional")}
+            onChangeTemplate={(val) =>
+              setTemplate((val || "professional").toLowerCase())
+            }
           />
         </div>
       </div>
