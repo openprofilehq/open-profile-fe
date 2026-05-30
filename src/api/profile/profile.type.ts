@@ -173,6 +173,8 @@ export type ProfileAppearanceCornerStyle =
 export type ProfileAppearanceSettings = {
   template: string;
   accentColour: string;
+  backgroundColour?: string;
+  textColour?: string;
   textColor?: string;
   bgColor?: string;
   font: ProfileAppearanceFont;
@@ -183,6 +185,8 @@ export type ProfileAppearanceSettings = {
 export type ProfileAppearanceRequest = {
   template?: string;
   accentColour?: string;
+  backgroundColour?: string;
+  textColour?: string;
   font?: ProfileAppearanceFont;
   cornerStyle?: ProfileAppearanceCornerStyle;
   spacing?: number;

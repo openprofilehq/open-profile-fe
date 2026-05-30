@@ -90,7 +90,9 @@ export default async function UserProfilePage({ params }: Props) {
     accentColour?: string;
     iconColor?: string;
     textColor?: string;
+    textColour?: string;
     bgColor?: string;
+    backgroundColour?: string;
     font?: string;
     cornerStyle?: string;
     borderRadius?: "sharp" | "rounded" | "pill";
@@ -217,9 +219,15 @@ export default async function UserProfilePage({ params }: Props) {
   const selectedFontClass =
     fontStyles[globalFontNormalized] || fontStyles[globalFont] || "font-afacad";
 
-  const globalBgColor = themeSettings.bgColor || THEME_DEFAULTS.BG_COLOR;
+  const globalBgColor =
+    themeSettings.backgroundColour ||
+    themeSettings.bgColor ||
+    THEME_DEFAULTS.BG_COLOR;
 
-  const globalTextColor = themeSettings.textColor || THEME_DEFAULTS.TEXT_COLOR;
+  const globalTextColor =
+    themeSettings.textColour ||
+    themeSettings.textColor ||
+    THEME_DEFAULTS.TEXT_COLOR;
 
   const globalIconColor =
     themeSettings.iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT;

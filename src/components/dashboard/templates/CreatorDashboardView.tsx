@@ -92,7 +92,11 @@ export default function CreatorDashboardView({
       );
     })
     .slice(0, 4);
-  const hasCustomBg = !!(appearance?.bgColor || appearance?.accentColour);
+  const hasCustomBg = !!(
+    appearance?.backgroundColour ||
+    appearance?.bgColor ||
+    appearance?.accentColour
+  );
   const customBgStyle = hasCustomBg
     ? undefined
     : ({

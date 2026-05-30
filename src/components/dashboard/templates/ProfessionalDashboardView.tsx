@@ -47,7 +47,11 @@ export default function ProfessionalDashboardView({
       : getImageUrl(rawPhotoSrc)!
     : "/profile-preview/avatar.png";
 
-  const hasCustomBg = !!(appearance?.bgColor || appearance?.accentColour);
+  const hasCustomBg = !!(
+    appearance?.backgroundColour ||
+    appearance?.bgColor ||
+    appearance?.accentColour
+  );
   const customBgStyle = hasCustomBg
     ? undefined
     : ({

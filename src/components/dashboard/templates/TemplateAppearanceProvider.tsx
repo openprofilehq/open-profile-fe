@@ -5,7 +5,9 @@ type TemplateAppearanceInput = {
   accentColour?: string | null;
   iconColor?: string | null;
   textColor?: string | null;
+  textColour?: string | null;
   bgColor?: string | null;
+  backgroundColour?: string | null;
   cornerStyle?: string | null;
   borderRadius?: string | null;
   spacing?: number | null;
@@ -90,13 +92,18 @@ export default function TemplateAppearanceProvider({
     "#087583";
 
   const bgColor =
-    normalizeColor(appearance?.bgColor || appearance?.accentColour) ||
-    "#FAFAFA";
+    normalizeColor(
+      appearance?.backgroundColour ||
+        appearance?.bgColor ||
+        appearance?.accentColour
+    ) || "#FAFAFA";
 
   const surfaceColor = "#FFFFFF";
   const secondarySurfaceColor = "#F6F6F6";
 
-  const textColor = normalizeColor(appearance?.textColor) || "#050505";
+  const textColor =
+    normalizeColor(appearance?.textColour || appearance?.textColor) ||
+    "#050505";
 
   const secondaryTextColor = "#454545";
   const tertiaryTextColor = "#747474";
