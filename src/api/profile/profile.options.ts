@@ -109,6 +109,8 @@ export const saveTemplateOption = mutationOptions({
         cornerStyle: _cornerStyle,
         spacing: _spacing,
         theme: _theme,
+        backgroundColour: _backgroundColour,
+        textColour: _textColour,
         ...allowedThemeSettings
       } = currentAppearance as Record<string, unknown>;
       await upsertDraft({
