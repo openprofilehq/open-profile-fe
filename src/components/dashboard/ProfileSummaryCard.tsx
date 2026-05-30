@@ -36,7 +36,7 @@ export default function ProfileSummaryCard({ profile, isLoading }: Props) {
         {isLoading ? (
           <Skeleton className="h-9" />
         ) : (
-          <h2 className="text-3xl font-bold break-words">
+          <h2 className="text-3xl font-bold break-all">
             {profile?.fullName ?? "No Name"}
           </h2>
         )}
@@ -44,7 +44,7 @@ export default function ProfileSummaryCard({ profile, isLoading }: Props) {
         {isLoading ? (
           <Skeleton className="mt-4 h-5" />
         ) : (
-          <p className="mt-4 max-w-[650px] break-words text-xl leading-8 text-primary-text">
+          <p className="mt-4 max-w-[650px] break-all text-xl leading-8 text-primary-text">
             {profile?.bio ?? "No bio added yet."}
           </p>
         )}

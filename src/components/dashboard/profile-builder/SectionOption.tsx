@@ -124,6 +124,7 @@ export default function SectionOption({
   const [urlError, setUrlError] = useState("");
   const [iconError, setIconError] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [_validatingUrl, setValidatingUrl] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const selectedIcon =
@@ -185,6 +186,7 @@ export default function SectionOption({
     const trimmedUrl = url.trim();
 
     try {
+      setValidatingUrl(true);
       if (!isValidUrl(trimmedUrl, selectedIconId)) {
         setUrlError("Please enter a valid link for the selected icon.");
         return;
@@ -212,6 +214,8 @@ export default function SectionOption({
       returnTab();
     } catch {
       setUrlError("Please enter a valid link for the selected icon.");
+    } finally {
+      setValidatingUrl(false);
     }
   };
 
