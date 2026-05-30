@@ -2,6 +2,7 @@ import type { Section, ProfilePreview } from "./types";
 import CreatorPreview from "./previews/CreatorPreview";
 import ProfessionalPreview from "./previews/ProfessionalPreview";
 import PortfolioPreview from "./previews/PortfolioPreview";
+import DefaultPreview from "./previews/DefaultPreview";
 import TemplateAppearanceProvider from "../templates/TemplateAppearanceProvider";
 
 interface PreviewCanvasProps {
@@ -10,8 +11,7 @@ interface PreviewCanvasProps {
   bgColor: string;
   iconColor: string;
   spacing: number;
-  borderRadius: "sharp" | "medium" | "round";
-  theme: "light" | "dark";
+  borderRadius: "sharp" | "rounded" | "pill";
   template?: string;
   sections: Section[];
   profile?: ProfilePreview | null;
@@ -21,7 +21,7 @@ interface PreviewCanvasProps {
 }
 
 export default function PreviewCanvas(props: PreviewCanvasProps) {
-  const { font, theme } = props;
+  const { font } = props;
 
   const templateKey = props.template
     ? String(props.template).toLowerCase()
@@ -36,7 +36,6 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
     Manrope: "font-sans",
   };
   const selectedFontClass = fontStyles[font] || "font-afacad";
-  const isDark = theme === "dark";
 
   return (
     <TemplateAppearanceProvider
@@ -49,20 +48,19 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
         cornerStyle: props.borderRadius,
         borderRadius: props.borderRadius,
         spacing: props.spacing,
-        theme: props.theme,
       }}
+      className="flex h-full w-full min-w-0 flex-1 flex-col"
     >
       <div
-        className={`animate-in fade-in flex h-full min-h-0 flex-1 justify-center overflow-y-auto px-4 transition-colors duration-200 lg:px-12 ${
-          isDark ? "bg-inverse-bg" : "bg-transparent"
-        } ${selectedFontClass}`}
+        className={`animate-in fade-in flex h-full min-h-0 flex-1 justify-center overflow-y-auto bg-transparent px-4 transition-colors duration-200 lg:px-12 ${selectedFontClass}`}
       >
         <div className="flex w-full max-w-5xl flex-col gap-6 pb-32">
           {templateKey === "creator" && <CreatorPreview {...props} />}
           {templateKey === "portfolio" && <PortfolioPreview {...props} />}
-          {(templateKey === "" ||
-            templateKey === "professional" ||
-            templateKey === "default") && <ProfessionalPreview {...props} />}
+          {templateKey === "default" && <DefaultPreview {...props} />}
+          {(templateKey === "" || templateKey === "professional") && (
+            <ProfessionalPreview {...props} />
+          )}
         </div>
       </div>
     </TemplateAppearanceProvider>

@@ -29,13 +29,18 @@ export default function DefaultDashboardView({
   return (
     <TemplateAppearanceProvider
       appearance={appearance}
-      className="flex flex-col gap-6"
+      className="bg-primary-bg flex min-h-full flex-col rounded-[24px] p-6 sm:p-8"
     >
-      <ProfileSummaryCard profile={profile} isLoading={isLoadingProfile} />
-      <FeaturedLinks content={content} isLoading={isLoadingContent} />
-      <HighlightCard profile={profile} />
-      <SelectedProject content={content} />
-      <YourCTA content={content} />
+      <div
+        className="flex flex-col"
+        style={{ gap: "var(--template-spacing, 24px)" }}
+      >
+        <ProfileSummaryCard profile={profile} isLoading={isLoadingProfile} />
+        <FeaturedLinks content={content} isLoading={isLoadingContent} />
+        <HighlightCard profile={profile} />
+        <SelectedProject content={content} />
+        <YourCTA content={content} />
+      </div>
     </TemplateAppearanceProvider>
   );
 }

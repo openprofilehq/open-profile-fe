@@ -162,7 +162,13 @@ export type ProfileAppearanceFont =
   | "geologica"
   | "manrope";
 
-export type ProfileAppearanceCornerStyle = "sharp" | "medium" | "round";
+export type ProfileAppearanceCornerStyle =
+  | "sharp"
+  | "medium"
+  | "round"
+  | "rounded"
+  | "pill"
+  | string;
 
 export type ProfileAppearanceSettings = {
   template: string;
@@ -172,7 +178,6 @@ export type ProfileAppearanceSettings = {
   font: ProfileAppearanceFont;
   cornerStyle: ProfileAppearanceCornerStyle;
   spacing: number;
-  theme: "light" | "dark";
 };
 
 export type ProfileAppearanceRequest = {
@@ -181,7 +186,6 @@ export type ProfileAppearanceRequest = {
   font?: ProfileAppearanceFont;
   cornerStyle?: ProfileAppearanceCornerStyle;
   spacing?: number;
-  theme?: "light" | "dark";
 };
 
 export type ProfileAppearanceResponse = {
