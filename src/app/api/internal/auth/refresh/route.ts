@@ -20,12 +20,21 @@ export async function POST() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        cookie: store.getAll().map(c => {
-          let name = c.name;
-          if (name === "_at") name = "accessToken";
-          if (name === "_rt") name = "refreshToken";
-          return `${name}=${c.value}`;
-        }).join("; "),
+        cookie: (() => {
+          const rawCookies = store.getAll();
+          const normalizedCookies = new Map<string, string>();
+          for (const c of rawCookies) {
+            let name = c.name;
+            if (name === "_at") name = "accessToken";
+            if (name === "_rt") name = "refreshToken";
+            if (!normalizedCookies.has(name) || (c.name === "accessToken" || c.name === "refreshToken")) {
+              normalizedCookies.set(name, c.value);
+            }
+          }
+          return Array.from(normalizedCookies.entries())
+            .map(([k, v]) => `${k}=${v}`)
+            .join("; ");
+        })(),
       },
       body: JSON.stringify({ refreshToken }),
     });
