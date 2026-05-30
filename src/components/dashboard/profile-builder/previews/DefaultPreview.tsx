@@ -3,7 +3,6 @@ import type { Section, ProfilePreview } from "../types";
 import { sectionsToContent } from "../builder.utils";
 import ProfileSummaryCard from "../../ProfileSummaryCard";
 import FeaturedLinks from "../../FeaturedLinks";
-import HighlightCard from "../../HighlightCard";
 import SelectedProject from "../../help/SelectedProject";
 import YourCTA from "../../help/YourCTA";
 import type {
@@ -34,7 +33,6 @@ export default function DefaultPreview({
         profile={profile as unknown as DashboardProfileResponse}
       />
       <FeaturedLinks content={mappedContent} />
-      <HighlightCard profile={profile as unknown as DashboardProfileResponse} />
       <SelectedProject content={mappedContent} />
       <YourCTA content={mappedContent} />
     </div>
