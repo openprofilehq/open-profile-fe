@@ -24,8 +24,8 @@ interface RightPanelProps {
   onChangeIconColor: (color: string) => void;
   spacing: number;
   onChangeSpacing: (spacing: number) => void;
-  borderRadius: "sharp" | "medium" | "round";
-  onChangeBorderRadius: (radius: "sharp" | "medium" | "round") => void;
+  borderRadius: "sharp" | "rounded" | "pill";
+  onChangeBorderRadius: (radius: "sharp" | "rounded" | "pill") => void;
   activeTab: "general" | "section";
   onChangeTab: (tab: "general" | "section") => void;
   selectedSection: Section | null;
@@ -177,31 +177,6 @@ export default function RightPanel({
                 <div className="border-tertiary-b bg-background flex gap-1 rounded-[12px] border p-1">
                   <button
                     type="button"
-                    onClick={() => onChangeBorderRadius("medium")}
-                    className={`flex flex-1 items-center justify-center rounded-[8px] py-3 transition-all duration-200 ${
-                      borderRadius === "medium"
-                        ? "bg-hover-bg text-primary-text"
-                        : "text-tertiary-text hover:bg-primary-bg hover:text-primary-text"
-                    }`}
-                    title="Medium"
-                  >
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M6 18V12C6 8.68629 8.68629 6 12 6H18"
-                        stroke="currentColor"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
                     onClick={() => onChangeBorderRadius("sharp")}
                     className={`flex flex-1 items-center justify-center rounded-[8px] py-3 transition-all duration-200 ${
                       borderRadius === "sharp"
@@ -227,13 +202,38 @@ export default function RightPanel({
                   </button>
                   <button
                     type="button"
-                    onClick={() => onChangeBorderRadius("round")}
+                    onClick={() => onChangeBorderRadius("rounded")}
                     className={`flex flex-1 items-center justify-center rounded-[8px] py-3 transition-all duration-200 ${
-                      borderRadius === "round"
+                      borderRadius === "rounded"
                         ? "bg-hover-bg text-primary-text"
                         : "text-tertiary-text hover:bg-primary-bg hover:text-primary-text"
                     }`}
-                    title="Round"
+                    title="Rounded"
+                  >
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M6 18V12C6 8.68629 8.68629 6 12 6H18"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onChangeBorderRadius("pill")}
+                    className={`flex flex-1 items-center justify-center rounded-[8px] py-3 transition-all duration-200 ${
+                      borderRadius === "pill"
+                        ? "bg-hover-bg text-primary-text"
+                        : "text-tertiary-text hover:bg-primary-bg hover:text-primary-text"
+                    }`}
+                    title="Pill"
                   >
                     <svg
                       width="24"

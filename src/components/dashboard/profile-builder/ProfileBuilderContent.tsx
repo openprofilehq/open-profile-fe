@@ -112,18 +112,9 @@ const mapFontToApi = (font: string): ProfileAppearanceFont => {
 };
 
 const mapCornerStyleToApi = (
-  borderRadius: "sharp" | "medium" | "round"
+  borderRadius: "sharp" | "rounded" | "pill"
 ): ProfileAppearanceCornerStyle => {
-  const cornerStyleMap: Record<
-    "sharp" | "medium" | "round",
-    ProfileAppearanceCornerStyle
-  > = {
-    sharp: "sharp",
-    medium: "medium",
-    round: "rounded", // Backend likely expects 'rounded' instead of 'round'
-  };
-
-  return cornerStyleMap[borderRadius];
+  return borderRadius;
 };
 
 const clampSpacingForApi = (spacing: number) => {
@@ -144,15 +135,15 @@ const mapFontFromApi = (font: string) => {
 };
 
 const mapCornerStyleFromApi = (cornerStyle: string) => {
-  const cornerStyleMap: Record<string, "sharp" | "medium" | "round"> = {
+  const cornerStyleMap: Record<string, "sharp" | "rounded" | "pill"> = {
     sharp: "sharp",
-    medium: "medium",
-    round: "round",
-    rounded: "round",
-    pill: "round",
+    medium: "rounded",
+    rounded: "rounded",
+    round: "pill",
+    pill: "pill",
   };
 
-  return cornerStyleMap[cornerStyle] ?? "medium";
+  return cornerStyleMap[cornerStyle] ?? "rounded";
 };
 
 export default function ProfileBuilderContent() {
@@ -190,8 +181,8 @@ export default function ProfileBuilderContent() {
   );
   const [spacing, setSpacing] = useState(20);
   const [borderRadius, setBorderRadius] = useState<
-    "sharp" | "medium" | "round"
-  >("medium");
+    "sharp" | "rounded" | "pill"
+  >("rounded");
 
   const [template, setTemplate] = useState<string>("creator");
   const [sections, setSections] = useState<Section[]>([]);

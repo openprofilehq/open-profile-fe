@@ -11,7 +11,7 @@ interface PreviewCanvasProps {
   bgColor: string;
   iconColor: string;
   spacing: number;
-  borderRadius: "sharp" | "medium" | "round";
+  borderRadius: "sharp" | "rounded" | "pill";
   template?: string;
   sections: Section[];
   profile?: ProfilePreview | null;

@@ -75,7 +75,7 @@ function getRadius(cornerStyle?: string | null, borderRadius?: string | null) {
   const value = cornerStyle || borderRadius;
 
   if (value === "sharp") return "0px";
-  if (value === "round" || value === "pill") return "32px";
+  if (value === "pill" || value === "round") return "32px";
 
   return "16px";
 }

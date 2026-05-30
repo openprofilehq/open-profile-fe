@@ -93,17 +93,19 @@ export default async function UserProfilePage({ params }: Props) {
     bgColor?: string;
     font?: string;
     cornerStyle?: string;
-    borderRadius?: "sharp" | "medium" | "round";
+    borderRadius?: "sharp" | "rounded" | "pill";
     spacing?: number;
     theme?: "light" | "dark";
   };
 
   const mapCornerStyleToRadius = (
     cornerStyle?: unknown
-  ): "sharp" | "medium" | "round" | undefined => {
+  ): "sharp" | "rounded" | "pill" | undefined => {
     if (cornerStyle === "sharp") return "sharp";
-    if (cornerStyle === "rounded") return "medium";
-    if (cornerStyle === "pill") return "round";
+    if (cornerStyle === "rounded") return "rounded";
+    if (cornerStyle === "pill") return "pill";
+    if (cornerStyle === "medium") return "rounded";
+    if (cornerStyle === "round") return "pill";
     return undefined;
   };
 
@@ -226,8 +228,8 @@ export default async function UserProfilePage({ params }: Props) {
 
   const radiusMap = {
     sharp: "0px",
-    medium: "16px",
-    round: "32px",
+    rounded: "16px",
+    pill: "32px",
   };
   const activeRadius =
     radiusMap[themeSettings.borderRadius as keyof typeof radiusMap] || "16px";
