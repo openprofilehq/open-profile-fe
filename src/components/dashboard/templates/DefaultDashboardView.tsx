@@ -27,7 +27,10 @@ export default function DefaultDashboardView({
   appearance,
 }: Props) {
   return (
-    <TemplateAppearanceProvider appearance={appearance}>
+    <TemplateAppearanceProvider
+      appearance={appearance}
+      className="flex flex-col gap-6"
+    >
       <ProfileSummaryCard profile={profile} isLoading={isLoadingProfile} />
       <FeaturedLinks content={content} isLoading={isLoadingContent} />
       <HighlightCard profile={profile} />
