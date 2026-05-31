@@ -32,7 +32,7 @@ export default function PortfolioPreview({
   const linksSection = sections.find((s) => s.type === "links");
   const projectsSection = sections.find((s) => s.type === "projects");
   const ctaSection = sections.find((s) => s.type === "experience");
-  const _bioSectionId = bioSection?.id ?? "bio";
+
 
   const renderControls = (section?: Section, isBio: boolean = false) => {
     if (!section) return null;
@@ -203,9 +203,7 @@ export default function PortfolioPreview({
                         </h3>
                       </div>
 
-                      <span className="text-tertiary-text mb-3 ml-6 text-[11px]">
-                        Product Design
-                      </span>
+
 
                       {project.description && (
                         <p className="text-secondary-text mb-6 ml-6 line-clamp-2 text-[13px]">

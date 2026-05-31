@@ -33,7 +33,7 @@ export default function DefaultPreview({
   const linksSection = sections.find((s) => s.type === "links");
   const projectsSection = sections.find((s) => s.type === "projects");
   const ctaSection = sections.find((s) => s.type === "experience" || s.type === "cta");
-  const _bioSectionId = bioSection?.id ?? "bio";
+
 
   const projectsToRender = projectsSection?.projects || [];
 

@@ -266,7 +266,7 @@ export default function CreatorPreview({
                         section.layout === "4" ? "grid-cols-1 sm:grid-cols-2" :
                         "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
                       }`}>
-                        {(section.projects || []).map((project) => {
+                        {remainingProjects.map((project) => {
                           const layoutType = section.layout || "2";
                           const hasUrl = Boolean(project.url);
                           const displayImg = getImageUrl(project.imageSrc);

@@ -182,7 +182,7 @@ export default function PortfolioDashboardView({ profile, content, isPreview }: 
 
           return (
             <div className="mb-20 w-full flex flex-col gap-10">
-              <HighlightCard profile={profile} content={content} />
+              <HighlightCard details={content?.content} />
               <section className="w-full">
                 <h2 className="text-tertiary-text mb-6 text-[13px]">
                   {details?.projects?.sectionTitle || "Featured Projects"}

@@ -30,7 +30,7 @@ export default function DefaultDashboardView({
     <TemplateAppearanceProvider appearance={appearance} className="flex flex-col gap-6">
       <ProfileSummaryCard profile={profile} isLoading={isLoadingProfile} />
       <FeaturedLinks content={content} isLoading={isLoadingContent} />
-      <HighlightCard profile={profile} content={content} />
+      <HighlightCard details={content?.content} />
       <SelectedProject content={content} />
       <YourCTA content={content} />
     </TemplateAppearanceProvider>

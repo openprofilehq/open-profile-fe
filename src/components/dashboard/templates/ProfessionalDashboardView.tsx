@@ -170,7 +170,7 @@ export default function ProfessionalDashboardView({ profile, content, isPreview 
 
           return (
             <div className="mt-16 w-full flex flex-col gap-10">
-              <HighlightCard profile={profile} content={content} />
+              <HighlightCard details={content?.content} />
               <section className="w-full">
                 <h2 className="text-tertiary-text mb-4 text-[13px]">
                   {details?.projects?.sectionTitle || "Selected Work"}

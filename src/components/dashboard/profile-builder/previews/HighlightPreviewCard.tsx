@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { ExternalLink } from "lucide-react";
-import { getImageUrl, sanitizeUrl } from "@/utils/profile";
+import { getImageUrl, sanitizeUrl, isProjectHighlighted } from "@/utils/profile";
 import type { Section } from "../types";
 
 type Props = {
@@ -10,9 +10,7 @@ type Props = {
 
 export default function HighlightPreviewCard({ projectsSection }: Props) {
   const projectsToRender = projectsSection?.projects || [];
-  const highlightedProject = projectsToRender.find(
-    (p) => p.highlighted === true || String(p.highlighted) === "true"
-  );
+  const highlightedProject = projectsToRender.find(isProjectHighlighted);
 
   if (!highlightedProject) {
     return (
@@ -61,8 +59,8 @@ export default function HighlightPreviewCard({ projectsSection }: Props) {
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-xl font-bold break-all">{highlightedProject.title}</h3>
-          <p className="mt-2 break-all text-sm text-secondary-text">{highlightedProject.description}</p>
+          <h3 className="text-xl font-bold break-words">{highlightedProject.title}</h3>
+          <p className="mt-2 break-words text-sm text-secondary-text">{highlightedProject.description}</p>
           {highlightedProject.url && (
             <a
               href={sanitizeUrl(highlightedProject.url)}

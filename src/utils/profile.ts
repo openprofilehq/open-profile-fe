@@ -188,3 +188,8 @@ export function decodeUrlForFrontend(url?: string | null): string {
     return url.replace("https://tel.open-profile.com/", "");
   return url;
 }
+
+export function isProjectHighlighted(project?: { id?: string | number, highlighted?: boolean | string }): boolean {
+  if (!project) return false;
+  return project.highlighted === true || String(project.highlighted) === "true" || String(project.id).startsWith("hl_");
+}

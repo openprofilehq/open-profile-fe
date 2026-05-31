@@ -218,7 +218,7 @@ export default function CreatorDashboardView({ profile, content, isPreview }: Pr
 
             return (
               <div className="flex flex-col gap-10">
-                <HighlightCard profile={profile} content={content} />
+                <HighlightCard details={content?.content} />
                 {remainingProjects.length > 0 ? (
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     {remainingProjects.map((project) => {

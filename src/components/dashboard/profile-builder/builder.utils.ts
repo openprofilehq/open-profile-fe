@@ -271,6 +271,8 @@ export function sectionsToContent(
           ...sectionStyleFields(projectsSection),
           items: (projectsSection.projects ?? []).map((p) => {
             const isHighlighted = p.highlighted === true || String(p.highlighted) === "true";
+            // Note: The "hl_" prefix is a presentation-layer convention used for the highlighted project feature.
+            // We defensively strip it here to ensure the backend only receives the original UUID.
             const baseId = String(p.id).startsWith("hl_") ? String(p.id).slice(3) : p.id;
             const mappedProject: Record<string, unknown> = {
               id: isHighlighted ? `hl_${baseId}` : baseId,

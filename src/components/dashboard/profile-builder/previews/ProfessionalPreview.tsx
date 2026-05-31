@@ -31,7 +31,7 @@ export default function ProfessionalPreview({
   const linksSection = sections.find((s) => s.type === "links");
   const projectsSection = sections.find((s) => s.type === "projects");
   const ctaSection = sections.find((s) => s.type === "experience");
-  const _bioSectionId = bioSection?.id ?? "bio";
+
 
   const renderControls = (section?: Section, isBio: boolean = false) => {
     if (!section) return null;
@@ -85,7 +85,7 @@ export default function ProfessionalPreview({
             <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
               {getImageUrl(profile?.photoUrl) ? (
                 <Image
-                  src={getImageUrl(profile?.photoUrl) || ""}
+                  src={getImageUrl(profile?.photoUrl)!}
                   alt={profile?.fullName ?? "Profile avatar"}
                   fill
                   className="object-cover"

@@ -503,7 +503,7 @@ export default async function UserProfilePage({ params }: Props) {
                     </div>
                   </div>
                   <div className="flex flex-col gap-8">
-                    <HighlightCard profile={profile as unknown as DashboardProfileResponse} content={{ content: profile.content } as unknown as ProfileContentResponse} />
+                    <HighlightCard details={profile.content as ProfileContentDetails} />
                     {remainingProjects.length > 0 ? (
                       <div
                         className={

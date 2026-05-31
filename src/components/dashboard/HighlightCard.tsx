@@ -1,20 +1,15 @@
 import Image from "next/image";
-import { getImageUrl, sanitizeUrl } from "@/utils/profile";
-import { ProfileContentResponse } from "@/api/profile/profile.type";
+import { getImageUrl, sanitizeUrl, isProjectHighlighted } from "@/utils/profile";
+import { ProfileContentDetails } from "@/api/profile/profile.type";
 import { ExternalLink } from "lucide-react";
 
 type Props = {
-  content?: ProfileContentResponse | null;
-  profile?: {
-    photoUrl?: string | null;
-    fullName?: string;
-    bio?: string | null;
-  };
+  details?: ProfileContentDetails | null;
 };
 
-export default function HighlightCard({ profile: _profile, content }: Props) {
-  const projects = content?.content?.projects?.items ?? [];
-  const highlightedProject = projects.find(p => p.highlighted === true || String(p.highlighted) === "true" || String(p.id).startsWith("hl_"));
+export default function HighlightCard({ details }: Props) {
+  const projects = details?.projects?.items ?? [];
+  const highlightedProject = projects.find(isProjectHighlighted);
 
   if (!highlightedProject) {
     return (
@@ -72,12 +67,12 @@ export default function HighlightCard({ profile: _profile, content }: Props) {
           <h3 className="text-xl font-bold break-all">
             {highlightedProject.title}
           </h3>
-          <p className="mt-2 break-all text-sm text-secondary-text">
+          <p className="mt-2 break-words text-sm text-secondary-text">
             {highlightedProject.description}
           </p>
-          {(highlightedProject.url || (highlightedProject as { repoUrl?: string }).repoUrl) && (
+          {(highlightedProject.url || highlightedProject.url) && (
             <a
-              href={sanitizeUrl(highlightedProject.url || (highlightedProject as { repoUrl?: string }).repoUrl)}
+              href={sanitizeUrl(highlightedProject.url)}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 flex items-center gap-1 text-sm font-semibold text-brand-hover-bg hover:underline"
