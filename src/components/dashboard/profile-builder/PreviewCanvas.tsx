@@ -56,40 +56,55 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
   const selectedFontClass = fontStyles[font] || "font-afacad";
 
   return (
-    <TemplateAppearanceProvider
-      appearance={{
-        font: props.font,
-        accentColour: props.iconColor,
-        iconColor: props.iconColor,
-        textColor: props.textColor,
-        textColour: props.textColor,
-        bgColor: props.bgColor,
-        backgroundColour: props.bgColor,
-        cornerStyle: props.borderRadius,
-        borderRadius: props.borderRadius,
-        spacing: props.spacing,
-      }}
-      className="flex h-full w-full min-w-0 flex-1 flex-col"
-    >
-      <div
-        className={`animate-in fade-in flex h-full min-h-0 flex-1 justify-center overflow-y-auto bg-transparent px-4 transition-colors duration-200 lg:px-12 ${selectedFontClass}`}
+    <>
+      <TemplateAppearanceProvider
+        appearance={{
+          font: props.font,
+          accentColour: props.iconColor,
+          iconColor: props.iconColor,
+          textColor: props.textColor,
+          textColour: props.textColor,
+          bgColor: props.bgColor,
+          backgroundColour: props.bgColor,
+          cornerStyle: props.borderRadius,
+          borderRadius: props.borderRadius,
+          spacing: props.spacing,
+        }}
+        className="flex h-full w-full min-w-0 flex-1 flex-col"
       >
-        <div className="flex w-full max-w-5xl flex-col gap-6 pb-32">
-          {templateKey === "creator" && <CreatorPreview {...enhancedProps} />}
-          {templateKey === "portfolio" && (
-            <PortfolioPreview {...enhancedProps} />
-          )}
-          {templateKey === "default" && <DefaultPreview {...enhancedProps} />}
-          {(templateKey === "" || templateKey === "professional") && (
-            <ProfessionalPreview {...enhancedProps} />
-          )}
+        <div
+          className={`animate-in fade-in flex h-full min-h-0 flex-1 justify-center overflow-y-auto bg-transparent px-4 transition-colors duration-200 lg:px-12 ${selectedFontClass}`}
+        >
+          <div className="flex w-full max-w-5xl flex-col gap-6 pb-32">
+            {templateKey === "creator" && <CreatorPreview {...enhancedProps} />}
+            {templateKey === "portfolio" && (
+              <PortfolioPreview {...enhancedProps} />
+            )}
+            {templateKey === "default" && <DefaultPreview {...enhancedProps} />}
+            {(templateKey === "" || templateKey === "professional") && (
+              <ProfessionalPreview {...enhancedProps} />
+            )}
+          </div>
         </div>
-      </div>
+      </TemplateAppearanceProvider>
 
       {sectionToDelete && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-background w-full max-w-sm rounded-2xl p-6 shadow-xl">
-            <h3 className="text-primary-text text-lg font-bold">
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setSectionToDelete(null);
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-section-title"
+            className="bg-background w-full max-w-sm rounded-2xl p-6 shadow-xl"
+          >
+            <h3
+              id="delete-section-title"
+              className="text-primary-text text-lg font-bold"
+            >
               Delete Section
             </h3>
             <p className="text-secondary-text mt-2 text-sm">
@@ -113,6 +128,6 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
           </div>
         </div>
       )}
-    </TemplateAppearanceProvider>
+    </>
   );
 }

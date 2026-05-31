@@ -309,7 +309,7 @@ export default function PortfolioDashboardView({
         )}
 
         {/* CTA SECTION */}
-        {details?.cta?.visible !== false && (
+        {details?.cta?.visible !== false && (cta?.value ?? cta?.url) && (
           <section className="w-full py-8">
             <div
               className={`flex flex-col ${cta?.layout === "2" ? "items-start text-left" : cta?.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
