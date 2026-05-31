@@ -146,14 +146,22 @@ export default function DefaultPreview({
           {renderControls(linksSection)}
           <section
             className="border-border bg-background rounded-[12px] border p-6 pr-14 shadow-sm"
-            style={getSectionStyle(linksSection)}
+            style={(() => {
+              const { gap: _gap, ...rest } = getSectionStyle(linksSection);
+              return rest;
+            })()}
           >
             <h2 className="text-2xl font-bold">
               {linksSection.subtitle || "Featured Links"}
             </h2>
 
             {linksSection.links && linksSection.links.length > 0 ? (
-              <div className="mt-6 flex flex-col gap-4">
+              <div
+                className="mt-6 flex flex-col gap-4"
+                style={{
+                  gap: linksSection.gap ? `${linksSection.gap}px` : undefined,
+                }}
+              >
                 {linksSection.links.map((item, index) => {
                   const displayImg = getImageUrl(item.imageSrc);
                   return (
@@ -227,7 +235,10 @@ export default function DefaultPreview({
           className={`group relative transition-opacity duration-200 ${!projectsSection.visible ? "opacity-50 grayscale" : ""}`}
         >
           {renderControls(projectsSection)}
-          <section className="border-border bg-background w-full rounded-[12px] border shadow-sm">
+          <section
+            className="border-border bg-background w-full rounded-[12px] border shadow-sm"
+            style={getSectionStyle(projectsSection)}
+          >
             <h2 className="p-4 pr-14 text-2xl font-bold">
               {projectsSection.subtitle || "Selected Projects"}
             </h2>
@@ -242,6 +253,11 @@ export default function DefaultPreview({
                         ? "grid-cols-1 sm:grid-cols-2"
                         : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
                   }`}
+                  style={{
+                    gap: projectsSection.gap
+                      ? `${projectsSection.gap}px`
+                      : undefined,
+                  }}
                 >
                   {remainingProjects.map((project, index) => {
                     const hasUrl = Boolean(project.url);
@@ -345,8 +361,16 @@ export default function DefaultPreview({
           className={`group relative transition-opacity duration-200 ${!ctaSection.visible ? "opacity-50 grayscale" : ""}`}
         >
           {renderControls(ctaSection)}
-          <section className="border-border bg-background relative w-full rounded-[12px] border p-16 pt-12 shadow-sm">
-            <div className="flex flex-col items-center gap-4">
+          <section
+            className="border-border bg-background relative w-full rounded-[12px] border p-16 pt-12 shadow-sm"
+            style={getSectionStyle(ctaSection)}
+          >
+            <div
+              className="flex flex-col items-center gap-4"
+              style={{
+                gap: ctaSection.gap ? `${ctaSection.gap}px` : undefined,
+              }}
+            >
               <span className="inline-flex items-center gap-2 rounded-md border p-2 text-sm font-medium">
                 <MessageSquare size={12} />
               </span>

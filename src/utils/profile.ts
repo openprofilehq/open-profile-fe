@@ -221,7 +221,10 @@ export function getSectionStyle(
       paddingBottom: `${section.paddingBottom}px`,
     }),
     ...(section.gap != null && { gap: `${section.gap}px` }),
-    ...(section.padding != null && { padding: `${section.padding}px` }),
+    ...(section.padding != null && {
+      paddingLeft: `${section.padding}px`,
+      paddingRight: `${section.padding}px`,
+    }),
     ...(section.bgColor && { backgroundColor: section.bgColor }),
     ...(section.textColor && { color: section.textColor }),
   };

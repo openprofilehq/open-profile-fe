@@ -12,6 +12,7 @@ import {
   getImageUrl,
   sanitizeUrl,
   isProjectHighlighted,
+  getSectionStyle,
 } from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 import { TemplateLinkCard, getLinkIcon } from "../../shared/TemplateLinkCard";
@@ -118,7 +119,10 @@ export default function CreatorPreview({
       {(!selectedSectionId ||
         selectedSectionId === bioSectionId ||
         selectedSectionId === ctaSection?.id) && (
-        <div className="relative mt-6 flex w-full flex-col items-center gap-4 p-6 text-center">
+        <div
+          className="relative mt-6 flex w-full flex-col items-center gap-4 p-6 text-center"
+          style={getSectionStyle(bioSection)}
+        >
           {renderControls(bioSection, true)}
 
           <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
@@ -290,6 +294,10 @@ export default function CreatorPreview({
                   <div
                     key={section.id}
                     className="relative flex w-full flex-col gap-6"
+                    style={(() => {
+                      const { gap: _gap, ...rest } = getSectionStyle(section);
+                      return rest;
+                    })()}
                   >
                     <HighlightPreviewCard projectsSection={section} />
                     <div className="relative w-full">
@@ -305,6 +313,9 @@ export default function CreatorPreview({
                                   ? "grid-cols-1 sm:grid-cols-2"
                                   : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
                           }`}
+                          style={{
+                            gap: section.gap ? `${section.gap}px` : undefined,
+                          }}
                         >
                           {remainingProjects.map((project) => {
                             const layoutType = section.layout || "2";
@@ -412,10 +423,19 @@ export default function CreatorPreview({
                   <div
                     key={section.id}
                     className="relative mx-auto flex w-full flex-col gap-4"
+                    style={(() => {
+                      const { gap: _gap, ...rest } = getSectionStyle(section);
+                      return rest;
+                    })()}
                   >
                     {renderControls(section)}
                     {allLinks.length > 0 ? (
-                      <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                      <div
+                        className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+                        style={{
+                          gap: section.gap ? `${section.gap}px` : undefined,
+                        }}
+                      >
                         {allLinks.map((link) => (
                           <TemplateLinkCard
                             key={link.id}
@@ -440,6 +460,7 @@ export default function CreatorPreview({
                   <div
                     key={section.id}
                     className="border-border mx-auto max-w-2xl rounded-3xl border p-8 sm:p-10"
+                    style={getSectionStyle(section)}
                   >
                     <p className="text-secondary-text text-center text-[15px] leading-relaxed break-all whitespace-pre-wrap">
                       {section.bio ||

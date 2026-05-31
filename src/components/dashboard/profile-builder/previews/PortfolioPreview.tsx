@@ -12,6 +12,7 @@ import {
   getImageUrl,
   sanitizeUrl,
   isProjectHighlighted,
+  getSectionStyle,
 } from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 import { TemplateLinkCard } from "../../shared/TemplateLinkCard";
@@ -86,7 +87,10 @@ export default function PortfolioPreview({
       style={{ gap: "var(--op-spacing, 2rem)" }}
     >
       {/* HEADER SECTION (Bio) */}
-      <div className="group relative transition-opacity duration-200">
+      <div
+        className="group relative transition-opacity duration-200"
+        style={getSectionStyle(bioSection)}
+      >
         {renderControls(bioSection, true)}
 
         <header className="hover:border-border hover:bg-background/50 relative mb-8 flex w-full flex-col justify-between gap-6 rounded-2xl border border-transparent p-6 transition-colors sm:flex-row sm:items-start">
@@ -129,14 +133,25 @@ export default function PortfolioPreview({
 
       {/* LINKS SECTION */}
       {linksSection && (
-        <section className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors">
+        <section
+          className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
+          style={(() => {
+            const { gap: _gap, ...rest } = getSectionStyle(linksSection);
+            return rest;
+          })()}
+        >
           {renderControls(linksSection)}
 
           <h2 className="text-tertiary-text mb-4 text-[13px]">
             {linksSection.subtitle || "Links"}
           </h2>
           {linksSection.links && linksSection.links.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div
+              className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+              style={{
+                gap: linksSection.gap ? `${linksSection.gap}px` : undefined,
+              }}
+            >
               {linksSection.links.map((link) => (
                 <TemplateLinkCard
                   key={link.id}
@@ -167,14 +182,28 @@ export default function PortfolioPreview({
           return (
             <div className="flex flex-col gap-6">
               <HighlightPreviewCard projectsSection={projectsSection} />
-              <section className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors">
+              <section
+                className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
+                style={(() => {
+                  const { gap: _gap, ...rest } =
+                    getSectionStyle(projectsSection);
+                  return rest;
+                })()}
+              >
                 {renderControls(projectsSection)}
 
                 <h2 className="text-tertiary-text mb-6 text-[13px]">
                   {projectsSection.subtitle || "Featured Projects"}
                 </h2>
                 {remainingProjects.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  <div
+                    className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+                    style={{
+                      gap: projectsSection.gap
+                        ? `${projectsSection.gap}px`
+                        : undefined,
+                    }}
+                  >
                     {remainingProjects.map((project, idx) => {
                       const numberStr = String(idx + 1).padStart(2, "0");
                       return (
@@ -240,7 +269,10 @@ export default function PortfolioPreview({
 
       {/* CTA SECTION */}
       {ctaSection && (
-        <section className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors">
+        <section
+          className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
+          style={getSectionStyle(ctaSection)}
+        >
           {renderControls(ctaSection)}
 
           <div className="flex flex-col justify-between gap-6 py-4 md:flex-row md:items-center">

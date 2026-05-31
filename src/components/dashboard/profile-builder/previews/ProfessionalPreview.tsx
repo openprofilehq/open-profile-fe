@@ -12,6 +12,7 @@ import {
   getImageUrl,
   sanitizeUrl,
   isProjectHighlighted,
+  getSectionStyle,
 } from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 import HighlightPreviewCard from "./HighlightPreviewCard";
@@ -85,7 +86,10 @@ export default function ProfessionalPreview({
       style={{ gap: "var(--op-spacing, 2rem)" }}
     >
       {/* HEADER SECTION (Bio) */}
-      <div className="group relative transition-opacity duration-200">
+      <div
+        className="group relative transition-opacity duration-200"
+        style={getSectionStyle(bioSection)}
+      >
         {renderControls(bioSection, true)}
 
         <header className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between gap-6 rounded-2xl border border-transparent p-6 transition-colors sm:flex-row sm:items-start">
@@ -126,13 +130,24 @@ export default function ProfessionalPreview({
 
       {/* LINKS SECTION */}
       {linksSection && (
-        <section className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors">
+        <section
+          className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
+          style={(() => {
+            const { gap: _gap, ...rest } = getSectionStyle(linksSection);
+            return rest;
+          })()}
+        >
           {renderControls(linksSection)}
 
           <h2 className="text-tertiary-text mb-4 text-[13px]">
             {linksSection.subtitle || "Links"}
           </h2>
-          <div className="border-border flex flex-col border-t">
+          <div
+            className="border-border flex flex-col border-t"
+            style={{
+              gap: linksSection.gap ? `${linksSection.gap}px` : undefined,
+            }}
+          >
             {linksSection.links && linksSection.links.length > 0 ? (
               linksSection.links.map((link, idx) => (
                 <a
@@ -190,7 +205,14 @@ export default function ProfessionalPreview({
           return (
             <div className="flex flex-col gap-6">
               <HighlightPreviewCard projectsSection={projectsSection} />
-              <section className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors">
+              <section
+                className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
+                style={(() => {
+                  const { gap: _gap, ...rest } =
+                    getSectionStyle(projectsSection);
+                  return rest;
+                })()}
+              >
                 {renderControls(projectsSection)}
 
                 <h2 className="text-tertiary-text mb-4 text-[13px]">
@@ -206,6 +228,11 @@ export default function ProfessionalPreview({
                           ? "grid-cols-1 sm:grid-cols-2"
                           : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
                   }`}
+                  style={{
+                    gap: projectsSection.gap
+                      ? `${projectsSection.gap}px`
+                      : undefined,
+                  }}
                 >
                   {remainingProjects.length > 0 ? (
                     remainingProjects.map((project) => {
@@ -310,7 +337,10 @@ export default function ProfessionalPreview({
 
       {/* CTA SECTION */}
       {ctaSection && (
-        <section className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors">
+        <section
+          className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
+          style={getSectionStyle(ctaSection)}
+        >
           {renderControls(ctaSection)}
 
           <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
