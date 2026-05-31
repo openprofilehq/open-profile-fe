@@ -127,12 +127,18 @@ export default function PortfolioDashboardView({
               className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
             >
               {cta?.iconSrc ? (
-                <Image
-                  src={cta.iconSrc}
-                  alt=""
-                  width={16}
-                  height={16}
-                  className="object-contain"
+                <div
+                  className="bg-brand-hover-bg h-4 w-4"
+                  style={{
+                    maskImage: `url(${cta.iconSrc})`,
+                    WebkitMaskImage: `url(${cta.iconSrc})`,
+                    maskSize: "contain",
+                    WebkitMaskSize: "contain",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskPosition: "center",
+                    WebkitMaskPosition: "center",
+                  }}
                 />
               ) : (
                 <Mail size={16} />
@@ -307,71 +313,42 @@ export default function PortfolioDashboardView({
         {/* CTA SECTION */}
         {details?.cta?.visible !== false && (
           <section className="w-full py-8">
-            {cta?.layout === "1" ? (
-              <>
-                <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
-                  {cta?.title || "Interested in working together?"}
-                </h2>
-                <p className="text-secondary-text mt-2 mb-6 max-w-[500px] text-[15px]">
-                  {cta?.subtitle ||
-                    "I am currently available for freelance project"}
-                </p>
-                <a
-                  href={cta?.value ?? cta?.url ?? ""}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm transition-all active:scale-95"
-                >
-                  {cta?.label || "Let's Connect"}
-                </a>
-              </>
-            ) : cta?.layout === "3" ? (
-              <div className="flex justify-center">
-                <a
-                  href={cta?.value ?? cta?.url ?? ""}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-8 text-sm font-bold text-white shadow-sm transition-all"
-                >
-                  {cta?.label || "Let's Connect"}
-                </a>
-              </div>
-            ) : (
-              <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-                <div className="flex items-center gap-4">
-                  <div className="bg-brand-hover-bg flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-white shadow-sm">
-                    {cta?.iconSrc ? (
-                      <Image
-                        src={cta.iconSrc}
-                        alt=""
-                        width={24}
-                        height={24}
-                        className="object-contain brightness-0 invert"
-                      />
-                    ) : (
-                      <Mail size={24} />
-                    )}
-                  </div>
-                  <div className="flex flex-col">
-                    <h3 className="text-primary-text text-[16px] font-bold">
-                      {cta?.title || "Interested in working together?"}
-                    </h3>
-                    <p className="text-secondary-text mt-0.5 text-[13px]">
-                      {cta?.subtitle ||
-                        "I am currently available for freelance project"}
-                    </p>
-                  </div>
+            <div
+              className={`flex flex-col ${cta?.layout === "2" ? "items-start text-left" : cta?.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
+            >
+              {cta?.iconSrc && (
+                <div className="mb-6 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-transparent">
+                  <div
+                    className="bg-brand-hover-bg h-8 w-8"
+                    style={{
+                      maskImage: `url(${cta.iconSrc})`,
+                      WebkitMaskImage: `url(${cta.iconSrc})`,
+                      maskSize: "contain",
+                      WebkitMaskSize: "contain",
+                      maskRepeat: "no-repeat",
+                      WebkitMaskRepeat: "no-repeat",
+                      maskPosition: "center",
+                      WebkitMaskPosition: "center",
+                    }}
+                  />
                 </div>
-                <a
-                  href={cta?.value ?? cta?.url ?? ""}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 shrink-0 items-center justify-center rounded-md px-6 text-[14px] font-bold whitespace-nowrap text-white shadow-sm transition-all active:scale-95"
-                >
-                  {cta?.label || "Let's Connect"}
-                </a>
-              </div>
-            )}
+              )}
+              <h2 className="text-primary-text text-[28px] font-bold tracking-tight">
+                {cta?.title || "Interested in working together?"}
+              </h2>
+              <p className="text-secondary-text mt-3 mb-8 max-w-[600px] text-[16px] leading-relaxed">
+                {cta?.subtitle ||
+                  "I am currently available for freelance project"}
+              </p>
+              <a
+                href={cta?.value ?? cta?.url ?? ""}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
+              >
+                {cta?.label || "Let's Connect"}
+              </a>
+            </div>
           </section>
         )}
 

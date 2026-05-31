@@ -150,12 +150,18 @@ export default function PortfolioPreview({
                 className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
               >
                 {ctaSection.iconSrc ? (
-                  <Image
-                    src={ctaSection.iconSrc}
-                    alt=""
-                    width={16}
-                    height={16}
-                    className="object-contain"
+                  <div
+                    className="bg-brand-hover-bg h-4 w-4"
+                    style={{
+                      maskImage: `url(${ctaSection.iconSrc})`,
+                      WebkitMaskImage: `url(${ctaSection.iconSrc})`,
+                      maskSize: "contain",
+                      WebkitMaskSize: "contain",
+                      maskRepeat: "no-repeat",
+                      WebkitMaskRepeat: "no-repeat",
+                      maskPosition: "center",
+                      WebkitMaskPosition: "center",
+                    }}
                   />
                 ) : (
                   <Mail size={16} />
@@ -391,53 +397,41 @@ export default function PortfolioPreview({
             </button>
           </div>
 
-          {ctaSection.layout === "1" ? (
-            <>
-              <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
-                {ctaSection.title || "Interested in working together?"}
-              </h2>
-              <p className="text-secondary-text mt-2 mb-6 max-w-[500px] text-[15px]">
-                {ctaSection.subtitle ||
-                  "I am currently available for freelance project"}
-              </p>
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="bg-brand-hover-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm"
-              >
-                {ctaSection.buttonText || "Let's Connect"}
-              </a>
-            </>
-          ) : ctaSection.layout === "3" ? (
-            <div className="flex justify-center">
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="bg-brand-hover-bg inline-flex h-10 items-center justify-center rounded-md px-8 text-sm font-bold text-white shadow-sm"
-              >
-                {ctaSection.buttonText || "Let's Connect"}
-              </a>
-            </div>
-          ) : (
-            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-              <div className="flex flex-col">
-                <h3 className="text-primary-text text-[16px] font-bold">
-                  {ctaSection.title || "Interested in working together?"}
-                </h3>
-                <p className="text-secondary-text mt-0.5 text-[13px]">
-                  {ctaSection.subtitle ||
-                    "I am currently available for freelance project"}
-                </p>
+          <div
+            className={`flex flex-col ${ctaSection.layout === "2" ? "items-start text-left" : ctaSection.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
+          >
+            {ctaSection.iconSrc && (
+              <div className="mb-6 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-transparent">
+                <div
+                  className="bg-brand-hover-bg h-8 w-8"
+                  style={{
+                    maskImage: `url(${ctaSection.iconSrc})`,
+                    WebkitMaskImage: `url(${ctaSection.iconSrc})`,
+                    maskSize: "contain",
+                    WebkitMaskSize: "contain",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskPosition: "center",
+                    WebkitMaskPosition: "center",
+                  }}
+                />
               </div>
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="bg-brand-hover-bg inline-flex h-10 shrink-0 items-center justify-center rounded-md px-6 text-[14px] font-bold whitespace-nowrap text-white shadow-sm"
-              >
-                {ctaSection.buttonText || "Let's Connect"}
-              </a>
-            </div>
-          )}
+            )}
+            <h2 className="text-primary-text text-[28px] font-bold tracking-tight">
+              {ctaSection.title || "Interested in working together?"}
+            </h2>
+            <p className="text-secondary-text mt-3 mb-8 max-w-[600px] text-[16px] leading-relaxed">
+              {ctaSection.subtitle ||
+                "I am currently available for freelance project"}
+            </p>
+            <a
+              href="#"
+              onClick={(e) => e.preventDefault()}
+              className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
+            >
+              {ctaSection.buttonText || "Let's Connect"}
+            </a>
+          </div>
         </section>
       )}
     </div>
