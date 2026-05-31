@@ -85,8 +85,6 @@ export default function ProfessionalDashboardView({
                 className="object-cover"
                 unoptimized
               />
-              {/* Online indicator dot */}
-              <div className="border-background absolute right-1 bottom-1 h-3.5 w-3.5 rounded-full border-2 bg-green-500" />
             </div>
 
             <div className="flex flex-col">

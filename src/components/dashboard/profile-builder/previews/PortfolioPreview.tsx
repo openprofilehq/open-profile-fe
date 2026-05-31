@@ -127,8 +127,6 @@ export default function PortfolioPreview({
                     {(profile?.fullName || "M").charAt(0).toUpperCase()}
                   </div>
                 )}
-                {/* Online indicator dot */}
-                <div className="border-background absolute right-1 bottom-1 h-4 w-4 rounded-full border-[3px] bg-green-500" />
               </div>
 
               <div className="flex flex-col">
