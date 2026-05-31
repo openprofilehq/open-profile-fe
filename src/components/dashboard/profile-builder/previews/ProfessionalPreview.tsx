@@ -32,7 +32,6 @@ export default function ProfessionalPreview({
   const projectsSection = sections.find((s) => s.type === "projects");
   const ctaSection = sections.find((s) => s.type === "experience");
 
-
   const renderControls = (section?: Section, isBio: boolean = false) => {
     if (!section) return null;
     return (
@@ -40,8 +39,8 @@ export default function ProfessionalPreview({
         <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
           <MoreHorizontal size={18} />
         </button>
-        
-        <div className="border-border bg-background absolute top-full right-0 mt-2 flex w-40 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all invisible group-hover/menu:visible group-hover/menu:opacity-100">
+
+        <div className="border-border bg-background invisible absolute top-full right-0 mt-2 flex w-40 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all group-hover/menu:visible group-hover/menu:opacity-100">
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -50,9 +49,13 @@ export default function ProfessionalPreview({
             className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors"
           >
             {section.visible ? (
-              <><EyeOff size={16} /> Hide Section</>
+              <>
+                <EyeOff size={16} /> Hide Section
+              </>
             ) : (
-              <><Eye size={16} /> Show Section</>
+              <>
+                <Eye size={16} /> Show Section
+              </>
             )}
           </button>
           <button
@@ -63,7 +66,7 @@ export default function ProfessionalPreview({
               }
             }}
             disabled={isBio}
-            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? 'text-negative-text opacity-50 cursor-not-allowed' : 'text-negative-text hover:bg-negative-bg/20'}`}
+            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? "text-negative-text cursor-not-allowed opacity-50" : "text-negative-text hover:bg-negative-bg/20"}`}
           >
             <Trash2 size={16} /> Delete
           </button>
@@ -73,15 +76,16 @@ export default function ProfessionalPreview({
   };
 
   return (
-    <div className="text-primary-text mx-auto flex w-full max-w-4xl flex-col py-8 pt-6">
+    <div
+      className="text-primary-text mx-auto flex w-full max-w-4xl flex-col py-8 pt-6"
+      style={{ gap: "var(--op-spacing, 2rem)" }}
+    >
       {/* HEADER SECTION (Bio) */}
-      <div
-        className="group relative mb-12 transition-opacity duration-200"
-      >
+      <div className="group relative transition-opacity duration-200">
         {renderControls(bioSection, true)}
 
         <header className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between gap-6 rounded-2xl border border-transparent p-6 transition-colors sm:flex-row sm:items-start">
-          <div className="flex flex-1 min-w-0 items-center gap-6">
+          <div className="flex min-w-0 flex-1 items-center gap-6">
             <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
               {getImageUrl(profile?.photoUrl) ? (
                 <Image
@@ -98,7 +102,7 @@ export default function ProfessionalPreview({
               )}
             </div>
 
-            <div className="flex flex-col min-w-0 flex-1">
+            <div className="flex min-w-0 flex-1 flex-col">
               <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight break-all">
                 {profile?.fullName || "Micaela Robinson"}
               </h1>
@@ -107,11 +111,10 @@ export default function ProfessionalPreview({
               </p>
             </div>
           </div>
-
         </header>
 
         <section className="mt-6 px-6">
-          <p className="text-secondary-text max-w-2xl break-all text-[16px] leading-relaxed whitespace-pre-wrap">
+          <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed break-all whitespace-pre-wrap">
             {bioSection?.bio || "Write a little bit about yourself here..."}
           </p>
         </section>
@@ -119,15 +122,13 @@ export default function ProfessionalPreview({
 
       {/* LINKS SECTION */}
       {linksSection && (
-        <section
-          className="group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors"
-        >
+        <section className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors">
           {renderControls(linksSection)}
 
           <h2 className="text-tertiary-text mb-4 text-[13px]">
             {linksSection.subtitle || "Links"}
           </h2>
-          <div className="flex flex-col border-t border-border">
+          <div className="border-border flex flex-col border-t">
             {linksSection.links && linksSection.links.length > 0 ? (
               linksSection.links.map((link, idx) => (
                 <a
@@ -135,27 +136,36 @@ export default function ProfessionalPreview({
                   href={sanitizeUrl(link.url || "")}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center justify-between border-b border-border py-4 transition-colors hover:bg-hover-bg/30"
+                  className="group border-border hover:bg-hover-bg/30 flex items-center justify-between border-b py-4 transition-colors"
                 >
-                  <span className="text-[15px] font-bold text-primary-text group-hover:text-brand-hover-bg transition-colors">
+                  <span className="text-primary-text group-hover:text-brand-hover-bg text-[15px] font-bold transition-colors">
                     {link.title || link.label}
                   </span>
                   <div className="flex items-center gap-3">
                     <span className="text-secondary-text text-[14px]">
                       {(() => {
                         try {
-                          return link.url ? new URL(link.url.startsWith('http') ? link.url : `https://${link.url}`).hostname.replace('www.', '') : '';
+                          return link.url
+                            ? new URL(
+                                link.url.startsWith("http")
+                                  ? link.url
+                                  : `https://${link.url}`
+                              ).hostname.replace("www.", "")
+                            : "";
                         } catch {
-                          return link.url || '';
+                          return link.url || "";
                         }
                       })()}
                     </span>
-                    <ExternalLink size={16} className="text-tertiary-text group-hover:text-brand-hover-bg transition-colors" />
+                    <ExternalLink
+                      size={16}
+                      className="text-tertiary-text group-hover:text-brand-hover-bg transition-colors"
+                    />
                   </div>
                 </a>
               ))
             ) : (
-              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm mt-4">
+              <p className="text-tertiary-text border-border mt-4 rounded-xl border border-dashed py-4 text-center text-sm">
                 No links added yet.
               </p>
             )}
@@ -164,129 +174,140 @@ export default function ProfessionalPreview({
       )}
 
       {/* PROJECTS SECTION */}
-      {projectsSection && (() => {
-        const projectsToRender = projectsSection.projects || [];
-        const highlightedProject = projectsToRender.find(
-          (p) => p.highlighted === true || String(p.highlighted) === "true"
-        );
-        const remainingProjects = projectsToRender.filter(
-          (p) => p.id !== highlightedProject?.id
-        );
+      {projectsSection &&
+        (() => {
+          const projectsToRender = projectsSection.projects || [];
+          const highlightedProject = projectsToRender.find(
+            (p) => p.highlighted === true || String(p.highlighted) === "true"
+          );
+          const remainingProjects = projectsToRender.filter(
+            (p) => p.id !== highlightedProject?.id
+          );
 
-        return (
-          <div className="mb-16 flex flex-col gap-6">
-            <HighlightPreviewCard projectsSection={projectsSection} />
-            <section
-              className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
-            >
-              {renderControls(projectsSection)}
+          return (
+            <div className="flex flex-col gap-6">
+              <HighlightPreviewCard projectsSection={projectsSection} />
+              <section className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors">
+                {renderControls(projectsSection)}
 
-              <h2 className="text-tertiary-text mb-4 text-[13px]">
-                {projectsSection.subtitle || "Selected Work"}
-              </h2>
-              <div className={`grid gap-6 ${
-                !projectsSection.layout || projectsSection.layout === "1" ? "grid-cols-1" :
-                projectsSection.layout === "3" ? "grid-cols-1 sm:grid-cols-2" :
-                projectsSection.layout === "4" ? "grid-cols-1 sm:grid-cols-2" :
-                "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
-              }`}>
-                {remainingProjects.length > 0 ? (
-                  remainingProjects.map((project) => {
-                const layoutType = projectsSection.layout || "2";
-                const hasUrl = Boolean(project.url);
-                const displayImg = getImageUrl(project.imageSrc);
+                <h2 className="text-tertiary-text mb-4 text-[13px]">
+                  {projectsSection.subtitle || "Selected Work"}
+                </h2>
+                <div
+                  className={`grid gap-6 ${
+                    !projectsSection.layout || projectsSection.layout === "1"
+                      ? "grid-cols-1"
+                      : projectsSection.layout === "3"
+                        ? "grid-cols-1 sm:grid-cols-2"
+                        : projectsSection.layout === "4"
+                          ? "grid-cols-1 sm:grid-cols-2"
+                          : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+                  }`}
+                >
+                  {remainingProjects.length > 0 ? (
+                    remainingProjects.map((project) => {
+                      const layoutType = projectsSection.layout || "2";
+                      const hasUrl = Boolean(project.url);
+                      const displayImg = getImageUrl(project.imageSrc);
 
-                const card = (
-                  <div className={`flex group rounded-[12px] border border-border bg-background p-4 shadow-sm transition-shadow hover:shadow-md hover:border-brand-hover-bg/30 ${
-                    layoutType === "1" ? "flex-col sm:flex-row sm:items-center justify-between" :
-                    layoutType === "3" ? "flex-col sm:flex-row sm:items-start" :
-                    layoutType === "4" ? "flex-col sm:flex-row-reverse sm:items-start" :
-                    "flex-col" // Layout 2
-                  }`}>
-                    {/* IMAGE */}
-                    {layoutType !== "1" && (
-                      <div className={`relative shrink-0 overflow-hidden rounded-lg border border-border bg-secondary-bg mb-4 ${
-                        layoutType === "2" ? "w-full aspect-video" : "w-full h-[120px] sm:mb-0 sm:w-[140px]"
-                      } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}>
-                        {displayImg ? (
-                          <Image
-                            src={displayImg}
-                            alt={project.title ?? "Project"}
-                            className="object-cover"
-                            fill
-                            unoptimized
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center text-xs text-tertiary-text">
-                            No image
+                      const card = (
+                        <div
+                          className={`group border-border bg-background hover:border-brand-hover-bg/30 flex rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md ${
+                            layoutType === "1"
+                              ? "flex-col justify-between sm:flex-row sm:items-center"
+                              : layoutType === "3"
+                                ? "flex-col sm:flex-row sm:items-start"
+                                : layoutType === "4"
+                                  ? "flex-col sm:flex-row-reverse sm:items-start"
+                                  : "flex-col" // Layout 2
+                          }`}
+                        >
+                          {/* IMAGE */}
+                          {layoutType !== "1" && (
+                            <div
+                              className={`border-border bg-secondary-bg relative mb-4 shrink-0 overflow-hidden rounded-lg border ${
+                                layoutType === "2"
+                                  ? "aspect-video w-full"
+                                  : "h-[120px] w-full sm:mb-0 sm:w-[140px]"
+                              } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
+                            >
+                              {displayImg ? (
+                                <Image
+                                  src={displayImg}
+                                  alt={project.title ?? "Project"}
+                                  className="object-cover"
+                                  fill
+                                  unoptimized
+                                />
+                              ) : (
+                                <div className="text-tertiary-text flex h-full w-full items-center justify-center text-xs">
+                                  No image
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* CONTENT */}
+                          <div className="flex min-w-0 flex-1 flex-col items-start">
+                            <h3 className="text-primary-text text-[16px] font-bold">
+                              {project.title}
+                            </h3>
+                            <p
+                              className={`text-secondary-text mt-1 break-all ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"} text-[13px]`}
+                            >
+                              {project.description}
+                            </p>
+                            {layoutType !== "1" && hasUrl && (
+                              <span className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
+                                {project.buttonText || "View Project"}
+                                <ArrowRight size={14} strokeWidth={2.5} />
+                              </span>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    )}
-                    
-                    {/* CONTENT */}
-                    <div className="flex flex-col items-start min-w-0 flex-1">
-                      <h3 className="text-primary-text text-[16px] font-bold">
-                        {project.title}
-                      </h3>
-                      <p className={`text-secondary-text break-all mt-1 ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"} text-[13px]`}>
-                        {project.description}
-                      </p>
-                      {layoutType !== "1" && hasUrl && (
-                        <span className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
-                          {project.buttonText || "View Project"}
-                          <ArrowRight size={14} strokeWidth={2.5} />
-                        </span>
-                      )}
-                    </div>
-                    
-                    {/* BUTTON FOR LAYOUT 1 */}
-                    {layoutType === "1" && hasUrl && (
-                      <div className="mt-4 sm:mt-0 sm:ml-6 shrink-0">
-                        <span className="text-brand-hover-bg inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
-                          {project.buttonText || "View Project"}
-                          <ArrowRight size={14} strokeWidth={2.5} />
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                );
 
-                return (
-                  <div key={project.id} className="w-full">
-                    {hasUrl ? (
-                      <a
-                        href={sanitizeUrl(project.url || "")}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="no-underline block h-full"
-                      >
-                        {card}
-                      </a>
-                    ) : (
-                      <div className="h-full">
-                        {card}
-                      </div>
-                    )}
-                  </div>
-                );
-              })
-            ) : (
-              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
-                No projects added yet.
-              </p>
-            )}
-          </div>
-        </section>
-        </div>
-        );
-      })()}
+                          {/* BUTTON FOR LAYOUT 1 */}
+                          {layoutType === "1" && hasUrl && (
+                            <div className="mt-4 shrink-0 sm:mt-0 sm:ml-6">
+                              <span className="text-brand-hover-bg inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
+                                {project.buttonText || "View Project"}
+                                <ArrowRight size={14} strokeWidth={2.5} />
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      );
+
+                      return (
+                        <div key={project.id} className="w-full">
+                          {hasUrl ? (
+                            <a
+                              href={sanitizeUrl(project.url || "")}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block h-full no-underline"
+                            >
+                              {card}
+                            </a>
+                          ) : (
+                            <div className="h-full">{card}</div>
+                          )}
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
+                      No projects added yet.
+                    </p>
+                  )}
+                </div>
+              </section>
+            </div>
+          );
+        })()}
 
       {/* CTA SECTION */}
       {ctaSection && (
-        <section
-          className="group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors"
-        >
+        <section className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors">
           {renderControls(ctaSection)}
 
           <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
@@ -308,4 +329,3 @@ export default function ProfessionalPreview({
     </div>
   );
 }
- 

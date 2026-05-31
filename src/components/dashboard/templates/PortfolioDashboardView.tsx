@@ -1,9 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import {
-  ArrowRight,
-  Rocket,
-} from "lucide-react";
+import { ArrowRight, Rocket } from "lucide-react";
 import { TemplateLinkCard } from "../shared/TemplateLinkCard";
 import {
   DashboardProfileResponse,
@@ -85,7 +82,11 @@ const DEFAULT_PROJECTS = [
   },
 ] as ProjectItem[];
 
-export default function PortfolioDashboardView({ profile, content, isPreview }: Props) {
+export default function PortfolioDashboardView({
+  profile,
+  content,
+  isPreview,
+}: Props) {
   const name = profile?.fullName ?? profile?.username ?? "John Smith";
   const username = profile?.username ?? "johnsmith";
   const details = content?.content;
@@ -95,10 +96,11 @@ export default function PortfolioDashboardView({ profile, content, isPreview }: 
     "I help teams craft thoughtful, user-centered products — from the first sketch to a polished design system. Currently shaping fintech and SaaS experiences.";
 
   const rawLinks = (details?.links?.items ?? []) as LinkItem[];
-  const links = rawLinks.length > 0 ? rawLinks : (isPreview ? DEFAULT_LINKS : []);
+  const links = rawLinks.length > 0 ? rawLinks : isPreview ? DEFAULT_LINKS : [];
 
   const rawProjects = (details?.projects?.items ?? []) as ProjectItem[];
-  const projects = rawProjects.length > 0 ? rawProjects : (isPreview ? DEFAULT_PROJECTS : []);
+  const projects =
+    rawProjects.length > 0 ? rawProjects : isPreview ? DEFAULT_PROJECTS : [];
 
   const cta = details?.cta;
 
@@ -111,9 +113,12 @@ export default function PortfolioDashboardView({ profile, content, isPreview }: 
 
   return (
     <div className="text-primary-text flex w-full flex-col font-sans antialiased">
-      <div className="mx-auto w-full max-w-5xl px-6 pb-16 sm:pb-24 pt-8">
+      <div
+        className="mx-auto flex w-full max-w-5xl flex-col px-6 pt-8 pb-16 sm:pb-24"
+        style={{ gap: "var(--op-spacing, 2rem)" }}
+      >
         {/* HEADER SECTION */}
-        <header className="mb-8 flex w-full flex-col justify-between gap-6 sm:flex-row sm:items-start">
+        <header className="flex w-full flex-col justify-between gap-6 sm:flex-row sm:items-start">
           <div className="flex flex-col gap-6">
             <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
               {photoSrc ? (
@@ -125,7 +130,7 @@ export default function PortfolioDashboardView({ profile, content, isPreview }: 
                   unoptimized
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-brand-subtle-bg text-[40px] font-bold text-brand-hover-bg">
+                <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-full w-full items-center justify-center text-[40px] font-bold">
                   {name.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -140,11 +145,10 @@ export default function PortfolioDashboardView({ profile, content, isPreview }: 
               </p>
             </div>
           </div>
-
         </header>
 
         {/* BIO SECTION */}
-        <section className="mt-8 mb-16">
+        <section>
           <p className="text-secondary-text max-w-3xl text-[15px] leading-relaxed">
             {bio}
           </p>
@@ -152,7 +156,7 @@ export default function PortfolioDashboardView({ profile, content, isPreview }: 
 
         {/* LINKS SECTION */}
         {details?.links?.visible !== false && (
-          <section className="mb-20 w-full">
+          <section className="w-full">
             <h2 className="text-tertiary-text mb-4 text-[13px]">Links</h2>
             {links.length > 0 ? (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -174,99 +178,109 @@ export default function PortfolioDashboardView({ profile, content, isPreview }: 
         )}
 
         {/* PROJECTS SECTION */}
-        {details?.projects?.visible !== false && (() => {
-          const highlightedProject = projects.find(
-            (p) => p.highlighted === true || String(p.highlighted) === "true" || String(p.id).startsWith("hl_")
-          );
-          const remainingProjects = projects.filter((p) => p.id !== highlightedProject?.id);
+        {details?.projects?.visible !== false &&
+          (() => {
+            const highlightedProject = projects.find(
+              (p) =>
+                p.highlighted === true ||
+                String(p.highlighted) === "true" ||
+                String(p.id).startsWith("hl_")
+            );
+            const remainingProjects = projects.filter(
+              (p) => p.id !== highlightedProject?.id
+            );
 
-          return (
-            <div className="mb-20 w-full flex flex-col gap-10">
-              <HighlightCard details={content?.content} />
-              <section className="w-full">
-                <h2 className="text-tertiary-text mb-6 text-[13px]">
-                  {details?.projects?.sectionTitle || "Featured Projects"}
-                </h2>
-                {remainingProjects.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {remainingProjects.map((project, idx) => {
-                      const numberStr = String(idx + 1).padStart(2, "0");
-                      const projectUrl = project.url || (project as { repoUrl?: string }).repoUrl;
-                      return (
-                        <div
-                          key={project.id}
-                          className="group border-border bg-background flex flex-col overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md"
-                        >
-                          {/* Project Image Placeholder */}
-                          <div className="bg-secondary-bg border-border relative aspect-16/10 w-full overflow-hidden border-b">
-                            {project.imageSrc ? (
-                              <Image
-                                src={
-                                  project.imageSrc.startsWith("/profile-preview/")
-                                    ? project.imageSrc
-                                    : getImageUrl(project.imageSrc)!
-                                }
-                                alt={project.title || "Project"}
-                                fill
-                                className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                                unoptimized
-                              />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center bg-neutral-200 text-xs text-tertiary-text transition-transform duration-500 group-hover:scale-[1.02]">
-                                No image
-                              </div>
-                            )}
-                          </div>
-  
-                          <div className="flex flex-1 flex-col p-6">
-                            <div className="mb-2 flex items-start gap-2">
-                              <span className="text-primary-text text-[16px] font-bold">
-                                {numberStr}
-                              </span>
-                              <h3 className="text-primary-text min-w-0 flex-1 text-[16px] font-bold">
-                                {project.title}
-                              </h3>
+            return (
+              <div className="flex w-full flex-col gap-10">
+                <HighlightCard details={content?.content} />
+                <section className="w-full">
+                  <h2 className="text-tertiary-text mb-6 text-[13px]">
+                    {details?.projects?.sectionTitle || "Featured Projects"}
+                  </h2>
+                  {remainingProjects.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                      {remainingProjects.map((project, idx) => {
+                        const numberStr = String(idx + 1).padStart(2, "0");
+                        const projectUrl =
+                          project.url ||
+                          (project as { repoUrl?: string }).repoUrl;
+                        return (
+                          <div
+                            key={project.id}
+                            className="group border-border bg-background flex flex-col overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md"
+                          >
+                            {/* Project Image Placeholder */}
+                            <div className="bg-secondary-bg border-border relative aspect-16/10 w-full overflow-hidden border-b">
+                              {project.imageSrc ? (
+                                <Image
+                                  src={
+                                    project.imageSrc.startsWith(
+                                      "/profile-preview/"
+                                    )
+                                      ? project.imageSrc
+                                      : getImageUrl(project.imageSrc)!
+                                  }
+                                  alt={project.title || "Project"}
+                                  fill
+                                  className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                                  unoptimized
+                                />
+                              ) : (
+                                <div className="text-tertiary-text flex h-full w-full items-center justify-center bg-neutral-200 text-xs transition-transform duration-500 group-hover:scale-[1.02]">
+                                  No image
+                                </div>
+                              )}
                             </div>
-  
-                            <span className="text-tertiary-text mb-3 ml-6 text-[11px]">
-                              Product Design
-                            </span>
-  
-                            {project.description && (
-                              <p className="text-secondary-text mb-6 ml-6 line-clamp-2 text-[13px]">
-                                {project.description}
-                              </p>
-                            )}
-  
-                            {projectUrl && (
-                              <a
-                                href={projectUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-brand-hover-bg mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
-                              >
-                                {project.buttonText || "View Project"}
-                                <ArrowRight size={14} strokeWidth={2.5} />
-                              </a>
-                            )}
+
+                            <div className="flex flex-1 flex-col p-6">
+                              <div className="mb-2 flex items-start gap-2">
+                                <span className="text-primary-text text-[16px] font-bold">
+                                  {numberStr}
+                                </span>
+                                <h3 className="text-primary-text min-w-0 flex-1 text-[16px] font-bold">
+                                  {project.title}
+                                </h3>
+                              </div>
+
+                              <span className="text-tertiary-text mb-3 ml-6 text-[11px]">
+                                Product Design
+                              </span>
+
+                              {project.description && (
+                                <p className="text-secondary-text mb-6 ml-6 line-clamp-2 text-[13px]">
+                                  {project.description}
+                                </p>
+                              )}
+
+                              {projectUrl && (
+                                <a
+                                  href={projectUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-brand-hover-bg mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
+                                >
+                                  {project.buttonText || "View Project"}
+                                  <ArrowRight size={14} strokeWidth={2.5} />
+                                </a>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-            ) : (
-              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
-                Add your projects
-              </p>
-            )}
-              </section>
-            </div>
-          );
-        })()}
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
+                      Add your projects
+                    </p>
+                  )}
+                </section>
+              </div>
+            );
+          })()}
 
         {/* CTA SECTION */}
         {details?.cta?.visible !== false && (
-          <section className="mb-24 w-full py-8">
+          <section className="w-full py-8">
             <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
               <div className="flex items-center gap-4">
                 <div className="bg-brand-hover-bg flex h-12 w-12 shrink-0 items-center justify-center rounded-[10px] text-white shadow-sm">

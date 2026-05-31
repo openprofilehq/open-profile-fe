@@ -27,12 +27,17 @@ export default function DefaultDashboardView({
   appearance,
 }: Props) {
   return (
-    <TemplateAppearanceProvider appearance={appearance} className="flex flex-col gap-6">
-      <ProfileSummaryCard profile={profile} isLoading={isLoadingProfile} />
-      <FeaturedLinks content={content} isLoading={isLoadingContent} />
-      <HighlightCard details={content?.content} />
-      <SelectedProject content={content} />
-      <YourCTA content={content} />
+    <TemplateAppearanceProvider appearance={appearance}>
+      <div
+        className="flex flex-col gap-6"
+        style={{ gap: "var(--op-spacing, 1.5rem)" }}
+      >
+        <ProfileSummaryCard profile={profile} isLoading={isLoadingProfile} />
+        <FeaturedLinks content={content} isLoading={isLoadingContent} />
+        <HighlightCard details={content?.content} />
+        <SelectedProject content={content} />
+        <YourCTA content={content} />
+      </div>
     </TemplateAppearanceProvider>
   );
 }

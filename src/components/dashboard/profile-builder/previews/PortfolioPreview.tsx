@@ -33,7 +33,6 @@ export default function PortfolioPreview({
   const projectsSection = sections.find((s) => s.type === "projects");
   const ctaSection = sections.find((s) => s.type === "experience");
 
-
   const renderControls = (section?: Section, isBio: boolean = false) => {
     if (!section) return null;
     return (
@@ -41,8 +40,8 @@ export default function PortfolioPreview({
         <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
           <MoreHorizontal size={18} />
         </button>
-        
-        <div className="border-border bg-background absolute top-full right-0 mt-2 flex w-40 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all invisible group-hover/menu:visible group-hover/menu:opacity-100">
+
+        <div className="border-border bg-background invisible absolute top-full right-0 mt-2 flex w-40 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all group-hover/menu:visible group-hover/menu:opacity-100">
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -51,9 +50,13 @@ export default function PortfolioPreview({
             className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors"
           >
             {section.visible ? (
-              <><EyeOff size={16} /> Hide Section</>
+              <>
+                <EyeOff size={16} /> Hide Section
+              </>
             ) : (
-              <><Eye size={16} /> Show Section</>
+              <>
+                <Eye size={16} /> Show Section
+              </>
             )}
           </button>
           <button
@@ -64,7 +67,7 @@ export default function PortfolioPreview({
               }
             }}
             disabled={isBio}
-            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? 'text-negative-text opacity-50 cursor-not-allowed' : 'text-negative-text hover:bg-negative-bg/20'}`}
+            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? "text-negative-text cursor-not-allowed opacity-50" : "text-negative-text hover:bg-negative-bg/20"}`}
           >
             <Trash2 size={16} /> Delete
           </button>
@@ -74,11 +77,12 @@ export default function PortfolioPreview({
   };
 
   return (
-    <div className="text-primary-text mx-auto flex w-full max-w-5xl flex-col py-8 pt-6">
+    <div
+      className="text-primary-text mx-auto flex w-full max-w-5xl flex-col py-8 pt-6"
+      style={{ gap: "var(--op-spacing, 2rem)" }}
+    >
       {/* HEADER SECTION (Bio) */}
-      <div
-        className="group relative mb-12 transition-opacity duration-200"
-      >
+      <div className="group relative transition-opacity duration-200">
         {renderControls(bioSection, true)}
 
         <header className="hover:border-border hover:bg-background/50 relative mb-8 flex w-full flex-col justify-between gap-6 rounded-2xl border border-transparent p-6 transition-colors sm:flex-row sm:items-start">
@@ -93,7 +97,7 @@ export default function PortfolioPreview({
                   unoptimized
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-brand-subtle-bg text-[40px] font-bold text-brand-hover-bg">
+                <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-full w-full items-center justify-center text-[40px] font-bold">
                   {(profile?.fullName || "John Smith").charAt(0).toUpperCase()}
                 </div>
               )}
@@ -110,7 +114,6 @@ export default function PortfolioPreview({
               </p>
             </div>
           </div>
-
         </header>
 
         <section className="mt-8 px-6">
@@ -122,9 +125,7 @@ export default function PortfolioPreview({
 
       {/* LINKS SECTION */}
       {linksSection && (
-        <section
-          className="group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors"
-        >
+        <section className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors">
           {renderControls(linksSection)}
 
           <h2 className="text-tertiary-text mb-4 text-[13px]">
@@ -150,98 +151,93 @@ export default function PortfolioPreview({
       )}
 
       {/* PROJECTS SECTION */}
-      {projectsSection && (() => {
-        const projectsToRender = projectsSection.projects || [];
-        const highlightedProject = projectsToRender.find(
-          (p) => p.highlighted === true || String(p.highlighted) === "true"
-        );
-        const remainingProjects = projectsToRender.filter(
-          (p) => p.id !== highlightedProject?.id
-        );
+      {projectsSection &&
+        (() => {
+          const projectsToRender = projectsSection.projects || [];
+          const highlightedProject = projectsToRender.find(
+            (p) => p.highlighted === true || String(p.highlighted) === "true"
+          );
+          const remainingProjects = projectsToRender.filter(
+            (p) => p.id !== highlightedProject?.id
+          );
 
-        return (
-          <div className="mb-16 flex flex-col gap-6">
-            <HighlightPreviewCard projectsSection={projectsSection} />
-            <section
-              className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
-            >
-              {renderControls(projectsSection)}
+          return (
+            <div className="flex flex-col gap-6">
+              <HighlightPreviewCard projectsSection={projectsSection} />
+              <section className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors">
+                {renderControls(projectsSection)}
 
-              <h2 className="text-tertiary-text mb-6 text-[13px]">
-                {projectsSection.subtitle || "Featured Projects"}
-              </h2>
-              {remainingProjects.length > 0 ? (
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {remainingProjects.map((project, idx) => {
-                const numberStr = String(idx + 1).padStart(2, "0");
-                return (
-                  <div
-                    key={project.id}
-                    className="group/proj border-border bg-background flex flex-col overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md"
-                  >
-                    <div className="bg-secondary-bg border-border relative aspect-16/10 w-full overflow-hidden border-b">
-                      {getImageUrl(project.imageSrc) ? (
-                        <Image
-                          src={getImageUrl(project.imageSrc)!}
-                          alt={project.title || "Project"}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover/proj:scale-[1.02]"
-                          unoptimized
-                        />
-                      ) : (
-                        <div className="h-full w-full bg-neutral-200 transition-transform duration-500 group-hover/proj:scale-[1.02]" />
-                      )}
-                    </div>
-
-                    <div className="flex flex-col p-6">
-                      <div className="mb-1 flex items-start gap-2">
-                        <span className="text-primary-text text-[16px] font-bold">
-                          {numberStr}
-                        </span>
-                        <h3 className="text-primary-text text-[16px] font-bold">
-                          {project.title}
-                        </h3>
-                      </div>
-
-
-
-                      {project.description && (
-                        <p className="text-secondary-text mb-6 ml-6 line-clamp-2 text-[13px]">
-                          {project.description}
-                        </p>
-                      )}
-
-                      {project.url && (
-                        <a
-                          href={sanitizeUrl(project.url)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-brand-hover-bg mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
+                <h2 className="text-tertiary-text mb-6 text-[13px]">
+                  {projectsSection.subtitle || "Featured Projects"}
+                </h2>
+                {remainingProjects.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {remainingProjects.map((project, idx) => {
+                      const numberStr = String(idx + 1).padStart(2, "0");
+                      return (
+                        <div
+                          key={project.id}
+                          className="group/proj border-border bg-background flex flex-col overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md"
                         >
-                          {project.buttonText || "View Project"}
-                          <ArrowRight size={14} strokeWidth={2.5} />
-                        </a>
-                      )}
-                    </div>
+                          <div className="bg-secondary-bg border-border relative aspect-16/10 w-full overflow-hidden border-b">
+                            {getImageUrl(project.imageSrc) ? (
+                              <Image
+                                src={getImageUrl(project.imageSrc)!}
+                                alt={project.title || "Project"}
+                                fill
+                                className="object-cover transition-transform duration-500 group-hover/proj:scale-[1.02]"
+                                unoptimized
+                              />
+                            ) : (
+                              <div className="h-full w-full bg-neutral-200 transition-transform duration-500 group-hover/proj:scale-[1.02]" />
+                            )}
+                          </div>
+
+                          <div className="flex flex-col p-6">
+                            <div className="mb-1 flex items-start gap-2">
+                              <span className="text-primary-text text-[16px] font-bold">
+                                {numberStr}
+                              </span>
+                              <h3 className="text-primary-text text-[16px] font-bold">
+                                {project.title}
+                              </h3>
+                            </div>
+
+                            {project.description && (
+                              <p className="text-secondary-text mb-6 ml-6 line-clamp-2 text-[13px]">
+                                {project.description}
+                              </p>
+                            )}
+
+                            {project.url && (
+                              <a
+                                href={sanitizeUrl(project.url)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-brand-hover-bg mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
+                              >
+                                {project.buttonText || "View Project"}
+                                <ArrowRight size={14} strokeWidth={2.5} />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                );
-              })}
+                ) : (
+                  <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
+                    No projects added yet.
+                  </p>
+                )}
+              </section>
             </div>
-          ) : (
-            <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
-              No projects added yet.
-            </p>
-          )}
-        </section>
-        </div>
-        );
-      })()}
+          );
+        })()}
 
       {/* CTA SECTION */}
       {ctaSection && (
-        <section
-          className="group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors"
-        >
+        <section className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors">
           {renderControls(ctaSection)}
 
           <div className="flex flex-col justify-between gap-6 py-4 md:flex-row md:items-center">
@@ -273,4 +269,3 @@ export default function PortfolioPreview({
     </div>
   );
 }
- 

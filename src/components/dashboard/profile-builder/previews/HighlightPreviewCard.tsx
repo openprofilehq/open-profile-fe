@@ -1,7 +1,11 @@
 import React from "react";
 import Image from "next/image";
 import { ExternalLink } from "lucide-react";
-import { getImageUrl, sanitizeUrl, isProjectHighlighted } from "@/utils/profile";
+import {
+  getImageUrl,
+  sanitizeUrl,
+  isProjectHighlighted,
+} from "@/utils/profile";
 import type { Section } from "../types";
 
 type Props = {
@@ -14,17 +18,24 @@ export default function HighlightPreviewCard({ projectsSection }: Props) {
 
   if (!highlightedProject) {
     return (
-      <section className={`rounded-[12px] border border-border bg-background p-4 sm:p-6 shadow-sm transition-opacity duration-200 ${!projectsSection?.visible ? "opacity-50 grayscale" : ""}`}>
+      <section
+        className={`border-border bg-background rounded-[12px] border p-4 shadow-sm transition-opacity duration-200 sm:p-6 ${!projectsSection?.visible ? "opacity-50 grayscale" : ""}`}
+      >
         <h2 className="text-xl font-bold">Highlight</h2>
         <div className="mt-4 flex flex-col gap-6 md:flex-row md:items-center">
-          <div className="flex flex-1 justify-center bg-secondary-bg p-4 rounded-[12px]">
-            <div className="flex h-[120px] w-full max-w-[160px] items-center justify-center rounded-[12px] bg-neutral-200 text-sm text-tertiary-text">
+          <div className="bg-secondary-bg flex flex-1 justify-center rounded-[12px] p-4">
+            <div className="text-tertiary-text flex h-[120px] w-full max-w-[160px] items-center justify-center rounded-[12px] bg-neutral-200 text-sm">
               No image
             </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="text-xl font-bold text-secondary-text">No project highlighted</h3>
-            <p className="mt-2 text-sm text-tertiary-text">Edit your projects and check &quot;Highlight&quot; to feature a project here.</p>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-secondary-text text-xl font-bold">
+              No project highlighted
+            </h3>
+            <p className="text-tertiary-text mt-2 text-sm">
+              Edit your projects and check &quot;Highlight&quot; to feature a
+              project here.
+            </p>
           </div>
         </div>
       </section>
@@ -39,10 +50,12 @@ export default function HighlightPreviewCard({ projectsSection }: Props) {
     : null;
 
   return (
-    <section className={`rounded-[12px] border border-border bg-background p-4 sm:p-6 shadow-sm transition-opacity duration-200 ${!projectsSection?.visible ? "opacity-50 grayscale" : ""}`}>
+    <section
+      className={`border-border bg-background rounded-[12px] border p-4 shadow-sm transition-opacity duration-200 sm:p-6 ${!projectsSection?.visible ? "opacity-50 grayscale" : ""}`}
+    >
       <h2 className="text-xl font-bold">Highlight</h2>
       <div className="mt-4 flex flex-col gap-6 md:flex-row md:items-center">
-        <div className="flex flex-1 justify-center bg-secondary-bg p-4 rounded-[12px] overflow-hidden">
+        <div className="bg-secondary-bg flex flex-1 justify-center overflow-hidden rounded-[12px] p-4">
           {displayImg ? (
             <Image
               src={displayImg}
@@ -53,20 +66,24 @@ export default function HighlightPreviewCard({ projectsSection }: Props) {
               unoptimized
             />
           ) : (
-            <div className="flex h-[120px] w-full max-w-[160px] items-center justify-center bg-neutral-200 text-sm text-tertiary-text rounded-[12px]">
+            <div className="text-tertiary-text flex h-[120px] w-full max-w-[160px] items-center justify-center rounded-[12px] bg-neutral-200 text-sm">
               No image
             </div>
           )}
         </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="text-xl font-bold break-words">{highlightedProject.title}</h3>
-          <p className="mt-2 break-words text-sm text-secondary-text">{highlightedProject.description}</p>
+        <div className="min-w-0 flex-1">
+          <h3 className="text-xl font-bold wrap-break-word">
+            {highlightedProject.title}
+          </h3>
+          <p className="text-secondary-text mt-2 text-sm wrap-break-word">
+            {highlightedProject.description}
+          </p>
           {highlightedProject.url && (
             <a
               href={sanitizeUrl(highlightedProject.url)}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 flex items-center gap-1 text-sm font-semibold text-brand-hover-bg hover:underline"
+              className="text-brand-hover-bg mt-4 flex items-center gap-1 text-sm font-semibold hover:underline"
             >
               {highlightedProject.buttonText || "View project"}
               <ExternalLink size={16} />

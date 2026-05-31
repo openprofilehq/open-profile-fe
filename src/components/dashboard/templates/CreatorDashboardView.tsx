@@ -15,7 +15,6 @@ import { getImageUrl } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
 import HighlightCard from "../HighlightCard";
 
-
 type Props = {
   profile?: DashboardProfileResponse;
   content?: ProfileContentResponse;
@@ -69,7 +68,11 @@ const DEFAULT_PROJECTS = [
   },
 ] as ProjectItem[];
 
-export default function CreatorDashboardView({ profile, content, isPreview }: Props) {
+export default function CreatorDashboardView({
+  profile,
+  content,
+  isPreview,
+}: Props) {
   const [activeTab, setActiveTab] = useState<"projects" | "links" | "about">(
     "projects"
   );
@@ -85,10 +88,11 @@ export default function CreatorDashboardView({ profile, content, isPreview }: Pr
     "I'm John Smith—a creator focused on building and sharing things that feel simple and useful. I spend most of my time working on ideas, collaborating with others, and turning rough concepts into something real. Some of it sticks, some of it doesn't, but that's part of the process.\n\nThis is where everything lives—my work, my links, and a way to get in touch if you want to build something together.";
 
   const rawLinks = (details?.links?.items ?? []) as LinkItem[];
-  const links = rawLinks.length > 0 ? rawLinks : (isPreview ? DEFAULT_LINKS : []);
+  const links = rawLinks.length > 0 ? rawLinks : isPreview ? DEFAULT_LINKS : [];
 
   const rawProjects = (details?.projects?.items ?? []) as ProjectItem[];
-  const projects = rawProjects.length > 0 ? rawProjects : (isPreview ? DEFAULT_PROJECTS : []);
+  const projects =
+    rawProjects.length > 0 ? rawProjects : isPreview ? DEFAULT_PROJECTS : [];
 
   const cta = details?.cta;
 
@@ -127,7 +131,7 @@ export default function CreatorDashboardView({ profile, content, isPreview }: Pr
                 unoptimized
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center bg-brand-subtle-bg text-[40px] font-bold text-brand-hover-bg">
+              <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-full w-full items-center justify-center text-[40px] font-bold">
                 {name.charAt(0).toUpperCase()}
               </div>
             )}
@@ -153,7 +157,9 @@ export default function CreatorDashboardView({ profile, content, isPreview }: Pr
                     rel="noopener noreferrer"
                     className="text-secondary-text hover:text-primary-text transition-colors"
                   >
-                    {getLinkIcon((link.url || "") + " " + (link.title || link.label || ""))}
+                    {getLinkIcon(
+                      (link.url || "") + " " + (link.title || link.label || "")
+                    )}
                   </a>
                 );
               })}
@@ -168,7 +174,14 @@ export default function CreatorDashboardView({ profile, content, isPreview }: Pr
               className="bg-brand-hover-bg hover:bg-button-brand-bg mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all active:scale-95"
             >
               {cta?.iconSrc ? (
-                <Image src={getImageUrl(cta.iconSrc)!} alt="CTA Icon" width={16} height={16} className="h-4 w-4 object-contain brightness-0 invert" unoptimized />
+                <Image
+                  src={getImageUrl(cta.iconSrc)!}
+                  alt="CTA Icon"
+                  width={16}
+                  height={16}
+                  className="h-4 w-4 object-contain brightness-0 invert"
+                  unoptimized
+                />
               ) : (
                 <MessageSquare size={16} />
               )}
@@ -178,7 +191,10 @@ export default function CreatorDashboardView({ profile, content, isPreview }: Pr
         </header>
 
         {/* TABS NAVIGATION */}
-        <div className="border-border mt-12 flex items-center justify-center gap-8 border-b">
+        <div
+          className="border-border flex items-center justify-center gap-8 border-b"
+          style={{ marginTop: "var(--op-spacing, 3rem)" }}
+        >
           <button
             onClick={() => setActiveTab("projects")}
             className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "projects" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
@@ -209,81 +225,94 @@ export default function CreatorDashboardView({ profile, content, isPreview }: Pr
         </div>
 
         {/* TABS CONTENT */}
-        <div className="mt-10 min-h-[400px] w-full">
-          {activeTab === "projects" && (() => {
-            const highlightedProject = projects.find(
-              (p) => p.highlighted === true || String(p.highlighted) === "true" || String(p.id).startsWith("hl_")
-            );
-            const remainingProjects = projects.filter((p) => p.id !== highlightedProject?.id);
+        <div
+          className="min-h-[400px] w-full"
+          style={{ marginTop: "var(--op-spacing, 2.5rem)" }}
+        >
+          {activeTab === "projects" &&
+            (() => {
+              const highlightedProject = projects.find(
+                (p) =>
+                  p.highlighted === true ||
+                  String(p.highlighted) === "true" ||
+                  String(p.id).startsWith("hl_")
+              );
+              const remainingProjects = projects.filter(
+                (p) => p.id !== highlightedProject?.id
+              );
 
-            return (
-              <div className="flex flex-col gap-10">
-                <HighlightCard details={content?.content} />
-                {remainingProjects.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                    {remainingProjects.map((project) => {
-                      const projectUrl = project.url || (project as { repoUrl?: string }).repoUrl;
-                      return (
-                        <div
-                          key={project.id}
-                          className="border-border bg-background flex flex-col overflow-hidden rounded-[12px] border transition-shadow hover:shadow-md"
-                        >
-                          <div className="bg-secondary-bg relative h-[200px] w-full shrink-0">
-                            {project.imageSrc ? (
-                              <Image
-                                src={
-                                  project.imageSrc.startsWith("/profile-preview/")
-                                    ? project.imageSrc
-                                    : getImageUrl(project.imageSrc)!
-                                }
-                                alt={project.title || "Project"}
-                                fill
-                                className="object-cover"
-                                unoptimized
-                              />
-                            ) : (
-                              <div className="h-full w-full bg-neutral-200" />
-                            )}
+              return (
+                <div className="flex flex-col gap-10">
+                  <HighlightCard details={content?.content} />
+                  {remainingProjects.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                      {remainingProjects.map((project) => {
+                        const projectUrl =
+                          project.url ||
+                          (project as { repoUrl?: string }).repoUrl;
+                        return (
+                          <div
+                            key={project.id}
+                            className="border-border bg-background flex flex-col overflow-hidden rounded-[12px] border transition-shadow hover:shadow-md"
+                          >
+                            <div className="bg-secondary-bg relative h-[200px] w-full shrink-0">
+                              {project.imageSrc ? (
+                                <Image
+                                  src={
+                                    project.imageSrc.startsWith(
+                                      "/profile-preview/"
+                                    )
+                                      ? project.imageSrc
+                                      : getImageUrl(project.imageSrc)!
+                                  }
+                                  alt={project.title || "Project"}
+                                  fill
+                                  className="object-cover"
+                                  unoptimized
+                                />
+                              ) : (
+                                <div className="h-full w-full bg-neutral-200" />
+                              )}
+                            </div>
+                            <div className="flex flex-col p-6">
+                              <h3 className="text-primary-text text-[17px] font-bold">
+                                {project.title}
+                              </h3>
+                              {project.description && (
+                                <p className="text-secondary-text mt-3 line-clamp-3 text-[14px] leading-relaxed">
+                                  {project.description}
+                                </p>
+                              )}
+                              {projectUrl && (
+                                <a
+                                  href={projectUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-brand-hover-bg mt-6 inline-flex items-center gap-1.5 text-[14px] font-bold hover:underline"
+                                >
+                                  {project.buttonText || "View Project"}
+                                  <ArrowRight size={16} strokeWidth={2.5} />
+                                </a>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex flex-col p-6">
-                            <h3 className="text-primary-text text-[17px] font-bold">
-                              {project.title}
-                            </h3>
-                            {project.description && (
-                              <p className="text-secondary-text mt-3 line-clamp-3 text-[14px] leading-relaxed">
-                                {project.description}
-                              </p>
-                            )}
-                            {projectUrl && (
-                              <a
-                                href={projectUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-brand-hover-bg mt-6 inline-flex items-center gap-1.5 text-[14px] font-bold hover:underline"
-                              >
-                                {project.buttonText || "View Project"}
-                                <ArrowRight size={16} strokeWidth={2.5} />
-                              </a>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <p className="text-tertiary-text border-border rounded-xl border border-dashed py-8 text-center text-sm">
-                    Add your projects
-                  </p>
-                )}
-              </div>
-            );
-          })()}
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-tertiary-text border-border rounded-xl border border-dashed py-8 text-center text-sm">
+                      Add your projects
+                    </p>
+                  )}
+                </div>
+              );
+            })()}
 
           {activeTab === "links" && (
             <>
               {links.length > 0 ? (
                 <div className="mx-auto flex w-full flex-col gap-4">
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full">
+                  <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {links.map((link) => (
                       <TemplateLinkCard
                         key={link.id}

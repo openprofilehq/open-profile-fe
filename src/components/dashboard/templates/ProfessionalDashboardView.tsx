@@ -55,7 +55,11 @@ const DEFAULT_PROJECTS = [
   },
 ] as ProjectItem[];
 
-export default function ProfessionalDashboardView({ profile, content, isPreview }: Props) {
+export default function ProfessionalDashboardView({
+  profile,
+  content,
+  isPreview,
+}: Props) {
   const name = profile?.fullName ?? profile?.username ?? "John Smith";
   const username = profile?.username ?? "johnsmith";
 
@@ -66,10 +70,11 @@ export default function ProfessionalDashboardView({ profile, content, isPreview 
     "Product Designer helping early-stage startups build meaningful, trustworthy experiences. Previously at Linear and Loom";
 
   const rawLinks = (details?.links?.items ?? []) as LinkItem[];
-  const links = rawLinks.length > 0 ? rawLinks : (isPreview ? DEFAULT_LINKS : []);
+  const links = rawLinks.length > 0 ? rawLinks : isPreview ? DEFAULT_LINKS : [];
 
   const rawProjects = (details?.projects?.items ?? []) as ProjectItem[];
-  const projects = rawProjects.length > 0 ? rawProjects : (isPreview ? DEFAULT_PROJECTS : []);
+  const projects =
+    rawProjects.length > 0 ? rawProjects : isPreview ? DEFAULT_PROJECTS : [];
 
   const cta = details?.cta;
 
@@ -82,7 +87,10 @@ export default function ProfessionalDashboardView({ profile, content, isPreview 
 
   return (
     <div className="text-primary-text bg-secondary-bg flex w-full flex-col font-sans antialiased">
-      <div className="mx-auto w-full max-w-5xl px-6 pb-16 sm:pb-24 pt-8">
+      <div
+        className="mx-auto flex w-full max-w-5xl flex-col px-6 pt-8 pb-16 sm:pb-24"
+        style={{ gap: "var(--op-spacing, 2rem)" }}
+      >
         {/* HEADER SECTION */}
         <header className="flex w-full flex-col justify-between gap-6 sm:flex-row sm:items-start">
           <div className="flex items-center gap-6">
@@ -96,7 +104,7 @@ export default function ProfessionalDashboardView({ profile, content, isPreview 
                   unoptimized
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-brand-subtle-bg text-[40px] font-bold text-brand-hover-bg">
+                <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-full w-full items-center justify-center text-[40px] font-bold">
                   {name.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -111,11 +119,10 @@ export default function ProfessionalDashboardView({ profile, content, isPreview 
               </p>
             </div>
           </div>
-
         </header>
 
         {/* BIO SECTION */}
-        <section className="mt-8">
+        <section>
           <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed">
             {bio}
           </p>
@@ -123,32 +130,41 @@ export default function ProfessionalDashboardView({ profile, content, isPreview 
 
         {/* LINKS SECTION */}
         {details?.links?.visible !== false && (
-          <section className="mt-16 w-full">
+          <section className="w-full">
             <h2 className="text-tertiary-text mb-4 text-[13px]">Links</h2>
             {links.length > 0 ? (
-              <div className="flex flex-col border-t border-border">
+              <div className="border-border flex flex-col border-t">
                 {links.map((link, idx) => (
                   <a
                     key={link.id ?? idx}
                     href={link.url || "#"}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center justify-between border-b border-border py-4 transition-colors hover:bg-hover-bg/30"
+                    className="group border-border hover:bg-hover-bg/30 flex items-center justify-between border-b py-4 transition-colors"
                   >
-                    <span className="text-[15px] font-bold text-primary-text group-hover:text-brand-hover-bg transition-colors">
+                    <span className="text-primary-text group-hover:text-brand-hover-bg text-[15px] font-bold transition-colors">
                       {link.title || link.label}
                     </span>
                     <div className="flex items-center gap-3">
                       <span className="text-secondary-text text-[14px]">
                         {(() => {
                           try {
-                            return link.url ? new URL(link.url.startsWith('http') ? link.url : `https://${link.url}`).hostname.replace('www.', '') : '';
+                            return link.url
+                              ? new URL(
+                                  link.url.startsWith("http")
+                                    ? link.url
+                                    : `https://${link.url}`
+                                ).hostname.replace("www.", "")
+                              : "";
                           } catch {
-                            return link.url || '';
+                            return link.url || "";
                           }
                         })()}
                       </span>
-                      <ExternalLink size={16} className="text-tertiary-text group-hover:text-brand-hover-bg transition-colors" />
+                      <ExternalLink
+                        size={16}
+                        className="text-tertiary-text group-hover:text-brand-hover-bg transition-colors"
+                      />
                     </div>
                   </a>
                 ))}
@@ -162,86 +178,96 @@ export default function ProfessionalDashboardView({ profile, content, isPreview 
         )}
 
         {/* PROJECTS SECTION */}
-        {details?.projects?.visible !== false && (() => {
-          const highlightedProject = projects.find(
-            (p) => p.highlighted === true || String(p.highlighted) === "true" || String(p.id).startsWith("hl_")
-          );
-          const remainingProjects = projects.filter((p) => p.id !== highlightedProject?.id);
+        {details?.projects?.visible !== false &&
+          (() => {
+            const highlightedProject = projects.find(
+              (p) =>
+                p.highlighted === true ||
+                String(p.highlighted) === "true" ||
+                String(p.id).startsWith("hl_")
+            );
+            const remainingProjects = projects.filter(
+              (p) => p.id !== highlightedProject?.id
+            );
 
-          return (
-            <div className="mt-16 w-full flex flex-col gap-10">
-              <HighlightCard details={content?.content} />
-              <section className="w-full">
-                <h2 className="text-tertiary-text mb-4 text-[13px]">
-                  {details?.projects?.sectionTitle || "Selected Work"}
-                </h2>
-                {remainingProjects.length > 0 ? (
-                  <div className="flex flex-col gap-4">
-                    {remainingProjects.map((project) => {
-                      const projectUrl = project.url || (project as { repoUrl?: string }).repoUrl;
-                      return (
-                        <div
-                          key={project.id}
-                          className="border-border bg-background flex flex-col items-start rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
-                        >
-                          <div className="bg-secondary-bg border-border relative mb-4 h-[80px] w-full shrink-0 overflow-hidden rounded-lg border sm:mb-0 sm:w-[120px]">
-                            {project.imageSrc ? (
-                              <Image
-                                src={
-                                  project.imageSrc.startsWith("/profile-preview/")
-                                    ? project.imageSrc
-                                    : getImageUrl(project.imageSrc)!
-                                }
-                                alt={project.title || "Project"}
-                                fill
-                                className="object-cover"
-                                unoptimized
-                              />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center bg-neutral-200 text-xs text-tertiary-text">
-                                No image
-                              </div>
-                            )}
+            return (
+              <div className="flex w-full flex-col gap-10">
+                <HighlightCard details={content?.content} />
+                <section className="w-full">
+                  <h2 className="text-tertiary-text mb-4 text-[13px]">
+                    {details?.projects?.sectionTitle || "Selected Work"}
+                  </h2>
+                  {remainingProjects.length > 0 ? (
+                    <div className="flex flex-col gap-4">
+                      {remainingProjects.map((project) => {
+                        const projectUrl =
+                          project.url ||
+                          (project as { repoUrl?: string }).repoUrl;
+                        return (
+                          <div
+                            key={project.id}
+                            className="border-border bg-background flex flex-col items-start rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
+                          >
+                            <div className="bg-secondary-bg border-border relative mb-4 h-[80px] w-full shrink-0 overflow-hidden rounded-lg border sm:mb-0 sm:w-[120px]">
+                              {project.imageSrc ? (
+                                <Image
+                                  src={
+                                    project.imageSrc.startsWith(
+                                      "/profile-preview/"
+                                    )
+                                      ? project.imageSrc
+                                      : getImageUrl(project.imageSrc)!
+                                  }
+                                  alt={project.title || "Project"}
+                                  fill
+                                  className="object-cover"
+                                  unoptimized
+                                />
+                              ) : (
+                                <div className="text-tertiary-text flex h-full w-full items-center justify-center bg-neutral-200 text-xs">
+                                  No image
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="flex w-full flex-col sm:ml-6">
+                              <h3 className="text-primary-text text-[16px] font-bold">
+                                {project.title}
+                              </h3>
+                              {project.description && (
+                                <p className="text-secondary-text mt-1 text-[13px]">
+                                  {project.description}
+                                </p>
+                              )}
+                              {projectUrl && (
+                                <a
+                                  href={projectUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
+                                >
+                                  {project.buttonText || "View Project"}
+                                  <ArrowRight size={14} strokeWidth={2.5} />
+                                </a>
+                              )}
+                            </div>
                           </div>
-  
-                          <div className="flex w-full flex-col sm:ml-6">
-                            <h3 className="text-primary-text text-[16px] font-bold">
-                              {project.title}
-                            </h3>
-                            {project.description && (
-                              <p className="text-secondary-text mt-1 text-[13px]">
-                                {project.description}
-                              </p>
-                            )}
-                            {projectUrl && (
-                              <a
-                                href={projectUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
-                              >
-                                {project.buttonText || "View Project"}
-                                <ArrowRight size={14} strokeWidth={2.5} />
-                              </a>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-            ) : (
-              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
-                Add your projects
-              </p>
-            )}
-              </section>
-            </div>
-          );
-        })()}
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
+                      Add your projects
+                    </p>
+                  )}
+                </section>
+              </div>
+            );
+          })()}
 
         {/* CTA SECTION */}
         {details?.cta?.visible !== false && (
-          <section className="mt-20 w-full">
+          <section className="w-full">
             <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
               {cta?.title || "Open to new projects."}
             </h2>

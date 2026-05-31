@@ -1,4 +1,5 @@
 import { env } from "@/env/client";
+import type { CSSProperties } from "react";
 
 const APP_BASE_URL = env.NEXT_PUBLIC_APP_BASE_URL;
 
@@ -189,7 +190,39 @@ export function decodeUrlForFrontend(url?: string | null): string {
   return url;
 }
 
-export function isProjectHighlighted(project?: { id?: string | number, highlighted?: boolean | string }): boolean {
+export function isProjectHighlighted(project?: {
+  id?: string | number;
+  highlighted?: boolean | string;
+}): boolean {
   if (!project) return false;
-  return project.highlighted === true || String(project.highlighted) === "true" || String(project.id).startsWith("hl_");
+  return (
+    project.highlighted === true ||
+    String(project.highlighted) === "true" ||
+    String(project.id).startsWith("hl_")
+  );
+}
+
+export function getSectionStyle(
+  section?: {
+    paddingTop?: number | string | null;
+    paddingBottom?: number | string | null;
+    gap?: number | string | null;
+    padding?: number | string | null;
+    bgColor?: string | null;
+    textColor?: string | null;
+  } | null
+): CSSProperties {
+  if (!section) return {};
+  return {
+    ...(section.paddingTop != null && {
+      paddingTop: `${section.paddingTop}px`,
+    }),
+    ...(section.paddingBottom != null && {
+      paddingBottom: `${section.paddingBottom}px`,
+    }),
+    ...(section.gap != null && { gap: `${section.gap}px` }),
+    ...(section.padding != null && { padding: `${section.padding}px` }),
+    ...(section.bgColor && { backgroundColor: section.bgColor }),
+    ...(section.textColor && { color: section.textColor }),
+  };
 }

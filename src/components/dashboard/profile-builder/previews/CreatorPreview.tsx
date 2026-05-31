@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Eye, EyeOff, Trash2, MessageSquare, ChevronRight, MoreHorizontal } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Trash2,
+  MessageSquare,
+  ChevronRight,
+  MoreHorizontal,
+} from "lucide-react";
 import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 import { TemplateLinkCard, getLinkIcon } from "../../shared/TemplateLinkCard";
 import HighlightPreviewCard from "./HighlightPreviewCard";
-
 
 interface CreatorPreviewProps {
   sections: Section[];
@@ -49,8 +55,8 @@ export default function CreatorPreview({
         <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
           <MoreHorizontal size={18} />
         </button>
-        
-        <div className="border-border bg-background absolute top-full right-0 mt-2 flex w-40 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all invisible group-hover/menu:visible group-hover/menu:opacity-100">
+
+        <div className="border-border bg-background invisible absolute top-full right-0 mt-2 flex w-40 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all group-hover/menu:visible group-hover/menu:opacity-100">
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -59,9 +65,13 @@ export default function CreatorPreview({
             className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors"
           >
             {section.visible ? (
-              <><EyeOff size={16} /> Hide Section</>
+              <>
+                <EyeOff size={16} /> Hide Section
+              </>
             ) : (
-              <><Eye size={16} /> Show Section</>
+              <>
+                <Eye size={16} /> Show Section
+              </>
             )}
           </button>
           <button
@@ -72,7 +82,7 @@ export default function CreatorPreview({
               }
             }}
             disabled={isBio}
-            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? 'text-negative-text opacity-50 cursor-not-allowed' : 'text-negative-text hover:bg-negative-bg/20'}`}
+            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? "text-negative-text cursor-not-allowed opacity-50" : "text-negative-text hover:bg-negative-bg/20"}`}
           >
             <Trash2 size={16} /> Delete
           </button>
@@ -140,7 +150,9 @@ export default function CreatorPreview({
                     key={i}
                     className="text-secondary-text transition-colors"
                   >
-                    {getLinkIcon((link.url || "") + " " + (link.title || link.label || ""))}
+                    {getLinkIcon(
+                      (link.url || "") + " " + (link.title || link.label || "")
+                    )}
                   </div>
                 );
               })}
@@ -153,8 +165,8 @@ export default function CreatorPreview({
                 <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
                   <MoreHorizontal size={16} />
                 </button>
-                
-                <div className="border-border bg-background absolute top-full left-1/2 mt-2 flex w-36 -translate-x-1/2 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all invisible group-hover/menu:visible group-hover/menu:opacity-100">
+
+                <div className="border-border bg-background invisible absolute top-full left-1/2 mt-2 flex w-36 -translate-x-1/2 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all group-hover/menu:visible group-hover/menu:opacity-100">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -163,9 +175,13 @@ export default function CreatorPreview({
                     className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-3 py-2 text-[13px] font-medium transition-colors"
                   >
                     {ctaSection.visible ? (
-                      <><EyeOff size={14} /> Hide</>
+                      <>
+                        <EyeOff size={14} /> Hide
+                      </>
                     ) : (
-                      <><Eye size={14} /> Show</>
+                      <>
+                        <Eye size={14} /> Show
+                      </>
                     )}
                   </button>
                   <button
@@ -176,7 +192,7 @@ export default function CreatorPreview({
                       }
                     }}
                     disabled={ctaSection.type === "bio"}
-                    className={`flex w-full items-center gap-3 px-3 py-2 text-[13px] font-medium transition-colors ${ctaSection.type === 'bio' ? 'text-negative-text opacity-50 cursor-not-allowed' : 'text-negative-text hover:bg-negative-bg/20'}`}
+                    className={`flex w-full items-center gap-3 px-3 py-2 text-[13px] font-medium transition-colors ${ctaSection.type === "bio" ? "text-negative-text cursor-not-allowed opacity-50" : "text-negative-text hover:bg-negative-bg/20"}`}
                   >
                     <Trash2 size={14} /> Delete
                   </button>
@@ -188,7 +204,14 @@ export default function CreatorPreview({
                 className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
               >
                 {ctaSection.iconSrc ? (
-                  <Image src={getImageUrl(ctaSection.iconSrc)!} alt="CTA Icon" width={16} height={16} className="h-4 w-4 object-contain brightness-0 invert" unoptimized />
+                  <Image
+                    src={getImageUrl(ctaSection.iconSrc)!}
+                    alt="CTA Icon"
+                    width={16}
+                    height={16}
+                    className="h-4 w-4 object-contain brightness-0 invert"
+                    unoptimized
+                  />
                 ) : (
                   <MessageSquare size={16} />
                 )}
@@ -203,7 +226,10 @@ export default function CreatorPreview({
       {(!selectedSectionId ||
         ["projects", "links", "bio"].includes(selectedSectionId)) && (
         <>
-          <div className="border-border mt-8 flex items-center justify-center gap-8 border-b">
+          <div
+            className="border-border flex items-center justify-center gap-8 border-b"
+            style={{ marginTop: "var(--op-spacing, 2rem)" }}
+          >
             <button
               onClick={() => setActiveTab("projects")}
               className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "projects" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
@@ -233,7 +259,10 @@ export default function CreatorPreview({
             </button>
           </div>
 
-          <div className="mt-8 w-full">
+          <div
+            className="w-full"
+            style={{ marginTop: "var(--op-spacing, 2rem)" }}
+          >
             {/* CREATOR TAB CONTENT */}
             {visibleSections.map((section) => {
               if (
@@ -248,110 +277,128 @@ export default function CreatorPreview({
               if (section.type === "projects" && activeTab === "projects") {
                 const projectsToRender = section.projects || [];
                 const highlightedProject = projectsToRender.find(
-                  (p) => p.highlighted === true || String(p.highlighted) === "true"
+                  (p) =>
+                    p.highlighted === true || String(p.highlighted) === "true"
                 );
                 const remainingProjects = projectsToRender.filter(
                   (p) => p.id !== highlightedProject?.id
                 );
 
                 return (
-                  <div key={section.id} className="relative w-full flex flex-col gap-6">
+                  <div
+                    key={section.id}
+                    className="relative flex w-full flex-col gap-6"
+                  >
                     <HighlightPreviewCard projectsSection={section} />
                     <div className="relative w-full">
                       {renderControls(section)}
                       {remainingProjects.length > 0 ? (
-                        <div className={`grid gap-6 ${
-                        section.layout === "1" ? "grid-cols-1" :
-                        section.layout === "3" ? "grid-cols-1 sm:grid-cols-2" :
-                        section.layout === "4" ? "grid-cols-1 sm:grid-cols-2" :
-                        "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
-                      }`}>
-                        {remainingProjects.map((project) => {
-                          const layoutType = section.layout || "2";
-                          const hasUrl = Boolean(project.url);
-                          const displayImg = getImageUrl(project.imageSrc);
+                        <div
+                          className={`grid gap-6 ${
+                            section.layout === "1"
+                              ? "grid-cols-1"
+                              : section.layout === "3"
+                                ? "grid-cols-1 sm:grid-cols-2"
+                                : section.layout === "4"
+                                  ? "grid-cols-1 sm:grid-cols-2"
+                                  : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+                          }`}
+                        >
+                          {remainingProjects.map((project) => {
+                            const layoutType = section.layout || "2";
+                            const hasUrl = Boolean(project.url);
+                            const displayImg = getImageUrl(project.imageSrc);
 
-                          const card = (
-                            <div className={`flex group rounded-[12px] border border-border bg-background p-4 shadow-sm transition-shadow hover:shadow-md hover:border-brand-hover-bg/30 ${
-                              layoutType === "1" ? "flex-col sm:flex-row sm:items-center justify-between" :
-                              layoutType === "3" ? "flex-col sm:flex-row sm:items-start" :
-                              layoutType === "4" ? "flex-col sm:flex-row-reverse sm:items-start" :
-                              "flex-col" // Layout 2
-                            }`}>
-                              {/* IMAGE */}
-                              {layoutType !== "1" && (
-                                <div className={`relative shrink-0 overflow-hidden rounded-lg border border-border bg-secondary-bg mb-4 ${
-                                  layoutType === "2" ? "w-full aspect-video" : "w-full h-[120px] sm:mb-0 sm:w-[140px]"
-                                } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}>
-                                  {displayImg ? (
-                                    <Image
-                                      src={displayImg}
-                                      alt={project.title ?? "Project"}
-                                      className="object-cover"
-                                      fill
-                                      unoptimized
-                                    />
-                                  ) : (
-                                    <div className="flex h-full w-full items-center justify-center text-xs text-tertiary-text">
-                                      No image
-                                    </div>
+                            const card = (
+                              <div
+                                className={`group border-border bg-background hover:border-brand-hover-bg/30 flex rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md ${
+                                  layoutType === "1"
+                                    ? "flex-col justify-between sm:flex-row sm:items-center"
+                                    : layoutType === "3"
+                                      ? "flex-col sm:flex-row sm:items-start"
+                                      : layoutType === "4"
+                                        ? "flex-col sm:flex-row-reverse sm:items-start"
+                                        : "flex-col" // Layout 2
+                                }`}
+                              >
+                                {/* IMAGE */}
+                                {layoutType !== "1" && (
+                                  <div
+                                    className={`border-border bg-secondary-bg relative mb-4 shrink-0 overflow-hidden rounded-lg border ${
+                                      layoutType === "2"
+                                        ? "aspect-video w-full"
+                                        : "h-[120px] w-full sm:mb-0 sm:w-[140px]"
+                                    } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
+                                  >
+                                    {displayImg ? (
+                                      <Image
+                                        src={displayImg}
+                                        alt={project.title ?? "Project"}
+                                        className="object-cover"
+                                        fill
+                                        unoptimized
+                                      />
+                                    ) : (
+                                      <div className="text-tertiary-text flex h-full w-full items-center justify-center text-xs">
+                                        No image
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* CONTENT */}
+                                <div className="flex min-w-0 flex-1 flex-col items-start">
+                                  <h5 className="text-primary-text text-xl font-bold break-all">
+                                    {project.title}
+                                  </h5>
+                                  <p
+                                    className={`text-secondary-text mt-1 break-all ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"}`}
+                                  >
+                                    {project.description}
+                                  </p>
+                                  {layoutType !== "1" && (
+                                    <span className="text-brand-hover-bg mt-3 flex items-center gap-1 text-sm font-semibold hover:underline">
+                                      {hasUrl ? "View project" : "Edit project"}
+                                      <ChevronRight size={16} />
+                                    </span>
                                   )}
                                 </div>
-                              )}
-                              
-                              {/* CONTENT */}
-                              <div className="flex flex-col items-start min-w-0 flex-1">
-                                <h5 className="text-xl font-bold text-primary-text break-all">
-                                  {project.title}
-                                </h5>
-                                <p className={`text-secondary-text break-all mt-1 ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"}`}>
-                                  {project.description}
-                                </p>
-                                {layoutType !== "1" && (
-                                  <span className="mt-3 flex items-center gap-1 text-sm font-semibold text-brand-hover-bg hover:underline">
-                                    {hasUrl ? "View project" : "Edit project"}
-                                    <ChevronRight size={16} />
-                                  </span>
+
+                                {/* BUTTON FOR LAYOUT 1 */}
+                                {layoutType === "1" && (
+                                  <div className="mt-4 shrink-0 sm:mt-0 sm:ml-6">
+                                    <span className="text-brand-hover-bg flex items-center gap-1 text-sm font-bold hover:underline">
+                                      {hasUrl ? "View project" : "Edit project"}
+                                      <ChevronRight size={16} />
+                                    </span>
+                                  </div>
                                 )}
                               </div>
-                              
-                              {/* BUTTON FOR LAYOUT 1 */}
-                              {layoutType === "1" && (
-                                <div className="mt-4 sm:mt-0 sm:ml-6 shrink-0">
-                                  <span className="flex items-center gap-1 text-sm font-bold text-brand-hover-bg hover:underline">
-                                    {hasUrl ? "View project" : "Edit project"}
-                                    <ChevronRight size={16} />
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          );
+                            );
 
-                          return (
-                            <div key={project.id} className="w-full">
-                              {hasUrl ? (
-                                <a
-                                  href={sanitizeUrl(project.url || "")}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="no-underline block h-full"
-                                >
-                                  {card}
-                                </a>
-                              ) : (
-                                <div className="h-full">
-                                  {card}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <p className="text-tertiary-text border-border rounded-xl border border-dashed py-8 text-center text-sm">
-                        No projects added yet.
-                      </p>
-                    )}
+                            return (
+                              <div key={project.id} className="w-full">
+                                {hasUrl ? (
+                                  <a
+                                    href={sanitizeUrl(project.url || "")}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block h-full no-underline"
+                                  >
+                                    {card}
+                                  </a>
+                                ) : (
+                                  <div className="h-full">{card}</div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <p className="text-tertiary-text border-border rounded-xl border border-dashed py-8 text-center text-sm">
+                          No projects added yet.
+                        </p>
+                      )}
                     </div>
                   </div>
                 );
@@ -366,7 +413,7 @@ export default function CreatorPreview({
                   >
                     {renderControls(section)}
                     {allLinks.length > 0 ? (
-                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full">
+                      <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         {allLinks.map((link) => (
                           <TemplateLinkCard
                             key={link.id}
@@ -392,7 +439,7 @@ export default function CreatorPreview({
                     key={section.id}
                     className="border-border mx-auto max-w-2xl rounded-3xl border p-8 sm:p-10"
                   >
-                    <p className="text-secondary-text break-all text-center text-[15px] leading-relaxed whitespace-pre-wrap">
+                    <p className="text-secondary-text text-center text-[15px] leading-relaxed break-all whitespace-pre-wrap">
                       {section.bio ||
                         "Write a little bit about yourself here..."}
                     </p>
@@ -408,4 +455,3 @@ export default function CreatorPreview({
     </div>
   );
 }
- 

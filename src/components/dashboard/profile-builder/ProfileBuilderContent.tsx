@@ -677,6 +677,10 @@ export default function ProfileBuilderContent() {
             onChangeSpacing={setSpacing}
             borderRadius={borderRadius}
             onChangeBorderRadius={setBorderRadius}
+            activeTab={_activeTab}
+            onChangeTab={setActiveTab}
+            selectedSection={selectedSection}
+            onUpdateSection={handleUpdateSection}
             template={template}
             onChangeTemplate={(val) =>
               setTemplate((val || "professional").toLowerCase())
