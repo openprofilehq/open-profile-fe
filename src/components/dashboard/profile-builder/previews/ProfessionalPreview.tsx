@@ -59,7 +59,7 @@ export default function ProfessionalPreview({
           style={sectionStyle(bioSection)}
         >
           {bioSection && (
-            <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
+            <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 opacity-0 shadow-none transition-opacity select-none group-hover:opacity-100">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -160,7 +160,7 @@ export default function ProfessionalPreview({
             ...sectionStyle(linksSection),
           }}
         >
-          <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
+          <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 opacity-0 shadow-none transition-opacity select-none group-hover:opacity-100">
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -235,7 +235,7 @@ export default function ProfessionalPreview({
             ...sectionStyle(projectsSection),
           }}
         >
-          <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
+          <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 opacity-0 shadow-none transition-opacity select-none group-hover:opacity-100">
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -356,7 +356,7 @@ export default function ProfessionalPreview({
             ...sectionStyle(ctaSection),
           }}
         >
-          <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
+          <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 opacity-0 shadow-none transition-opacity select-none group-hover:opacity-100">
             <button
               onClick={(e) => {
                 e.stopPropagation();
