@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, Trash2, Upload, MoreHorizontal } from "lucide-react";
+import { ChevronLeft, Trash2, Upload } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -31,7 +31,6 @@ export default function BioSidebar({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [buttonMenuOpen, setButtonMenuOpen] = useState(false);
 
   const fullName = section.fullName ?? profile?.fullName ?? "";
   const bio = section.bio ?? "";
@@ -249,58 +248,7 @@ export default function BioSidebar({
               />
             </div>
 
-            {/* Buttons — card container */}
-            <div>
-              <label className="text-primary-text mb-2 block text-sm font-semibold">
-                Buttons
-              </label>
-              <div className="border-tertiary-b overflow-hidden rounded-[10px] border bg-background">
-                {/* Messages header */}
-                <div className="border-tertiary-b border-b px-4 py-3">
-                  <p className="text-sm font-semibold text-[#050505]">
-                    Messages
-                  </p>
-                </div>
 
-                {/* Search / paste link row */}
-                <div className="relative flex items-center">
-                  <input
-                    type="text"
-                    placeholder="Search site or paste link"
-                    className="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm text-[#050505] placeholder-[#A2A2A2] outline-none"
-                    readOnly
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setButtonMenuOpen(!buttonMenuOpen)}
-                    className="text-tertiary-text hover:bg-hover-bg mr-2 flex shrink-0 items-center justify-center rounded-lg border p-2 transition-colors"
-                    title="Button options"
-                  >
-                    <MoreHorizontal size={16} />
-                  </button>
-
-                  {/* Dropdown menu */}
-                  {buttonMenuOpen && (
-                    <div className="border-tertiary-b absolute top-full right-0 z-20 mt-1 w-36 overflow-hidden rounded-[10px] border bg-background shadow-lg">
-                      <button
-                        type="button"
-                        onClick={() => setButtonMenuOpen(false)}
-                        className="hover:bg-hover-bg w-full px-4 py-3 text-left text-sm text-[#050505] transition-colors"
-                      >
-                        Link
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setButtonMenuOpen(false)}
-                        className="hover:bg-hover-bg border-tertiary-b w-full border-t px-4 py-3 text-left text-sm text-[#050505] transition-colors"
-                      >
-                        Email
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
           </div>
         ) : (
           /* Section tab — Image upload */

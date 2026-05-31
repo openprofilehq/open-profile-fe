@@ -7,6 +7,8 @@ import {
   type LinkItem,
   type ProjectItem,
   type ProfileAppearanceSettings,
+  type DashboardProfileResponse,
+  type ProfileContentResponse,
 } from "@/api/profile/profile.type";
 import { env as serverEnv } from "@/env/server";
 import { Folder, ExternalLink } from "lucide-react";
@@ -15,6 +17,7 @@ import CreatorDashboardView from "@/components/dashboard/templates/CreatorDashbo
 import ProfessionalDashboardView from "@/components/dashboard/templates/ProfessionalDashboardView";
 import PortfolioDashboardView from "@/components/dashboard/templates/PortfolioDashboardView";
 import TemplateAppearanceProvider from "@/components/dashboard/templates/TemplateAppearanceProvider";
+import HighlightCard from "@/components/dashboard/HighlightCard";
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -452,6 +455,11 @@ export default async function UserProfilePage({ params }: Props) {
             if (sectionId === "projects" && content?.projects) {
               if (!content.projects.visible) return null;
               const projects = (content.projects.items || []) as ProjectItem[];
+              const highlightedProject = projects.find(
+                (p) => p.highlighted === true || String(p.highlighted) === "true" || String(p.id).startsWith("hl_")
+              );
+              const remainingProjects = projects.filter((p) => p.id !== highlightedProject?.id);
+
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const secProps = content.projects as any;
               const secBgColor = secProps.bgColor || globalBgColor;
@@ -494,8 +502,9 @@ export default async function UserProfilePage({ params }: Props) {
                       </h3>
                     </div>
                   </div>
-                  <div>
-                    {projects.length > 0 ? (
+                  <div className="flex flex-col gap-8">
+                    <HighlightCard profile={profile as unknown as DashboardProfileResponse} content={{ content: profile.content } as unknown as ProfileContentResponse} />
+                    {remainingProjects.length > 0 ? (
                       <div
                         className={
                           secProps.layout === "1" || !secProps.layout
@@ -503,7 +512,7 @@ export default async function UserProfilePage({ params }: Props) {
                             : "flex flex-col gap-4"
                         }
                       >
-                        {projects.map((project: ProjectItem) => {
+                        {remainingProjects.map((project: ProjectItem) => {
                           const isHighlighted = project.highlighted;
                           const projectCardStyle = {
                             borderColor: isHighlighted

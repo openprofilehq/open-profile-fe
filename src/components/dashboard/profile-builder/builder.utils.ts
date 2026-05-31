@@ -108,12 +108,17 @@ export function contentToSections(
         visible: content?.projects?.visible ?? true,
         subtitle: content?.projects?.sectionTitle ?? "",
         projects: (content?.projects?.items ?? []).map(
-          (p: Record<string, unknown>) => ({
-            ...p,
-            url: decodeUrlForFrontend(
-              (p.repoUrl as string) || (p.url as string)
-            ),
-          })
+          (p: Record<string, unknown>) => {
+            const isHl = String(p.id).startsWith("hl_");
+            return {
+              ...p,
+              id: isHl ? String(p.id).slice(3) : p.id,
+              highlighted: isHl,
+              url: decodeUrlForFrontend(
+                (p.repoUrl as string) || (p.url as string)
+              ),
+            };
+          }
         ) as unknown as ProjectItem[],
         layout: (content?.projects as Record<string, unknown>)?.layout as
           | string
@@ -265,8 +270,10 @@ export function sectionsToContent(
           ...(projectsSection.layout && { layout: projectsSection.layout }),
           ...sectionStyleFields(projectsSection),
           items: (projectsSection.projects ?? []).map((p) => {
+            const isHighlighted = p.highlighted === true || String(p.highlighted) === "true";
+            const baseId = String(p.id).startsWith("hl_") ? String(p.id).slice(3) : p.id;
             const mappedProject: Record<string, unknown> = {
-              id: p.id,
+              id: isHighlighted ? `hl_${baseId}` : baseId,
               title: p.title || "",
               description: p.description || "",
               visible: true,

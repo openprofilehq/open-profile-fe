@@ -12,7 +12,9 @@ type Props = {
 };
 
 export default function ProfileSummaryCard({ profile, isLoading }: Props) {
-  const profileImageUrl = getImageUrl(profile?.photoUrl);
+  const rawUrl = profile?.photoUrl;
+  const profileImageUrl = rawUrl ? (rawUrl.startsWith("/profile-preview/") ? rawUrl : getImageUrl(rawUrl)) : null;
+
   return (
     <section className="flex flex-col gap-5 rounded-[12px] border border-border bg-background p-6 md:flex-row md:items-start">
       {isLoading ? (

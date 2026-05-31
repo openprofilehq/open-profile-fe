@@ -19,6 +19,8 @@ export default function SelectedProject({ content, isLoading }: Props) {
     description?: string;
     url?: string;
     imageSrc?: string | null;
+    highlighted?: boolean;
+    buttonText?: string;
   }[];
 
   return (
@@ -45,8 +47,19 @@ export default function SelectedProject({ content, isLoading }: Props) {
       ) : (
         <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2">
           {projects.map((project, index) => {
-            const hasUrl = Boolean(project.url);
-            const displayImg = getImageUrl(project.imageSrc);
+            const projectUrl = project.url || (project as { repoUrl?: string }).repoUrl;
+            const hasUrl = Boolean(projectUrl);
+            const rawImageSrc = project.imageSrc;
+            const displayImg = rawImageSrc 
+              ? (rawImageSrc.startsWith("/profile-preview/") ? rawImageSrc : getImageUrl(rawImageSrc))
+              : null;
+
+            const dummyImages = [
+              "/profile-preview/feature1.jpg",
+              "/profile-preview/feature2.jpg",
+              "/profile-preview/feature3.jpg",
+            ];
+            const fallbackImg = dummyImages[index % dummyImages.length];
 
             const card = (
               <div className="flex flex-col gap-4">
@@ -60,9 +73,13 @@ export default function SelectedProject({ content, isLoading }: Props) {
                       unoptimized
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-secondary-bg text-xs text-tertiary-text">
-                      No image
-                    </div>
+                    <Image
+                      src={fallbackImg}
+                      alt="Project placeholder"
+                      className="object-cover"
+                      fill
+                      unoptimized
+                    />
                   )}
                 </div>
                 <div className="flex flex-col items-start min-w-0">
@@ -81,7 +98,7 @@ export default function SelectedProject({ content, isLoading }: Props) {
             return hasUrl ? (
               <a
                 key={project.id ?? index}
-                href={sanitizeUrl(project.url)}
+                href={sanitizeUrl(projectUrl!)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="no-underline"

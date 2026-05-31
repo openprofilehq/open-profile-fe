@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Mail, ArrowRight } from "lucide-react";
+import { ArrowRight, MessageSquare } from "lucide-react";
+import { TemplateLinkCard, getLinkIcon } from "../shared/TemplateLinkCard";
 import {
   DashboardProfileResponse,
   ProfileContentResponse,
@@ -10,22 +11,10 @@ import {
   ProjectItem,
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
-import {
-  getImageUrl,
-  sanitizeUrl,
-  getDisplayProfileUrl,
-} from "@/utils/profile";
+import { getImageUrl } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
-import {
-  XIcon,
-  InstagramIcon,
-  LinkedInIcon,
-  GithubIcon,
-  YoutubeIcon,
-  FacebookIcon,
-  DribbbleIcon,
-  GlobeIcon,
-} from "@/components/icons/BrandIcons";
+import HighlightCard from "../HighlightCard";
+
 
 type Props = {
   profile?: DashboardProfileResponse;
@@ -36,40 +25,53 @@ type Props = {
   isPreview?: boolean;
 };
 
-const getIconForUrl = (url: string = "") => {
-  const lowerUrl = url.toLowerCase();
-  if (lowerUrl.includes("twitter.com") || lowerUrl.includes("x.com"))
-    return XIcon;
-  if (lowerUrl.includes("instagram.com")) return InstagramIcon;
-  if (lowerUrl.includes("linkedin.com")) return LinkedInIcon;
-  if (lowerUrl.includes("github.com")) return GithubIcon;
-  if (lowerUrl.includes("youtube.com")) return YoutubeIcon;
-  if (lowerUrl.includes("facebook.com")) return FacebookIcon;
-  if (lowerUrl.includes("dribbble.com")) return DribbbleIcon;
-  return GlobeIcon;
-};
+const DEFAULT_LINKS = [
+  { id: "link-1", title: "Instagram", url: "https://instagram.com/johnsmith" },
+  { id: "link-2", title: "Twitter / X", url: "https://twitter.com/johnsmith" },
+  { id: "link-3", title: "LinkedIn", url: "https://linkedin.com/in/johnsmith" },
+  { id: "link-4", title: "Facebook", url: "https://facebook.com/johnsmith" },
+  { id: "link-5", title: "Website", url: "https://johnsmithdesign.com" },
+] as LinkItem[];
 
-export default function CreatorDashboardView({
-  profile,
-  content,
-  appearance,
-}: Props) {
-  const projectsVisible =
-    (content?.content?.projects?.visible ?? true) &&
-    (content?.content?.projects?.items?.length ?? 0) > 0;
-  const linksVisible =
-    (content?.content?.links?.visible ?? true) &&
-    (content?.content?.links?.items?.length ?? 0) > 0;
-  const bioVisible = content?.content?.bio?.visible ?? true;
+const DEFAULT_PROJECTS = [
+  {
+    id: "proj-1",
+    title: "Summer Campaign x [Pitaya]",
+    description:
+      "A cross-platform content series reaching over 2M views, focusing on sustainable lifestyle.",
+    buttonText: "View Project",
+    url: "#",
+    imageSrc: "/profile-preview/feature1.jpg",
+  },
+  {
+    id: "proj-2",
+    title: "The 30-Day Creative Challenge",
+    description: "Launched a guided workshop series for 10,000+ creators.",
+    buttonText: "View Project",
+    url: "#",
+    imageSrc: "/profile-preview/feature2.jpg",
+  },
+  {
+    id: "proj-3",
+    title: "Documentary Series",
+    description: "A 3-part YouTube series exploring the creator economy.",
+    buttonText: "View Project",
+    url: "#",
+    imageSrc: "/profile-preview/feature3.jpg",
+  },
+  {
+    id: "proj-4",
+    title: "Documentary Series",
+    description: "A 3-part YouTube series exploring the creator economy.",
+    buttonText: "View Project",
+    url: "#",
+    imageSrc: "/profile-preview/feature3.jpg",
+  },
+] as ProjectItem[];
 
-  const firstVisibleTab = projectsVisible
-    ? "projects"
-    : linksVisible
-      ? "links"
-      : "about";
-
+export default function CreatorDashboardView({ profile, content, isPreview }: Props) {
   const [activeTab, setActiveTab] = useState<"projects" | "links" | "about">(
-    firstVisibleTab
+    "projects"
   );
 
   const name =
@@ -83,10 +85,10 @@ export default function CreatorDashboardView({
     "I'm John Smith—a creator focused on building and sharing things that feel simple and useful. I spend most of my time working on ideas, collaborating with others, and turning rough concepts into something real. Some of it sticks, some of it doesn't, but that's part of the process.\n\nThis is where everything lives—my work, my links, and a way to get in touch if you want to build something together.";
 
   const rawLinks = (details?.links?.items ?? []) as LinkItem[];
-  const links = rawLinks;
+  const links = rawLinks.length > 0 ? rawLinks : (isPreview ? DEFAULT_LINKS : []);
 
   const rawProjects = (details?.projects?.items ?? []) as ProjectItem[];
-  const projects = rawProjects;
+  const projects = rawProjects.length > 0 ? rawProjects : (isPreview ? DEFAULT_PROJECTS : []);
 
   const cta = details?.cta;
 
@@ -94,8 +96,8 @@ export default function CreatorDashboardView({
   const photoSrc = rawPhotoSrc
     ? rawPhotoSrc.startsWith("/profile-preview/")
       ? rawPhotoSrc
-      : getImageUrl(rawPhotoSrc)!
-    : "/profile-preview/avatar.png";
+      : getImageUrl(rawPhotoSrc)
+    : null;
 
   const socialLinks = links
     .filter((link) => {
@@ -111,73 +113,47 @@ export default function CreatorDashboardView({
       );
     })
     .slice(0, 4);
-  const hasCustomBg = !!(
-    appearance?.backgroundColour ||
-    appearance?.bgColor ||
-    appearance?.accentColour
-  );
-  const customBgStyle = hasCustomBg
-    ? undefined
-    : ({
-        "--primary-bg": "#FFFFFF",
-      } as React.CSSProperties);
-
   return (
-    <div
-      className="text-primary-text bg-primary-bg flex min-h-screen w-full flex-col antialiased"
-      style={customBgStyle}
-    >
-      <div
-        className="mx-auto flex w-full max-w-3xl flex-col px-6 py-16 sm:py-24"
-        style={{ gap: "calc(var(--op-spacing, 24px) * 2)" }}
-      >
-        <header
-          className="flex w-full flex-col items-center text-center"
-          style={{ gap: "var(--op-spacing, 24px)" }}
-        >
-          <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
-            <Image
-              src={photoSrc}
-              alt={name}
-              fill
-              className="object-cover"
-              unoptimized
-            />
-            <div className="border-background absolute right-[6px] bottom-[6px] h-4 w-4 rounded-full border-2 bg-green-400" />
+    <div className="text-primary-text flex min-h-screen w-full flex-col font-sans antialiased">
+      <div className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-24">
+        <header className="flex w-full flex-col items-center gap-4 text-center">
+          <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
+            {photoSrc ? (
+              <Image
+                src={photoSrc}
+                alt={name}
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-brand-subtle-bg text-[40px] font-bold text-brand-hover-bg">
+                {name.charAt(0).toUpperCase()}
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col items-center">
             <h1 className="text-primary-text flex items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
               {name}
-              <svg
-                className="text-brand-hover-bg h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z" />
-              </svg>
             </h1>
             <p className="text-secondary-text mt-1 text-[15px]">
-              {getDisplayProfileUrl(username)}
+              openprofile.app/{username}
             </p>
           </div>
 
           {socialLinks.length > 0 && (
-            <div
-              className="flex items-center"
-              style={{ gap: "calc(var(--op-spacing, 24px) * 0.75)" }}
-            >
+            <div className="mt-2 flex items-center gap-4">
               {socialLinks.map((link, i) => {
-                const Icon = getIconForUrl(link.url);
                 return (
                   <a
                     key={i}
-                    href={sanitizeUrl(link.url)}
+                    href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-secondary-text hover:text-primary-text transition-colors"
                   >
-                    <Icon className="h-5 w-5" />
+                    {getLinkIcon((link.url || "") + " " + (link.title || link.label || ""))}
                   </a>
                 );
               })}
@@ -186,179 +162,148 @@ export default function CreatorDashboardView({
 
           {details?.cta?.visible !== false && (
             <a
-              href={sanitizeUrl(cta?.value ?? cta?.url)}
+              href={cta?.url || "mailto:hello@example.com"}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all active:scale-95"
+              className="bg-brand-hover-bg hover:bg-button-brand-bg mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all active:scale-95"
             >
               {cta?.iconSrc ? (
-                <Image
-                  src={cta.iconSrc}
-                  alt=""
-                  width={16}
-                  height={16}
-                  className="object-contain brightness-0 invert"
-                />
+                <Image src={getImageUrl(cta.iconSrc)!} alt="CTA Icon" width={16} height={16} className="h-4 w-4 object-contain brightness-0 invert" unoptimized />
               ) : (
-                <Mail size={16} />
+                <MessageSquare size={16} />
               )}
-              {cta?.label || "Let's Collaborate"}
+              {cta?.buttonText || cta?.label || "Let's Collaborate"}
             </a>
           )}
         </header>
 
         {/* TABS NAVIGATION */}
-        <div
-          className="border-border flex items-center justify-center border-b"
-          style={{ gap: "calc(var(--op-spacing, 24px) * 1.5)" }}
-        >
-          {projectsVisible && (
-            <button
-              onClick={() => setActiveTab("projects")}
-              className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "projects" ? "text-primary-text" : "text-secondary-text hover:text-primary-text"}`}
-            >
-              Projects
-              {activeTab === "projects" && (
-                <span className="bg-primary-text absolute right-0 bottom-[-1px] left-0 h-[2px]" />
-              )}
-            </button>
-          )}
-          {linksVisible && (
-            <button
-              onClick={() => setActiveTab("links")}
-              className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "links" ? "text-primary-text" : "text-secondary-text hover:text-primary-text"}`}
-            >
-              Links
-              {activeTab === "links" && (
-                <span className="bg-primary-text absolute right-0 bottom-[-1px] left-0 h-[2px]" />
-              )}
-            </button>
-          )}
-          {bioVisible && (
-            <button
-              onClick={() => setActiveTab("about")}
-              className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "about" ? "text-primary-text" : "text-secondary-text hover:text-primary-text"}`}
-            >
-              About
-              {activeTab === "about" && (
-                <span className="bg-primary-text absolute right-0 bottom-[-1px] left-0 h-[2px]" />
-              )}
-            </button>
-          )}
+        <div className="border-border mt-12 flex items-center justify-center gap-8 border-b">
+          <button
+            onClick={() => setActiveTab("projects")}
+            className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "projects" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
+          >
+            Projects
+            {activeTab === "projects" && (
+              <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab("links")}
+            className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "links" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
+          >
+            Links
+            {activeTab === "links" && (
+              <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab("about")}
+            className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "about" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
+          >
+            About
+            {activeTab === "about" && (
+              <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
+            )}
+          </button>
         </div>
 
         {/* TABS CONTENT */}
-        <div className="min-h-[400px] w-full">
-          {activeTab === "projects" && projectsVisible && (
-            <div
-              className="grid grid-cols-1 sm:grid-cols-2"
-              style={{ gap: "var(--op-spacing, 24px)" }}
-            >
-              {projects.map((project) => (
-                <div
-                  key={project.id}
-                  className="border-border bg-background flex flex-col overflow-hidden rounded-2xl border transition-shadow hover:shadow-md"
-                >
-                  <div className="bg-secondary-bg relative h-[200px] w-full shrink-0">
-                    {project.imageSrc ? (
-                      <Image
-                        src={
-                          project.imageSrc.startsWith("/profile-preview/")
-                            ? project.imageSrc
-                            : getImageUrl(project.imageSrc)!
-                        }
-                        alt={project.title || "Project"}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
-                    ) : (
-                      <div className="h-full w-full bg-neutral-200" />
-                    )}
+        <div className="mt-10 min-h-[400px] w-full">
+          {activeTab === "projects" && (() => {
+            const highlightedProject = projects.find(
+              (p) => p.highlighted === true || String(p.highlighted) === "true" || String(p.id).startsWith("hl_")
+            );
+            const remainingProjects = projects.filter((p) => p.id !== highlightedProject?.id);
+
+            return (
+              <div className="flex flex-col gap-10">
+                <HighlightCard profile={profile} content={content} />
+                {remainingProjects.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    {remainingProjects.map((project) => {
+                      const projectUrl = project.url || (project as { repoUrl?: string }).repoUrl;
+                      return (
+                        <div
+                          key={project.id}
+                          className="border-border bg-background flex flex-col overflow-hidden rounded-[12px] border transition-shadow hover:shadow-md"
+                        >
+                          <div className="bg-secondary-bg relative h-[200px] w-full shrink-0">
+                            {project.imageSrc ? (
+                              <Image
+                                src={
+                                  project.imageSrc.startsWith("/profile-preview/")
+                                    ? project.imageSrc
+                                    : getImageUrl(project.imageSrc)!
+                                }
+                                alt={project.title || "Project"}
+                                fill
+                                className="object-cover"
+                                unoptimized
+                              />
+                            ) : (
+                              <div className="h-full w-full bg-neutral-200" />
+                            )}
+                          </div>
+                          <div className="flex flex-col p-6">
+                            <h3 className="text-primary-text text-[17px] font-bold">
+                              {project.title}
+                            </h3>
+                            {project.description && (
+                              <p className="text-secondary-text mt-3 line-clamp-3 text-[14px] leading-relaxed">
+                                {project.description}
+                              </p>
+                            )}
+                            {projectUrl && (
+                              <a
+                                href={projectUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-brand-hover-bg mt-6 inline-flex items-center gap-1.5 text-[14px] font-bold hover:underline"
+                              >
+                                {project.buttonText || "View Project"}
+                                <ArrowRight size={16} strokeWidth={2.5} />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div
-                    className="flex flex-col"
-                    style={{ padding: "var(--op-spacing, 24px)" }}
-                  >
-                    <h3 className="text-primary-text text-[17px] font-bold">
-                      {project.title}
-                    </h3>
-                    {project.description && (
-                      <p className="text-secondary-text mt-3 line-clamp-3 text-[14px] leading-relaxed">
-                        {project.description}
-                      </p>
-                    )}
-                    {project.url && (
-                      <a
-                        href={sanitizeUrl(project.url)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-brand-hover-bg mt-6 inline-flex items-center gap-1.5 text-[14px] font-bold hover:underline"
-                      >
-                        {project.buttonText || "View Project"}
-                        <ArrowRight size={16} strokeWidth={2.5} />
-                      </a>
-                    )}
+                ) : (
+                  <p className="text-tertiary-text border-border rounded-xl border border-dashed py-8 text-center text-sm">
+                    Add your projects
+                  </p>
+                )}
+              </div>
+            );
+          })()}
+
+          {activeTab === "links" && (
+            <>
+              {links.length > 0 ? (
+                <div className="mx-auto flex w-full flex-col gap-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full">
+                    {links.map((link) => (
+                      <TemplateLinkCard
+                        key={link.id}
+                        id={link.id}
+                        title={link.title || link.label || ""}
+                        url={link.url || ""}
+                      />
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
+              ) : (
+                <p className="text-tertiary-text border-border rounded-xl border border-dashed py-8 text-center text-sm">
+                  Add your links
+                </p>
+              )}
+            </>
           )}
 
-          {activeTab === "links" && linksVisible && (
-            <div
-              className="mx-auto flex max-w-xl flex-col"
-              style={{ gap: "var(--op-spacing, 24px)" }}
-            >
-              {links.map((link) => {
-                const Icon = getIconForUrl(link.url);
-                const isWebsite =
-                  !link.url?.includes("twitter") &&
-                  !link.url?.includes("instagram") &&
-                  !link.url?.includes("linkedin") &&
-                  !link.url?.includes("facebook") &&
-                  !link.url?.includes("youtube") &&
-                  !link.url?.includes("github");
-                const subtitle = isWebsite
-                  ? link.url
-                      ?.replace(/^https?:\/\/(www\.)?/, "")
-                      ?.replace(/\/$/, "")
-                  : `@${username}`;
-
-                return (
-                  <a
-                    key={link.id}
-                    href={sanitizeUrl(link.url)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group border-border bg-background hover:border-brand-hover-bg flex items-center justify-between rounded-2xl border transition-all hover:shadow-sm"
-                    style={{ padding: "var(--op-spacing, 24px)" }}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="bg-brand-light-subtle-bg text-brand-hover-bg flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
-                        <Icon className="h-5 w-5" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-primary-text text-[15px] font-bold">
-                          {link.title || link.label}
-                        </span>
-                        <span className="text-tertiary-text text-[13px]">
-                          {subtitle}
-                        </span>
-                      </div>
-                    </div>
-                    <ArrowRight className="text-tertiary-text group-hover:text-brand-hover-bg h-5 w-5 transition-transform group-hover:translate-x-1" />
-                  </a>
-                );
-              })}
-            </div>
-          )}
-
-          {activeTab === "about" && bioVisible && (
-            <div
-              className="border-border bg-background mx-auto max-w-2xl rounded-3xl border"
-              style={{ padding: "calc(var(--op-spacing, 24px) * 1.5)" }}
-            >
+          {activeTab === "about" && (
+            <div className="border-border bg-background mx-auto max-w-2xl rounded-[12px] border p-8 sm:p-12">
               <p className="text-secondary-text text-center text-[16px] leading-relaxed whitespace-pre-wrap">
                 {bio}
               </p>
@@ -367,7 +312,7 @@ export default function CreatorDashboardView({
         </div>
 
         {/* FOOTER */}
-        <div>
+        <div className="mt-20">
           <TemplateFooter />
         </div>
       </div>

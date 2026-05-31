@@ -92,6 +92,7 @@ export type ProfileContentSectionCta = {
   title?: string;
   subtitle?: string;
   layout?: string;
+  buttonText?: string;
   iconId?: string | null;
   iconSrc?: string | null;
   iconLabel?: string | null;

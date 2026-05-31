@@ -1,19 +1,16 @@
 import React from "react";
 import Image from "next/image";
 import {
-  Mail,
-  Link as LinkIcon,
   ArrowRight,
+  ExternalLink,
+  MoreHorizontal,
   Eye,
   EyeOff,
   Trash2,
 } from "lucide-react";
-import {
-  getImageUrl,
-  sanitizeUrl,
-  getDisplayProfileUrl,
-} from "@/utils/profile";
+import { getImageUrl, sanitizeUrl } from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
+import HighlightPreviewCard from "./HighlightPreviewCard";
 
 interface ProfessionalPreviewProps {
   sections: Section[];
@@ -26,7 +23,7 @@ interface ProfessionalPreviewProps {
 export default function ProfessionalPreview({
   sections,
   profile,
-  selectedSectionId,
+  selectedSectionId: _selectedSectionId,
   onToggleSectionVisibility,
   onRemoveSection,
 }: ProfessionalPreviewProps) {
@@ -34,191 +31,131 @@ export default function ProfessionalPreview({
   const linksSection = sections.find((s) => s.type === "links");
   const projectsSection = sections.find((s) => s.type === "projects");
   const ctaSection = sections.find((s) => s.type === "experience");
-  const bioSectionId = bioSection?.id ?? "bio";
+  const _bioSectionId = bioSection?.id ?? "bio";
 
-  const sectionStyle = (section: Section): React.CSSProperties => ({
-    ...(section.bgColor && { backgroundColor: section.bgColor }),
-    ...(section.textColor && { color: section.textColor }),
-    ...(section.padding != null && { padding: section.padding }),
-    ...(section.paddingTop != null && { paddingTop: section.paddingTop }),
-    ...(section.paddingBottom != null && {
-      paddingBottom: section.paddingBottom,
-    }),
-    ...(section.gap != null && { gap: section.gap }),
-  });
+  const renderControls = (section?: Section, isBio: boolean = false) => {
+    if (!section) return null;
+    return (
+      <div className="group/menu absolute -top-12 right-0 z-50">
+        <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
+          <MoreHorizontal size={18} />
+        </button>
+        
+        <div className="border-border bg-background absolute top-full right-0 mt-2 flex w-40 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all invisible group-hover/menu:visible group-hover/menu:opacity-100">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleSectionVisibility(section.id);
+            }}
+            className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors"
+          >
+            {section.visible ? (
+              <><EyeOff size={16} /> Hide Section</>
+            ) : (
+              <><Eye size={16} /> Show Section</>
+            )}
+          </button>
+          <button
+            onClick={(e) => {
+              if (!isBio) {
+                e.stopPropagation();
+                onRemoveSection(section.id);
+              }
+            }}
+            disabled={isBio}
+            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? 'text-negative-text opacity-50 cursor-not-allowed' : 'text-negative-text hover:bg-negative-bg/20'}`}
+          >
+            <Trash2 size={16} /> Delete
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div
-      className="text-primary-text mx-auto flex w-full max-w-4xl flex-col py-8 pt-12"
-      style={{ gap: "calc(var(--op-spacing, 24px) * 2)" }}
-    >
+    <div className="text-primary-text mx-auto flex w-full max-w-4xl flex-col py-8 pt-6">
       {/* HEADER SECTION (Bio) */}
-      {bioSection?.visible && (
-        <div
-          className={`group relative transition-opacity duration-200 ${selectedSectionId && selectedSectionId !== bioSectionId ? "opacity-50" : ""}`}
-          style={sectionStyle(bioSection)}
-        >
-          {bioSection && (
-            <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleSectionVisibility(bioSection.id);
-                }}
-                className="text-secondary-text transition-opacity hover:opacity-80"
-              >
-                {bioSection.visible ? (
-                  <Eye size={18} strokeWidth={2} />
-                ) : (
-                  <EyeOff size={18} strokeWidth={2} />
-                )}
-              </button>
-              <button
-                disabled
-                className="text-secondary-text cursor-not-allowed opacity-50"
-              >
-                <Trash2 size={18} strokeWidth={2} />
-              </button>
-            </div>
-          )}
+      <div
+        className="group relative mb-12 transition-opacity duration-200"
+      >
+        {renderControls(bioSection, true)}
 
-          <header
-            className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between rounded-2xl border border-transparent transition-colors sm:flex-row sm:items-start"
-            style={{
-              gap: "var(--op-spacing, 24px)",
-              padding: "var(--op-spacing, 24px)",
-            }}
-          >
-            <div
-              className="flex items-center"
-              style={{ gap: "var(--op-spacing, 24px)" }}
-            >
-              <div className="border-border bg-secondary-bg relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-full border">
-                {getImageUrl(profile?.photoUrl) ? (
-                  <Image
-                    src={getImageUrl(profile?.photoUrl) || ""}
-                    alt={profile?.fullName ?? "Profile avatar"}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                ) : (
-                  <div className="text-brand-text flex h-full items-center justify-center text-3xl font-bold">
-                    {(profile?.fullName || "M").charAt(0).toUpperCase()}
-                  </div>
-                )}
-                {/* Online indicator dot */}
-                <div className="border-background absolute right-1 bottom-1 h-3.5 w-3.5 rounded-full border-2 bg-green-500" />
-              </div>
-
-              <div className="flex flex-col">
-                <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight">
-                  {profile?.fullName || "Micaela Robinson"}
-                </h1>
-                <p className="text-secondary-text mt-1 text-[15px]">
-                  {getDisplayProfileUrl(profile?.username || "micaela")}
-                </p>
-              </div>
+        <header className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between gap-6 rounded-2xl border border-transparent p-6 transition-colors sm:flex-row sm:items-start">
+          <div className="flex flex-1 min-w-0 items-center gap-6">
+            <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
+              {getImageUrl(profile?.photoUrl) ? (
+                <Image
+                  src={getImageUrl(profile?.photoUrl) || ""}
+                  alt={profile?.fullName ?? "Profile avatar"}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+              ) : (
+                <div className="text-brand-text flex h-full items-center justify-center text-[40px] font-bold">
+                  {(profile?.fullName || "M").charAt(0).toUpperCase()}
+                </div>
+              )}
             </div>
 
-            {ctaSection?.visible && ctaSection?.url && (
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="border-brand-hover-bg bg-brand-hover-bg/5 text-brand-hover-bg hover:bg-brand-hover-bg/10 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-sm font-semibold transition-colors"
-              >
-                {ctaSection.iconSrc ? (
-                  <Image
-                    src={ctaSection.iconSrc}
-                    alt=""
-                    width={16}
-                    height={16}
-                    className="object-contain"
-                  />
-                ) : (
-                  <Mail size={16} />
-                )}
-                {ctaSection.buttonText || "Email"}
-              </a>
-            )}
-          </header>
+            <div className="flex flex-col min-w-0 flex-1">
+              <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight break-all">
+                {profile?.fullName || "Micaela Robinson"}
+              </h1>
+              <p className="text-secondary-text mt-1 text-[15px] break-all">
+                openprofile.app/{profile?.username || "micaela"}
+              </p>
+            </div>
+          </div>
 
-          <section style={{ paddingInline: "var(--op-spacing, 24px)" }}>
-            <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed whitespace-pre-wrap">
-              {bioSection?.bio || "Write a little bit about yourself here..."}
-            </p>
-          </section>
-        </div>
-      )}
+        </header>
+
+        <section className="mt-6 px-6">
+          <p className="text-secondary-text max-w-2xl break-all text-[16px] leading-relaxed whitespace-pre-wrap">
+            {bioSection?.bio || "Write a little bit about yourself here..."}
+          </p>
+        </section>
+      </div>
 
       {/* LINKS SECTION */}
-      {linksSection?.visible && (
+      {linksSection && (
         <section
-          className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent transition-colors ${selectedSectionId && selectedSectionId !== linksSection.id ? "opacity-50" : ""}`}
-          style={{
-            padding: "var(--op-spacing, 24px)",
-            ...sectionStyle(linksSection),
-          }}
+          className="group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors"
         >
-          <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleSectionVisibility(linksSection.id);
-              }}
-              className="text-secondary-text hover:opacity-80"
-            >
-              {linksSection.visible ? (
-                <Eye size={18} strokeWidth={2} />
-              ) : (
-                <EyeOff size={18} strokeWidth={2} />
-              )}
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemoveSection(linksSection.id);
-              }}
-              className="text-negative-text hover:opacity-80"
-            >
-              <Trash2 size={18} strokeWidth={2} />
-            </button>
-          </div>
+          {renderControls(linksSection)}
 
           <h2 className="text-tertiary-text mb-4 text-[13px]">
             {linksSection.subtitle || "Links"}
           </h2>
-          <div className="flex flex-col">
+          <div className="flex flex-col border-t border-border">
             {linksSection.links && linksSection.links.length > 0 ? (
-              linksSection.links.map((link, idx) => {
-                const displayUrl =
-                  link.url
-                    ?.replace(/^https?:\/\/(www\.)?/, "")
-                    ?.replace(/\/$/, "") || "link";
-                return (
-                  <a
-                    key={link.id}
-                    href={sanitizeUrl(link.url)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`group/link hover:bg-hover-bg flex items-center justify-between py-4 transition-colors ${
-                      idx === 0
-                        ? "border-border border-y"
-                        : "border-border border-b"
-                    }`}
-                  >
-                    <span className="text-primary-text text-[15px] font-bold">
-                      {link.title || link.label}
+              linksSection.links.map((link, idx) => (
+                <a
+                  key={link.id ?? idx}
+                  href={sanitizeUrl(link.url || "")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center justify-between border-b border-border py-4 transition-colors hover:bg-hover-bg/30"
+                >
+                  <span className="text-[15px] font-bold text-primary-text group-hover:text-brand-hover-bg transition-colors">
+                    {link.title || link.label}
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-secondary-text text-[14px]">
+                      {(() => {
+                        try {
+                          return link.url ? new URL(link.url.startsWith('http') ? link.url : `https://${link.url}`).hostname.replace('www.', '') : '';
+                        } catch {
+                          return link.url || '';
+                        }
+                      })()}
                     </span>
-                    <span className="text-secondary-text group-hover/link:text-brand-hover-bg flex items-center gap-2 text-[14px] transition-colors">
-                      {displayUrl}
-                      <LinkIcon size={14} />
-                    </span>
-                  </a>
-                );
-              })
+                    <ExternalLink size={16} className="text-tertiary-text group-hover:text-brand-hover-bg transition-colors" />
+                  </div>
+                </a>
+              ))
             ) : (
-              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
+              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm mt-4">
                 No links added yet.
               </p>
             )}
@@ -227,209 +164,148 @@ export default function ProfessionalPreview({
       )}
 
       {/* PROJECTS SECTION */}
-      {projectsSection?.visible && (
-        <section
-          className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent transition-colors ${selectedSectionId && selectedSectionId !== projectsSection.id ? "opacity-50" : ""}`}
-          style={{
-            padding: "var(--op-spacing, 24px)",
-            ...sectionStyle(projectsSection),
-          }}
-        >
-          <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleSectionVisibility(projectsSection.id);
-              }}
-              className="text-secondary-text hover:opacity-80"
-            >
-              {projectsSection.visible ? (
-                <Eye size={18} strokeWidth={2} />
-              ) : (
-                <EyeOff size={18} strokeWidth={2} />
-              )}
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemoveSection(projectsSection.id);
-              }}
-              className="text-negative-text hover:opacity-80"
-            >
-              <Trash2 size={18} strokeWidth={2} />
-            </button>
-          </div>
+      {projectsSection && (() => {
+        const projectsToRender = projectsSection.projects || [];
+        const highlightedProject = projectsToRender.find(
+          (p) => p.highlighted === true || String(p.highlighted) === "true"
+        );
+        const remainingProjects = projectsToRender.filter(
+          (p) => p.id !== highlightedProject?.id
+        );
 
-          <h2 className="text-tertiary-text mb-4 text-[13px]">
-            {projectsSection.subtitle || "Selected Work"}
-          </h2>
-          {projectsSection.projects && projectsSection.projects.length > 0 ? (
-            <div
-              className={`grid ${projectsSection.layout === "1" ? "grid-cols-1" : projectsSection.layout === "3" || projectsSection.layout === "4" ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1 sm:grid-cols-2"}`}
-              style={{ gap: "var(--op-spacing, 24px)" }}
+        return (
+          <div className="mb-16 flex flex-col gap-6">
+            <HighlightPreviewCard projectsSection={projectsSection} />
+            <section
+              className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
             >
-              {projectsSection.projects.map((project) => {
-                const layoutType = projectsSection.layout || "1";
-                const img = getImageUrl(project.imageSrc);
-                return (
-                  <div
-                    key={project.id}
-                    className={`border-border bg-background flex rounded-xl border shadow-sm transition-shadow hover:shadow-md ${
-                      layoutType === "4"
-                        ? "flex-col sm:flex-row-reverse sm:items-start"
-                        : layoutType === "3"
-                          ? "flex-col sm:flex-row sm:items-start"
-                          : layoutType === "2"
-                            ? "flex-col"
-                            : "flex-col items-start sm:flex-row sm:items-center"
-                    }`}
-                    style={{ padding: "var(--op-spacing, 24px)" }}
-                  >
+              {renderControls(projectsSection)}
+
+              <h2 className="text-tertiary-text mb-4 text-[13px]">
+                {projectsSection.subtitle || "Selected Work"}
+              </h2>
+              <div className={`grid gap-6 ${
+                !projectsSection.layout || projectsSection.layout === "1" ? "grid-cols-1" :
+                projectsSection.layout === "3" ? "grid-cols-1 sm:grid-cols-2" :
+                projectsSection.layout === "4" ? "grid-cols-1 sm:grid-cols-2" :
+                "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+              }`}>
+                {remainingProjects.length > 0 ? (
+                  remainingProjects.map((project) => {
+                const layoutType = projectsSection.layout || "2";
+                const hasUrl = Boolean(project.url);
+                const displayImg = getImageUrl(project.imageSrc);
+
+                const card = (
+                  <div className={`flex group rounded-[12px] border border-border bg-background p-4 shadow-sm transition-shadow hover:shadow-md hover:border-brand-hover-bg/30 ${
+                    layoutType === "1" ? "flex-col sm:flex-row sm:items-center justify-between" :
+                    layoutType === "3" ? "flex-col sm:flex-row sm:items-start" :
+                    layoutType === "4" ? "flex-col sm:flex-row-reverse sm:items-start" :
+                    "flex-col" // Layout 2
+                  }`}>
+                    {/* IMAGE */}
                     {layoutType !== "1" && (
-                      <div
-                        className={`bg-secondary-bg border-border relative shrink-0 overflow-hidden rounded-lg border ${layoutType === "2" ? "mb-4 aspect-video w-full" : "mb-4 h-[100px] w-full sm:mb-0 sm:w-[120px]"} ${layoutType === "3" ? "sm:mr-4" : ""} ${layoutType === "4" ? "sm:ml-4" : ""}`}
-                      >
-                        {img ? (
+                      <div className={`relative shrink-0 overflow-hidden rounded-lg border border-border bg-secondary-bg mb-4 ${
+                        layoutType === "2" ? "w-full aspect-video" : "w-full h-[120px] sm:mb-0 sm:w-[140px]"
+                      } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}>
+                        {displayImg ? (
                           <Image
-                            src={img}
-                            alt={project.title || ""}
-                            fill
+                            src={displayImg}
+                            alt={project.title ?? "Project"}
                             className="object-cover"
+                            fill
                             unoptimized
                           />
                         ) : (
-                          <div className="h-full w-full bg-neutral-200" />
+                          <div className="flex h-full w-full items-center justify-center text-xs text-tertiary-text">
+                            No image
+                          </div>
                         )}
                       </div>
                     )}
-                    {layoutType === "1" && (
-                      <div className="bg-secondary-bg border-border relative mb-4 h-[80px] w-full shrink-0 overflow-hidden rounded-lg border sm:mb-0 sm:w-[120px]">
-                        {img ? (
-                          <Image
-                            src={img}
-                            alt={project.title || ""}
-                            fill
-                            className="object-cover"
-                            unoptimized
-                          />
-                        ) : (
-                          <div className="h-full w-full bg-neutral-200" />
-                        )}
-                      </div>
-                    )}
-                    <div
-                      className={`flex min-w-0 flex-1 flex-col ${layoutType === "1" ? "sm:ml-6" : ""}`}
-                    >
-                      <h3 className="text-primary-text text-[15px] font-bold">
+                    
+                    {/* CONTENT */}
+                    <div className="flex flex-col items-start min-w-0 flex-1">
+                      <h3 className="text-primary-text text-[16px] font-bold">
                         {project.title}
                       </h3>
-                      {project.description && (
-                        <p className="text-secondary-text mt-1 line-clamp-2 text-[13px]">
-                          {project.description}
-                        </p>
+                      <p className={`text-secondary-text break-all mt-1 ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"} text-[13px]`}>
+                        {project.description}
+                      </p>
+                      {layoutType !== "1" && hasUrl && (
+                        <span className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
+                          {project.buttonText || "View Project"}
+                          <ArrowRight size={14} strokeWidth={2.5} />
+                        </span>
                       )}
-                      <span className="text-brand-hover-bg mt-3 inline-flex items-center gap-1 text-[13px] font-bold">
-                        {project.url
-                          ? project.buttonText || "View Project"
-                          : "Edit project"}
-                        <ArrowRight size={14} strokeWidth={2.5} />
-                      </span>
                     </div>
+                    
+                    {/* BUTTON FOR LAYOUT 1 */}
+                    {layoutType === "1" && hasUrl && (
+                      <div className="mt-4 sm:mt-0 sm:ml-6 shrink-0">
+                        <span className="text-brand-hover-bg inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
+                          {project.buttonText || "View Project"}
+                          <ArrowRight size={14} strokeWidth={2.5} />
+                        </span>
+                      </div>
+                    )}
                   </div>
                 );
-              })}
-            </div>
-          ) : (
-            <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
-              No projects added yet.
-            </p>
-          )}
+
+                return (
+                  <div key={project.id} className="w-full">
+                    {hasUrl ? (
+                      <a
+                        href={sanitizeUrl(project.url || "")}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="no-underline block h-full"
+                      >
+                        {card}
+                      </a>
+                    ) : (
+                      <div className="h-full">
+                        {card}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
+                No projects added yet.
+              </p>
+            )}
+          </div>
         </section>
-      )}
+        </div>
+        );
+      })()}
 
       {/* CTA SECTION */}
-      {ctaSection?.visible && (
+      {ctaSection && (
         <section
-          className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent transition-colors ${selectedSectionId && selectedSectionId !== ctaSection.id ? "opacity-50" : ""}`}
-          style={{
-            padding: "var(--op-spacing, 24px)",
-            ...sectionStyle(ctaSection),
-          }}
+          className="group hover:border-border hover:bg-background/50 relative mb-16 w-full rounded-2xl border border-transparent p-6 transition-colors"
         >
-          <div className="border-border bg-background absolute -top-12 right-0 z-10 flex w-24 items-center justify-between gap-3 rounded-[10px] border p-3 shadow-none select-none">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleSectionVisibility(ctaSection.id);
-              }}
-              className="text-secondary-text hover:opacity-80"
-            >
-              {ctaSection.visible ? (
-                <Eye size={18} strokeWidth={2} />
-              ) : (
-                <EyeOff size={18} strokeWidth={2} />
-              )}
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemoveSection(ctaSection.id);
-              }}
-              className="text-negative-text hover:opacity-80"
-            >
-              <Trash2 size={18} strokeWidth={2} />
-            </button>
-          </div>
+          {renderControls(ctaSection)}
 
-          {ctaSection.layout === "2" ? (
-            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-              <div>
-                <h3 className="text-primary-text text-[16px] font-bold">
-                  {ctaSection.title || "Open to new projects."}
-                </h3>
-                <p className="text-secondary-text mt-0.5 text-[13px]">
-                  {ctaSection.subtitle ||
-                    "Have an idea or product you're building?"}
-                </p>
-              </div>
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="bg-brand-hover-bg inline-flex h-10 shrink-0 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm"
-              >
-                {ctaSection.buttonText || "Work with me"}
-              </a>
-            </div>
-          ) : ctaSection.layout === "3" ? (
-            <div className="flex justify-center">
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="bg-brand-hover-bg inline-flex h-10 items-center justify-center rounded-md px-8 text-sm font-bold text-white shadow-sm"
-              >
-                {ctaSection.buttonText || "Work with me"}
-              </a>
-            </div>
-          ) : (
-            <>
-              <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
-                {ctaSection.title || "Open to new projects."}
-              </h2>
-              <p className="text-secondary-text mt-2 mb-6 max-w-[500px] text-[15px]">
-                {ctaSection.subtitle ||
-                  "Have an idea or product you're building?"}
-              </p>
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="bg-brand-hover-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm transition-all"
-              >
-                {ctaSection.buttonText || "Work with me"}
-              </a>
-            </>
-          )}
+          <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
+            {ctaSection.title || "Open to new projects."}
+          </h2>
+          <p className="text-secondary-text mt-2 mb-6 max-w-[500px] text-[15px]">
+            {ctaSection.subtitle || "Have an idea or product you're building?"}
+          </p>
+          <a
+            href={sanitizeUrl(ctaSection.url)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm transition-all active:scale-95"
+          >
+            {ctaSection.buttonText || "Work with me"}
+          </a>
         </section>
       )}
     </div>
   );
 }
+ 
