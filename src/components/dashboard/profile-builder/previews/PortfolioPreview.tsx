@@ -8,7 +8,11 @@ import {
   Trash2,
   MoreHorizontal,
 } from "lucide-react";
-import { getImageUrl, sanitizeUrl } from "@/utils/profile";
+import {
+  getImageUrl,
+  sanitizeUrl,
+  isProjectHighlighted,
+} from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 import { TemplateLinkCard } from "../../shared/TemplateLinkCard";
 import HighlightPreviewCard from "./HighlightPreviewCard";
@@ -154,9 +158,8 @@ export default function PortfolioPreview({
       {projectsSection &&
         (() => {
           const projectsToRender = projectsSection.projects || [];
-          const highlightedProject = projectsToRender.find(
-            (p) => p.highlighted === true || String(p.highlighted) === "true"
-          );
+          const highlightedProject =
+            projectsToRender.find(isProjectHighlighted);
           const remainingProjects = projectsToRender.filter(
             (p) => p.id !== highlightedProject?.id
           );
@@ -182,7 +185,7 @@ export default function PortfolioPreview({
                           <div className="bg-secondary-bg border-border relative aspect-16/10 w-full overflow-hidden border-b">
                             {getImageUrl(project.imageSrc) ? (
                               <Image
-                                src={getImageUrl(project.imageSrc)!}
+                                src={getImageUrl(project.imageSrc) || ""}
                                 alt={project.title || "Project"}
                                 fill
                                 className="object-cover transition-transform duration-500 group-hover/proj:scale-[1.02]"

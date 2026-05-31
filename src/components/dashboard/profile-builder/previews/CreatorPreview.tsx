@@ -8,7 +8,11 @@ import {
   ChevronRight,
   MoreHorizontal,
 } from "lucide-react";
-import { getImageUrl, sanitizeUrl } from "@/utils/profile";
+import {
+  getImageUrl,
+  sanitizeUrl,
+  isProjectHighlighted,
+} from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 import { TemplateLinkCard, getLinkIcon } from "../../shared/TemplateLinkCard";
 import HighlightPreviewCard from "./HighlightPreviewCard";
@@ -205,7 +209,7 @@ export default function CreatorPreview({
               >
                 {ctaSection.iconSrc ? (
                   <Image
-                    src={getImageUrl(ctaSection.iconSrc)!}
+                    src={getImageUrl(ctaSection.iconSrc) || ""}
                     alt="CTA Icon"
                     width={16}
                     height={16}
@@ -276,10 +280,8 @@ export default function CreatorPreview({
               // Projects Tab
               if (section.type === "projects" && activeTab === "projects") {
                 const projectsToRender = section.projects || [];
-                const highlightedProject = projectsToRender.find(
-                  (p) =>
-                    p.highlighted === true || String(p.highlighted) === "true"
-                );
+                const highlightedProject =
+                  projectsToRender.find(isProjectHighlighted);
                 const remainingProjects = projectsToRender.filter(
                   (p) => p.id !== highlightedProject?.id
                 );

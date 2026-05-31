@@ -11,7 +11,7 @@ import {
   ProjectItem,
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
-import { getImageUrl } from "@/utils/profile";
+import { getImageUrl, isProjectHighlighted } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
 import HighlightCard from "../HighlightCard";
 
@@ -175,7 +175,7 @@ export default function CreatorDashboardView({
             >
               {cta?.iconSrc ? (
                 <Image
-                  src={getImageUrl(cta.iconSrc)!}
+                  src={getImageUrl(cta.iconSrc) || ""}
                   alt="CTA Icon"
                   width={16}
                   height={16}
@@ -231,12 +231,7 @@ export default function CreatorDashboardView({
         >
           {activeTab === "projects" &&
             (() => {
-              const highlightedProject = projects.find(
-                (p) =>
-                  p.highlighted === true ||
-                  String(p.highlighted) === "true" ||
-                  String(p.id).startsWith("hl_")
-              );
+              const highlightedProject = projects.find(isProjectHighlighted);
               const remainingProjects = projects.filter(
                 (p) => p.id !== highlightedProject?.id
               );
@@ -263,7 +258,7 @@ export default function CreatorDashboardView({
                                       "/profile-preview/"
                                     )
                                       ? project.imageSrc
-                                      : getImageUrl(project.imageSrc)!
+                                      : getImageUrl(project.imageSrc) || ""
                                   }
                                   alt={project.title || "Project"}
                                   fill

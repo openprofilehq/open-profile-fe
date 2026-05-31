@@ -9,7 +9,7 @@ import {
   ProjectItem,
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
-import { getImageUrl } from "@/utils/profile";
+import { getImageUrl, isProjectHighlighted } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
 import HighlightCard from "../HighlightCard";
 
@@ -180,12 +180,7 @@ export default function PortfolioDashboardView({
         {/* PROJECTS SECTION */}
         {details?.projects?.visible !== false &&
           (() => {
-            const highlightedProject = projects.find(
-              (p) =>
-                p.highlighted === true ||
-                String(p.highlighted) === "true" ||
-                String(p.id).startsWith("hl_")
-            );
+            const highlightedProject = projects.find(isProjectHighlighted);
             const remainingProjects = projects.filter(
               (p) => p.id !== highlightedProject?.id
             );
@@ -218,7 +213,7 @@ export default function PortfolioDashboardView({
                                       "/profile-preview/"
                                     )
                                       ? project.imageSrc
-                                      : getImageUrl(project.imageSrc)!
+                                      : getImageUrl(project.imageSrc) || ""
                                   }
                                   alt={project.title || "Project"}
                                   fill
@@ -241,10 +236,6 @@ export default function PortfolioDashboardView({
                                   {project.title}
                                 </h3>
                               </div>
-
-                              <span className="text-tertiary-text mb-3 ml-6 text-[11px]">
-                                Product Design
-                              </span>
 
                               {project.description && (
                                 <p className="text-secondary-text mb-6 ml-6 line-clamp-2 text-[13px]">

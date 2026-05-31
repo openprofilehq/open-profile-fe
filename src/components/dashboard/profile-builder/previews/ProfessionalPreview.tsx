@@ -8,7 +8,11 @@ import {
   EyeOff,
   Trash2,
 } from "lucide-react";
-import { getImageUrl, sanitizeUrl } from "@/utils/profile";
+import {
+  getImageUrl,
+  sanitizeUrl,
+  isProjectHighlighted,
+} from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 import HighlightPreviewCard from "./HighlightPreviewCard";
 
@@ -177,9 +181,8 @@ export default function ProfessionalPreview({
       {projectsSection &&
         (() => {
           const projectsToRender = projectsSection.projects || [];
-          const highlightedProject = projectsToRender.find(
-            (p) => p.highlighted === true || String(p.highlighted) === "true"
-          );
+          const highlightedProject =
+            projectsToRender.find(isProjectHighlighted);
           const remainingProjects = projectsToRender.filter(
             (p) => p.id !== highlightedProject?.id
           );

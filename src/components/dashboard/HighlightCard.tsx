@@ -77,7 +77,7 @@ export default function HighlightCard({ details }: Props) {
           <p className="text-secondary-text mt-2 text-sm wrap-break-word">
             {highlightedProject.description}
           </p>
-          {(highlightedProject.url || highlightedProject.url) && (
+          {highlightedProject.url && (
             <a
               href={sanitizeUrl(highlightedProject.url)}
               target="_blank"

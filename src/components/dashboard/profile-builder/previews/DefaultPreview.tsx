@@ -10,7 +10,12 @@ import {
   Trash2,
   MoreHorizontal,
 } from "lucide-react";
-import { getImageUrl, sanitizeUrl, getSectionStyle } from "@/utils/profile";
+import {
+  getImageUrl,
+  sanitizeUrl,
+  getSectionStyle,
+  isProjectHighlighted,
+} from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 import HighlightPreviewCard from "./HighlightPreviewCard";
 
@@ -38,9 +43,7 @@ export default function DefaultPreview({
 
   const projectsToRender = projectsSection?.projects || [];
 
-  const highlightedProject = projectsToRender.find(
-    (p) => p.highlighted === true || String(p.highlighted) === "true"
-  );
+  const highlightedProject = projectsToRender.find(isProjectHighlighted);
   const remainingProjects = projectsToRender.filter(
     (p) => p.id !== highlightedProject?.id
   );

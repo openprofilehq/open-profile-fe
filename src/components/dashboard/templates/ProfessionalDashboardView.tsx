@@ -9,7 +9,7 @@ import {
   ProjectItem,
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
-import { getImageUrl } from "@/utils/profile";
+import { getImageUrl, isProjectHighlighted } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
 import HighlightCard from "../HighlightCard";
 
@@ -180,12 +180,7 @@ export default function ProfessionalDashboardView({
         {/* PROJECTS SECTION */}
         {details?.projects?.visible !== false &&
           (() => {
-            const highlightedProject = projects.find(
-              (p) =>
-                p.highlighted === true ||
-                String(p.highlighted) === "true" ||
-                String(p.id).startsWith("hl_")
-            );
+            const highlightedProject = projects.find(isProjectHighlighted);
             const remainingProjects = projects.filter(
               (p) => p.id !== highlightedProject?.id
             );
@@ -216,7 +211,7 @@ export default function ProfessionalDashboardView({
                                       "/profile-preview/"
                                     )
                                       ? project.imageSrc
-                                      : getImageUrl(project.imageSrc)!
+                                      : getImageUrl(project.imageSrc) || ""
                                   }
                                   alt={project.title || "Project"}
                                   fill
