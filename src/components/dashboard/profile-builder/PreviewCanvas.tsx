@@ -5,6 +5,13 @@ import ProfessionalPreview from "./previews/ProfessionalPreview";
 import PortfolioPreview from "./previews/PortfolioPreview";
 import DefaultPreview from "./previews/DefaultPreview";
 import TemplateAppearanceProvider from "../templates/TemplateAppearanceProvider";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface PreviewCanvasProps {
   font: string;
@@ -88,49 +95,36 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
         </div>
       </TemplateAppearanceProvider>
 
-      {sectionToDelete && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setSectionToDelete(null);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") setSectionToDelete(null);
-          }}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="delete-section-title"
-            className="bg-background w-full max-w-sm rounded-2xl p-6 shadow-xl"
-          >
-            <h3
-              id="delete-section-title"
-              className="text-primary-text text-lg font-bold"
-            >
+      <Dialog
+        open={!!sectionToDelete}
+        onOpenChange={(open) => !open && setSectionToDelete(null)}
+      >
+        <DialogContent className="bg-background w-full max-w-sm rounded-2xl p-6 shadow-xl sm:rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-primary-text text-left text-lg font-bold">
               Delete Section
-            </h3>
-            <p className="text-secondary-text mt-2 text-sm">
+            </DialogTitle>
+            <DialogDescription className="text-secondary-text mt-2 text-left text-sm">
               Are you sure you want to delete this section? This action cannot
               be undone.
-            </p>
-            <div className="mt-6 flex justify-end gap-3">
-              <button
-                onClick={() => setSectionToDelete(null)}
-                className="text-primary-text hover:bg-hover-bg rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirmDelete}
-                className="bg-negative-text hover:bg-negative-text/90 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors"
-              >
-                Delete
-              </button>
-            </div>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-6 flex justify-end gap-3">
+            <button
+              onClick={() => setSectionToDelete(null)}
+              className="text-primary-text hover:bg-hover-bg rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmDelete}
+              className="bg-negative-text hover:bg-negative-text/90 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors"
+            >
+              Delete
+            </button>
           </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

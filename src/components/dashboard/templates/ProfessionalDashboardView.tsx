@@ -304,7 +304,7 @@ export default function ProfessionalDashboardView({
               <h2 className="text-primary-text text-[28px] font-bold tracking-tight">
                 {cta?.title || "Open to new projects."}
               </h2>
-              <p className="text-secondary-text mt-3 mb-8 max-w-[600px] text-[16px] leading-relaxed">
+              <p className="text-secondary-text mt-3 mb-8 max-w-[600px] text-base leading-relaxed">
                 {cta?.subtitle || "Have an idea or product you're building?"}
               </p>
               <a

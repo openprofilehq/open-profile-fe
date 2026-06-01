@@ -418,7 +418,7 @@ export default function PortfolioPreview({
             <h2 className="text-primary-text text-[28px] font-bold tracking-tight">
               {ctaSection.title || "Interested in working together?"}
             </h2>
-            <p className="text-secondary-text mt-3 mb-8 max-w-[600px] text-[16px] leading-relaxed">
+            <p className="text-secondary-text mt-3 mb-8 max-w-[600px] text-base leading-relaxed">
               {ctaSection.subtitle ||
                 "I am currently available for freelance project"}
             </p>
