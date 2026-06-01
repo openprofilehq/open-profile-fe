@@ -720,12 +720,14 @@ export default function ProfileBuilderContent() {
           </DialogHeader>
           <div className="mt-6 flex justify-end gap-3">
             <button
+              type="button"
               onClick={() => setSectionToDelete(null)}
               className="text-primary-text hover:bg-hover-bg rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
             >
               Cancel
             </button>
             <button
+              type="button"
               onClick={handleConfirmDelete}
               className="bg-negative-text hover:bg-negative-text/90 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors"
             >

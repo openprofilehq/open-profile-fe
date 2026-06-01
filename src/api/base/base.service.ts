@@ -14,12 +14,12 @@ declare module "axios" {
 }
 
 const isServer = typeof window === "undefined";
+const isClientDev = !isServer && process.env.NODE_ENV === "development";
+const publicApiOrigin = env.NEXT_PUBLIC_API_URL.replace(/\/+$/, "");
+const apiBase = isClientDev ? "/api/v1" : `${publicApiOrigin}/api/v1`;
 
 export const api = axios.create({
-  baseURL:
-    !isServer && process.env.NODE_ENV === "development"
-      ? "/api/v1"
-      : `${env.NEXT_PUBLIC_API_URL}/api/v1`,
+  baseURL: apiBase,
   timeout: 60 * 1000,
   withCredentials: true,
 });
@@ -74,10 +74,7 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const refreshUrl =
-        !isServer && process.env.NODE_ENV === "development"
-          ? "/api/v1/auth/refresh-token"
-          : `${env.NEXT_PUBLIC_API_URL}/api/v1/auth/refresh-token`;
+      const refreshUrl = `${apiBase}/auth/refresh-token`;
       await axios.post(refreshUrl, {}, { withCredentials: true });
       processQueue(null);
 
