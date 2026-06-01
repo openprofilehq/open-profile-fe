@@ -91,6 +91,9 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
       {sectionToDelete && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSectionToDelete(null);
+          }}
           onKeyDown={(e) => {
             if (e.key === "Escape") setSectionToDelete(null);
           }}
