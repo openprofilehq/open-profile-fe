@@ -28,6 +28,13 @@ import { contentToSections, sectionsToContent } from "./builder.utils";
 import { isApiError } from "@/api/base";
 import { ROUTES } from "@/constants/routes";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const createSection = (type: string, customTitle?: string): Section | null => {
   const allowedTypes: Record<string, Section["type"]> = {
@@ -186,6 +193,7 @@ export default function ProfileBuilderContent() {
 
   const [template, setTemplate] = useState<string>("creator");
   const [sections, setSections] = useState<Section[]>([]);
+  const [sectionToDelete, setSectionToDelete] = useState<string | null>(null);
 
   const contentLoadedRef = useRef(false);
   const userEditedRef = useRef(false);
@@ -551,10 +559,17 @@ export default function ProfileBuilderContent() {
   };
 
   const handleRemoveSection = (id: string) => {
-    const updated = sections.filter((s) => s.id !== id);
-    setSections(updated);
-    if (selectedSectionId === id) {
-      setSelectedSectionId(updated[0]?.id || null);
+    setSectionToDelete(id);
+  };
+
+  const handleConfirmDelete = () => {
+    if (sectionToDelete) {
+      const updated = sections.filter((s) => s.id !== sectionToDelete);
+      setSections(updated);
+      if (selectedSectionId === sectionToDelete) {
+        setSelectedSectionId(updated[0]?.id || null);
+      }
+      setSectionToDelete(null);
     }
   };
 
@@ -688,6 +703,37 @@ export default function ProfileBuilderContent() {
           />
         </div>
       </div>
+
+      <Dialog
+        open={!!sectionToDelete}
+        onOpenChange={(open) => !open && setSectionToDelete(null)}
+      >
+        <DialogContent className="bg-background w-full max-w-sm rounded-2xl p-6 shadow-xl sm:rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-primary-text text-left text-lg font-bold">
+              Delete Section
+            </DialogTitle>
+            <DialogDescription className="text-secondary-text mt-2 text-left text-sm">
+              Are you sure you want to delete this section? This action cannot
+              be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-6 flex justify-end gap-3">
+            <button
+              onClick={() => setSectionToDelete(null)}
+              className="text-primary-text hover:bg-hover-bg rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmDelete}
+              className="bg-negative-text hover:bg-negative-text/90 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors"
+            >
+              Delete
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

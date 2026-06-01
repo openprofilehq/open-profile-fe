@@ -1,17 +1,9 @@
-import React, { useState } from "react";
 import type { Section, ProfilePreview } from "./types";
 import CreatorPreview from "./previews/CreatorPreview";
 import ProfessionalPreview from "./previews/ProfessionalPreview";
 import PortfolioPreview from "./previews/PortfolioPreview";
 import DefaultPreview from "./previews/DefaultPreview";
 import TemplateAppearanceProvider from "../templates/TemplateAppearanceProvider";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 interface PreviewCanvasProps {
   font: string;
@@ -30,23 +22,6 @@ interface PreviewCanvasProps {
 
 export default function PreviewCanvas(props: PreviewCanvasProps) {
   const { font } = props;
-  const [sectionToDelete, setSectionToDelete] = useState<string | null>(null);
-
-  const handleConfirmDelete = () => {
-    if (sectionToDelete) {
-      props.onRemoveSection(sectionToDelete);
-      setSectionToDelete(null);
-    }
-  };
-
-  const handleRequestRemove = (id: string) => {
-    setSectionToDelete(id);
-  };
-
-  const enhancedProps = {
-    ...props,
-    onRemoveSection: handleRequestRemove,
-  };
 
   const templateKey = props.template
     ? String(props.template).toLowerCase()
@@ -83,48 +58,15 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
           className={`animate-in fade-in flex h-full min-h-0 flex-1 justify-center overflow-y-auto bg-transparent px-4 transition-colors duration-200 lg:px-12 ${selectedFontClass}`}
         >
           <div className="flex w-full max-w-5xl flex-col gap-6 pb-32">
-            {templateKey === "creator" && <CreatorPreview {...enhancedProps} />}
-            {templateKey === "portfolio" && (
-              <PortfolioPreview {...enhancedProps} />
-            )}
-            {templateKey === "default" && <DefaultPreview {...enhancedProps} />}
+            {templateKey === "creator" && <CreatorPreview {...props} />}
+            {templateKey === "portfolio" && <PortfolioPreview {...props} />}
+            {templateKey === "default" && <DefaultPreview {...props} />}
             {(templateKey === "" || templateKey === "professional") && (
-              <ProfessionalPreview {...enhancedProps} />
+              <ProfessionalPreview {...props} />
             )}
           </div>
         </div>
       </TemplateAppearanceProvider>
-
-      <Dialog
-        open={!!sectionToDelete}
-        onOpenChange={(open) => !open && setSectionToDelete(null)}
-      >
-        <DialogContent className="bg-background w-full max-w-sm rounded-2xl p-6 shadow-xl sm:rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-primary-text text-left text-lg font-bold">
-              Delete Section
-            </DialogTitle>
-            <DialogDescription className="text-secondary-text mt-2 text-left text-sm">
-              Are you sure you want to delete this section? This action cannot
-              be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="mt-6 flex justify-end gap-3">
-            <button
-              onClick={() => setSectionToDelete(null)}
-              className="text-primary-text hover:bg-hover-bg rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleConfirmDelete}
-              className="bg-negative-text hover:bg-negative-text/90 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors"
-            >
-              Delete
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
