@@ -16,10 +16,10 @@ declare module "axios" {
 const isServer = typeof window === "undefined";
 
 export const api = axios.create({
-  baseURL: `${env.NEXT_PUBLIC_API_URL}/api/v1`,
-  // baseURL: isServer
-  //   ? `${env.NEXT_PUBLIC_API_URL || "https://api.staging.open-profile.hng14.com"}/api/v1`
-  //   : "/api/v1",
+  baseURL:
+    !isServer && process.env.NODE_ENV === "development"
+      ? "/api/v1"
+      : `${env.NEXT_PUBLIC_API_URL}/api/v1`,
   timeout: 60 * 1000,
   withCredentials: true,
 });
@@ -74,11 +74,11 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      await axios.post(
-        `${env.NEXT_PUBLIC_API_URL}/api/v1/auth/refresh-token`,
-        {},
-        { withCredentials: true }
-      );
+      const refreshUrl =
+        !isServer && process.env.NODE_ENV === "development"
+          ? "/api/v1/auth/refresh-token"
+          : `${env.NEXT_PUBLIC_API_URL}/api/v1/auth/refresh-token`;
+      await axios.post(refreshUrl, {}, { withCredentials: true });
       processQueue(null);
 
       return await api(originalRequest);
