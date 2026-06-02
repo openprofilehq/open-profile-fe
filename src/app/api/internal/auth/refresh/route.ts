@@ -70,24 +70,21 @@ export async function POST() {
 
     const response = NextResponse.json({ success: true, ...data });
 
-    // Use parseSetCookie + response.cookies.set() — same approach as the proxy,
-    // so cookies land on the FE domain without a domain attribute.
+    // Use parseSetCookie + response.cookies.set() and scope to COOKIE_DOMAIN
+    // so cookies are accessible from both frontend and API subdomains.
     const setCookies = res.headers.getSetCookie?.() || [];
     let gotAccessToken = false;
 
     for (const cookieStr of setCookies) {
       const { name, value, cookieOptions } = parseSetCookie(cookieStr);
-      delete cookieOptions.domain;
+      if (env.COOKIE_DOMAIN) {
+        cookieOptions.domain = env.COOKIE_DOMAIN;
+      } else {
+        delete cookieOptions.domain;
+      }
       cookieOptions.secure = process.env.NODE_ENV === "production";
       response.cookies.set(name, value, cookieOptions);
       if (name === "accessToken") gotAccessToken = true;
-
-      if (env.COOKIE_DOMAIN) {
-        response.headers.append(
-          "Set-Cookie",
-          `${name}=; Domain=${env.COOKIE_DOMAIN}; Path=/; Max-Age=0; HttpOnly; SameSite=Lax`
-        );
-      }
     }
 
     if (gotAccessToken) {
@@ -95,6 +92,7 @@ export async function POST() {
         path: "/",
         sameSite: "lax",
         maxAge: 7 * 24 * 60 * 60,
+        ...(env.COOKIE_DOMAIN ? { domain: env.COOKIE_DOMAIN } : {}),
       });
     }
 

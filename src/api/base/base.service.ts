@@ -13,13 +13,8 @@ declare module "axios" {
   }
 }
 
-const isServer = typeof window === "undefined";
-
 export const api = axios.create({
   baseURL: `${env.NEXT_PUBLIC_API_URL}/api/v1`,
-  // baseURL: isServer
-  //   ? `${env.NEXT_PUBLIC_API_URL || "https://api.staging.open-profile.hng14.com"}/api/v1`
-  //   : "/api/v1",
   timeout: 60 * 1000,
   withCredentials: true,
 });
@@ -45,7 +40,6 @@ api.interceptors.response.use(
 
     const originalRequest = error.config as AxiosRequestConfig & {
       _retry?: boolean;
-      silent?: boolean;
     };
 
     const isAuthEndpoint =
@@ -53,7 +47,6 @@ api.interceptors.response.use(
       !originalRequest.url?.match(/\/auth\/me(?:$|\?|\/)/);
 
     if (
-      isServer || // Prevent server-side silent token refresh (CR1)
       error.response?.status !== 401 ||
       originalRequest._retry ||
       isAuthEndpoint
@@ -62,46 +55,20 @@ api.interceptors.response.use(
     }
 
     if (isRefreshing) {
-      originalRequest._retry = true;
       return new Promise<void>((resolve, reject) => {
         failedQueue.push({ resolve, reject });
-      })
-        .then(() => api(originalRequest))
-        .catch((err) => Promise.reject(err));
+      }).then(() => api(originalRequest));
     }
 
     originalRequest._retry = true;
     isRefreshing = true;
 
     try {
-      await axios.post(
-        `${env.NEXT_PUBLIC_API_URL}/api/v1/auth/refresh-token`,
-        {},
-        { withCredentials: true }
-      );
+      const result = await api(originalRequest);
       processQueue(null);
-
-      return await api(originalRequest);
-    } catch (refreshError: unknown) {
-      const err = refreshError as AxiosError;
-      console.error(
-        "[Interceptor] Refresh failed!",
-        err?.response?.status,
-        err?.response?.data
-      );
+      return result;
+    } catch (refreshError) {
       processQueue(refreshError);
-      const isSilent = originalRequest.silent === true;
-
-      if (typeof window !== "undefined" && !isSilent) {
-        if (!window.location.pathname.startsWith("/login")) {
-          const returnTo = encodeURIComponent(
-            window.location.pathname +
-              window.location.search +
-              window.location.hash
-          );
-          window.location.href = `/login?returnTo=${returnTo}`;
-        }
-      }
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;
