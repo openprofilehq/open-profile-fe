@@ -1,7 +1,7 @@
 import React from "react";
 import ProfileSummaryCard from "../ProfileSummaryCard";
 import FeaturedLinks from "../FeaturedLinks";
-import HighlightCard from "../HighlightCard";
+// import HighlightCard from "../HighlightCard";
 import SelectedProject from "../help/SelectedProject";
 import YourCTA from "../help/YourCTA";
 import {
@@ -34,7 +34,7 @@ export default function DefaultDashboardView({
       >
         <ProfileSummaryCard profile={profile} isLoading={isLoadingProfile} />
         <FeaturedLinks content={content} isLoading={isLoadingContent} />
-        <HighlightCard details={content?.content} />
+        {/* <HighlightCard details={content?.content} /> */}
         <SelectedProject content={content} />
         <YourCTA content={content} />
       </div>
