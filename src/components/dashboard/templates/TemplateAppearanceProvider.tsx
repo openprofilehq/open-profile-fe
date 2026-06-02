@@ -96,7 +96,7 @@ export default function TemplateAppearanceProvider({
       appearance?.backgroundColour ||
         appearance?.bgColor ||
         appearance?.accentColour
-    ) || "#FAFAFA";
+    ) || "#FFFFFF";
 
   const surfaceColor = "#FFFFFF";
   const secondarySurfaceColor = "#F6F6F6";

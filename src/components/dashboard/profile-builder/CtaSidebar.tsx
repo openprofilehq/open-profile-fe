@@ -191,72 +191,36 @@ export default function CtaSidebar({
       {/* Sidebar Content */}
       <div className="flex-1 overflow-y-auto py-6 pr-1">
         <div className="flex flex-col gap-6">
-          {/* Layout Section */}
+          {/* Button Section */}
           <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold text-[#050505]">Layout</label>
-            <div className="grid grid-cols-3 gap-2">
-              {["1", "2", "3"].map((lay) => (
-                <button
-                  key={lay}
-                  type="button"
-                  onClick={() => handleLayoutChange(lay)}
-                  className={`group relative aspect-square overflow-hidden rounded-xl border transition-all duration-200 outline-none focus:outline-none ${
-                    layout === lay
-                      ? "border-[#E4E4E7] bg-[#F4F4F5]"
-                      : "border-border bg-background hover:border-gray-300"
+            <label className="text-xs font-bold text-[#050505]">Button</label>
+            <div className={`flex flex-col overflow-hidden rounded-[10px] border ${
+              btnTextError || urlError ? "border-red-500" : "border-border bg-background"
+            }`}>
+              <input
+                type="text"
+                value={buttonText}
+                onChange={(e) => handleButtonTextChange(e.target.value)}
+                placeholder="Start a Conversation"
+                className="w-full border-b border-border px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:bg-gray-50/30"
+              />
+              <div className="relative flex items-center bg-background">
+                <input
+                  type="text"
+                  value={buttonUrl}
+                  onChange={(e) => handleButtonUrlChange(e.target.value)}
+                  placeholder="Paste link, email, or phone (e.g., +1234567890)..."
+                  className={`w-full bg-background px-4 py-3 pr-10 text-sm outline-none focus:bg-gray-50/30 ${
+                    urlError ? "text-red-500" : "text-gray-600"
                   }`}
-                >
-                  <Image
-                    src={`/profilebuilder_cta/${lay}.svg`}
-                    alt={`Layout ${lay}`}
-                    fill
-                    className="object-contain p-2"
-                  />
-                </button>
-              ))}
+                />
+                <span className="absolute right-4 text-xs font-bold text-gray-400 select-none">
+                  ...
+                </span>
+              </div>
             </div>
-          </div>
-
-          {/* Title Section */}
-          <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold text-[#050505]">Title</label>
-            <input
-              type="text"
-              value={sectionTitle}
-              onChange={(e) => handleTitleChange(e.target.value)}
-              placeholder="Let's build something"
-              className={`w-full rounded-[10px] border px-4 py-3 text-sm font-semibold text-[#050505] outline-none transition-colors ${
-                titleError
-                  ? "border-red-500 focus:border-red-500"
-                  : "border-border focus:border-brand-b"
-              }`}
-            />
-            {titleError && <p className="text-xs text-red-500">{titleError}</p>}
-          </div>
-
-          {/* Subtitle Section */}
-          <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold text-[#050505]">Subtitle</label>
-            <textarea
-              value={sectionSubtitle}
-              onChange={(e) => handleSubtitleChange(e.target.value)}
-              maxLength={200}
-              placeholder="I'm currently accepting new projects and consulting opportunities..."
-              rows={4}
-              className={`w-full resize-none rounded-[10px] border px-4 py-3 text-sm text-[#050505] outline-none transition-colors ${
-                subtitleError
-                  ? "border-red-500 focus:border-red-500"
-                  : "border-border focus:border-brand-b"
-              }`}
-            />
-            <div className="flex justify-between items-center">
-              {subtitleError ? (
-                <p className="text-xs text-red-500">{subtitleError}</p>
-              ) : <span />}
-              <p className="text-right text-[11px] text-[#A2A2A2]">
-                {sectionSubtitle.length}/200
-              </p>
-            </div>
+            {btnTextError && <p className="text-xs text-red-500">{btnTextError}</p>}
+            {urlError && <p className="text-xs text-red-500">{urlError}</p>}
           </div>
 
           {/* Icon Selector Section */}
@@ -332,36 +296,72 @@ export default function CtaSidebar({
             )}
           </div>
 
-          {/* Button Section */}
+          {/* Layout Section */}
           <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold text-[#050505]">Button</label>
-            <div className={`flex flex-col overflow-hidden rounded-[10px] border ${
-              btnTextError || urlError ? "border-red-500" : "border-border bg-background"
-            }`}>
-              <input
-                type="text"
-                value={buttonText}
-                onChange={(e) => handleButtonTextChange(e.target.value)}
-                placeholder="Start a Conversation"
-                className="w-full border-b border-border px-4 py-3 text-sm font-semibold text-[#050505] outline-none focus:bg-gray-50/30"
-              />
-              <div className="relative flex items-center bg-background">
-                <input
-                  type="text"
-                  value={buttonUrl}
-                  onChange={(e) => handleButtonUrlChange(e.target.value)}
-                  placeholder="Paste link, email, or phone (e.g., +1234567890)..."
-                  className={`w-full bg-background px-4 py-3 pr-10 text-sm outline-none focus:bg-gray-50/30 ${
-                    urlError ? "text-red-500" : "text-gray-600"
+            <label className="text-xs font-bold text-[#050505]">Layout</label>
+            <div className="grid grid-cols-3 gap-2">
+              {["1", "2", "3"].map((lay) => (
+                <button
+                  key={lay}
+                  type="button"
+                  onClick={() => handleLayoutChange(lay)}
+                  className={`group relative aspect-square overflow-hidden rounded-xl border transition-all duration-200 outline-none focus:outline-none ${
+                    layout === lay
+                      ? "border-[#E4E4E7] bg-[#F4F4F5]"
+                      : "border-border bg-background hover:border-gray-300"
                   }`}
-                />
-                <span className="absolute right-4 text-xs font-bold text-gray-400 select-none">
-                  ...
-                </span>
-              </div>
+                >
+                  <Image
+                    src={`/profilebuilder_cta/${lay}.svg`}
+                    alt={`Layout ${lay}`}
+                    fill
+                    className="object-contain p-2"
+                  />
+                </button>
+              ))}
             </div>
-            {btnTextError && <p className="text-xs text-red-500">{btnTextError}</p>}
-            {urlError && <p className="text-xs text-red-500">{urlError}</p>}
+          </div>
+
+          {/* Title Section */}
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-bold text-[#050505]">Title</label>
+            <input
+              type="text"
+              value={sectionTitle}
+              onChange={(e) => handleTitleChange(e.target.value)}
+              placeholder="Let's build something"
+              className={`w-full rounded-[10px] border px-4 py-3 text-sm font-semibold text-[#050505] outline-none transition-colors ${
+                titleError
+                  ? "border-red-500 focus:border-red-500"
+                  : "border-border focus:border-brand-b"
+              }`}
+            />
+            {titleError && <p className="text-xs text-red-500">{titleError}</p>}
+          </div>
+
+          {/* Subtitle Section */}
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-bold text-[#050505]">Subtitle</label>
+            <textarea
+              value={sectionSubtitle}
+              onChange={(e) => handleSubtitleChange(e.target.value)}
+              maxLength={200}
+              placeholder="I'm currently accepting new projects and consulting opportunities..."
+              rows={4}
+              className={`w-full resize-none rounded-[10px] border px-4 py-3 text-sm text-[#050505] outline-none transition-colors ${
+                subtitleError
+                  ? "border-red-500 focus:border-red-500"
+                  : "border-border focus:border-brand-b"
+              }`}
+            />
+            <div className="flex justify-between items-center">
+              {subtitleError ? (
+                <p className="text-xs text-red-500">{subtitleError}</p>
+              ) : <span />}
+              <p className="text-right text-[11px] text-[#A2A2A2]">
+                {sectionSubtitle.length}/200
+              </p>
+            </div>
           </div>
         </div>
       </div>
