@@ -11,7 +11,7 @@ import {
 } from "@/api/profile/profile.type";
 import { getImageUrl, isProjectHighlighted } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
-// import HighlightCard from "../HighlightCard";
+import HighlightCard from "../HighlightCard";
 
 type Props = {
   profile?: DashboardProfileResponse;
@@ -187,12 +187,12 @@ export default function ProfessionalDashboardView({
 
             return (
               <div className="flex w-full flex-col gap-10">
-                {/* <HighlightCard details={content?.content} /> */}
-                <section className="w-full">
-                  <h2 className="text-tertiary-text mb-4 text-[13px]">
-                    {details?.projects?.sectionTitle || "Selected Work"}
-                  </h2>
-                  {remainingProjects.length > 0 ? (
+                <HighlightCard details={content?.content} />
+                {remainingProjects.length > 0 ? (
+                  <section className="w-full">
+                    <h2 className="text-tertiary-text mb-4 text-[13px]">
+                      {details?.projects?.sectionTitle || "Selected Work"}
+                    </h2>
                     <div className="flex flex-col gap-4">
                       {remainingProjects.map((project) => {
                         const projectUrl =
@@ -250,12 +250,17 @@ export default function ProfessionalDashboardView({
                         );
                       })}
                     </div>
-                  ) : (
+                  </section>
+                ) : projects.length === 0 ? (
+                  <section className="w-full">
+                    <h2 className="text-tertiary-text mb-4 text-[13px]">
+                      {details?.projects?.sectionTitle || "Selected Work"}
+                    </h2>
                     <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
                       Add your projects
                     </p>
-                  )}
-                </section>
+                  </section>
+                ) : null}
               </div>
             );
           })()}

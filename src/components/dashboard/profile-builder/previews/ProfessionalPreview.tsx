@@ -87,7 +87,7 @@ export default function ProfessionalPreview({
     >
       {/* HEADER SECTION (Bio) */}
       <div
-        className="group relative transition-opacity duration-200"
+        className={`group relative transition-opacity duration-200 ${!bioSection?.visible ? "opacity-50 grayscale" : ""}`}
         style={getSectionStyle(bioSection)}
       >
         {renderControls(bioSection, true)}
@@ -131,7 +131,7 @@ export default function ProfessionalPreview({
       {/* LINKS SECTION */}
       {linksSection && (
         <section
-          className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
+          className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!linksSection.visible ? "opacity-50 grayscale" : ""}`}
           style={(() => {
             const { gap: _gap, ...rest } = getSectionStyle(linksSection);
             return rest;
@@ -206,7 +206,7 @@ export default function ProfessionalPreview({
             <div className="flex flex-col gap-6">
               <HighlightPreviewCard projectsSection={projectsSection} />
               <section
-                className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
+                className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!projectsSection.visible ? "opacity-50 grayscale" : ""}`}
                 style={(() => {
                   const { gap: _gap, ...rest } =
                     getSectionStyle(projectsSection);
@@ -338,7 +338,7 @@ export default function ProfessionalPreview({
       {/* CTA SECTION */}
       {ctaSection && (
         <section
-          className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
+          className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!ctaSection.visible ? "opacity-50 grayscale" : ""}`}
           style={getSectionStyle(ctaSection)}
         >
           {renderControls(ctaSection)}

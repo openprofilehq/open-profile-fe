@@ -1,7 +1,7 @@
 import React from "react";
 import ProfileSummaryCard from "../ProfileSummaryCard";
 import FeaturedLinks from "../FeaturedLinks";
-// import HighlightCard from "../HighlightCard";
+import HighlightCard from "../HighlightCard";
 import SelectedProject from "../help/SelectedProject";
 import YourCTA from "../help/YourCTA";
 import {
@@ -26,6 +26,8 @@ export default function DefaultDashboardView({
   isLoadingContent,
   appearance,
 }: Props) {
+  const details = content?.content;
+
   return (
     <TemplateAppearanceProvider appearance={appearance}>
       <div
@@ -33,10 +35,16 @@ export default function DefaultDashboardView({
         style={{ gap: "var(--op-spacing, 1.5rem)" }}
       >
         <ProfileSummaryCard profile={profile} isLoading={isLoadingProfile} />
-        <FeaturedLinks content={content} isLoading={isLoadingContent} />
-        {/* <HighlightCard details={content?.content} /> */}
-        <SelectedProject content={content} />
-        <YourCTA content={content} />
+        {details?.links?.visible !== false && (
+          <FeaturedLinks content={content} isLoading={isLoadingContent} />
+        )}
+        {details?.projects?.visible !== false && (
+          <>
+            <HighlightCard details={content?.content} />
+            <SelectedProject content={content} />
+          </>
+        )}
+        {details?.cta?.visible !== false && <YourCTA content={content} />}
       </div>
     </TemplateAppearanceProvider>
   );

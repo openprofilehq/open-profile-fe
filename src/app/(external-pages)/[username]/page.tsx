@@ -7,8 +7,6 @@ import {
   type LinkItem,
   type ProjectItem,
   type ProfileAppearanceSettings,
-  type DashboardProfileResponse,
-  type ProfileContentResponse,
 } from "@/api/profile/profile.type";
 import { env as serverEnv } from "@/env/server";
 import { Folder, ExternalLink } from "lucide-react";
@@ -456,9 +454,14 @@ export default async function UserProfilePage({ params }: Props) {
               if (!content.projects.visible) return null;
               const projects = (content.projects.items || []) as ProjectItem[];
               const highlightedProject = projects.find(
-                (p) => p.highlighted === true || String(p.highlighted) === "true" || String(p.id).startsWith("hl_")
+                (p) =>
+                  p.highlighted === true ||
+                  String(p.highlighted) === "true" ||
+                  String(p.id).startsWith("hl_")
               );
-              const remainingProjects = projects.filter((p) => p.id !== highlightedProject?.id);
+              const remainingProjects = projects.filter(
+                (p) => p.id !== highlightedProject?.id
+              );
 
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const secProps = content.projects as any;
@@ -503,7 +506,9 @@ export default async function UserProfilePage({ params }: Props) {
                     </div>
                   </div>
                   <div className="flex flex-col gap-8">
-                    <HighlightCard details={profile.content as ProfileContentDetails} />
+                    <HighlightCard
+                      details={profile.content as ProfileContentDetails}
+                    />
                     {remainingProjects.length > 0 ? (
                       <div
                         className={

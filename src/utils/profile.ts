@@ -213,19 +213,36 @@ export function getSectionStyle(
   } | null
 ): CSSProperties {
   if (!section) return {};
-  return {
-    ...(section.paddingTop != null && {
-      paddingTop: `${section.paddingTop}px`,
-    }),
-    ...(section.paddingBottom != null && {
-      paddingBottom: `${section.paddingBottom}px`,
-    }),
-    ...(section.gap != null && { gap: `${section.gap}px` }),
-    ...(section.padding != null && {
-      paddingLeft: `${section.padding}px`,
-      paddingRight: `${section.padding}px`,
-    }),
-    ...(section.bgColor && { backgroundColor: section.bgColor }),
-    ...(section.textColor && { color: section.textColor }),
-  };
+  const style: CSSProperties = {};
+
+  if (section.paddingTop != null) {
+    style.paddingTop = `${section.paddingTop}px`;
+  } else if (section.padding != null) {
+    style.paddingTop = `${section.padding}px`;
+  }
+
+  if (section.paddingBottom != null) {
+    style.paddingBottom = `${section.paddingBottom}px`;
+  } else if (section.padding != null) {
+    style.paddingBottom = `${section.padding}px`;
+  }
+
+  if (section.padding != null) {
+    style.paddingLeft = `${section.padding}px`;
+    style.paddingRight = `${section.padding}px`;
+  }
+
+  if (section.gap != null) {
+    style.gap = `${section.gap}px`;
+  }
+
+  if (section.bgColor) {
+    style.backgroundColor = section.bgColor;
+  }
+
+  if (section.textColor) {
+    style.color = section.textColor;
+  }
+
+  return style;
 }

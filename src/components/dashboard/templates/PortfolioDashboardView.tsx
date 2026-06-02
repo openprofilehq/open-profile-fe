@@ -11,7 +11,7 @@ import {
 } from "@/api/profile/profile.type";
 import { getImageUrl, isProjectHighlighted } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
-// import HighlightCard from "../HighlightCard";
+import HighlightCard from "../HighlightCard";
 
 type Props = {
   profile?: DashboardProfileResponse;
@@ -187,12 +187,12 @@ export default function PortfolioDashboardView({
 
             return (
               <div className="flex w-full flex-col gap-10">
-                {/* <HighlightCard details={content?.content} /> */}
-                <section className="w-full">
-                  <h2 className="text-tertiary-text mb-6 text-[13px]">
-                    {details?.projects?.sectionTitle || "Featured Projects"}
-                  </h2>
-                  {remainingProjects.length > 0 ? (
+                <HighlightCard details={content?.content} />
+                {remainingProjects.length > 0 ? (
+                  <section className="w-full">
+                    <h2 className="text-tertiary-text mb-6 text-[13px]">
+                      {details?.projects?.sectionTitle || "Featured Projects"}
+                    </h2>
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                       {remainingProjects.map((project, idx) => {
                         const numberStr = String(idx + 1).padStart(2, "0");
@@ -259,12 +259,17 @@ export default function PortfolioDashboardView({
                         );
                       })}
                     </div>
-                  ) : (
+                  </section>
+                ) : projects.length === 0 ? (
+                  <section className="w-full">
+                    <h2 className="text-tertiary-text mb-6 text-[13px]">
+                      {details?.projects?.sectionTitle || "Featured Projects"}
+                    </h2>
                     <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
                       Add your projects
                     </p>
-                  )}
-                </section>
+                  </section>
+                ) : null}
               </div>
             );
           })()}

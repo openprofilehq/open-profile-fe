@@ -13,7 +13,7 @@ import {
 } from "@/api/profile/profile.type";
 import { getImageUrl, isProjectHighlighted } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
-// import HighlightCard from "../HighlightCard";
+import HighlightCard from "../HighlightCard";
 
 type Props = {
   profile?: DashboardProfileResponse;
@@ -238,7 +238,7 @@ export default function CreatorDashboardView({
 
               return (
                 <div className="flex flex-col gap-10">
-                  {/* <HighlightCard details={content?.content} /> */}
+                  <HighlightCard details={content?.content} />
                   {remainingProjects.length > 0 ? (
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                       {remainingProjects.map((project) => {
@@ -294,11 +294,11 @@ export default function CreatorDashboardView({
                         );
                       })}
                     </div>
-                  ) : (
+                  ) : projects.length === 0 ? (
                     <p className="text-tertiary-text border-border rounded-xl border border-dashed py-8 text-center text-sm">
                       Add your projects
                     </p>
-                  )}
+                  ) : null}
                 </div>
               );
             })()}
