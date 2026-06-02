@@ -1,4 +1,5 @@
 import { env } from "@/env/client";
+import type { CSSProperties } from "react";
 
 const APP_BASE_URL = env.NEXT_PUBLIC_APP_BASE_URL;
 
@@ -25,6 +26,10 @@ export function getDisplayProfileUrl(username?: string) {
 
 export function getImageUrl(path?: string | null) {
   if (!path) return "";
+  if (path.startsWith("/profile-preview/")) return path;
+  if (path.startsWith("/profilebuilder_home/")) return path;
+  if (path.startsWith("/profilebuilder_cta/")) return path;
+  if (path.startsWith("/profilebuilder_")) return path;
 
   try {
     if (path.startsWith("http")) {
@@ -183,4 +188,61 @@ export function decodeUrlForFrontend(url?: string | null): string {
   if (url.startsWith("https://tel.open-profile.com/"))
     return url.replace("https://tel.open-profile.com/", "");
   return url;
+}
+
+export function isProjectHighlighted(project?: {
+  id?: string | number;
+  highlighted?: boolean | string;
+}): boolean {
+  if (!project) return false;
+  return (
+    project.highlighted === true ||
+    String(project.highlighted) === "true" ||
+    String(project.id).startsWith("hl_")
+  );
+}
+
+export function getSectionStyle(
+  section?: {
+    paddingTop?: number | string | null;
+    paddingBottom?: number | string | null;
+    gap?: number | string | null;
+    padding?: number | string | null;
+    bgColor?: string | null;
+    textColor?: string | null;
+  } | null
+): CSSProperties {
+  if (!section) return {};
+  const style: CSSProperties = {};
+
+  if (section.paddingTop != null) {
+    style.paddingTop = `${section.paddingTop}px`;
+  } else if (section.padding != null) {
+    style.paddingTop = `${section.padding}px`;
+  }
+
+  if (section.paddingBottom != null) {
+    style.paddingBottom = `${section.paddingBottom}px`;
+  } else if (section.padding != null) {
+    style.paddingBottom = `${section.padding}px`;
+  }
+
+  if (section.padding != null) {
+    style.paddingLeft = `${section.padding}px`;
+    style.paddingRight = `${section.padding}px`;
+  }
+
+  if (section.gap != null) {
+    style.gap = `${section.gap}px`;
+  }
+
+  if (section.bgColor) {
+    style.backgroundColor = section.bgColor;
+  }
+
+  if (section.textColor) {
+    style.color = section.textColor;
+  }
+
+  return style;
 }
