@@ -15,7 +15,7 @@ interface Step {
   mobileIconBoxSize: number;
   mobileIconImageSize: number;
 }
-const steps: Step[] = [
+export const steps: Step[] = [
   {
     id: "create-profile",
     ghostIcon: "/journey/step01.svg",

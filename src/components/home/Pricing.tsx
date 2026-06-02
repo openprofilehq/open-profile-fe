@@ -2,10 +2,12 @@
 
 import { Check } from "lucide-react";
 import { motion, Variants } from "motion/react";
+import { useState } from "react";
 
 interface PricingPlan {
   name: string;
-  price: string;
+  priceMonth: string;
+  priceYear: string;
   features: string[];
   buttonText: string;
   highlighted?: boolean;
@@ -15,7 +17,8 @@ interface PricingPlan {
 const plans: PricingPlan[] = [
   {
     name: "Free",
-    price: "0",
+    priceMonth: "0",
+    priceYear: "0",
     features: [
       "Public profile (basic)",
       "Username URL",
@@ -28,7 +31,8 @@ const plans: PricingPlan[] = [
   },
   {
     name: "Pro",
-    price: "8",
+    priceMonth: "8",
+    priceYear: "80",
     featureTitle: "Includes everything in free +",
     features: [
       "Verification badge",
@@ -43,7 +47,8 @@ const plans: PricingPlan[] = [
   },
   {
     name: "Elite",
-    price: "20",
+    priceMonth: "20",
+    priceYear: "200",
     featureTitle: "Includes everything in Pro +",
     features: [
       "Custom domain (yourname.com)",
@@ -58,6 +63,7 @@ const plans: PricingPlan[] = [
 ];
 
 export function Pricing() {
+  const [isYear, setIsYear] = useState(false);
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -95,6 +101,27 @@ export function Pricing() {
         >
           Choose the plan that fits your needs.
         </motion.h2>
+        <motion.div
+          variants={itemVariants}
+          className="mb-10 inline-flex items-center rounded-2xl border border-[#E5E5E5] bg-white text-center transition-all duration-300"
+        >
+          <span
+            onClick={() => setIsYear(false)}
+            className={`w-28 cursor-pointer rounded-2xl px-4 py-3 font-semibold ${
+              !isYear ? "bg-brand text-white" : "text-[#525252]"
+            }`}
+          >
+            Month
+          </span>
+          <span
+            onClick={() => setIsYear(true)}
+            className={`w-28 cursor-pointer rounded-2xl px-4 py-3 font-semibold ${
+              isYear ? "bg-brand text-white" : "text-[#525252]"
+            }`}
+          >
+            Year
+          </span>
+        </motion.div>
 
         <motion.div
           variants={containerVariants}
@@ -123,14 +150,33 @@ export function Pricing() {
                     plan.highlighted ? "border-white/20" : "border-[#E5E5E5]"
                   }`}
                 >
-                  <span className="text-[36px] font-bold">${plan.price}</span>
-                  <span
-                    className={`text-[15px] ${
-                      plan.highlighted ? "text-white/80" : "text-[#525252]"
-                    }`}
-                  >
-                    /month
-                  </span>
+                  {isYear ? (
+                    <span>
+                      <span className="text-[36px] font-bold">
+                        ${plan.priceYear}
+                      </span>
+                      <span
+                        className={`text-[15px] ${
+                          plan.highlighted ? "text-white/80" : "text-[#525252]"
+                        }`}
+                      >
+                        /year
+                      </span>
+                    </span>
+                  ) : (
+                    <span>
+                      <span className="text-[36px] font-bold">
+                        ${plan.priceMonth}
+                      </span>
+                      <span
+                        className={`text-[15px] ${
+                          plan.highlighted ? "text-white/80" : "text-[#525252]"
+                        }`}
+                      >
+                        /month
+                      </span>
+                    </span>
+                  )}
                 </div>
               </div>
 

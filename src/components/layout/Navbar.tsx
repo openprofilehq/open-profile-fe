@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUserOption } from "@/api/auth/auth.options";
-import { ROUTES } from "@/constants/routes";
+import { Navlinks, ROUTES } from "@/constants/routes";
 import { useAuthCookie } from "@/hooks/useAuthCookie";
 
 export function Navbar() {
@@ -32,7 +32,7 @@ export function Navbar() {
       <header
         className={`fixed top-0 right-0 left-0 z-50 w-full border-b border-[#EDEDED] transition-colors duration-300 ${scrolled ? "bg-white/70 backdrop-blur-md" : "bg-white"}`}
       >
-        <nav className="mx-auto flex h-[76px] w-full max-w-[1440px] items-center justify-between gap-8 px-5 md:px-10 lg:px-[112px]">
+        <nav className="max-w-9xl mx-auto flex h-[76px] w-full items-center justify-between px-5 md:px-10 lg:px-16 xl:px-[125px]">
           {/* Logo */}
           <Link
             href="/"
@@ -50,27 +50,16 @@ export function Navbar() {
 
           {/* Desktop nav links */}
           <div className="hidden items-center gap-6 md:flex lg:gap-8">
-            <Link
-              href="/coming-soon"
-              className="text-[17px] leading-[26px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
-              style={{ fontFamily: "'Afacad', sans-serif" }}
-            >
-              How it works
-            </Link>
-            <Link
-              href="/#pricing"
-              className="text-[16px] leading-[24px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
-              style={{ fontFamily: "'Afacad', sans-serif" }}
-            >
-              Pricing
-            </Link>
-            <Link
-              href="/faq"
-              className="text-[16px] leading-[24px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
-              style={{ fontFamily: "'Afacad', sans-serif" }}
-            >
-              FAQ
-            </Link>
+            {Navlinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-lg leading-[26px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
+                style={{ fontFamily: "'Afacad', sans-serif" }}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
 
           {/* Desktop auth buttons */}
