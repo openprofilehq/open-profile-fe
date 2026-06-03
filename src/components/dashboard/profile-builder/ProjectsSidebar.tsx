@@ -361,19 +361,15 @@ export default function ProjectsSidebar({
                     </div>
                   ))}
 
-                  {/* Add Project trigger card */}
-                  <button
+                  {/* Add Project trigger button */}
+                  <Button
                     type="button"
+                    size="lg"
+                    variant="waitlist"
                     onClick={handleAddNewProjectClick}
-                    className="hover:border-brand-b/60 border-border bg-background flex h-[50px] w-full items-center justify-between overflow-hidden rounded-[8px] border pl-4 text-left transition-all"
                   >
-                    <span className="text-sm font-semibold text-[#747474]">
-                      Add Project
-                    </span>
-                    <div className="border-border flex h-full w-[50px] shrink-0 items-center justify-center border-l bg-[#F4F4F5] text-[#747474]">
-                      <Plus size={16} />
-                    </div>
-                  </button>
+                    Add New Project
+                  </Button>
                 </div>
               </div>
 
