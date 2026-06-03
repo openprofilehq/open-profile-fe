@@ -147,9 +147,8 @@ export default function CreateProfileInfo({
         </div>
 
         <div className="mt-16 flex flex-col gap-1.5">
-          <div className="flex flex-col items-center gap-4 md:flex-row">
-            {/* it should be first name and last name input, so it concatenated to send has payload */}
-            <span>
+          <div className="flex w-full flex-col items-center gap-4 md:flex-row">
+            <span className="flex-1">
               <label className="mb-1 inline-block font-bold text-[#454545]">
                 <span className="text-[#D92D20]">*</span> First Name
               </label>
@@ -169,7 +168,7 @@ export default function CreateProfileInfo({
                 </p>
               )}
             </span>
-            <span>
+            <span className="flex-1">
               <label className="mb-1 inline-block font-bold text-[#454545]">
                 <span className="text-[#D92D20]">*</span> Last Name
               </label>
