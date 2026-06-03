@@ -27,7 +27,8 @@ export default function CreateProfileForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
-  const [displayName, setDisplayName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoUrl, setPhotoUrl] = useState("");
   const debouncedUsername = useDebounce(username, 300);
@@ -88,11 +89,18 @@ export default function CreateProfileForm() {
   });
 
   function submitProfile() {
-    if (currentStep !== 2 || !displayName.trim() || !bio.trim() || bio.length > 300) return;
+    if (
+      currentStep !== 2 ||
+      !firstName.trim() ||
+      !lastName.trim() ||
+      !bio.trim() ||
+      bio.length > 300
+    )
+      return;
 
     createProfile.mutate({
       username,
-      fullName: displayName.trim(),
+      fullName: `${firstName.trim()} ${lastName.trim()}`,
       bio,
       ...(photoUrl && photoUrl.startsWith("http") ? { photoUrl } : {}),
     });
@@ -134,9 +142,11 @@ export default function CreateProfileForm() {
         {currentStep === 2 && (
           <CreateProfileInfo
             bio={bio}
-            displayName={displayName}
             onUpdateBio={(e) => setBio(e.target.value)}
-            onUpdateDisplayName={(e) => setDisplayName(e.target.value)}
+            firstName={firstName}
+            lastName={lastName}
+            onUpdateFirstName={(e) => setFirstName(e.target.value)}
+            onUpdateLastName={(e) => setLastName(e.target.value)}
             onUpdateStep={submitProfile}
             isPending={createProfile.isPending}
             photoUrl={photoUrl}
@@ -149,10 +159,13 @@ export default function CreateProfileForm() {
         {currentStep === 3 && (
           <ProfileLinkSuccess
             username={username}
-            displayName={displayName}
+            firstName={firstName}
+            lastName={lastName}
             bio={bio}
             photoUrl={photoUrl || undefined}
-            onContinue={() => router.replace(`${ROUTES.dashboard.home}?new=true`)}
+            onContinue={() =>
+              router.replace(`${ROUTES.dashboard.home}?new=true`)
+            }
           />
         )}
       </form>
