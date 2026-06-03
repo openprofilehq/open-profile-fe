@@ -11,8 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import { Palette, Type } from "lucide-react";
+import { Palette, Type, ChevronLeft } from "lucide-react";
 
 interface RightPanelProps {
   font: string;
@@ -27,8 +26,7 @@ interface RightPanelProps {
   onChangeSpacing: (spacing: number) => void;
   borderRadius: "sharp" | "rounded" | "pill";
   onChangeBorderRadius: (radius: "sharp" | "rounded" | "pill") => void;
-  activeTab: "general" | "section";
-  onChangeTab: (tab: "general" | "section") => void;
+  onBackToGlobal: () => void;
   selectedSection: Section | null;
   onUpdateSection: (id: string, updates: Partial<Section>) => void;
   template: string;
@@ -57,8 +55,7 @@ export default function RightPanel({
   onChangeSpacing,
   borderRadius,
   onChangeBorderRadius,
-  activeTab,
-  onChangeTab,
+  onBackToGlobal,
   selectedSection,
   onUpdateSection,
   template,
@@ -66,40 +63,27 @@ export default function RightPanel({
 }: RightPanelProps) {
   return (
     <aside className="border-tertiary-b animate-in fade-in bg-background hidden h-full w-[290px] shrink-0 flex-col rounded-2xl border p-6 shadow-sm duration-200 select-none lg:flex">
-      {/* Tabs Header */}
-      <div className="border-tertiary-b flex border-b">
-        <button
-          onClick={() => onChangeTab("general")}
-          className={`relative flex-1 py-4 text-center text-sm font-bold transition-all ${
-            activeTab === "general"
-              ? "text-primary-text"
-              : "text-tertiary-text hover:text-primary-text"
-          }`}
-        >
-          General
-          {activeTab === "general" && (
-            <span className="bg-primary-text absolute bottom-0 left-0 h-[2.5px] w-full transition-all" />
-          )}
-        </button>
-        <button
-          onClick={() => onChangeTab("section")}
-          className={`relative flex-1 py-4 text-center text-sm font-bold transition-all ${
-            activeTab === "section"
-              ? "text-primary-text"
-              : "text-tertiary-text hover:text-primary-text"
-          }`}
-        >
-          Section
-          {activeTab === "section" && (
-            <span className="bg-primary-text absolute bottom-0 left-0 h-[2.5px] w-full transition-all" />
-          )}
-        </button>
+      {/* Header */}
+      <div className="border-tertiary-b border-b pb-4">
+        {selectedSection ? (
+          <button
+            onClick={onBackToGlobal}
+            className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
+          >
+            <ChevronLeft size={20} />
+            <span>Back to Global</span>
+          </button>
+        ) : (
+          <div className="text-primary-text py-2 text-sm font-bold">
+            Global Settings
+          </div>
+        )}
       </div>
 
       {/* Settings Body */}
       <div className="relative flex-1 overflow-x-visible overflow-y-auto py-6 pr-1">
         <div>
-          {activeTab === "general" ? (
+          {!selectedSection ? (
             <div className="flex flex-col gap-6">
               {/* Template Selection */}
               <div>

@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUserOption } from "@/api/auth/auth.options";
-import { ROUTES } from "@/constants/routes";
+import { Navlinks, ROUTES } from "@/constants/routes";
 import { useAuthCookie } from "@/hooks/useAuthCookie";
 
 export function Navbar() {
@@ -32,7 +32,7 @@ export function Navbar() {
       <header
         className={`fixed top-0 right-0 left-0 z-50 w-full border-b border-[#EDEDED] transition-colors duration-300 ${scrolled ? "bg-white/70 backdrop-blur-md" : "bg-white"}`}
       >
-        <nav className="mx-auto flex h-[76px] w-full max-w-[1440px] items-center justify-between gap-8 px-5 md:px-10 lg:px-[112px]">
+        <nav className="max-w-9xl mx-auto flex h-[76px] w-full items-center justify-between px-5 md:px-10 lg:px-16 xl:px-[125px]">
           {/* Logo */}
           <Link
             href="/"
@@ -50,27 +50,16 @@ export function Navbar() {
 
           {/* Desktop nav links */}
           <div className="hidden items-center gap-6 md:flex lg:gap-8">
-            <Link
-              href="/coming-soon"
-              className="text-[17px] leading-[26px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
-              style={{ fontFamily: "'Afacad', sans-serif" }}
-            >
-              How it works
-            </Link>
-            <Link
-              href="/#pricing"
-              className="text-[16px] leading-[24px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
-              style={{ fontFamily: "'Afacad', sans-serif" }}
-            >
-              Pricing
-            </Link>
-            <Link
-              href="/faq"
-              className="text-[16px] leading-[24px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
-              style={{ fontFamily: "'Afacad', sans-serif" }}
-            >
-              FAQ
-            </Link>
+            {Navlinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-lg leading-[26px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
+                style={{ fontFamily: "'Afacad', sans-serif" }}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
 
           {/* Desktop auth buttons */}
@@ -131,16 +120,16 @@ export function Navbar() {
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className="fixed inset-0 z-50 flex flex-col bg-white md:hidden"
           >
-            <div className="flex h-[76px] items-center justify-between border-b border-[#EDEDED] px-6">
+            <div className="border-primary-foreground-bg flex h-19 items-center justify-between border-b px-6">
               <span
-                className="text-[18px] font-semibold text-[#087583]"
+                className="text-brand text-[18px] font-semibold"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               >
                 Menu
               </span>
               <button
                 onClick={() => setMobileOpen(false)}
-                className="cursor-pointer p-2 text-[#050505]"
+                className="text-primary-text cursor-pointer p-2"
                 aria-label="Close menu"
               >
                 <X className="h-5 w-5" />
@@ -149,7 +138,7 @@ export function Navbar() {
 
             <div className="flex flex-1 flex-col gap-8 px-6 pt-8">
               {[
-                { label: "How it works", href: "/coming-soon" },
+                { label: "How it works", href: "/how-it-works" },
                 { label: "Pricing", href: "/#pricing" },
                 { label: "FAQ", href: "/faq" },
               ].map((item) => (
@@ -157,7 +146,7 @@ export function Navbar() {
                   key={item.label}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className="text-[18px] font-medium text-[#050505]"
+                  className="text-primary-text text-[18px] font-medium"
                   style={{ fontFamily: "'Afacad', sans-serif" }}
                 >
                   {item.label}
@@ -170,7 +159,7 @@ export function Navbar() {
                 <Link
                   href={ROUTES.dashboard.home}
                   onClick={() => setMobileOpen(false)}
-                  className="bg-brand hover:bg-brand-hover flex h-[52px] w-full items-center justify-center rounded-[10px] text-[16px] font-medium text-white"
+                  className="bg-brand hover:bg-brand-hover flex h-13 w-full items-center justify-center rounded-[10px] text-base text-white"
                   style={{ fontFamily: "'Afacad', sans-serif" }}
                 >
                   Dashboard
@@ -180,7 +169,7 @@ export function Navbar() {
                   <Link
                     href="/login"
                     onClick={() => setMobileOpen(false)}
-                    className="bg-primary-bg text-link-hover-text flex h-[52px] w-full items-center justify-center rounded-[10px] text-[16px] font-semibold"
+                    className="bg-primary-bg text-link-hover-text flex h-13 w-full items-center justify-center rounded-[10px] text-base font-semibold"
                     style={{ fontFamily: "'Afacad', sans-serif" }}
                   >
                     Login
@@ -188,7 +177,7 @@ export function Navbar() {
                   <Link
                     href="/signup"
                     onClick={() => setMobileOpen(false)}
-                    className="bg-brand hover:bg-brand-hover flex h-[52px] w-full items-center justify-center rounded-[10px] text-[16px] font-medium text-white"
+                    className="bg-brand hover:bg-brand-hover flex h-13 w-full items-center justify-center rounded-[10px] text-base font-medium text-white"
                     style={{ fontFamily: "'Afacad', sans-serif" }}
                   >
                     Get Started

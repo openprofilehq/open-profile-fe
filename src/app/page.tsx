@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <div className="min-h-screen overflow-hidden bg-white font-sans text-[#050505] selection:bg-[#065E69] selection:text-white">
       <Navbar />
-      <div className="pt-[76px]">
+      <div className="pt-19">
         <div className="w-full bg-[#FAFAFA]">
           <main className="relative mx-auto w-full">
             <Hero />
@@ -27,7 +27,7 @@ export default function Home() {
 
         {/* impression */}
         <section className="w-full bg-[#FAFAFA]">
-          <div className="mx-auto max-w-7xl px-4 py-16 md:px-8">
+          <div className="max-w-9xl mx-auto px-4 py-16 md:px-8">
             <Impression />
           </div>
         </section>

@@ -17,6 +17,7 @@ export default function ExternalPagesLayout({
     "/privacy-policy",
     "/terms",
     "/waitlist",
+    "/how-it-works",
   ];
 
   const showLayout = pagesWithLayout.includes(pathname);

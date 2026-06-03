@@ -18,21 +18,21 @@ export default function FaqPage() {
       answer:
         "Yes! Creating your profile and getting verified is completely free. There are no hidden fees or credit card requirements.",
     },
-    {
-      question: "How does verification work ?",
-      answer:
-        "Yes! Creating your profile and getting verified is completely free. There are no hidden fees or credit card requirements.",
-    },
+    // {
+    //   question: "How does verification work ?",
+    //   answer:
+    //     "Yes! Creating your profile and getting verified is completely free. There are no hidden fees or credit card requirements.",
+    // },
     {
       question: "Can people find me if I don't share my profile link ?",
       answer:
         "Yes! Creating your profile and getting verified is completely free. There are no hidden fees or credit card requirements.",
     },
-    {
-      question: "What happens when someone invites me ?",
-      answer:
-        "Yes! Creating your profile and getting verified is completely free. There are no hidden fees or credit card requirements.",
-    },
+    // {
+    //   question: "What happens when someone invites me ?",
+    //   answer:
+    //     "Yes! Creating your profile and getting verified is completely free. There are no hidden fees or credit card requirements.",
+    // },
     {
       question: "How do I share my profile",
       answer:

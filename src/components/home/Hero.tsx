@@ -109,9 +109,9 @@ export function Hero() {
 
   return (
     <section className="w-full overflow-hidden bg-white">
-      <div className="relative mx-auto flex max-w-[1440px] flex-col items-start gap-8 px-6 pt-[60px] pb-[40px] md:px-[125px] md:pt-[80px] lg:flex-row lg:items-center lg:gap-4">
+      <div className="max-w-9xl relative mx-auto flex flex-col items-start gap-8 px-6 pt-[60px] pb-[40px] md:px-12 md:pt-[80px] lg:flex-row lg:items-center lg:gap-4 lg:px-16 xl:px-[125px]">
         {/* ───────────────── LEFT COLUMN ───────────────── */}
-        <div className="z-10 flex w-full shrink-0 flex-col gap-4 lg:max-w-[500px]">
+        <div className="z-10 flex w-full shrink-0 flex-col gap-4 lg:max-w-[450px] xl:max-w-[500px]">
           {/* Heading */}
           <motion.h1
             {...fadeUp(0.05)}
@@ -325,7 +325,7 @@ export function Hero() {
         </div>
 
         {/* ───────────────── RIGHT COLUMN — desktop only ───────────────── */}
-        <div className="relative ml-[-10px] hidden w-full flex-1 overflow-visible lg:block">
+        <div className="relative hidden w-full flex-1 overflow-visible lg:block">
           {/* LEFT fade */}
           <div
             style={{
