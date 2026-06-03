@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { getImageUrl } from "@/utils/profile";
+import { getInitials } from "@/utils/avatar";
 import { Skeleton } from "../ui/skeleton";
 
 type Props = {
@@ -10,20 +11,6 @@ type Props = {
   };
   isLoading?: boolean;
 };
-
-function getInitials(fullName?: string | null) {
-  const parts = fullName?.trim().split(/\s+/).filter(Boolean) ?? [];
-
-  if (parts.length >= 2) {
-    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-  }
-
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
-  }
-
-  return "U";
-}
 
 export default function ProfileSummaryCard({ profile, isLoading }: Props) {
   const rawUrl = profile?.photoUrl;

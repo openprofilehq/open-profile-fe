@@ -16,6 +16,7 @@ import {
   getSectionStyle,
   isProjectHighlighted,
 } from "@/utils/profile";
+import { getInitials } from "@/utils/avatar";
 import type { Section, ProfilePreview } from "../types";
 import HighlightPreviewCard from "./HighlightPreviewCard";
 
@@ -25,20 +26,6 @@ interface DefaultPreviewProps {
   selectedSectionId?: string | null;
   onToggleSectionVisibility: (id: string) => void;
   onRemoveSection: (id: string) => void;
-}
-
-function getInitials(fullName?: string | null) {
-  const parts = fullName?.trim().split(/\s+/).filter(Boolean) ?? [];
-
-  if (parts.length >= 2) {
-    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-  }
-
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
-  }
-
-  return "U";
 }
 
 export default function DefaultPreview({

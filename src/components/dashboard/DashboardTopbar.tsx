@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { isApiError } from "@/api/base";
 import { publishProfile } from "@/api/profile/profile.service";
 import { dashboardProfileOption } from "@/api/profile/profile.options";
+import { getInitials } from "@/utils/avatar";
 import type { PublishProfileResponse } from "@/api/profile/profile.type";
 
 const navLinks = [
@@ -22,24 +23,6 @@ const navLinks = [
   { label: "Profile Builder", href: ROUTES.dashboard.profileBuilder },
   // { label: "Settings", href: ROUTES.dashboard.settings.home },
 ];
-
-function getInitials(fullName?: string | null, email?: string): string {
-  const parts = fullName?.trim().split(/\s+/).filter(Boolean) ?? [];
-
-  if (parts.length >= 2) {
-    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-  }
-
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
-  }
-
-  if (email) {
-    return email.slice(0, 2).toUpperCase();
-  }
-
-  return "??";
-}
 
 export default function DashboardTopbar() {
   const pathname = usePathname();
@@ -53,7 +36,10 @@ export default function DashboardTopbar() {
 
   const dropdownRef = useOutsideClick(() => setDropdownOpen(false));
   const displayName = profile?.fullName ?? user?.fullName ?? null;
-  const initials = getInitials(displayName, user?.email);
+  const initials = getInitials(displayName, {
+    email: user?.email,
+    fallback: "??",
+  });
 
   const { mutate: doPublish, isPending: isPublishing } = useMutation<
     PublishProfileResponse,

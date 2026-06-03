@@ -10,6 +10,7 @@ import {
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
 import { getImageUrl, isProjectHighlighted } from "@/utils/profile";
+import { getInitials } from "@/utils/avatar";
 import { TemplateFooter } from "./TemplateFooter";
 import HighlightCard from "../HighlightCard";
 
@@ -54,20 +55,6 @@ const DEFAULT_PROJECTS = [
     imageSrc: "/profile-preview/feature3.jpg",
   },
 ] as ProjectItem[];
-
-function getInitials(fullName?: string | null) {
-  const parts = fullName?.trim().split(/\s+/).filter(Boolean) ?? [];
-
-  if (parts.length >= 2) {
-    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-  }
-
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
-  }
-
-  return "U";
-}
 
 export default function ProfessionalDashboardView({
   profile,
