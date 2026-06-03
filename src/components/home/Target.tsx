@@ -93,7 +93,7 @@ export default function Target() {
               whileInView="show"
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.15 }}
-              className="relative mx-auto flex h-full w-full max-w-112.5 cursor-pointer flex-col space-y-4 overflow-hidden rounded-[16px] px-6 pt-20 pb-6 transition-all duration-200 hover:shadow-lg"
+              className="relative mx-auto flex h-full w-full max-w-112.5 flex-col space-y-4 overflow-hidden rounded-[16px] px-6 pt-20 pb-6 transition-all duration-200 hover:shadow-lg"
             >
               {/* top icon */}
               <div className={`absolute top-0 ${right}`}>

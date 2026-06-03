@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { steps } from "@/components/home/Journey";
 
-export default function FaqPage() {
+export default function HowItWorksPage() {
   const data = [
     "Show up when people search your name",
     "One profile for everything",
@@ -24,17 +24,17 @@ export default function FaqPage() {
     },
   };
 
-  // const itemVariants: Variants = {
-  //   hidden: { opacity: 0, y: 20 },
-  //   visible: {
-  //     opacity: 1,
-  //     y: 0,
-  //     transition: {
-  //       duration: 0.5,
-  //       ease: "easeOut",
-  //     },
-  //   },
-  // };
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut",
+      },
+    },
+  };
 
   return (
     <div>
@@ -44,12 +44,12 @@ export default function FaqPage() {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="mt-19 flex flex-col items-center justify-center space-y-1 py-10 text-center lg:py-17"
       >
-        <p className="text-[36px] leading-18 font-semibold tracking-[-1.51px] lg:text-[50px] lg:leading-18">
+        <h1 className="text-[36px] leading-18 font-semibold tracking-[-1.51px] lg:text-[50px] lg:leading-18">
           Get started in simple steps
-        </p>
-        <p className="text-label-text max-w-md text-[15px] leading-6.5 lg:max-w-full">
+        </h1>
+        <h3 className="text-label-text max-w-md text-[15px] leading-6.5 lg:max-w-full">
           No design skills needed. No coding required. Just you and your work.
-        </p>
+        </h3>
       </motion.div>
 
       <div className="mx-auto flex w-[90%] flex-col gap-2 py-20 lg:w-[70%]">
@@ -162,7 +162,14 @@ export default function FaqPage() {
                 width={24}
                 height={24}
               />
-              {item}
+              <motion.p
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={itemVariants}
+              >
+                {item}
+              </motion.p>
             </div>
           ))}
         </div>
@@ -183,6 +190,7 @@ export default function FaqPage() {
               </div>
               <div>
                 <Button
+                  asChild
                   variant="outline"
                   size="lg"
                   className="rounded-[12px] p-6"

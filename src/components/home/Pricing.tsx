@@ -3,6 +3,7 @@
 import { Check } from "lucide-react";
 import { motion, Variants } from "motion/react";
 import { useState } from "react";
+import { Button } from "../ui/button";
 
 interface PricingPlan {
   name: string;
@@ -105,22 +106,26 @@ export function Pricing() {
           variants={itemVariants}
           className="mb-10 inline-flex items-center rounded-2xl border border-[#E5E5E5] bg-white text-center transition-all duration-300"
         >
-          <span
+          <Button
+            variant={null}
+            size="lg"
             onClick={() => setIsYear(false)}
             className={`w-28 cursor-pointer rounded-2xl px-4 py-3 font-semibold ${
               !isYear ? "bg-brand text-white" : "text-[#525252]"
             }`}
           >
             Month
-          </span>
-          <span
+          </Button>
+          <Button
+            variant={null}
+            size="lg"
             onClick={() => setIsYear(true)}
             className={`w-28 cursor-pointer rounded-2xl px-4 py-3 font-semibold ${
               isYear ? "bg-brand text-white" : "text-[#525252]"
             }`}
           >
             Year
-          </span>
+          </Button>
         </motion.div>
 
         <motion.div

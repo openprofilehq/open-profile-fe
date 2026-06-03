@@ -117,20 +117,38 @@ export function Proof() {
 
       {/* Row 1: scrolls left */}
       <div className="relative mb-4 overflow-hidden mask-[linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-        <div className="animate-marquee-left flex w-max">
+        <motion.div
+          className="flex w-max"
+          animate={{ x: ["0%", "-25%"] }}
+          transition={{
+            duration: 35,
+            ease: "linear",
+            repeat: Infinity,
+            repeatType: "loop",
+          }}
+        >
           {[...row1, ...row1, ...row1, ...row1].map((t, i) => (
             <TestimonialCard key={i} t={t} />
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {/* Row 2: scrolls right */}
       <div className="relative overflow-hidden mask-[linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-        <div className="animate-marquee-right flex w-max">
+        <motion.div
+          className="flex w-max"
+          animate={{ x: ["-25%", "0%"] }}
+          transition={{
+            duration: 35,
+            ease: "linear",
+            repeat: Infinity,
+            repeatType: "loop",
+          }}
+        >
           {[...row2, ...row2, ...row2, ...row2].map((t, i) => (
             <TestimonialCard key={i} t={t} />
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
