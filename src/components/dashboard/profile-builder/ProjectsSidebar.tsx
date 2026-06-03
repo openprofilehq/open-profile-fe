@@ -337,6 +337,14 @@ export default function ProjectsSidebar({
                     <div
                       key={proj.id}
                       onClick={() => handleEditProjectClick(proj)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleEditProjectClick(proj);
+                        }
+                      }}
                       className="group hover:border-brand-b/40 border-border bg-background flex h-[50px] cursor-pointer items-center justify-between overflow-hidden rounded-[8px] border pl-4 transition-all"
                     >
                       <span className="flex-1 truncate text-sm font-semibold text-[#050505]">

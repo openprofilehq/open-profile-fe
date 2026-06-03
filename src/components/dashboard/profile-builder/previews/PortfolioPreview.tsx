@@ -371,8 +371,9 @@ export default function PortfolioPreview({
                     "I am currently available for freelance project"}
                 </p>
                 <a
-                  href="#"
-                  onClick={(e) => e.preventDefault()}
+                  href={sanitizeUrl(section.url || "#")}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
                 >
                   {section.buttonText || "Let's Connect"}
