@@ -138,7 +138,7 @@ export function Navbar() {
 
             <div className="flex flex-1 flex-col gap-8 px-6 pt-8">
               {[
-                { label: "How it works", href: "/coming-soon" },
+                { label: "How it works", href: "/how-it-works" },
                 { label: "Pricing", href: "/#pricing" },
                 { label: "FAQ", href: "/faq" },
               ].map((item) => (

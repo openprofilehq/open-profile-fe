@@ -7,9 +7,11 @@ import Image from "next/image";
 
 type CreateProfileInfoProps = {
   bio: string;
-  displayName: string;
   onUpdateBio: (e: ChangeEvent<HTMLTextAreaElement>) => void;
-  onUpdateDisplayName: (e: ChangeEvent<HTMLInputElement>) => void;
+  firstName: string;
+  lastName: string;
+  onUpdateFirstName: (e: ChangeEvent<HTMLInputElement>) => void;
+  onUpdateLastName: (e: ChangeEvent<HTMLInputElement>) => void;
   onUpdateStep: () => void;
   isPending?: boolean;
   photoUrl?: string;
@@ -20,14 +22,16 @@ type CreateProfileInfoProps = {
 
 export default function CreateProfileInfo({
   bio,
-  displayName,
   onUpdateBio,
-  onUpdateDisplayName,
   onUpdateStep,
   isPending,
   photoUrl,
   onPhotoUrl,
   onPhotoFile,
+  firstName,
+  lastName,
+  onUpdateFirstName,
+  onUpdateLastName,
 }: CreateProfileInfoProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const currentBlobRef = useRef<string | null>(null);
@@ -43,14 +47,22 @@ export default function CreateProfileInfo({
 
   const displayPhoto = preview ?? photoUrl;
 
-  const [errors, setErrors] = useState<{ displayName?: string; bio?: string }>({});
+  const [errors, setErrors] = useState<{
+    firstName?: string;
+    lastName?: string;
+    bio?: string;
+  }>({});
 
   const characterCount = bio?.length || 0;
 
   function handleContinue() {
-    const newErrors: { displayName?: string; bio?: string } = {};
-    if (!displayName.trim()) {
-      newErrors.displayName = "Full name is required.";
+    const newErrors: { firstName?: string; lastName?: string; bio?: string } =
+      {};
+    if (!firstName.trim()) {
+      newErrors.firstName = "First name is required.";
+    }
+    if (!lastName.trim()) {
+      newErrors.lastName = "Last name is required.";
     }
     if (!bio.trim()) {
       newErrors.bio = "Bio is required.";
@@ -135,20 +147,46 @@ export default function CreateProfileInfo({
         </div>
 
         <div className="mt-16 flex flex-col gap-1.5">
-          <div className="mt-4">
-            <label className="mb-1 inline-block font-bold text-[#454545]">
-              <span className="text-[#D92D20]">*</span> Full Name
-            </label>
-            <Input
-              value={displayName}
-              onChange={(e) => {
-                onUpdateDisplayName(e);
-                if (errors.displayName) setErrors({ ...errors, displayName: undefined });
-              }}
-              placeholder="Enter your full name"
-              className={`border-2 bg-white shadow-none ${errors.displayName ? "border-[#D92D20] focus-visible:ring-[#D92D20]" : "border-[#ededed]"}`}
-            />
-            {errors.displayName && <p className="mt-1 text-sm text-[#D92D20]">{errors.displayName}</p>}
+          <div className="flex flex-col items-center gap-4 md:flex-row">
+            {/* it should be first name and last name input, so it concatenated to send has payload */}
+            <span>
+              <label className="mb-1 inline-block font-bold text-[#454545]">
+                <span className="text-[#D92D20]">*</span> First Name
+              </label>
+              <Input
+                value={firstName}
+                onChange={(e) => {
+                  onUpdateFirstName(e);
+                  if (errors.firstName)
+                    setErrors({ ...errors, firstName: undefined });
+                }}
+                placeholder="Enter your first name"
+                className={`border-2 bg-white shadow-none ${errors.firstName ? "border-[#D92D20] focus-visible:ring-[#D92D20]" : "border-[#ededed]"}`}
+              />
+              {errors.firstName && (
+                <p className="mt-1 text-sm text-[#D92D20]">
+                  {errors.firstName}
+                </p>
+              )}
+            </span>
+            <span>
+              <label className="mb-1 inline-block font-bold text-[#454545]">
+                <span className="text-[#D92D20]">*</span> Last Name
+              </label>
+              <Input
+                value={lastName}
+                onChange={(e) => {
+                  onUpdateLastName(e);
+                  if (errors.lastName)
+                    setErrors({ ...errors, lastName: undefined });
+                }}
+                placeholder="Enter your last name"
+                className={`border-2 bg-white shadow-none ${errors.lastName ? "border-[#D92D20] focus-visible:ring-[#D92D20]" : "border-[#ededed]"}`}
+              />
+              {errors.lastName && (
+                <p className="mt-1 text-sm text-[#D92D20]">{errors.lastName}</p>
+              )}
+            </span>
           </div>
 
           <div className="mt-4">
@@ -165,17 +203,29 @@ export default function CreateProfileInfo({
               rows={5}
               placeholder="Product designer & side project builder based in lagos"
             />
-            <div className="flex justify-between items-center mt-1">
-              <span className={`text-xs ${characterCount > 300 ? 'text-[#D92D20] font-medium' : 'text-[#747474]'}`}>
-                {characterCount <= 300 ? `${characterCount} / 300 characters` : `-${characterCount - 300} characters`}
+            <div className="mt-1 flex items-center justify-between">
+              <span
+                className={`text-xs ${characterCount > 300 ? "font-medium text-[#D92D20]" : "text-[#747474]"}`}
+              >
+                {characterCount <= 300
+                  ? `${characterCount} / 300 characters`
+                  : `-${characterCount - 300} characters`}
               </span>
-              {errors.bio && <span className="text-sm text-[#D92D20]">{errors.bio}</span>}
+              {errors.bio && (
+                <span className="text-sm text-[#D92D20]">{errors.bio}</span>
+              )}
             </div>
           </div>
 
           <Button
             type="button"
-            disabled={isPending || !displayName.trim() || !bio.trim() || characterCount > 300}
+            disabled={
+              isPending ||
+              !firstName.trim() ||
+              !lastName.trim() ||
+              !bio.trim() ||
+              characterCount > 300
+            }
             className="mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-medium shadow-none transition-colors"
             onClick={handleContinue}
           >

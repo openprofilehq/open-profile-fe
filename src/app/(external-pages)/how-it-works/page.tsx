@@ -52,15 +52,15 @@ export default function FaqPage() {
         </p>
       </motion.div>
 
-      <div className="mx-auto flex w-[90%] flex-col gap-2 py-20 xl:w-[70%]">
+      <div className="mx-auto flex w-[90%] flex-col gap-2 py-20 lg:w-[70%]">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="w-100 self-center xl:self-start"
+          className="w-100 self-center lg:self-start"
         >
-          <div className="flex justify-center xl:justify-end">
+          <div className="flex justify-center lg:justify-end">
             <Image
               src={steps[0].ghostIcon}
               alt="step number"
@@ -89,9 +89,9 @@ export default function FaqPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="w-100 self-center xl:self-end"
+          className="w-100 self-center lg:self-end"
         >
-          <div className="flex justify-center xl:justify-end">
+          <div className="flex justify-center lg:justify-end">
             <Image
               src={steps[1].ghostIcon}
               alt="step number"
@@ -120,9 +120,9 @@ export default function FaqPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="w-100 self-center xl:self-start"
+          className="w-100 self-center lg:self-start"
         >
-          <div className="flex justify-center xl:justify-end">
+          <div className="flex justify-center lg:justify-end">
             <Image
               src={steps[2].ghostIcon}
               alt="step number"
@@ -153,12 +153,9 @@ export default function FaqPage() {
         variants={containerVariants}
         className="bg-brand-progress-bg mx-auto mt-10 p-5 lg:pt-16 lg:pb-20"
       >
-        <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
+        <div className="mx-auto grid max-w-2xl gap-6 md:grid-cols-2">
           {data.map((item, index) => (
-            <div
-              key={index}
-              className="flex max-w-sm items-center gap-3 font-semibold"
-            >
+            <div key={index} className="flex items-center gap-3 font-semibold">
               <Image
                 src="/Container.svg"
                 alt={`FAQ ${index + 1}`}
