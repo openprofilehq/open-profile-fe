@@ -255,9 +255,18 @@ export default function ProfessionalPreview({
               >
                 {renderControls(projectsSection)}
 
-                <h2 className="text-tertiary-text mb-4 text-[13px]">
-                  {projectsSection.subtitle || "Selected Work"}
-                </h2>
+                <div className="mb-4 flex flex-col gap-1">
+                  {projectsSection.title && (
+                    <h2 className="text-primary-text text-xl font-bold tracking-tight">
+                      {projectsSection.title}
+                    </h2>
+                  )}
+                  {(projectsSection.subtitle || !projectsSection.title) && (
+                    <h3 className="text-tertiary-text text-[13px]">
+                      {projectsSection.subtitle || "Selected Work"}
+                    </h3>
+                  )}
+                </div>
                 <div
                   className={`grid gap-6 ${
                     !projectsSection.layout || projectsSection.layout === "1"

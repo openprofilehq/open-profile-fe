@@ -257,7 +257,7 @@ export default function ProjectsSidebar({
             className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
           >
             <ChevronLeft size={20} />
-            <span>{sectionTitle}</span>
+            <span>Projects</span>
           </button>
         ) : (
           <button
@@ -268,7 +268,7 @@ export default function ProjectsSidebar({
             className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
           >
             <ChevronLeft size={20} />
-            <span>Back to {sectionTitle}</span>
+            <span>Back to Projects</span>
           </button>
         )}
       </div>
@@ -291,34 +291,6 @@ export default function ProjectsSidebar({
             </div>
           ) : (
             <div className="flex flex-col gap-6">
-              {/* Layout Section */}
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-[#050505]">
-                  Layout
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  {["1", "2", "3", "4"].map((lay) => (
-                    <button
-                      key={lay}
-                      type="button"
-                      onClick={() => handleLayoutChange(lay)}
-                      className={`group relative aspect-video overflow-hidden rounded-[8px] border-2 transition-all duration-200 outline-none focus:outline-none ${
-                        layout === lay
-                          ? "border-brand-b bg-transparent"
-                          : "border-border bg-transparent hover:border-gray-300"
-                      }`}
-                    >
-                      <Image
-                        src={`/profilebuilder_projects/${lay}.png`}
-                        alt={`Layout ${lay}`}
-                        fill
-                        className="object-contain p-1.5"
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Title Section */}
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold text-[#050505]">
@@ -402,6 +374,34 @@ export default function ProjectsSidebar({
                       <Plus size={16} />
                     </div>
                   </button>
+                </div>
+              </div>
+
+              {/* Layout Section */}
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-[#050505]">
+                  Layout
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {["1", "2", "3", "4"].map((lay) => (
+                    <button
+                      key={lay}
+                      type="button"
+                      onClick={() => handleLayoutChange(lay)}
+                      className={`group relative aspect-video overflow-hidden rounded-[8px] border-2 transition-all duration-200 outline-none focus:outline-none ${
+                        layout === lay
+                          ? "border-brand-b bg-transparent"
+                          : "border-border bg-transparent hover:border-gray-300"
+                      }`}
+                    >
+                      <Image
+                        src={`/profilebuilder_projects/${lay}.png`}
+                        alt={`Layout ${lay}`}
+                        fill
+                        className="object-contain p-1.5"
+                      />
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>

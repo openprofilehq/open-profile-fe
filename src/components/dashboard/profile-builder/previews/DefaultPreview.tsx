@@ -239,9 +239,16 @@ export default function DefaultPreview({
             className="border-border bg-background w-full rounded-[12px] border shadow-sm"
             style={getSectionStyle(projectsSection)}
           >
-            <h2 className="p-4 pr-14 text-2xl font-bold">
-              {projectsSection.subtitle || "Selected Projects"}
-            </h2>
+            <div className="flex flex-col p-4 pr-14">
+              {projectsSection.title && (
+                <h2 className="text-2xl font-bold">{projectsSection.title}</h2>
+              )}
+              {(projectsSection.subtitle || !projectsSection.title) && (
+                <p className="text-tertiary-text mt-1 text-[15px]">
+                  {projectsSection.subtitle || "Selected Projects"}
+                </p>
+              )}
+            </div>
 
             {(() => {
               return remainingProjects.length > 0 ? (
