@@ -105,7 +105,7 @@ export default function CreateProfileInfo({
           <h1 className="text-primary text-3xl font-bold">
             Tell us about yourself
           </h1>
-          <p className="my-2 text-[#454545]">
+          <p className="text-secondary-text my-2">
             This is what people will see when they search you
           </p>
         </div>
@@ -149,8 +149,8 @@ export default function CreateProfileInfo({
         <div className="mt-16 flex flex-col gap-1.5">
           <div className="flex w-full flex-col items-center gap-4 md:flex-row">
             <span className="flex-1">
-              <label className="mb-1 inline-block font-bold text-[#454545]">
-                <span className="text-[#D92D20]">*</span> First Name
+              <label className="text-secondary-text mb-1 inline-block font-bold">
+                <span className="text-danger-text">*</span> First Name
               </label>
               <Input
                 value={firstName}
@@ -160,17 +160,17 @@ export default function CreateProfileInfo({
                     setErrors({ ...errors, firstName: undefined });
                 }}
                 placeholder="Enter your first name"
-                className={`border-2 bg-white shadow-none ${errors.firstName ? "border-[#D92D20] focus-visible:ring-[#D92D20]" : "border-[#ededed]"}`}
+                className={`border-2 bg-white shadow-none ${errors.firstName ? "focus-visible:ring-danger-text border-danger-text" : "border-tertiary-text"}`}
               />
               {errors.firstName && (
-                <p className="mt-1 text-sm text-[#D92D20]">
+                <p className="text-danger-text mt-1 text-sm">
                   {errors.firstName}
                 </p>
               )}
             </span>
             <span className="flex-1">
-              <label className="mb-1 inline-block font-bold text-[#454545]">
-                <span className="text-[#D92D20]">*</span> Last Name
+              <label className="text-secondary-text mb-1 inline-block font-bold">
+                <span className="text-danger-text">*</span> Last Name
               </label>
               <Input
                 value={lastName}
@@ -180,20 +180,22 @@ export default function CreateProfileInfo({
                     setErrors({ ...errors, lastName: undefined });
                 }}
                 placeholder="Enter your last name"
-                className={`border-2 bg-white shadow-none ${errors.lastName ? "border-[#D92D20] focus-visible:ring-[#D92D20]" : "border-[#ededed]"}`}
+                className={`border-2 bg-white shadow-none ${errors.lastName ? "border-danger-text focus-visible:ring-danger-text" : "border-tertiary-text"}`}
               />
               {errors.lastName && (
-                <p className="mt-1 text-sm text-[#D92D20]">{errors.lastName}</p>
+                <p className="text-danger-text mt-1 text-sm">
+                  {errors.lastName}
+                </p>
               )}
             </span>
           </div>
 
           <div className="mt-4">
-            <label className="mb-1 inline-block font-bold text-[#454545]">
-              <span className="text-[#D92D20]">*</span> Bio
+            <label className="text-secondary-text mb-1 inline-block font-bold">
+              <span className="text-danger-text">*</span> Bio
             </label>
             <textarea
-              className={`w-full resize-none rounded-lg border-2 bg-white p-3 focus:outline-none ${errors.bio ? "border-[#D92D20] focus:ring-1 focus:ring-[#D92D20]" : "border-[#ededed]"}`}
+              className={`w-full resize-none rounded-lg border-2 bg-white p-3 focus:outline-none ${errors.bio ? "focus:ring-danger-text border-danger-text focus:ring-1" : "border-active-bg"}`}
               value={bio}
               onChange={(e) => {
                 onUpdateBio(e);
@@ -204,14 +206,14 @@ export default function CreateProfileInfo({
             />
             <div className="mt-1 flex items-center justify-between">
               <span
-                className={`text-xs ${characterCount > 300 ? "font-medium text-[#D92D20]" : "text-[#747474]"}`}
+                className={`text-xs ${characterCount > 300 ? "text-danger-text font-medium" : "text-tertiary-text"}`}
               >
                 {characterCount <= 300
                   ? `${characterCount} / 300 characters`
                   : `-${characterCount - 300} characters`}
               </span>
               {errors.bio && (
-                <span className="text-sm text-[#D92D20]">{errors.bio}</span>
+                <span className="text-danger-text text-sm">{errors.bio}</span>
               )}
             </div>
           </div>
@@ -225,7 +227,7 @@ export default function CreateProfileInfo({
               !bio.trim() ||
               characterCount > 300
             }
-            className="mt-4 h-13 w-full rounded-[10px] bg-[#087583] text-[16px] font-medium shadow-none transition-colors"
+            className="bg-brand mt-4 h-13 w-full rounded-[10px] text-base shadow-none transition-colors"
             onClick={handleContinue}
           >
             {isPending ? "Please wait…" : "Continue"}

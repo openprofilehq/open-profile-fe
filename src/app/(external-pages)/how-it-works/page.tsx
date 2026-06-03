@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { steps } from "@/components/home/Journey";
+import { ROUTES } from "@/constants/routes";
 
 export default function HowItWorksPage() {
   const data = [
@@ -73,11 +74,11 @@ export default function HowItWorksPage() {
           <Image src={steps[0].icon} alt="step icon" width={43} height={43} />
 
           <div className="relative z-10">
-            <h3 className="text-[28px] leading-[1.05] font-bold tracking-[-0.04em] text-[#00798C]">
+            <h3 className="text-brand text-[28px] leading-[1.05] font-bold tracking-[-0.04em]">
               {steps[0].title}
             </h3>
 
-            <p className="text-[16px] leading-[1.75] text-[#6B7280]">
+            <p className="text-secondary-foreground-text text-[16px] leading-[1.75]">
               {steps[0].description}
             </p>
           </div>
@@ -108,7 +109,7 @@ export default function HowItWorksPage() {
               {steps[1].title}
             </h3>
 
-            <p className="text-[16px] leading-[1.75] text-[#6B7280]">
+            <p className="text-secondary-foreground-text text-[16px] leading-[1.75]">
               {steps[1].description}
             </p>
           </div>
@@ -139,7 +140,7 @@ export default function HowItWorksPage() {
               {steps[2].title}
             </h3>
 
-            <p className="text-[16px] leading-[1.75] text-[#6B7280]">
+            <p className="text-secondary-foreground-text text-[16px] leading-[1.75]">
               {steps[2].description}
             </p>
           </div>
@@ -195,7 +196,9 @@ export default function HowItWorksPage() {
                   size="lg"
                   className="rounded-[12px] p-6"
                 >
-                  <Link href="/signup">Create Your Profile Now</Link>
+                  <Link href={`${ROUTES.auth.signup}`}>
+                    Create Your Profile Now
+                  </Link>
                 </Button>
               </div>
             </div>

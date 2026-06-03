@@ -88,7 +88,7 @@ export function Pricing() {
   };
 
   return (
-    <section id="pricing" className="w-full bg-[#FAFAFA] py-16">
+    <section id="pricing" className="bg-primary-bg w-full py-16">
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -98,20 +98,20 @@ export function Pricing() {
       >
         <motion.h2
           variants={itemVariants}
-          className="mb-10 text-center text-[28px] font-semibold text-[#050505] md:text-[40px]"
+          className="text-primary-text mb-10 text-center text-[28px] font-semibold md:text-[40px]"
         >
           Choose the plan that fits your needs.
         </motion.h2>
         <motion.div
           variants={itemVariants}
-          className="mb-10 inline-flex items-center rounded-2xl border border-[#E5E5E5] bg-white text-center transition-all duration-300"
+          className="border-primary-foreground-b mb-10 inline-flex items-center rounded-2xl border bg-white text-center transition-all duration-300"
         >
           <Button
             variant={null}
             size="lg"
             onClick={() => setIsYear(false)}
             className={`w-28 cursor-pointer rounded-2xl px-4 py-3 font-semibold ${
-              !isYear ? "bg-brand text-white" : "text-[#525252]"
+              !isYear ? "bg-brand text-white" : "text-tertiary-foreground-text"
             }`}
           >
             Month
@@ -121,7 +121,7 @@ export function Pricing() {
             size="lg"
             onClick={() => setIsYear(true)}
             className={`w-28 cursor-pointer rounded-2xl px-4 py-3 font-semibold ${
-              isYear ? "bg-brand text-white" : "text-[#525252]"
+              isYear ? "bg-brand text-white" : "text-tertiary-foreground-text"
             }`}
           >
             Year
@@ -138,21 +138,25 @@ export function Pricing() {
               variants={itemVariants}
               className={`flex h-full flex-col rounded-[16px] border p-4 xl:p-8 ${
                 plan.highlighted
-                  ? "bg-brand-hover-bg border-[#087583] text-white"
-                  : "border-[#E5E5E5] bg-white text-[#050505]"
+                  ? "bg-brand-hover-bg border-brand text-white"
+                  : "border-primary-foreground-b text-primary-text bg-white"
               }`}
             >
               <div className="mb-8">
                 <p
-                  className={`mb-4 text-[16px] font-medium ${
-                    plan.highlighted ? "text-white" : "text-[#525252]"
+                  className={`mb-4 text-base font-medium ${
+                    plan.highlighted
+                      ? "text-white"
+                      : "text-tertiary-foreground-text"
                   }`}
                 >
                   {plan.name}
                 </p>
                 <div
                   className={`flex items-baseline gap-1 border-b ${
-                    plan.highlighted ? "border-white/20" : "border-[#E5E5E5]"
+                    plan.highlighted
+                      ? "border-white/20"
+                      : "border-primary-foreground-b"
                   }`}
                 >
                   {isYear ? (
@@ -161,8 +165,10 @@ export function Pricing() {
                         ${plan.priceYear}
                       </span>
                       <span
-                        className={`text-[15px] ${
-                          plan.highlighted ? "text-white/80" : "text-[#525252]"
+                        className={`text-base ${
+                          plan.highlighted
+                            ? "text-white/80"
+                            : "text-tertiary-foreground-text"
                         }`}
                       >
                         /year
@@ -174,8 +180,10 @@ export function Pricing() {
                         ${plan.priceMonth}
                       </span>
                       <span
-                        className={`text-[15px] ${
-                          plan.highlighted ? "text-white/80" : "text-[#525252]"
+                        className={`text-base ${
+                          plan.highlighted
+                            ? "text-white/80"
+                            : "text-tertiary-foreground-text"
                         }`}
                       >
                         /month
@@ -188,7 +196,7 @@ export function Pricing() {
               <div className="flex-1">
                 <p
                   className={`mb-6 text-[14px] font-bold ${
-                    plan.highlighted ? "text-white" : "text-[#050505]"
+                    plan.highlighted ? "text-white" : "text-primary-text"
                   }`}
                 >
                   {plan.featureTitle || "Includes:"}
@@ -208,7 +216,9 @@ export function Pricing() {
                       />
                       <span
                         className={
-                          plan.highlighted ? "text-white" : "text-[#525252]"
+                          plan.highlighted
+                            ? "text-white"
+                            : "text-tertiary-foreground-text"
                         }
                       >
                         {feature}
@@ -223,7 +233,7 @@ export function Pricing() {
                 className={`flex h-auto w-full items-center justify-center rounded-[8px] py-4 text-[14px] font-bold transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50 ${
                   plan.highlighted
                     ? "text-link-hover-text border border-transparent bg-white"
-                    : "text-link-hover-text border border-[#087583] bg-white"
+                    : "text-link-hover-text border-brand border bg-white"
                 }`}
               >
                 {plan.buttonText}

@@ -22,6 +22,8 @@ export const ROUTES = {
   },
   public: {
     faq: "/faq",
+    privacy: "/privacy",
+    terms: "/terms",
   },
   comingSoon: "/coming-soon",
   home: "/",

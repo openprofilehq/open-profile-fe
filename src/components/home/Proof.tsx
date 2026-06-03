@@ -66,8 +66,10 @@ function TestimonialCard({ t }: { t: Testimonial }) {
           {t.initials}
         </div>
         <div>
-          <p className="text-[13px] font-bold text-[#050505]">{t.name}</p>
-          <p className="text-[11px] font-medium text-[#737373]">{t.role}</p>
+          <p className="text-primary-text text-sm font-bold">{t.name}</p>
+          <p className="text-tertiary-foreground-text text-sm font-medium">
+            {t.role}
+          </p>
         </div>
       </div>
     </div>
@@ -85,7 +87,7 @@ export function Proof() {
   };
 
   return (
-    <section className="w-full overflow-hidden bg-[#FAFAFA] py-16">
+    <section className="bg-primary-bg w-full overflow-hidden py-16">
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -94,7 +96,7 @@ export function Proof() {
       >
         <motion.div
           variants={headerVariants}
-          className="mb-8 flex h-7.5 w-fit items-center gap-1 rounded-[24px] bg-[#F2FDFE] pr-5.5 pl-3.5"
+          className="bg-primary-foreground-bg mb-8 flex h-7.5 w-fit items-center gap-1 rounded-[24px] pr-5.5 pl-3.5"
         >
           <Image
             src="/target_assets/icon-flash.svg"
@@ -102,14 +104,14 @@ export function Proof() {
             width={16}
             height={16}
           />
-          <p className="text-brand font-sfpror text-[12px] leading-4 font-medium">
+          <p className="text-brand font-sfpror text-sm leading-4 font-medium">
             Social Proof
           </p>
         </motion.div>
 
         <motion.h2
           variants={headerVariants}
-          className="text-center text-[32px] font-semibold text-[#050505] lg:text-[40px]"
+          className="text-primary-text text-center text-[32px] font-semibold lg:text-[40px]"
         >
           Join creators and freelancers building their identity online
         </motion.h2>

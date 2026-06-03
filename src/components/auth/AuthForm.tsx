@@ -19,6 +19,7 @@ import {
 } from "@/api/auth/auth.options";
 import { isApiError } from "@/api/base";
 import { Checkbox } from "../ui/checkbox";
+import { ROUTES } from "@/constants/routes";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -141,7 +142,7 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
   return (
     <AuthLayout>
       <div className="mb-1 text-center">
-        <h1 className="text-3xl font-bold text-[#050505]">
+        <h1 className="text-primary-text text-3xl font-bold">
           {isSignup ? "Join Openprofile" : "Welcome back"}
         </h1>
         <p className="mt-1 text-lg text-gray-500">
@@ -213,7 +214,7 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
         <Button
           type="submit"
           disabled={pending || !email || !password || (isSignup && !agreed)}
-          className={`mt-1 h-13 w-full rounded-[10px] text-[16px] font-medium shadow-none transition-colors ${
+          className={`mt-1 h-13 w-full rounded-[10px] text-base font-medium shadow-none transition-colors ${
             pending || !email || !password
               ? "border-button-b text-label-text border bg-white"
               : "bg-brand-hover-bg hover:bg-brand border-0 text-white"
@@ -236,14 +237,14 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
           >
             By Continuing, you agree to Openprofile&apos;s{" "}
             <Link
-              href="/privacy"
+              href={ROUTES.public.privacy}
               className="text-link-hover-text font-semibold hover:underline"
             >
               privacy policy
             </Link>
             , and{" "}
             <Link
-              href="/terms"
+              href={ROUTES.public.terms}
               className="text-link-hover-text font-semibold hover:underline"
             >
               Terms and Conditions
@@ -256,7 +257,7 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
 
       <a
         href={googleAuthUrl}
-        className="border-input-b flex h-11 w-full items-center justify-center gap-3 rounded-lg border bg-[#FAFAFA] font-medium transition-colors hover:bg-[#f0f0f0]"
+        className="border-input-b hover:bg-hover-bg bg-primary-bg flex h-11 w-full items-center justify-center gap-3 rounded-lg border font-medium transition-colors"
       >
         <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
           <path
