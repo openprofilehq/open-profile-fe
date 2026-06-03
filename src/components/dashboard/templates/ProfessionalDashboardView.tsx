@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
-import { Mail, Link as LinkIcon, ArrowRight } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
+
 import {
   DashboardProfileResponse,
   ProfileContentResponse,
@@ -8,9 +9,9 @@ import {
   ProjectItem,
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
-import { getImageUrl, getDisplayProfileUrl } from "@/utils/profile";
-import normalizeHref from "@/utils/url";
+import { getImageUrl, isProjectHighlighted } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
+import HighlightCard from "../HighlightCard";
 
 type Props = {
   profile?: DashboardProfileResponse;
@@ -21,10 +22,43 @@ type Props = {
   isPreview?: boolean;
 };
 
+const DEFAULT_LINKS = [
+  { id: "link-1", title: "Portfolio", url: "https://john.studio" },
+  { id: "link-2", title: "Twitter", url: "https://twitter.com/johnsmith" },
+  { id: "link-3", title: "GitHub", url: "https://github.com/johnsmith" },
+] as LinkItem[];
+
+const DEFAULT_PROJECTS = [
+  {
+    id: "proj-1",
+    title: "Atlas - Onboarding kit for SaaS",
+    description: "A complete design system and onboarding flow",
+    buttonText: "View Project",
+    url: "#",
+    imageSrc: "/profile-preview/feature1.jpg",
+  },
+  {
+    id: "proj-2",
+    title: "Field - Mobile Journaling app",
+    description: "A calm journaling experience with a custom typography stack.",
+    buttonText: "View Project",
+    url: "#",
+    imageSrc: "/profile-preview/feature2.jpg",
+  },
+  {
+    id: "proj-3",
+    title: "Northwind Analytics",
+    description: "Dashboard rework for a B2B analytics products.",
+    buttonText: "View Project",
+    url: "#",
+    imageSrc: "/profile-preview/feature3.jpg",
+  },
+] as ProjectItem[];
+
 export default function ProfessionalDashboardView({
   profile,
   content,
-  appearance,
+  isPreview,
 }: Props) {
   const name = profile?.fullName ?? profile?.username ?? "John Smith";
   const username = profile?.username ?? "johnsmith";
@@ -35,9 +69,12 @@ export default function ProfessionalDashboardView({
     details?.bio?.content ??
     "Product Designer helping early-stage startups build meaningful, trustworthy experiences. Previously at Linear and Loom";
 
-  const links = (details?.links?.items ?? []) as LinkItem[];
+  const rawLinks = (details?.links?.items ?? []) as LinkItem[];
+  const links = rawLinks.length > 0 ? rawLinks : isPreview ? DEFAULT_LINKS : [];
 
-  const projects = (details?.projects?.items ?? []) as ProjectItem[];
+  const rawProjects = (details?.projects?.items ?? []) as ProjectItem[];
+  const projects =
+    rawProjects.length > 0 ? rawProjects : isPreview ? DEFAULT_PROJECTS : [];
 
   const cta = details?.cta;
 
@@ -45,48 +82,32 @@ export default function ProfessionalDashboardView({
   const photoSrc = rawPhotoSrc
     ? rawPhotoSrc.startsWith("/profile-preview/")
       ? rawPhotoSrc
-      : getImageUrl(rawPhotoSrc)!
-    : "/profile-preview/avatar.png";
-
-  const hasCustomBg = !!(
-    appearance?.backgroundColour ||
-    appearance?.bgColor ||
-    appearance?.accentColour
-  );
-  const customBgStyle = hasCustomBg
-    ? undefined
-    : ({
-        "--primary-bg": "#FFFFFF",
-      } as React.CSSProperties);
+      : getImageUrl(rawPhotoSrc)
+    : null;
 
   return (
-    <div
-      className="text-primary-text bg-primary-bg flex min-h-screen w-full flex-col antialiased"
-      style={customBgStyle}
-    >
+    <div className="text-primary-text bg-secondary-bg flex w-full flex-col font-sans antialiased">
       <div
-        className="mx-auto flex w-full max-w-5xl flex-col px-6 py-16 sm:py-24"
-        style={{ gap: "calc(var(--op-spacing, 24px) * 2)" }}
+        className="mx-auto flex w-full max-w-5xl flex-col px-6 pt-8 pb-16 sm:pb-24"
+        style={{ gap: "var(--op-spacing, 2rem)" }}
       >
         {/* HEADER SECTION */}
-        <header
-          className="flex w-full flex-col justify-between sm:flex-row sm:items-start"
-          style={{ gap: "var(--op-spacing, 24px)" }}
-        >
-          <div
-            className="flex items-center"
-            style={{ gap: "var(--op-spacing, 24px)" }}
-          >
-            <div className="border-border bg-secondary-bg relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-full border">
-              <Image
-                src={photoSrc}
-                alt={name}
-                fill
-                className="object-cover"
-                unoptimized
-              />
-              {/* Online indicator dot */}
-              <div className="border-background absolute right-1 bottom-1 h-3.5 w-3.5 rounded-full border-2 bg-green-500" />
+        <header className="flex w-full flex-col justify-between gap-6 sm:flex-row sm:items-start">
+          <div className="flex items-center gap-6">
+            <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
+              {photoSrc ? (
+                <Image
+                  src={photoSrc}
+                  alt={name}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+              ) : (
+                <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-full w-full items-center justify-center text-[40px] font-bold">
+                  {name.charAt(0).toUpperCase()}
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col">
@@ -94,32 +115,10 @@ export default function ProfessionalDashboardView({
                 {name}
               </h1>
               <p className="text-secondary-text mt-1 text-[15px]">
-                {getDisplayProfileUrl(username)}
+                openprofile.app/{username}
               </p>
             </div>
           </div>
-
-          {details?.cta?.visible !== false && (cta?.value ?? cta?.url) && (
-            <a
-              href={cta?.value ?? cta?.url ?? ""}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="border-brand-hover-bg bg-brand-hover-bg/5 text-brand-hover-bg hover:bg-brand-hover-bg/10 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-sm font-semibold transition-colors"
-            >
-              {cta?.iconSrc ? (
-                <Image
-                  src={cta.iconSrc}
-                  alt=""
-                  width={16}
-                  height={16}
-                  className="object-contain"
-                />
-              ) : (
-                <Mail size={16} />
-              )}
-              {cta?.label || "Email"}
-            </a>
-          )}
         </header>
 
         {/* BIO SECTION */}
@@ -130,203 +129,160 @@ export default function ProfessionalDashboardView({
         </section>
 
         {/* LINKS SECTION */}
-        {details?.links?.visible !== false && links.length > 0 && (
+        {details?.links?.visible !== false && (
           <section className="w-full">
             <h2 className="text-tertiary-text mb-4 text-[13px]">Links</h2>
-            <div className="flex flex-col">
-              {links.map((link, idx) => {
-                // Strip protocols and www for a cleaner display URL
-                const displayUrl =
-                  link.url
-                    ?.replace(/^https?:\/\/(www\.)?/, "")
-                    ?.replace(/\/$/, "") || "link";
-
-                const safeHref = normalizeHref(link.url);
-
-                if (safeHref) {
-                  return (
-                    <a
-                      key={link.id}
-                      href={safeHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={
-                        idx === 0
-                          ? "group hover:bg-hover-bg border-border flex items-center justify-between border-y py-4 transition-colors"
-                          : "group hover:bg-hover-bg border-border flex items-center justify-between border-b py-4 transition-colors"
-                      }
-                    >
-                      <span className="text-primary-text text-[15px] font-bold">
-                        {link.title || link.label}
-                      </span>
-                      <span className="text-secondary-text group-hover:text-brand-hover-bg flex items-center gap-2 text-[14px] transition-colors">
-                        {displayUrl}
-                        <LinkIcon size={14} />
-                      </span>
-                    </a>
-                  );
-                }
-
-                return (
-                  <div
-                    key={link.id}
-                    className={
-                      idx === 0
-                        ? "group border-border flex items-center justify-between border-y py-4 transition-colors"
-                        : "group border-border flex items-center justify-between border-b py-4 transition-colors"
-                    }
+            {links.length > 0 ? (
+              <div className="border-border flex flex-col border-t">
+                {links.map((link, idx) => (
+                  <a
+                    key={link.id ?? idx}
+                    href={link.url || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group border-border hover:bg-hover-bg/30 flex items-center justify-between border-b py-4 transition-colors"
                   >
-                    <span className="text-primary-text text-[15px] font-bold">
+                    <span className="text-primary-text group-hover:text-brand-hover-bg text-[15px] font-bold transition-colors">
                       {link.title || link.label}
                     </span>
-                    <span className="text-secondary-text flex items-center gap-2 text-[14px]">
-                      {displayUrl}
-                      <LinkIcon size={14} />
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-secondary-text text-[14px]">
+                        {(() => {
+                          try {
+                            return link.url
+                              ? new URL(
+                                  link.url.startsWith("http")
+                                    ? link.url
+                                    : `https://${link.url}`
+                                ).hostname.replace("www.", "")
+                              : "";
+                          } catch {
+                            return link.url || "";
+                          }
+                        })()}
+                      </span>
+                      <ExternalLink
+                        size={16}
+                        className="text-tertiary-text group-hover:text-brand-hover-bg transition-colors"
+                      />
+                    </div>
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
+                Add your links
+              </p>
+            )}
           </section>
         )}
 
         {/* PROJECTS SECTION */}
-        {details?.projects?.visible !== false && projects.length > 0 && (
-          <section className="w-full">
-            <h2 className="text-tertiary-text mb-4 text-[13px]">
-              {details?.projects?.sectionTitle || "Selected Work"}
-            </h2>
-            <div
-              className="flex flex-col"
-              style={{ gap: "var(--op-spacing, 24px)" }}
-            >
-              {projects.map((project) => {
-                const safeHref = normalizeHref(project.url);
+        {details?.projects?.visible !== false &&
+          (() => {
+            const highlightedProject = projects.find(isProjectHighlighted);
+            const remainingProjects = projects.filter(
+              (p) => p.id !== highlightedProject?.id
+            );
 
-                let ctaNode: React.ReactNode = null;
-                if (project.url) {
-                  if (safeHref) {
-                    ctaNode = (
-                      <a
-                        href={safeHref}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
-                      >
-                        {project.buttonText || "View Project"}
-                        <ArrowRight size={14} strokeWidth={2.5} />
-                      </a>
-                    );
-                  } else {
-                    ctaNode = (
-                      <span className="text-tertiary-text mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold">
-                        {project.buttonText || "View Project"}
-                      </span>
-                    );
-                  }
-                }
+            return (
+              <div className="flex w-full flex-col gap-10">
+                <HighlightCard details={content?.content} />
+                {remainingProjects.length > 0 ? (
+                  <section className="w-full">
+                    <h2 className="text-tertiary-text mb-4 text-[13px]">
+                      {details?.projects?.sectionTitle || "Selected Work"}
+                    </h2>
+                    <div className="flex flex-col gap-4">
+                      {remainingProjects.map((project) => {
+                        const projectUrl =
+                          project.url ||
+                          (project as { repoUrl?: string }).repoUrl;
+                        return (
+                          <div
+                            key={project.id}
+                            className="border-border bg-background flex flex-col items-start rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
+                          >
+                            <div className="bg-secondary-bg border-border relative mb-4 h-[80px] w-full shrink-0 overflow-hidden rounded-lg border sm:mb-0 sm:w-[120px]">
+                              {project.imageSrc ? (
+                                <Image
+                                  src={
+                                    project.imageSrc.startsWith(
+                                      "/profile-preview/"
+                                    )
+                                      ? project.imageSrc
+                                      : getImageUrl(project.imageSrc) || ""
+                                  }
+                                  alt={project.title || "Project"}
+                                  fill
+                                  className="object-cover"
+                                  unoptimized
+                                />
+                              ) : (
+                                <div className="text-tertiary-text flex h-full w-full items-center justify-center bg-neutral-200 text-xs">
+                                  No image
+                                </div>
+                              )}
+                            </div>
 
-                return (
-                  <div
-                    key={project.id}
-                    className="border-border bg-background flex flex-col items-start rounded-xl border shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center"
-                    style={{ padding: "var(--op-spacing, 24px)" }}
-                  >
-                    <div className="bg-secondary-bg border-border relative mb-4 h-[80px] w-full shrink-0 overflow-hidden rounded-lg border sm:mb-0 sm:w-[120px]">
-                      {project.imageSrc ? (
-                        <Image
-                          src={
-                            project.imageSrc.startsWith("/profile-preview/")
-                              ? project.imageSrc
-                              : getImageUrl(project.imageSrc)!
-                          }
-                          alt={project.title || "Project"}
-                          fill
-                          className="object-cover"
-                          unoptimized
-                        />
-                      ) : (
-                        <Image
-                          src="/profile-preview/feature1.jpg"
-                          alt="Project placeholder"
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                          unoptimized
-                        />
-                      )}
+                            <div className="flex w-full flex-col sm:ml-6">
+                              <h3 className="text-primary-text text-[16px] font-bold">
+                                {project.title}
+                              </h3>
+                              {project.description && (
+                                <p className="text-secondary-text mt-1 text-[13px]">
+                                  {project.description}
+                                </p>
+                              )}
+                              {projectUrl && (
+                                <a
+                                  href={projectUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
+                                >
+                                  {project.buttonText || "View Project"}
+                                  <ArrowRight size={14} strokeWidth={2.5} />
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-
-                    <div className="flex w-full flex-col sm:ml-6">
-                      <h3 className="text-primary-text text-[16px] font-bold">
-                        {project.title}
-                      </h3>
-                      {project.description && (
-                        <p className="text-secondary-text mt-1 text-[13px]">
-                          {project.description}
-                        </p>
-                      )}
-                      {ctaNode}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        )}
+                  </section>
+                ) : projects.length === 0 ? (
+                  <section className="w-full">
+                    <h2 className="text-tertiary-text mb-4 text-[13px]">
+                      {details?.projects?.sectionTitle || "Selected Work"}
+                    </h2>
+                    <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
+                      Add your projects
+                    </p>
+                  </section>
+                ) : null}
+              </div>
+            );
+          })()}
 
         {/* CTA SECTION */}
         {details?.cta?.visible !== false && (
           <section className="w-full">
-            {cta?.layout === "2" ? (
-              <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-                <div>
-                  <h3 className="text-primary-text text-[16px] font-bold">
-                    {cta?.title || "Open to new projects."}
-                  </h3>
-                  <p className="text-secondary-text mt-0.5 text-[13px]">
-                    {cta?.subtitle ||
-                      "Have an idea or product you're building?"}
-                  </p>
-                </div>
-                <a
-                  href={cta?.value ?? cta?.url ?? ""}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 shrink-0 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm transition-all"
-                >
-                  {cta?.label || "Work with me"}
-                </a>
-              </div>
-            ) : cta?.layout === "3" ? (
-              <div className="flex justify-center">
-                <a
-                  href={cta?.value ?? cta?.url ?? ""}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-8 text-sm font-bold text-white shadow-sm transition-all"
-                >
-                  {cta?.label || "Work with me"}
-                </a>
-              </div>
-            ) : (
-              <>
-                <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
-                  {cta?.title || "Open to new projects."}
-                </h2>
-                <p className="text-secondary-text mt-2 mb-6 max-w-[500px] text-[15px]">
-                  {cta?.subtitle ||
-                    "Have an idea or product you're building? I can help you design it the right way."}
-                </p>
-                <a
-                  href={cta?.value ?? cta?.url ?? ""}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm transition-all active:scale-95"
-                >
-                  {cta?.label || "Work with me"}
-                </a>
-              </>
-            )}
+            <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
+              {cta?.title || "Open to new projects."}
+            </h2>
+            <p className="text-secondary-text mt-2 mb-6 max-w-[500px] text-[15px]">
+              {cta?.subtitle ||
+                "Have an idea or product you're building? I can help you design it the right way."}
+            </p>
+            <a
+              href={cta?.url || "mailto:hello@example.com"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm transition-all active:scale-95"
+            >
+              {cta?.label || "Work with me"}
+            </a>
           </section>
         )}
 

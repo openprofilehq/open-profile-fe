@@ -201,19 +201,18 @@ export default function ProjectsSidebar({
     const validatedProjectUrl = itemUrl.trim() || undefined;
 
     if (editingProject) {
-      const updated = projects.map((p) =>
-        p.id === editingProject.id
-          ? {
-              ...p,
-              title: itemTitle.trim(),
-              description: itemDesc.trim(),
-              buttonText: itemButtonText.trim() || "View project",
-              url: validatedProjectUrl,
-              imageSrc: itemImage,
-              highlighted: itemHighlighted,
-            }
-          : p
-      );
+      const updated = projects.map((p) => {
+        const isCurrentProject = p.id === editingProject.id;
+        return {
+          ...p,
+          title: isCurrentProject ? itemTitle.trim() : p.title,
+          description: isCurrentProject ? itemDesc.trim() : p.description,
+          buttonText: isCurrentProject ? (itemButtonText.trim() || "View project") : p.buttonText,
+          url: isCurrentProject ? validatedProjectUrl : p.url,
+          imageSrc: isCurrentProject ? itemImage : p.imageSrc,
+          highlighted: isCurrentProject ? itemHighlighted : (itemHighlighted ? false : p.highlighted),
+        };
+      });
       handleProjectsChange(updated);
     } else {
       const newProj: ProjectItem = {
@@ -225,7 +224,12 @@ export default function ProjectsSidebar({
         imageSrc: itemImage,
         highlighted: itemHighlighted,
       };
-      handleProjectsChange([...projects, newProj]);
+      
+      const updated = itemHighlighted 
+        ? projects.map(p => ({ ...p, highlighted: false }))
+        : projects;
+        
+      handleProjectsChange([...updated, newProj]);
     }
 
     setEditingProject(null);
@@ -233,7 +237,8 @@ export default function ProjectsSidebar({
   };
 
   const highlightedCount = useMemo(() => {
-    return projects.filter((p) => p.highlighted).length;
+    const count = projects.filter((p) => p.highlighted).length;
+    return count;
   }, [projects]);
 
   return (
@@ -580,7 +585,7 @@ export default function ProjectsSidebar({
             </div>
 
             {/* Project Item Highlight Toggle */}
-            {/* <div className="flex items-center justify-between rounded-[10px] border border-border bg-background p-3.5">
+            <div className="flex items-center justify-between rounded-[10px] border border-border bg-background p-3.5">
               <span className="text-sm font-bold text-[#050505]">
                 Highlight
               </span>
@@ -593,7 +598,7 @@ export default function ProjectsSidebar({
                 />
                 <div className="peer peer-checked:bg-brand-hover-bg h-6 w-11 rounded-full bg-gray-200 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-background after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white" />
               </label>
-            </div> */}
+            </div>
 
             {/* Action buttons */}
             <div className="flex gap-3 pt-2">
