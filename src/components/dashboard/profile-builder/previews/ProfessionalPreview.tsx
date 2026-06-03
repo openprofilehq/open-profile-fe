@@ -7,7 +7,7 @@ import {
   Eye,
   EyeOff,
   Trash2,
-  Mail
+  Mail,
 } from "lucide-react";
 import {
   getImageUrl,
@@ -90,7 +90,7 @@ export default function ProfessionalPreview({
       {/* HEADER SECTION (Bio) */}
       {bioSection && (
         <div
-          className={`group relative transition-opacity duration-200 ${!bioSection.visible ? "opacity-50 grayscale" : ""}`}
+          className={`group relative rounded-2xl transition-opacity duration-200 ${!bioSection.visible ? "opacity-50 grayscale" : ""}`}
           style={getSectionStyle(bioSection)}
         >
           {renderControls(bioSection, true)}
@@ -160,12 +160,12 @@ export default function ProfessionalPreview({
             )}
           </header>
 
-        <section className="mt-6 px-6">
-          <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed break-all whitespace-pre-wrap">
-            {bioSection?.bio || "Write a little bit about yourself here..."}
-          </p>
-        </section>
-      </div>
+          <section className="mt-6 px-6">
+            <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed break-all whitespace-pre-wrap">
+              {bioSection?.bio || "Write a little bit about yourself here..."}
+            </p>
+          </section>
+        </div>
       )}
 
       {/* LINKS SECTION */}

@@ -90,7 +90,7 @@ export default function PortfolioPreview({
       {/* HEADER SECTION (Bio) */}
       {bioSection && (
         <div
-          className={`group relative transition-opacity duration-200 ${!bioSection.visible ? "opacity-50 grayscale" : ""}`}
+          className={`group relative rounded-2xl transition-opacity duration-200 ${!bioSection.visible ? "opacity-50 grayscale" : ""}`}
           style={getSectionStyle(bioSection)}
         >
           {renderControls(bioSection, true)}

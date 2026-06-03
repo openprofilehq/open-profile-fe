@@ -120,7 +120,7 @@ export default function CreatorPreview({
         selectedSectionId === bioSectionId ||
         selectedSectionId === ctaSection?.id) && (
         <div
-          className="relative mt-6 flex w-full flex-col items-center gap-4 p-6 text-center"
+          className="relative mt-6 flex w-full flex-col items-center gap-4 rounded-2xl p-6 text-center"
           style={getSectionStyle(bioSection)}
         >
           {renderControls(bioSection, true)}
