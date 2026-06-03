@@ -35,9 +35,12 @@ export default function DashboardTopbar() {
   const [modalOpen, setModalOpen] = useState(false);
 
   const dropdownRef = useOutsideClick(() => setDropdownOpen(false));
-  const displayName = profile?.fullName ?? user?.fullName ?? null;
+  const profileFullName = profile?.fullName?.trim();
+  const userFullName = user?.fullName?.trim();
+  const userEmail = user?.email?.trim();
+
+  const displayName = profileFullName || userFullName || userEmail || "??";
   const initials = getInitials(displayName, {
-    email: user?.email,
     fallback: "??",
   });
 
