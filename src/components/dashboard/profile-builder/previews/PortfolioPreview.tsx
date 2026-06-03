@@ -26,6 +26,20 @@ interface PortfolioPreviewProps {
   onRemoveSection: (id: string) => void;
 }
 
+function getInitials(fullName?: string | null) {
+  const parts = fullName?.trim().split(/\s+/).filter(Boolean) ?? [];
+
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+  }
+
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+
+  return "U";
+}
+
 export default function PortfolioPreview({
   sections,
   profile,
@@ -105,8 +119,8 @@ export default function PortfolioPreview({
                   unoptimized
                 />
               ) : (
-                <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-full w-full items-center justify-center text-[40px] font-bold">
-                  {(profile?.fullName || "John Smith").charAt(0).toUpperCase()}
+                <div className="bg-brand-hover-bg text-inverse-text flex h-full w-full items-center justify-center text-[40px] font-bold">
+                  {getInitials(profile?.fullName)}
                 </div>
               )}
             </div>

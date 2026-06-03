@@ -27,6 +27,20 @@ interface DefaultPreviewProps {
   onRemoveSection: (id: string) => void;
 }
 
+function getInitials(fullName?: string | null) {
+  const parts = fullName?.trim().split(/\s+/).filter(Boolean) ?? [];
+
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+  }
+
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+
+  return "U";
+}
+
 export default function DefaultPreview({
   sections,
   profile,
@@ -122,8 +136,8 @@ export default function DefaultPreview({
               className="h-24 w-24 shrink-0 rounded-full object-cover"
             />
           ) : (
-            <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-24 w-24 shrink-0 items-center justify-center rounded-full text-3xl font-bold">
-              {profile?.fullName?.charAt(0).toUpperCase() ?? "U"}
+            <div className="bg-brand-hover-bg text-inverse-text flex h-24 w-24 shrink-0 items-center justify-center rounded-full text-3xl font-bold">
+              {getInitials(profile?.fullName)}
             </div>
           )}
 

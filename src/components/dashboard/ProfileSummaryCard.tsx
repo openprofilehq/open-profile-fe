@@ -32,6 +32,7 @@ export default function ProfileSummaryCard({ profile, isLoading }: Props) {
       ? rawUrl
       : getImageUrl(rawUrl)
     : null;
+
   const initials = getInitials(profile?.fullName);
 
   return (
@@ -48,7 +49,7 @@ export default function ProfileSummaryCard({ profile, isLoading }: Props) {
           className="h-24 w-24 rounded-full object-cover"
         />
       ) : (
-        <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-24 w-24 shrink-0 items-center justify-center rounded-full text-3xl font-extrabold">
+        <div className="bg-brand-hover-bg text-inverse-text flex h-24 w-24 shrink-0 items-center justify-center rounded-full text-3xl font-extrabold">
           {initials}
         </div>
       )}
