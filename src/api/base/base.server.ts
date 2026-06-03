@@ -37,7 +37,6 @@ export async function callApiServer<TResData>({
     method,
     headers: {
       "Content-Type": "application/json",
-      "ngrok-skip-browser-warning": "true",
       ...(cookieHeader ? { cookie: cookieHeader } : {}),
     },
     body: data ? JSON.stringify(data) : undefined,
