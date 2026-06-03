@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Reorder } from "motion/react";
+import { Reorder, useDragControls } from "motion/react";
 import {
   ChevronLeft,
   Search,
@@ -541,103 +541,17 @@ export default function LeftSidebar({
           {filteredSections.map((section) => {
             const isSelected = selectedSectionId === section.id;
             return (
-              <Reorder.Item
+              <SortableSectionItem
                 key={section.id}
-                value={section}
-                onClick={() => handleOpenSectionForm(section.id)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    handleOpenSectionForm(section.id);
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-                className={`group flex cursor-pointer items-center justify-between overflow-hidden rounded-xl border transition-all duration-200 focus:outline-none ${
-                  isSelected
-                    ? "border-brand-b bg-brand-light-subtle-bg shadow-sm"
-                    : "border-tertiary-b hover:border-brand-b hover:bg-primary-bg bg-background"
-                }`}
-              >
-                <div className="flex min-w-0 flex-1 items-center justify-between px-4 py-3">
-                  <div className="w-20">
-                    <p
-                      className={`truncate text-sm font-semibold transition-colors ${
-                        !section.visible
-                          ? "text-tertiary-text opacity-50"
-                          : isSelected
-                            ? "text-link-hover-text"
-                            : "text-primary-text"
-                      }`}
-                    >
-                      {section.type === "bio" &&
-                      section.title === "Bio" &&
-                      profile?.fullName
-                        ? `Bio - ${profile.fullName}`
-                        : section.title}
-                    </p>
-
-                    <p className="text-secondary-text mt-0.5 truncate text-xs">
-                      {getSectionDescriptor(section)}
-                    </p>
-                  </div>
-                  <div>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onToggleSectionVisibility(section.id);
-                      }}
-                      className="hover:bg-hover-bg text-secondary-text shrink-0 rounded-lg p-1.5 opacity-40 transition-all group-hover:opacity-100 hover:opacity-100"
-                      title={section.visible ? "Hide section" : "Show section"}
-                      aria-label={`${section.visible ? "Hide" : "Show"} section ${section.title}`}
-                    >
-                      {section.visible ? (
-                        <Eye size={15} />
-                      ) : (
-                        <EyeOff size={15} />
-                      )}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onRemoveSection(section.id);
-                      }}
-                      className="hover:bg-hover-bg hover:text-negative-text text-secondary-text shrink-0 rounded-lg p-1.5 opacity-40 transition-all group-hover:opacity-100 hover:opacity-100"
-                      title="Delete Section"
-                      aria-label={`Delete section ${section.title}`}
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-                </div>
-
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  onPointerDown={(e) => {
-                    if (searchQuery) {
-                      e.stopPropagation();
-                      e.preventDefault();
-                    } else {
-                      e.stopPropagation();
-                    }
-                  }}
-                  className={`border-tertiary-b bg-active-bg text-tertiary-text flex items-center justify-center self-stretch border-l px-3.5 transition-colors ${
-                    searchQuery
-                      ? "cursor-not-allowed opacity-40"
-                      : "hover:bg-hover-bg cursor-grab active:cursor-grabbing"
-                  }`}
-                  title={
-                    searchQuery
-                      ? "Clear search to reorder sections"
-                      : "Drag to reorder"
-                  }
-                >
-                  <GripVertical size={16} />
-                </div>
-              </Reorder.Item>
+                section={section}
+                isSelected={isSelected}
+                onToggleSectionVisibility={onToggleSectionVisibility}
+                onRemoveSection={onRemoveSection}
+                handleOpenSectionForm={handleOpenSectionForm}
+                searchQuery={searchQuery}
+                profile={profile}
+                getSectionDescriptor={getSectionDescriptor}
+              />
             );
           })}
 
@@ -649,5 +563,123 @@ export default function LeftSidebar({
         </Reorder.Group>
       </div>
     </aside>
+  );
+}
+
+function SortableSectionItem({
+  section,
+  isSelected,
+  onToggleSectionVisibility,
+  onRemoveSection,
+  handleOpenSectionForm,
+  searchQuery,
+  profile,
+  getSectionDescriptor,
+}: {
+  section: Section;
+  isSelected: boolean;
+  onToggleSectionVisibility: (id: string) => void;
+  onRemoveSection: (id: string) => void;
+  handleOpenSectionForm: (id: string) => void;
+  searchQuery: string;
+  profile?: { fullName?: string } | null;
+  getSectionDescriptor: (section: Section) => string;
+}) {
+  const dragControls = useDragControls();
+
+  return (
+    <Reorder.Item
+      value={section}
+      dragListener={false}
+      dragControls={dragControls}
+      onClick={() => handleOpenSectionForm(section.id)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleOpenSectionForm(section.id);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      className={`group flex cursor-pointer items-center justify-between overflow-hidden rounded-xl border transition-colors duration-200 focus:outline-none ${
+        isSelected
+          ? "border-brand-b bg-brand-light-subtle-bg shadow-sm"
+          : "border-tertiary-b hover:border-brand-b hover:bg-primary-bg bg-background"
+      }`}
+    >
+      <div className="flex min-w-0 flex-1 items-center justify-between px-4 py-3">
+        <div className="w-20">
+          <p
+            className={`truncate text-sm font-semibold transition-colors ${
+              !section.visible
+                ? "text-tertiary-text opacity-50"
+                : isSelected
+                  ? "text-link-hover-text"
+                  : "text-primary-text"
+            }`}
+          >
+            {section.type === "bio" &&
+            section.title === "Bio" &&
+            profile?.fullName
+              ? `Bio - ${profile.fullName}`
+              : section.title}
+          </p>
+
+          <p className="text-secondary-text mt-0.5 truncate text-xs">
+            {getSectionDescriptor(section)}
+          </p>
+        </div>
+        <div>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleSectionVisibility(section.id);
+            }}
+            className="hover:bg-hover-bg text-secondary-text shrink-0 rounded-lg p-1.5 opacity-40 transition-all group-hover:opacity-100 hover:opacity-100"
+            title={section.visible ? "Hide section" : "Show section"}
+            aria-label={`${section.visible ? "Hide" : "Show"} section ${section.title}`}
+          >
+            {section.visible ? <Eye size={15} /> : <EyeOff size={15} />}
+          </button>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemoveSection(section.id);
+            }}
+            className="hover:bg-hover-bg hover:text-negative-text text-secondary-text shrink-0 rounded-lg p-1.5 opacity-40 transition-all group-hover:opacity-100 hover:opacity-100"
+            title="Delete Section"
+            aria-label={`Delete section ${section.title}`}
+          >
+            <Trash2 size={15} />
+          </button>
+        </div>
+      </div>
+
+      <div
+        onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => {
+          if (searchQuery) {
+            e.stopPropagation();
+            e.preventDefault();
+          } else {
+            e.stopPropagation();
+            dragControls.start(e);
+          }
+        }}
+        className={`border-tertiary-b bg-active-bg text-tertiary-text flex items-center justify-center self-stretch border-l px-3.5 transition-colors ${
+          searchQuery
+            ? "cursor-not-allowed opacity-40"
+            : "hover:bg-hover-bg cursor-grab active:cursor-grabbing"
+        }`}
+        title={
+          searchQuery ? "Clear search to reorder sections" : "Drag to reorder"
+        }
+      >
+        <GripVertical size={16} />
+      </div>
+    </Reorder.Item>
   );
 }
