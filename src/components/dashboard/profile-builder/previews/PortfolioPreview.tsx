@@ -2,7 +2,6 @@ import React from "react";
 import Image from "next/image";
 import {
   ArrowRight,
-  Rocket,
   Eye,
   EyeOff,
   Trash2,
@@ -14,6 +13,7 @@ import {
   sanitizeUrl,
   isProjectHighlighted,
   getSectionStyle,
+  getDisplayProfileUrl,
 } from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 import { TemplateLinkCard } from "../../shared/TemplateLinkCard";
@@ -117,7 +117,9 @@ export default function PortfolioPreview({
                   />
                 ) : (
                   <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-full w-full items-center justify-center text-[32px] font-bold">
-                    {(profile?.fullName || "John Smith").charAt(0).toUpperCase()}
+                    {(profile?.fullName || "John Smith")
+                      .charAt(0)
+                      .toUpperCase()}
                   </div>
                 )}
               </div>
@@ -129,7 +131,7 @@ export default function PortfolioPreview({
                   </h1>
                 </div>
                 <p className="text-secondary-text mt-1 text-[14px]">
-                  openprofile.app/{profile?.username || "johnsmith"}
+                  {getDisplayProfileUrl(profile?.username || "johnsmith")}
                 </p>
               </div>
             </div>
@@ -162,12 +164,12 @@ export default function PortfolioPreview({
             )}
           </header>
 
-        <section className="mt-8 px-6">
-          <p className="text-secondary-text max-w-3xl text-[15px] leading-relaxed whitespace-pre-wrap">
-            {bioSection?.bio || "Write a little bit about yourself here..."}
-          </p>
-        </section>
-      </div>
+          <section className="mt-8 px-6">
+            <p className="text-secondary-text max-w-3xl text-[15px] leading-relaxed whitespace-pre-wrap">
+              {bioSection?.bio || "Write a little bit about yourself here..."}
+            </p>
+          </section>
+        </div>
       )}
 
       {/* LINKS SECTION */}
