@@ -233,12 +233,27 @@ export default function PortfolioPreview({
               >
                 {renderControls(projectsSection)}
 
-                <h2 className="text-tertiary-text mb-6 text-[13px]">
-                  {projectsSection.subtitle || "Featured Projects"}
-                </h2>
+                <div className="mb-6 flex flex-col gap-1">
+                  {projectsSection.title && (
+                    <h2 className="text-primary-text text-[26px] font-bold">
+                      {projectsSection.title}
+                    </h2>
+                  )}
+                  {(projectsSection.subtitle || !projectsSection.title) && (
+                    <h3 className="text-tertiary-text text-[13px]">
+                      {projectsSection.subtitle || "Featured Projects"}
+                    </h3>
+                  )}
+                </div>
                 {remainingProjects.length > 0 ? (
                   <div
-                    className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+                    className={`grid gap-6 ${
+                      projectsSection.layout === "1"
+                        ? "grid-cols-1"
+                        : projectsSection.layout === "3"
+                          ? "grid-cols-1 sm:grid-cols-2"
+                          : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                    }`}
                     style={{
                       gap: projectsSection.gap
                         ? `${projectsSection.gap}px`
@@ -250,9 +265,19 @@ export default function PortfolioPreview({
                       return (
                         <div
                           key={project.id}
-                          className="group/proj border-border bg-background flex flex-col overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md"
+                          className={`group/proj border-border bg-background flex overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md ${
+                            projectsSection.layout === "1"
+                              ? "flex-col sm:flex-row"
+                              : "flex-col"
+                          }`}
                         >
-                          <div className="bg-secondary-bg border-border relative aspect-16/10 w-full overflow-hidden border-b">
+                          <div
+                            className={`bg-secondary-bg border-border relative overflow-hidden ${
+                              projectsSection.layout === "1"
+                                ? "w-full shrink-0 border-b sm:w-[320px] sm:border-r sm:border-b-0"
+                                : "aspect-16/10 w-full border-b"
+                            }`}
+                          >
                             {getImageUrl(project.imageSrc) ? (
                               <Image
                                 src={getImageUrl(project.imageSrc) || ""}
@@ -266,7 +291,7 @@ export default function PortfolioPreview({
                             )}
                           </div>
 
-                          <div className="flex flex-col p-6">
+                          <div className="flex flex-1 flex-col p-6">
                             <div className="mb-1 flex items-start gap-2">
                               <span className="text-primary-text text-[16px] font-bold">
                                 {numberStr}
