@@ -7,12 +7,14 @@ import {
   Eye,
   EyeOff,
   Trash2,
+  Mail,
 } from "lucide-react";
 import {
   getImageUrl,
   sanitizeUrl,
   isProjectHighlighted,
   getSectionStyle,
+  getDisplayProfileUrl,
 } from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 import HighlightPreviewCard from "./HighlightPreviewCard";
@@ -86,47 +88,85 @@ export default function ProfessionalPreview({
       style={{ gap: "var(--op-spacing, 2rem)" }}
     >
       {/* HEADER SECTION (Bio) */}
-      <div
-        className={`group relative transition-opacity duration-200 ${!bioSection?.visible ? "opacity-50 grayscale" : ""}`}
-        style={getSectionStyle(bioSection)}
-      >
-        {renderControls(bioSection, true)}
+      {bioSection && (
+        <div
+          className={`group relative rounded-2xl transition-opacity duration-200 ${!bioSection.visible ? "opacity-50 grayscale" : ""}`}
+          style={getSectionStyle(bioSection)}
+        >
+          {renderControls(bioSection, true)}
 
-        <header className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between gap-6 rounded-2xl border border-transparent p-6 transition-colors sm:flex-row sm:items-start">
-          <div className="flex min-w-0 flex-1 items-center gap-6">
-            <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
-              {getImageUrl(profile?.photoUrl) ? (
-                <Image
-                  src={getImageUrl(profile?.photoUrl)!}
-                  alt={profile?.fullName ?? "Profile avatar"}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                <div className="text-brand-text flex h-full items-center justify-center text-[40px] font-bold">
-                  {(profile?.fullName || "M").charAt(0).toUpperCase()}
-                </div>
-              )}
+          <header
+            className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between rounded-2xl border border-transparent transition-colors sm:flex-row sm:items-start"
+            style={{
+              gap: "var(--op-spacing, 24px)",
+              padding: "var(--op-spacing, 24px)",
+            }}
+          >
+            <div
+              className="flex items-center"
+              style={{ gap: "var(--op-spacing, 24px)" }}
+            >
+              <div className="border-border bg-secondary-bg relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-full border">
+                {getImageUrl(profile?.photoUrl) ? (
+                  <Image
+                    src={getImageUrl(profile?.photoUrl)!}
+                    alt={profile?.fullName ?? "Profile avatar"}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="text-brand-text flex h-full items-center justify-center text-[32px] font-bold">
+                    {(profile?.fullName || "M").charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight break-all">
+                  {profile?.fullName || "Micaela Robinson"}
+                </h1>
+                <p className="text-secondary-text mt-1 text-[15px] break-all">
+                  {getDisplayProfileUrl(profile?.username || "micaela")}
+                </p>
+              </div>
             </div>
 
-            <div className="flex min-w-0 flex-1 flex-col">
-              <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight break-all">
-                {profile?.fullName || "Micaela Robinson"}
-              </h1>
-              <p className="text-secondary-text mt-1 text-[15px] break-all">
-                openprofile.app/{profile?.username || "micaela"}
-              </p>
-            </div>
-          </div>
-        </header>
+            {ctaSection?.visible && ctaSection?.url && (
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                className="border-brand-hover-bg bg-brand-hover-bg/5 text-brand-hover-bg hover:bg-brand-hover-bg/10 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-sm font-semibold transition-colors"
+              >
+                {ctaSection.iconSrc ? (
+                  <div
+                    className="bg-brand-hover-bg h-4 w-4"
+                    style={{
+                      maskImage: `url(${ctaSection.iconSrc})`,
+                      WebkitMaskImage: `url(${ctaSection.iconSrc})`,
+                      maskSize: "contain",
+                      WebkitMaskSize: "contain",
+                      maskRepeat: "no-repeat",
+                      WebkitMaskRepeat: "no-repeat",
+                      maskPosition: "center",
+                      WebkitMaskPosition: "center",
+                    }}
+                  />
+                ) : (
+                  <Mail size={16} />
+                )}
+                {ctaSection.buttonText || "Email"}
+              </a>
+            )}
+          </header>
 
-        <section className="mt-6 px-6">
-          <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed break-all whitespace-pre-wrap">
-            {bioSection?.bio || "Write a little bit about yourself here..."}
-          </p>
-        </section>
-      </div>
+          <section className="mt-6 px-6">
+            <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed break-all whitespace-pre-wrap">
+              {bioSection?.bio || "Write a little bit about yourself here..."}
+            </p>
+          </section>
+        </div>
+      )}
 
       {/* LINKS SECTION */}
       {linksSection && (
@@ -343,20 +383,41 @@ export default function ProfessionalPreview({
         >
           {renderControls(ctaSection)}
 
-          <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
-            {ctaSection.title || "Open to new projects."}
-          </h2>
-          <p className="text-secondary-text mt-2 mb-6 max-w-[500px] text-[15px]">
-            {ctaSection.subtitle || "Have an idea or product you're building?"}
-          </p>
-          <a
-            href={sanitizeUrl(ctaSection.url)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm transition-all active:scale-95"
+          <div
+            className={`flex flex-col ${ctaSection.layout === "2" ? "items-start text-left" : ctaSection.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
           >
-            {ctaSection.buttonText || "Work with me"}
-          </a>
+            {ctaSection.iconSrc && (
+              <div className="mb-6 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-transparent">
+                <div
+                  className="bg-brand-hover-bg h-8 w-8"
+                  style={{
+                    maskImage: `url(${ctaSection.iconSrc})`,
+                    WebkitMaskImage: `url(${ctaSection.iconSrc})`,
+                    maskSize: "contain",
+                    WebkitMaskSize: "contain",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskPosition: "center",
+                    WebkitMaskPosition: "center",
+                  }}
+                />
+              </div>
+            )}
+            <h2 className="text-primary-text text-[28px] font-bold tracking-tight">
+              {ctaSection.title || "Open to new projects."}
+            </h2>
+            <p className="text-secondary-text mt-3 mb-8 max-w-[600px] text-base leading-relaxed">
+              {ctaSection.subtitle ||
+                "Have an idea or product you're building?"}
+            </p>
+            <a
+              href="#"
+              onClick={(e) => e.preventDefault()}
+              className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
+            >
+              {ctaSection.buttonText || "Work with me"}
+            </a>
+          </div>
         </section>
       )}
     </div>

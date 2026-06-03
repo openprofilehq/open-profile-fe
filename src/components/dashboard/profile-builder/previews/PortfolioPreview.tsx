@@ -2,17 +2,18 @@ import React from "react";
 import Image from "next/image";
 import {
   ArrowRight,
-  Rocket,
   Eye,
   EyeOff,
   Trash2,
   MoreHorizontal,
+  Mail,
 } from "lucide-react";
 import {
   getImageUrl,
   sanitizeUrl,
   isProjectHighlighted,
   getSectionStyle,
+  getDisplayProfileUrl,
 } from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 import { TemplateLinkCard } from "../../shared/TemplateLinkCard";
@@ -87,49 +88,89 @@ export default function PortfolioPreview({
       style={{ gap: "var(--op-spacing, 2rem)" }}
     >
       {/* HEADER SECTION (Bio) */}
-      <div
-        className={`group relative transition-opacity duration-200 ${!bioSection?.visible ? "opacity-50 grayscale" : ""}`}
-        style={getSectionStyle(bioSection)}
-      >
-        {renderControls(bioSection, true)}
+      {bioSection && (
+        <div
+          className={`group relative rounded-2xl transition-opacity duration-200 ${!bioSection.visible ? "opacity-50 grayscale" : ""}`}
+          style={getSectionStyle(bioSection)}
+        >
+          {renderControls(bioSection, true)}
 
-        <header className="hover:border-border hover:bg-background/50 relative mb-8 flex w-full flex-col justify-between gap-6 rounded-2xl border border-transparent p-6 transition-colors sm:flex-row sm:items-start">
-          <div className="flex flex-col gap-6">
-            <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
-              {profile?.photoUrl ? (
-                <Image
-                  src={getImageUrl(profile.photoUrl)}
-                  alt={profile?.fullName || "User"}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-full w-full items-center justify-center text-[40px] font-bold">
-                  {(profile?.fullName || "John Smith").charAt(0).toUpperCase()}
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <h1 className="text-primary-text text-[26px] leading-tight font-bold tracking-tight">
-                  {profile?.fullName || "John Smith"}
-                </h1>
+          <header
+            className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between rounded-2xl border border-transparent transition-colors sm:flex-row sm:items-start"
+            style={{
+              gap: "var(--op-spacing, 24px)",
+              padding: "var(--op-spacing, 24px)",
+            }}
+          >
+            <div
+              className="flex flex-col"
+              style={{ gap: "var(--op-spacing, 24px)" }}
+            >
+              <div className="border-border bg-secondary-bg relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-full border">
+                {profile?.photoUrl ? (
+                  <Image
+                    src={getImageUrl(profile.photoUrl)!}
+                    alt={profile?.fullName || "User"}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-full w-full items-center justify-center text-[32px] font-bold">
+                    {(profile?.fullName || "John Smith")
+                      .charAt(0)
+                      .toUpperCase()}
+                  </div>
+                )}
               </div>
-              <p className="text-secondary-text mt-1 text-[14px]">
-                openprofile.app/{profile?.username || "johnsmith"}
-              </p>
-            </div>
-          </div>
-        </header>
 
-        <section className="mt-8 px-6">
-          <p className="text-secondary-text max-w-3xl text-[15px] leading-relaxed whitespace-pre-wrap">
-            {bioSection?.bio || "Write a little bit about yourself here..."}
-          </p>
-        </section>
-      </div>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <h1 className="text-primary-text text-[26px] leading-tight font-bold tracking-tight">
+                    {profile?.fullName || "John Smith"}
+                  </h1>
+                </div>
+                <p className="text-secondary-text mt-1 text-[14px]">
+                  {getDisplayProfileUrl(profile?.username || "johnsmith")}
+                </p>
+              </div>
+            </div>
+
+            {ctaSection?.visible && ctaSection?.url && (
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
+              >
+                {ctaSection.iconSrc ? (
+                  <div
+                    className="bg-brand-hover-bg h-4 w-4"
+                    style={{
+                      maskImage: `url(${ctaSection.iconSrc})`,
+                      WebkitMaskImage: `url(${ctaSection.iconSrc})`,
+                      maskSize: "contain",
+                      WebkitMaskSize: "contain",
+                      maskRepeat: "no-repeat",
+                      WebkitMaskRepeat: "no-repeat",
+                      maskPosition: "center",
+                      WebkitMaskPosition: "center",
+                    }}
+                  />
+                ) : (
+                  <Mail size={16} />
+                )}
+                {ctaSection.buttonText || "Email"}
+              </a>
+            )}
+          </header>
+
+          <section className="mt-8 px-6">
+            <p className="text-secondary-text max-w-3xl text-[15px] leading-relaxed whitespace-pre-wrap">
+              {bioSection?.bio || "Write a little bit about yourself here..."}
+            </p>
+          </section>
+        </div>
+      )}
 
       {/* LINKS SECTION */}
       {linksSection && (
@@ -275,26 +316,37 @@ export default function PortfolioPreview({
         >
           {renderControls(ctaSection)}
 
-          <div className="flex flex-col justify-between gap-6 py-4 md:flex-row md:items-center">
-            <div className="flex items-center gap-4">
-              <div className="bg-brand-hover-bg flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-white shadow-sm">
-                <Rocket size={24} strokeWidth={2} />
+          <div
+            className={`flex flex-col ${ctaSection.layout === "2" ? "items-start text-left" : ctaSection.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
+          >
+            {ctaSection.iconSrc && (
+              <div className="mb-6 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-transparent">
+                <div
+                  className="bg-brand-hover-bg h-8 w-8"
+                  style={{
+                    maskImage: `url(${ctaSection.iconSrc})`,
+                    WebkitMaskImage: `url(${ctaSection.iconSrc})`,
+                    maskSize: "contain",
+                    WebkitMaskSize: "contain",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskPosition: "center",
+                    WebkitMaskPosition: "center",
+                  }}
+                />
               </div>
-              <div className="flex flex-col">
-                <h3 className="text-primary-text text-[16px] font-bold">
-                  {ctaSection.title || "Interested in working together?"}
-                </h3>
-                <p className="text-secondary-text mt-0.5 text-[13px]">
-                  {ctaSection.subtitle ||
-                    "I am currently available for freelance project"}
-                </p>
-              </div>
-            </div>
+            )}
+            <h2 className="text-primary-text text-[28px] font-bold tracking-tight">
+              {ctaSection.title || "Interested in working together?"}
+            </h2>
+            <p className="text-secondary-text mt-3 mb-8 max-w-[600px] text-base leading-relaxed">
+              {ctaSection.subtitle ||
+                "I am currently available for freelance project"}
+            </p>
             <a
-              href={sanitizeUrl(ctaSection.url)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-[14px] font-bold whitespace-nowrap text-white shadow-sm transition-all active:scale-95"
+              href="#"
+              onClick={(e) => e.preventDefault()}
+              className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
             >
               {ctaSection.buttonText || "Let's Connect"}
             </a>
