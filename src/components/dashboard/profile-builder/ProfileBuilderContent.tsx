@@ -159,11 +159,8 @@ export default function ProfileBuilderContent() {
   const searchParams = useSearchParams();
   const sectionParam = searchParams.get("section");
 
-  const [_activeTab, setActiveTab] = useState<"general" | "section">(
-    sectionParam ? "section" : "general"
-  );
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
-    sectionParam ?? "bio"
+    sectionParam ?? null
   );
 
   const dashboardProfile = useQuery(dashboardProfileOption());
@@ -523,7 +520,6 @@ export default function ProfileBuilderContent() {
     if (sectionParam) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedSectionId(sectionParam);
-      setActiveTab("section");
 
       setSections((curr) => {
         const exists = curr.some((s) => s.id === sectionParam);
@@ -540,7 +536,6 @@ export default function ProfileBuilderContent() {
 
   const handleSelectSection = (id: string) => {
     setSelectedSectionId(id);
-    setActiveTab("section");
   };
 
   const handleAddSection = (title: string, type: string) => {
@@ -555,7 +550,6 @@ export default function ProfileBuilderContent() {
       return [...prev, newSection];
     });
     setSelectedSectionId(newSection.id);
-    setActiveTab("section");
   };
 
   const handleRemoveSection = (id: string) => {
@@ -692,8 +686,7 @@ export default function ProfileBuilderContent() {
             onChangeSpacing={setSpacing}
             borderRadius={borderRadius}
             onChangeBorderRadius={setBorderRadius}
-            activeTab={_activeTab}
-            onChangeTab={setActiveTab}
+            onBackToGlobal={() => setSelectedSectionId(null)}
             selectedSection={selectedSection}
             onUpdateSection={handleUpdateSection}
             template={template}
