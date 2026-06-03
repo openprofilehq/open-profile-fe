@@ -19,13 +19,30 @@ export default function PaginationControls({
   return (
     <div className="mt-12 flex items-center justify-center gap-2">
       <div className="border-secondary-b bg-background flex items-center gap-2 rounded-[8px] border p-2 shadow-sm">
-        {[...Array(totalPages)].map((_, i) => {
-          const pageNum = i + 1;
-          if (
-            pageNum === 1 ||
-            pageNum === totalPages ||
-            (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
-          ) {
+        {(() => {
+          const pages: (number | string)[] = [];
+          if (totalPages <= 5) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+          } else {
+            pages.push(1);
+            if (currentPage > 3) pages.push("...");
+            const start = Math.max(2, currentPage - 1);
+            const end = Math.min(totalPages - 1, currentPage + 1);
+            for (let i = start; i <= end; i++) pages.push(i);
+            if (currentPage < totalPages - 2) pages.push("...");
+            pages.push(totalPages);
+          }
+          return pages.map((pageNum, index) => {
+            if (pageNum === "...") {
+              return (
+                <span
+                  key={`ellipsis-${index}`}
+                  className="text-link-hover-text px-1 font-bold tracking-wider"
+                >
+                  ...
+                </span>
+              );
+            }
             return (
               <Link
                 key={pageNum}
@@ -39,21 +56,8 @@ export default function PaginationControls({
                 {pageNum}
               </Link>
             );
-          } else if (
-            pageNum === currentPage - 2 ||
-            pageNum === currentPage + 2
-          ) {
-            return (
-              <span
-                key={pageNum}
-                className="text-link-hover-text px-1 font-bold tracking-wider"
-              >
-                ...
-              </span>
-            );
-          }
-          return null;
-        })}
+          });
+        })()}
 
         {currentPage < totalPages && (
           <Link

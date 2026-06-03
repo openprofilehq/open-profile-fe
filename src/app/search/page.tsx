@@ -19,7 +19,7 @@ export default async function SearchPage(props: PageProps) {
   const q = typeof searchParams.q === "string" ? searchParams.q : "";
   const pageStr =
     typeof searchParams.page === "string" ? searchParams.page : "1";
-  const currentPage = parseInt(pageStr, 10) || 1;
+  const currentPage = Math.max(1, parseInt(pageStr, 10) || 1);
   const limit = 4;
 
   const queryIsValid = q.trim().length >= 3;
@@ -132,54 +132,64 @@ export default async function SearchPage(props: PageProps) {
                     user.username ||
                     "Open Profile User";
                   const bio = user.bio || user.title || user.role || "";
+                  const slug =
+                    user.username ||
+                    (user as SearchResult & { slug?: string }).slug;
+                  const cardClassName =
+                    "group border-secondary-b hover:border-brand-b/40 bg-background block rounded-[12px] border px-4 pt-3 pb-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]";
+                  const key = user.id || user.username || index;
 
-                  return (
-                    <Link
-                      href={user.username ? `/${user.username}` : "#"}
-                      key={user.id || user.username || index}
-                      className="group border-secondary-b hover:border-brand-b/40 bg-background block rounded-[12px] border px-4 pt-3 pb-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
-                    >
-                      <div className="flex items-start gap-4">
-                        <Avatar className="border-secondary-b h-[48px] w-[48px] shrink-0 border">
-                          <AvatarImage
-                            src={
-                              user.photoUrl ||
-                              user.profilePicture ||
-                              user.profileImage ||
-                              user.avatar ||
-                              ""
-                            }
-                          />
-                          <AvatarFallback className="bg-brand-hover-bg text-lg font-medium text-white">
-                            {name.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
+                  const content = (
+                    <div className="flex items-start gap-4">
+                      <Avatar className="border-secondary-b h-[48px] w-[48px] shrink-0 border">
+                        <AvatarImage
+                          src={
+                            user.photoUrl ||
+                            user.profilePicture ||
+                            user.profileImage ||
+                            user.avatar ||
+                            ""
+                          }
+                        />
+                        <AvatarFallback className="bg-brand-hover-bg text-lg font-medium text-white">
+                          {name.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
 
-                        <div className="flex min-w-0 flex-1 flex-col">
-                          <div>
-                            <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
-                              <h3 className="text-primary-text group-hover:text-link-hover-text truncate text-[16px] font-bold transition-colors">
-                                {name}
-                              </h3>
-                              <p className="text-secondary-text truncate text-[14px] font-normal">
-                                @{user.username}
-                              </p>
-                            </div>
-                            {bio && (
-                              <p className="text-secondary-text mt-2 line-clamp-3 text-[13px] leading-relaxed">
-                                {bio}
-                              </p>
-                            )}
+                      <div className="flex min-w-0 flex-1 flex-col">
+                        <div>
+                          <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
+                            <h3 className="text-primary-text group-hover:text-link-hover-text truncate text-[16px] font-bold transition-colors">
+                              {name}
+                            </h3>
+                            <p className="text-secondary-text truncate text-[14px] font-normal">
+                              @{user.username}
+                            </p>
                           </div>
+                          {bio && (
+                            <p className="text-secondary-text mt-2 line-clamp-3 text-[13px] leading-relaxed">
+                              {bio}
+                            </p>
+                          )}
+                        </div>
 
-                          <div className="mt-4 flex justify-start">
-                            <span className="bg-brand-hover-bg inline-flex rounded-[6px] px-4 py-1.5 text-[13px] font-semibold text-white transition-opacity hover:opacity-90">
-                              View Profile
-                            </span>
-                          </div>
+                        <div className="mt-4 flex justify-start">
+                          <span className="bg-brand-hover-bg inline-flex rounded-[6px] px-4 py-1.5 text-[13px] font-semibold text-white transition-opacity hover:opacity-90">
+                            View Profile
+                          </span>
                         </div>
                       </div>
+                    </div>
+                  );
+
+                  return slug ? (
+                    <Link href={`/${slug}`} key={key} className={cardClassName}>
+                      {content}
                     </Link>
+                  ) : (
+                    <div key={key} className={cardClassName}>
+                      {content}
+                    </div>
                   );
                 })}
               </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUserOption } from "@/api/auth/auth.options";
@@ -9,11 +10,25 @@ import { Button } from "@/components/ui/button";
 
 export function HomeAuthCTA() {
   const hasAuthCookie = useAuthCookie();
-  const { data: user } = useQuery({
+  const { data: user, isPending } = useQuery({
     ...getCurrentUserOption(),
     enabled: hasAuthCookie,
     throwOnError: false,
   });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+
+  if (!mounted || (hasAuthCookie && isPending)) {
+    return (
+      <div className="mt-8 flex w-full max-w-[512px] flex-col items-center gap-3 sm:flex-row lg:mt-10">
+        <div className="bg-secondary-bg/50 h-12.5 w-full animate-pulse rounded-[8px] sm:w-[150px]" />
+      </div>
+    );
+  }
 
   return (
     <div className="mt-8 flex w-full max-w-[512px] flex-col items-center gap-3 sm:flex-row lg:mt-10">

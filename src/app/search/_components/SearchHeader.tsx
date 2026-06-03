@@ -1,7 +1,7 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import { FormEvent, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Search, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -11,15 +11,15 @@ interface SearchHeaderProps {
 
 export default function SearchHeader({ initialQuery }: SearchHeaderProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState(initialQuery);
   const [isSearching, setIsSearching] = useState(false);
 
-  const [prevQuery, setPrevQuery] = useState(initialQuery);
-  if (initialQuery !== prevQuery) {
-    setPrevQuery(initialQuery);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setQuery(initialQuery);
     setIsSearching(false);
-  }
+  }, [initialQuery, searchParams]);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();

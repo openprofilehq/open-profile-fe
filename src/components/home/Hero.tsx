@@ -100,8 +100,9 @@ export function Hero() {
     router.push(`/search?q=${encodeURIComponent(username)}`);
   }
 
-  const showDropdown = inputFocused && query.trim().length >= 3;
+  const showDropdown = inputFocused && debouncedQuery.trim().length >= 3;
   const searchResults = isError ? [] : searchData?.results || [];
+  const isSearchPending = isFetching || query !== debouncedQuery;
   const previewResults = searchResults.slice(0, 2);
   const totalResults = searchData?.total || 0;
   const remainingCount = Math.max(0, totalResults - 2);
@@ -186,9 +187,9 @@ export function Hero() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 4 }}
                   transition={{ duration: 0.15 }}
-                  className="border-border absolute top-[100%] left-0 z-50 mt-2 w-full overflow-hidden rounded-lg border bg-white shadow-lg"
+                  className="border-border absolute top-full left-0 z-50 mt-2 w-full overflow-hidden rounded-lg border bg-white shadow-lg"
                 >
-                  {isFetching && searchResults.length === 0 ? (
+                  {isSearchPending && searchResults.length === 0 ? (
                     <div
                       className="text-secondary-text p-4 text-center text-sm"
                       style={{ fontFamily: "'Afacad', sans-serif" }}

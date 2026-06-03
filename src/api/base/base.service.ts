@@ -77,8 +77,8 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const refreshUrl = `${apiBase}/auth/refresh-token`;
-      await axios.post(refreshUrl, {}, { withCredentials: true });
+      const refreshUrl = `/auth/refresh-token`;
+      await api.post(refreshUrl, {}, { withCredentials: true });
       processQueue(null);
 
       return await api(originalRequest);
@@ -169,7 +169,7 @@ export async function callApi<TResData>({
           console.error(
             "[callApi] error",
             e.response?.status,
-            JSON.stringify(e.response?.data),
+            e.response?.data,
             "code:",
             e.code,
             "msg:",

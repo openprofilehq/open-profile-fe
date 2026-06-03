@@ -72,9 +72,9 @@ export default function DashboardHome() {
     if (profile && !profile.templateType) {
       const storageKey = `hasSeenTemplateModal_${profile.username}`;
       const seen = localStorage.getItem(storageKey);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setHasSeenModal(Boolean(seen));
       if (!seen) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setHasSeenModal(false);
         localStorage.setItem(storageKey, "true");
       }
     }
