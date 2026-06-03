@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, X } from "lucide-react";
+import { LogOut, X, Search } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -128,12 +128,17 @@ export default function DashboardTopbar() {
 
           {/* Right Actions */}
           <div className="flex shrink-0 items-center gap-3 md:gap-4">
-            {/* <button
-              className="text-primary-text hover:text-secondary-text transition-colors"
-              aria-label="Search"
+            <Button
+              asChild
+              variant="outline"
+              className="border-tertiary-b text-primary-text hover:bg-hover-bg h-10 rounded-[10px] px-4 text-sm font-semibold transition-all active:scale-95"
+              title="Find user"
             >
-              <Search size={24} />
-            </button> */}
+              <Link href="/search" className="flex items-center gap-2">
+                <Search size={16} />
+                Search
+              </Link>
+            </Button>
 
             {/* <Button asChild className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text hidden h-10 rounded-[10px] border px-5 text-sm font-semibold shadow-none transition-all hover:bg-background active:scale-95 md:flex">
               <Link href="/coming-soon">Upgrade</Link>

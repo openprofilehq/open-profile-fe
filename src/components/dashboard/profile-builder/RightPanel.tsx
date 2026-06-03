@@ -11,9 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TemplateSelectionModal } from "../TemplateSelectionModal";
-import { Button } from "@/components/ui/button";
-import { Palette, ChevronDown, Type } from "lucide-react";
+
+import { Palette, Type } from "lucide-react";
 
 interface RightPanelProps {
   font: string;
@@ -107,38 +106,25 @@ export default function RightPanel({
                 <label className="text-primary-text mb-2 block text-xs font-bold tracking-wider uppercase">
                   Template
                 </label>
-                <TemplateSelectionModal
-                  initialTemplate={
-                    (template
-                      ? template.charAt(0).toUpperCase() + template.slice(1)
-                      : "Professional") as
-                      | "Professional"
-                      | "Creator"
-                      | "Portfolio"
-                      | "Default"
-                  }
-                  onPreviewChange={onChangeTemplate}
-                  trigger={
-                    <Button
-                      variant="outline"
-                      className="border-tertiary-b hover:bg-hover-bg bg-background text-primary-text h-auto w-full justify-between rounded-[12px] border px-4 py-3.5 text-sm font-semibold"
-                    >
-                      <span className="flex items-center">
-                        <Palette
-                          size={16}
-                          className="text-secondary-text mr-2"
-                        />
-                        {template
-                          ? template.charAt(0).toUpperCase() + template.slice(1)
-                          : "Choose Template"}
+                <Select
+                  value={template ? template.toLowerCase() : "default"}
+                  onValueChange={(val) => onChangeTemplate?.(val)}
+                >
+                  <SelectTrigger className="border-tertiary-b bg-background rounded-[12px] border px-4 py-3.5 text-sm font-semibold">
+                    <span className="flex items-center">
+                      <Palette size={16} className="text-secondary-text mr-2" />
+                      <span className="capitalize">
+                        {template || "Choose Template"}
                       </span>
-                      <ChevronDown
-                        size={16}
-                        className="text-secondary-text opacity-50"
-                      />
-                    </Button>
-                  }
-                />
+                    </span>
+                  </SelectTrigger>
+                  <SelectContent position="popper">
+                    <SelectItem value="professional">Professional</SelectItem>
+                    <SelectItem value="creator">Creator</SelectItem>
+                    <SelectItem value="portfolio">Portfolio</SelectItem>
+                    <SelectItem value="default">Default</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Font Selection */}
@@ -150,7 +136,7 @@ export default function RightPanel({
                   <SelectTrigger className="border-tertiary-b bg-background rounded-[12px] border px-4 py-3.5 text-sm font-semibold">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent position="popper">
                     {FONT_OPTIONS.map((o) => (
                       <SelectItem key={o.value} value={o.value}>
                         {o.label}
@@ -316,7 +302,7 @@ export default function RightPanel({
                       <SelectTrigger className="border-tertiary-b bg-background rounded-[12px] border px-4 py-3.5 text-sm font-semibold">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent position="popper">
                         {FONT_OPTIONS.map((o) => (
                           <SelectItem key={o.value} value={o.value}>
                             {o.label}

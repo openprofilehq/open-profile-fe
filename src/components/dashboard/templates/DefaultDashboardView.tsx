@@ -31,7 +31,7 @@ export default function DefaultDashboardView({
   return (
     <TemplateAppearanceProvider appearance={appearance}>
       <div
-        className="flex flex-col gap-6"
+        className="flex flex-col gap-6 p-6 pb-24 sm:p-8"
         style={{ gap: "var(--op-spacing, 1.5rem)" }}
       >
         <ProfileSummaryCard profile={profile} isLoading={isLoadingProfile} />

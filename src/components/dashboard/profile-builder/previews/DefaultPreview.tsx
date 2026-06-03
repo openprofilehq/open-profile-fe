@@ -101,7 +101,7 @@ export default function DefaultPreview({
 
   return (
     <div
-      className="text-primary-text mx-auto flex w-full max-w-4xl flex-col py-8 pt-6"
+      className="text-primary-text mx-auto flex w-full max-w-4xl flex-col py-12"
       style={{ gap: "var(--op-spacing, 1.5rem)" }}
     >
       {/* BIO / SUMMARY CARD */}
