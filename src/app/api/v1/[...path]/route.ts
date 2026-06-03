@@ -66,6 +66,7 @@ async function proxyRequest(
       headers: {
         ...(contentType ? { "content-type": contentType } : {}),
         ...(cookieHeader ? { cookie: cookieHeader } : {}),
+        "ngrok-skip-browser-warning": "true",
       },
       body: body && body.byteLength > 0 ? body : undefined,
       signal: AbortSignal.timeout(60_000),

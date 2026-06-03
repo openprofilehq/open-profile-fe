@@ -22,6 +22,9 @@ export const api = axios.create({
   baseURL: apiBase,
   timeout: 60 * 1000,
   withCredentials: true,
+  headers: {
+    "ngrok-skip-browser-warning": "true",
+  },
 });
 
 // ─── Silent token refresh ─────────────────────────────────────────────────────
@@ -81,13 +84,16 @@ api.interceptors.response.use(
       return await api(originalRequest);
     } catch (refreshError: unknown) {
       const err = refreshError as AxiosError;
-      console.error(
-        "[Interceptor] Refresh failed!",
-        err?.response?.status,
-        err?.response?.data
-      );
-      processQueue(refreshError);
       const isSilent = originalRequest.silent === true;
+
+      if (!isSilent) {
+        console.error(
+          "[Interceptor] Refresh failed!",
+          err?.response?.status,
+          err?.response?.data
+        );
+      }
+      processQueue(refreshError);
 
       if (typeof window !== "undefined" && !isSilent) {
         if (!window.location.pathname.startsWith("/login")) {
@@ -157,25 +163,28 @@ export async function callApi<TResData>({
   } catch (e) {
     if (e instanceof AxiosError) {
       if (e.code === "ERR_CANCELED") throw e; // silently propagate aborts
-      if (process.env.NODE_ENV === "development") {
-        console.error(
-          "[callApi] error",
-          e.response?.status,
-          JSON.stringify(e.response?.data),
-          "code:",
-          e.code,
-          "msg:",
-          e.message
-        );
-      } else {
-        console.error(
-          "[callApi] error",
-          e.response?.status,
-          "code:",
-          e.code,
-          "msg:",
-          e.message
-        );
+
+      if (!silent) {
+        if (process.env.NODE_ENV === "development") {
+          console.error(
+            "[callApi] error",
+            e.response?.status,
+            JSON.stringify(e.response?.data),
+            "code:",
+            e.code,
+            "msg:",
+            e.message
+          );
+        } else {
+          console.error(
+            "[callApi] error",
+            e.response?.status,
+            "code:",
+            e.code,
+            "msg:",
+            e.message
+          );
+        }
       }
       throw new ApiError(
         e.response ? getApiErrorMessage(e.response.data?.message) : e.message,

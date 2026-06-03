@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { Hero } from "@/components/home/Hero";
+import { HomeAuthCTA } from "@/components/home/HomeAuthCTA";
 import { Proof } from "@/components/home/Proof";
 import { FAQ } from "@/components/home/FAQ";
 import { Pricing } from "@/components/home/Pricing";
@@ -18,6 +19,9 @@ export default function Home() {
         <div className="w-full bg-[#FAFAFA]">
           <main className="relative mx-auto w-full">
             <Hero />
+            <div className="mx-auto -mt-8 flex max-w-[1440px] justify-center px-6 pb-[60px] md:px-[125px] lg:-mt-16 lg:justify-start">
+              <HomeAuthCTA />
+            </div>
           </main>
         </div>
 
