@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { ArrowRight, Rocket } from "lucide-react";
+import { ArrowRight, Mail } from "lucide-react";
 import { TemplateLinkCard } from "../shared/TemplateLinkCard";
 import {
   DashboardProfileResponse,
@@ -10,6 +10,7 @@ import {
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
 import { getImageUrl, isProjectHighlighted } from "@/utils/profile";
+import { getInitials } from "@/utils/avatar";
 import { TemplateFooter } from "./TemplateFooter";
 import HighlightCard from "../HighlightCard";
 
@@ -118,9 +119,15 @@ export default function PortfolioDashboardView({
         style={{ gap: "var(--op-spacing, 2rem)" }}
       >
         {/* HEADER SECTION */}
-        <header className="flex w-full flex-col justify-between gap-6 sm:flex-row sm:items-start">
-          <div className="flex flex-col gap-6">
-            <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
+        <header
+          className="flex w-full flex-col justify-between sm:flex-row sm:items-start"
+          style={{ gap: "var(--op-spacing, 24px)" }}
+        >
+          <div
+            className="flex flex-col"
+            style={{ gap: "var(--op-spacing, 24px)" }}
+          >
+            <div className="border-border bg-secondary-bg relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-full border">
               {photoSrc ? (
                 <Image
                   src={photoSrc}
@@ -130,8 +137,8 @@ export default function PortfolioDashboardView({
                   unoptimized
                 />
               ) : (
-                <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-full w-full items-center justify-center text-[40px] font-bold">
-                  {name.charAt(0).toUpperCase()}
+                <div className="bg-brand-hover-bg text-inverse-text flex h-full w-full items-center justify-center text-[32px] font-bold">
+                  {getInitials(name)}
                 </div>
               )}
             </div>
@@ -145,6 +152,33 @@ export default function PortfolioDashboardView({
               </p>
             </div>
           </div>
+          {details?.cta?.visible !== false && (cta?.value ?? cta?.url) && (
+            <a
+              href={cta?.value ?? cta?.url ?? ""}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
+            >
+              {cta?.iconSrc ? (
+                <div
+                  className="bg-brand-hover-bg h-4 w-4"
+                  style={{
+                    maskImage: `url(${cta.iconSrc})`,
+                    WebkitMaskImage: `url(${cta.iconSrc})`,
+                    maskSize: "contain",
+                    WebkitMaskSize: "contain",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskPosition: "center",
+                    WebkitMaskPosition: "center",
+                  }}
+                />
+              ) : (
+                <Mail size={16} />
+              )}
+              {cta?.label || "Email"}
+            </a>
+          )}
         </header>
 
         {/* BIO SECTION */}
@@ -275,28 +309,40 @@ export default function PortfolioDashboardView({
           })()}
 
         {/* CTA SECTION */}
-        {details?.cta?.visible !== false && (
+        {details?.cta?.visible !== false && (cta?.value ?? cta?.url) && (
           <section className="w-full py-8">
-            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
-              <div className="flex items-center gap-4">
-                <div className="bg-brand-hover-bg flex h-12 w-12 shrink-0 items-center justify-center rounded-[10px] text-white shadow-sm">
-                  <Rocket size={24} strokeWidth={2} />
+            <div
+              className={`flex flex-col ${cta?.layout === "2" ? "items-start text-left" : cta?.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
+            >
+              {cta?.iconSrc && (
+                <div className="mb-6 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-transparent">
+                  <div
+                    className="bg-brand-hover-bg h-8 w-8"
+                    style={{
+                      maskImage: `url(${cta.iconSrc})`,
+                      WebkitMaskImage: `url(${cta.iconSrc})`,
+                      maskSize: "contain",
+                      WebkitMaskSize: "contain",
+                      maskRepeat: "no-repeat",
+                      WebkitMaskRepeat: "no-repeat",
+                      maskPosition: "center",
+                      WebkitMaskPosition: "center",
+                    }}
+                  />
                 </div>
-                <div className="flex flex-col">
-                  <h3 className="text-primary-text text-[16px] font-bold">
-                    {cta?.title || "Interested in working together?"}
-                  </h3>
-                  <p className="text-secondary-text mt-0.5 text-[13px]">
-                    {cta?.subtitle ||
-                      "I am currently available for freelance project"}
-                  </p>
-                </div>
-              </div>
+              )}
+              <h2 className="text-primary-text text-[28px] font-bold tracking-tight">
+                {cta?.title || "Interested in working together?"}
+              </h2>
+              <p className="text-secondary-text mt-3 mb-8 max-w-[600px] text-base leading-relaxed">
+                {cta?.subtitle ||
+                  "I am currently available for freelance project"}
+              </p>
               <a
-                href={cta?.url || "mailto:hello@example.com"}
+                href={cta?.value ?? cta?.url ?? ""}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-[14px] font-bold whitespace-nowrap text-white shadow-sm transition-all active:scale-95"
+                className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
               >
                 {cta?.label || "Let's Connect"}
               </a>

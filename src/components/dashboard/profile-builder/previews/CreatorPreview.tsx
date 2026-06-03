@@ -17,6 +17,7 @@ import {
 import type { Section, ProfilePreview } from "../types";
 import { TemplateLinkCard, getLinkIcon } from "../../shared/TemplateLinkCard";
 import HighlightPreviewCard from "./HighlightPreviewCard";
+import { getInitials } from "@/utils/avatar";
 
 interface CreatorPreviewProps {
   sections: Section[];
@@ -52,11 +53,12 @@ export default function CreatorPreview({
   const linksSection = sections.find((s) => s.type === "links");
   const ctaSection = sections.find((s) => s.type === "experience");
   const bioSectionId = bioSection?.id ?? "bio";
+  const resolvedName = profile?.fullName || "Micaela Robinson";
 
   const renderControls = (section?: Section, isBio: boolean = false) => {
     if (!section) return null;
     return (
-      <div className="group/menu absolute -top-12 right-0 z-50">
+      <div className="group/menu pointer-events-none absolute -top-12 right-0 z-50 opacity-0 transition-opacity group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100">
         <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
           <MoreHorizontal size={18} />
         </button>
@@ -120,7 +122,7 @@ export default function CreatorPreview({
         selectedSectionId === bioSectionId ||
         selectedSectionId === ctaSection?.id) && (
         <div
-          className="relative mt-6 flex w-full flex-col items-center gap-4 p-6 text-center"
+          className="relative mt-6 flex w-full flex-col items-center gap-4 rounded-2xl p-6 text-center"
           style={getSectionStyle(bioSection)}
         >
           {renderControls(bioSection, true)}
@@ -135,15 +137,15 @@ export default function CreatorPreview({
                 unoptimized
               />
             ) : (
-              <div className="text-brand-text flex h-full items-center justify-center text-[40px] font-bold">
-                {(profile?.fullName || "M").charAt(0).toUpperCase()}
+              <div className="bg-brand-hover-bg text-inverse-text flex h-full w-full items-center justify-center text-[40px] font-bold">
+                {getInitials(resolvedName)}
               </div>
             )}
           </div>
 
           <div className="flex flex-col items-center">
             <h1 className="text-primary-text flex items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
-              {profile?.fullName || "Micaela Robinson"}
+              {resolvedName}
             </h1>
             <p className="text-secondary-text mt-1 text-[15px]">
               openprofile.app/{profile?.username || "micaela"}

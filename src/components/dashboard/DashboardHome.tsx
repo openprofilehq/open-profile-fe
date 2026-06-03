@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import ProfileOverviewCard from "./ProfileOverviewCard";
@@ -10,6 +10,7 @@ import CreatorDashboardView from "./templates/CreatorDashboardView";
 import PortfolioDashboardView from "./templates/PortfolioDashboardView";
 import ProfessionalDashboardView from "./templates/ProfessionalDashboardView";
 import TemplateAppearanceProvider from "./templates/TemplateAppearanceProvider";
+import { TemplateSelectionModal } from "./TemplateSelectionModal";
 
 import {
   dashboardProfileOption,
@@ -35,13 +36,14 @@ export default function DashboardHome() {
   const isContentLoading = profileContent.isPending;
 
   // Determine active template
-  // 1. Preview template (from TemplateSelectionModal) takes absolute priority
-  // 2. Appearance API (if backend returns it there)
-  // 3. Draft Content themeSettings (where we explicitly save it via upsertDraft)
-  // 4. Profile templateType (legacy top-level field)
+  // 1. Preview template from TemplateSelectionModal takes priority
+  // 2. Appearance API
+  // 3. Draft content themeSettings
+  // 4. Profile templateType fallback
   const themeSettings = (content as Record<string, unknown>)?.themeSettings as
     | Record<string, unknown>
     | undefined;
+
   const rawTemplate =
     previewTemplate ||
     profileAppearance.data?.appearance?.template ||
@@ -64,9 +66,37 @@ export default function DashboardHome() {
       ? activeTemplateMap[rawTemplate.toLowerCase()] || "default"
       : "default";
 
+  const [hasSeenModal, setHasSeenModal] = useState(true);
+
+  useEffect(() => {
+    if (profile && !profile.templateType) {
+      const storageKey = `hasSeenTemplateModal_${profile.username}`;
+      const seen = localStorage.getItem(storageKey);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setHasSeenModal(Boolean(seen));
+      if (!seen) {
+        localStorage.setItem(storageKey, "true");
+      }
+    }
+  }, [profile]);
+
+  const isFirstTimeUser = !!(profile && !profile.templateType && !hasSeenModal);
+  const initialModalTemplate = (
+    activeTemplate === "default"
+      ? "Default"
+      : activeTemplate.charAt(0).toUpperCase() + activeTemplate.slice(1)
+  ) as TemplateType;
+
   return (
-    <div className="mx-auto grid w-full max-w-[1180px] grid-cols-1 gap-6 overflow-x-hidden xl:grid-cols-[0.8fr_1.2fr]">
-      <div className="flex flex-col gap-4">
+    <div className="mx-auto grid w-full max-w-[1360px] grid-cols-1 gap-5 overflow-x-hidden xl:grid-cols-[0.75fr_1.25fr] 2xl:max-w-[1480px]">
+      {isFirstTimeUser && (
+        <TemplateSelectionModal
+          initialTemplate={initialModalTemplate}
+          defaultOpen={true}
+          onPreviewChange={setPreviewTemplate}
+        />
+      )}
+      <div className="flex min-w-0 flex-col gap-4">
         <ProfileOverviewCard
           profile={profile}
           isLoading={isProfileLoading}
@@ -77,7 +107,7 @@ export default function DashboardHome() {
 
       <TemplateAppearanceProvider
         appearance={appearance}
-        className="flex flex-col gap-6"
+        className="flex min-w-0 flex-col gap-5"
       >
         {activeTemplate === "portfolio" ? (
           <PortfolioDashboardView

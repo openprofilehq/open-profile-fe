@@ -1,12 +1,20 @@
 "use client";
-import { ChevronRight, Eye, Link2, Pencil, Palette } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { getDisplayUrl, getProfileUrl } from "@/utils/profile";
-import { Skeleton } from "../ui/skeleton";
-import { useQuery } from "@tanstack/react-query";
-import { userQueryOptions } from "@/api/auth/auth.options";
 
+import { useEffect, useRef, useState } from "react";
+import {
+  Check,
+  ChevronRight,
+  Copy,
+  Eye,
+  Link2,
+  Palette,
+  Pencil,
+} from "lucide-react";
+import { toast } from "sonner";
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+
+import { userQueryOptions } from "@/api/auth/auth.options";
 import {
   DashboardProfileResponse,
   TemplateType,
@@ -15,6 +23,9 @@ import {
   profileAppearanceOption,
   profileContentOption,
 } from "@/api/profile/profile.options";
+import { getDisplayUrl, getProfileUrl } from "@/utils/profile";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "../ui/skeleton";
 
 const actions = [
   {
@@ -33,8 +44,7 @@ const actions = [
     title: "Customize your profile",
     description: "Adjust font, color, spacing and appearance",
     icon: Palette,
-    // href: "/dashboard/profile-builder",
-    href: "/coming-soon",
+    href: "/dashboard/profile-builder",
   },
 ];
 
@@ -48,20 +58,32 @@ type Props = {
 export default function ProfileOverviewCard({
   profile,
   isLoading,
-  onPreviewChange: _onPreviewChange,
   previewTemplate,
 }: Props) {
   const { data: user } = useQuery(userQueryOptions);
   const { data: appearanceData } = useQuery(profileAppearanceOption());
   const { data: contentData } = useQuery(profileContentOption());
   const publicProfileUrl = getProfileUrl(profile?.username);
+  const [copied, setCopied] = useState(false);
+  const copyResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Derive the active template
+  useEffect(() => {
+    return () => {
+      if (copyResetTimerRef.current) {
+        clearTimeout(copyResetTimerRef.current);
+      }
+    };
+  }, []);
+
+  const displayName = profile?.fullName ?? user?.fullName ?? "User";
+
   const themeSettings = (contentData as Record<string, unknown>)
     ?.themeSettings as Record<string, unknown> | undefined;
+
   const rawTemplate =
     previewTemplate ||
     appearanceData?.appearance?.template ||
+    appearanceData?.data?.template ||
     themeSettings?.template ||
     profile?.templateType;
 
@@ -72,28 +94,50 @@ export default function ProfileOverviewCard({
           rawTemplate.toLowerCase() === "portfolio"
         ? "Portfolio"
         : typeof rawTemplate === "string" &&
-            rawTemplate.toLowerCase() === "default"
-          ? "Default"
-          : "Default";
+            rawTemplate.toLowerCase() === "professional"
+          ? "Professional"
+          : typeof rawTemplate === "string" &&
+              rawTemplate.toLowerCase() === "default"
+            ? "Default"
+            : "Default";
+
+  const handleCopyProfileUrl = async () => {
+    if (!publicProfileUrl) return;
+
+    try {
+      await navigator.clipboard.writeText(publicProfileUrl);
+      setCopied(true);
+
+      if (copyResetTimerRef.current) {
+        clearTimeout(copyResetTimerRef.current);
+      }
+
+      copyResetTimerRef.current = setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error("Failed to copy profile URL:", error);
+      toast.error("Failed to copy profile link");
+    }
+  };
 
   return (
     <>
-      <section className="border-border bg-background rounded-[12px] border p-4">
-        <p className="text-secondary-text text-sm uppercase">
+      <section className="border-border bg-background rounded-[12px] border p-5">
+        <p className="text-secondary-text text-sm font-bold tracking-wide uppercase">
           Profile Overview
         </p>
 
-        <div className="bg-secondary-bg mt-3 rounded-[10px] p-4">
+        <div className="bg-secondary-bg mt-3 rounded-[10px] p-5">
           {isLoading ? (
-            <Skeleton className="h-8" />
+            <Skeleton className="h-10" />
           ) : (
-            <h1 className="text-2xl font-bold break-all">
-              Welcome, {profile?.fullName ?? user?.fullName ?? "User"}
+            <h1 className="text-primary-text text-3xl font-extrabold tracking-tight md:text-4xl">
+              Welcome, {displayName}
             </h1>
           )}
-          <p className="text-secondary-text mt-3 max-w-[390px] wrap-break-word">
+
+          <p className="text-secondary-text mt-3 max-w-[430px] text-base leading-7 font-medium">
             Your profile is live and ready to share. Manage your public page,
-            update key sections, and keep things current from one place
+            update key sections, and keep things current from one place.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
@@ -129,16 +173,20 @@ export default function ProfileOverviewCard({
             key={item.title}
             href={item.href}
             aria-label={item.title}
-            className="border-border bg-background flex w-full items-center justify-between rounded-[12px] border p-5 text-left"
+            className="border-border bg-background hover:bg-secondary-bg flex w-full items-center justify-between rounded-[12px] border p-5 text-left transition-colors"
           >
             <div className="flex items-start gap-3">
-              <span className="border-border flex h-7 w-7 items-center justify-center rounded-[8px] border">
-                <Icon size={16} />
+              <span className="border-border flex h-8 w-8 items-center justify-center rounded-[8px] border">
+                <Icon size={17} />
               </span>
 
               <div>
-                <h2 className="text-lg font-bold">{item.title}</h2>
-                <p className="text-secondary-text mt-1">{item.description}</p>
+                <h2 className="text-primary-text text-xl font-extrabold">
+                  {item.title}
+                </h2>
+                <p className="text-secondary-text mt-1 text-base font-medium">
+                  {item.description}
+                </p>
               </div>
             </div>
 
@@ -148,23 +196,39 @@ export default function ProfileOverviewCard({
       })}
 
       <section className="border-border bg-background rounded-[12px] border p-4">
-        <div className="bg-secondary-bg p-3">
-          <p className="text-secondary-text text-sm uppercase">Page Details</p>
+        <div className="bg-secondary-bg p-4">
+          <p className="text-secondary-text text-sm font-bold tracking-wide uppercase">
+            Page Details
+          </p>
 
-          <div className="mt-4 flex justify-between text-sm">
-            <span className="text-secondary-text">Public URL</span>
+          <div className="mt-4 flex flex-col gap-2 text-sm sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-secondary-text font-semibold">
+              Public URL
+            </span>
             {isLoading ? (
               <Skeleton className="h-4 w-40" />
             ) : publicProfileUrl ? (
-              <a
-                href={publicProfileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-brand-hover-bg text-right break-all hover:underline"
-                suppressHydrationWarning
-              >
-                {getDisplayUrl(publicProfileUrl)}
-              </a>
+              <div className="flex min-w-0 items-center gap-2 sm:justify-end">
+                <a
+                  href={publicProfileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-brand-hover-bg min-w-0 truncate text-right font-semibold hover:underline"
+                  suppressHydrationWarning
+                >
+                  {getDisplayUrl(publicProfileUrl)}
+                </a>
+
+                <button
+                  type="button"
+                  onClick={handleCopyProfileUrl}
+                  className="border-border bg-background text-brand-hover-bg hover:bg-hover-bg flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full border transition-colors"
+                  aria-label="Copy public profile URL"
+                  title="Copy public profile URL"
+                >
+                  {copied ? <Check size={16} /> : <Copy size={16} />}
+                </button>
+              </div>
             ) : (
               <span className="text-right break-all">
                 Profile URL not available

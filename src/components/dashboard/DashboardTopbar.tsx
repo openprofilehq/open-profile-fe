@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, X } from "lucide-react";
+import { LogOut, X, Search } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -14,6 +14,8 @@ import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { toast } from "sonner";
 import { isApiError } from "@/api/base";
 import { publishProfile } from "@/api/profile/profile.service";
+import { dashboardProfileOption } from "@/api/profile/profile.options";
+import { getInitials } from "@/utils/avatar";
 import type { PublishProfileResponse } from "@/api/profile/profile.type";
 
 const navLinks = [
@@ -22,19 +24,10 @@ const navLinks = [
   // { label: "Settings", href: ROUTES.dashboard.settings.home },
 ];
 
-function getInitials(fullName?: string | null, email?: string): string {
-  if (fullName) {
-    const parts = fullName.trim().split(/\s+/);
-    if (parts.length >= 2) return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase() || "??";
-    return parts[0]?.slice(0, 2).toUpperCase() || "??";
-  }
-  if (email) return email.slice(0, 2).toUpperCase();
-  return "??";
-}
-
 export default function DashboardTopbar() {
   const pathname = usePathname();
   const { data: user } = useQuery(userQueryOptions);
+  const { data: profile } = useQuery(dashboardProfileOption());
   const queryClient = useQueryClient();
 
   const draftUpdatedAtRef = useRef<string | null>(null);
@@ -42,7 +35,14 @@ export default function DashboardTopbar() {
   const [modalOpen, setModalOpen] = useState(false);
 
   const dropdownRef = useOutsideClick(() => setDropdownOpen(false));
-  const initials = getInitials(user?.fullName, user?.email);
+  const profileFullName = profile?.fullName?.trim();
+  const userFullName = user?.fullName?.trim();
+  const userEmail = user?.email?.trim();
+
+  const displayName = profileFullName || userFullName || userEmail || "??";
+  const initials = getInitials(displayName, {
+    fallback: "??",
+  });
 
   const { mutate: doPublish, isPending: isPublishing } = useMutation<
     PublishProfileResponse,
@@ -128,12 +128,17 @@ export default function DashboardTopbar() {
 
           {/* Right Actions */}
           <div className="flex shrink-0 items-center gap-3 md:gap-4">
-            {/* <button
-              className="text-primary-text hover:text-secondary-text transition-colors"
-              aria-label="Search"
+            <Button
+              asChild
+              variant="outline"
+              className="border-tertiary-b text-primary-text hover:bg-hover-bg h-10 rounded-[10px] px-4 text-sm font-semibold transition-all active:scale-95"
+              title="Find user"
             >
-              <Search size={24} />
-            </button> */}
+              <Link href="/search" className="flex items-center gap-2">
+                <Search size={16} />
+                Search
+              </Link>
+            </Button>
 
             {/* <Button asChild className="border-brand-b bg-brand-light-subtle-bg text-link-hover-text hidden h-10 rounded-[10px] border px-5 text-sm font-semibold shadow-none transition-all hover:bg-background active:scale-95 md:flex">
               <Link href="/coming-soon">Upgrade</Link>
@@ -168,11 +173,11 @@ export default function DashboardTopbar() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.15, ease: "easeOut" }}
-                    className="border-tertiary-b absolute right-0 top-full mt-2 w-44 overflow-hidden rounded-xl border bg-background py-1 shadow-lg"
+                    className="border-tertiary-b bg-background absolute top-full right-0 mt-2 w-44 overflow-hidden rounded-xl border py-1 shadow-lg"
                   >
-                    {user?.fullName && (
+                    {displayName && (
                       <p className="border-tertiary-b text-tertiary-text text-md truncate border-b px-4 py-2">
-                        {user.fullName}
+                        {displayName}
                       </p>
                     )}
                     <button

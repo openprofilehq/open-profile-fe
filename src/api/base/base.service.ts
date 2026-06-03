@@ -14,14 +14,17 @@ declare module "axios" {
 }
 
 const isServer = typeof window === "undefined";
+const isClientDev = !isServer && process.env.NODE_ENV === "development";
+const publicApiOrigin = env.NEXT_PUBLIC_API_URL.replace(/\/+$/, "");
+const apiBase = isClientDev ? "/api/v1" : `${publicApiOrigin}/api/v1`;
 
 export const api = axios.create({
-  baseURL: `${env.NEXT_PUBLIC_API_URL}/api/v1`,
-  // baseURL: isServer
-  //   ? `${env.NEXT_PUBLIC_API_URL || "https://api.staging.open-profile.hng14.com"}/api/v1`
-  //   : "/api/v1",
+  baseURL: apiBase,
   timeout: 60 * 1000,
   withCredentials: true,
+  headers: {
+    "ngrok-skip-browser-warning": "true",
+  },
 });
 
 // ─── Silent token refresh ─────────────────────────────────────────────────────
@@ -74,23 +77,23 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      await axios.post(
-        `${env.NEXT_PUBLIC_API_URL}/api/v1/auth/refresh-token`,
-        {},
-        { withCredentials: true }
-      );
+      const refreshUrl = `/auth/refresh-token`;
+      await api.post(refreshUrl, {}, { withCredentials: true });
       processQueue(null);
 
       return await api(originalRequest);
     } catch (refreshError: unknown) {
       const err = refreshError as AxiosError;
-      console.error(
-        "[Interceptor] Refresh failed!",
-        err?.response?.status,
-        err?.response?.data
-      );
-      processQueue(refreshError);
       const isSilent = originalRequest.silent === true;
+
+      if (!isSilent) {
+        console.error(
+          "[Interceptor] Refresh failed!",
+          err?.response?.status,
+          err?.response?.data
+        );
+      }
+      processQueue(refreshError);
 
       if (typeof window !== "undefined" && !isSilent) {
         if (!window.location.pathname.startsWith("/login")) {
@@ -160,25 +163,28 @@ export async function callApi<TResData>({
   } catch (e) {
     if (e instanceof AxiosError) {
       if (e.code === "ERR_CANCELED") throw e; // silently propagate aborts
-      if (process.env.NODE_ENV === "development") {
-        console.error(
-          "[callApi] error",
-          e.response?.status,
-          JSON.stringify(e.response?.data),
-          "code:",
-          e.code,
-          "msg:",
-          e.message
-        );
-      } else {
-        console.error(
-          "[callApi] error",
-          e.response?.status,
-          "code:",
-          e.code,
-          "msg:",
-          e.message
-        );
+
+      if (!silent) {
+        if (process.env.NODE_ENV === "development") {
+          console.error(
+            "[callApi] error",
+            e.response?.status,
+            e.response?.data,
+            "code:",
+            e.code,
+            "msg:",
+            e.message
+          );
+        } else {
+          console.error(
+            "[callApi] error",
+            e.response?.status,
+            "code:",
+            e.code,
+            "msg:",
+            e.message
+          );
+        }
       }
       throw new ApiError(
         e.response ? getApiErrorMessage(e.response.data?.message) : e.message,

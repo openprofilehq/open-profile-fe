@@ -7,14 +7,16 @@ import {
   Eye,
   EyeOff,
   Trash2,
+  Mail,
 } from "lucide-react";
 import {
   getImageUrl,
   sanitizeUrl,
   isProjectHighlighted,
   getSectionStyle,
+  getDisplayProfileUrl,
 } from "@/utils/profile";
-import type { Section, ProfilePreview } from "../types";
+import type { Section, ProfilePreview, SavedLink, ProjectItem } from "../types";
 import HighlightPreviewCard from "./HighlightPreviewCard";
 
 interface ProfessionalPreviewProps {
@@ -32,10 +34,9 @@ export default function ProfessionalPreview({
   onToggleSectionVisibility,
   onRemoveSection,
 }: ProfessionalPreviewProps) {
-  const bioSection = sections.find((s) => s.type === "bio");
-  const linksSection = sections.find((s) => s.type === "links");
-  const projectsSection = sections.find((s) => s.type === "projects");
-  const ctaSection = sections.find((s) => s.type === "experience");
+  const ctaSection = sections.find(
+    (s) => s.type === "experience" || s.type === "cta"
+  );
 
   const renderControls = (section?: Section, isBio: boolean = false) => {
     if (!section) return null;
@@ -85,158 +86,206 @@ export default function ProfessionalPreview({
       className="text-primary-text mx-auto flex w-full max-w-4xl flex-col py-8 pt-6"
       style={{ gap: "var(--op-spacing, 2rem)" }}
     >
-      {/* HEADER SECTION (Bio) */}
-      <div
-        className={`group relative transition-opacity duration-200 ${!bioSection?.visible ? "opacity-50 grayscale" : ""}`}
-        style={getSectionStyle(bioSection)}
-      >
-        {renderControls(bioSection, true)}
+      {sections.map((section) => {
+        if (section.type === "bio") {
+          return (
+            <div
+              key={section.id}
+              className={`group relative rounded-2xl transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""}`}
+              style={getSectionStyle(section)}
+            >
+              {renderControls(section, true)}
 
-        <header className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between gap-6 rounded-2xl border border-transparent p-6 transition-colors sm:flex-row sm:items-start">
-          <div className="flex min-w-0 flex-1 items-center gap-6">
-            <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
-              {getImageUrl(profile?.photoUrl) ? (
-                <Image
-                  src={getImageUrl(profile?.photoUrl)!}
-                  alt={profile?.fullName ?? "Profile avatar"}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                <div className="text-brand-text flex h-full items-center justify-center text-[40px] font-bold">
-                  {(profile?.fullName || "M").charAt(0).toUpperCase()}
-                </div>
-              )}
-            </div>
-
-            <div className="flex min-w-0 flex-1 flex-col">
-              <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight break-all">
-                {profile?.fullName || "Micaela Robinson"}
-              </h1>
-              <p className="text-secondary-text mt-1 text-[15px] break-all">
-                openprofile.app/{profile?.username || "micaela"}
-              </p>
-            </div>
-          </div>
-        </header>
-
-        <section className="mt-6 px-6">
-          <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed break-all whitespace-pre-wrap">
-            {bioSection?.bio || "Write a little bit about yourself here..."}
-          </p>
-        </section>
-      </div>
-
-      {/* LINKS SECTION */}
-      {linksSection && (
-        <section
-          className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!linksSection.visible ? "opacity-50 grayscale" : ""}`}
-          style={(() => {
-            const { gap: _gap, ...rest } = getSectionStyle(linksSection);
-            return rest;
-          })()}
-        >
-          {renderControls(linksSection)}
-
-          <h2 className="text-tertiary-text mb-4 text-[13px]">
-            {linksSection.subtitle || "Links"}
-          </h2>
-          <div
-            className="border-border flex flex-col border-t"
-            style={{
-              gap: linksSection.gap ? `${linksSection.gap}px` : undefined,
-            }}
-          >
-            {linksSection.links && linksSection.links.length > 0 ? (
-              linksSection.links.map((link, idx) => (
-                <a
-                  key={link.id ?? idx}
-                  href={sanitizeUrl(link.url || "")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group border-border hover:bg-hover-bg/30 flex items-center justify-between border-b py-4 transition-colors"
+              <header
+                className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between rounded-2xl border border-transparent transition-colors sm:flex-row sm:items-start"
+                style={{
+                  gap: "var(--op-spacing, 24px)",
+                  padding: "var(--op-spacing, 24px)",
+                }}
+              >
+                <div
+                  className="flex items-center"
+                  style={{ gap: "var(--op-spacing, 24px)" }}
                 >
-                  <span className="text-primary-text group-hover:text-brand-hover-bg text-[15px] font-bold transition-colors">
-                    {link.title || link.label}
-                  </span>
-                  <div className="flex items-center gap-3">
-                    <span className="text-secondary-text text-[14px]">
-                      {(() => {
-                        try {
-                          return link.url
-                            ? new URL(
-                                link.url.startsWith("http")
-                                  ? link.url
-                                  : `https://${link.url}`
-                              ).hostname.replace("www.", "")
-                            : "";
-                        } catch {
-                          return link.url || "";
-                        }
-                      })()}
-                    </span>
-                    <ExternalLink
-                      size={16}
-                      className="text-tertiary-text group-hover:text-brand-hover-bg transition-colors"
-                    />
+                  <div className="border-border bg-secondary-bg relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-full border">
+                    {getImageUrl(profile?.photoUrl) ? (
+                      <Image
+                        src={getImageUrl(profile?.photoUrl)!}
+                        alt={profile?.fullName ?? "Profile avatar"}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="text-brand-text flex h-full items-center justify-center text-[32px] font-bold">
+                        {(profile?.fullName || "M").charAt(0).toUpperCase()}
+                      </div>
+                    )}
                   </div>
-                </a>
-              ))
-            ) : (
-              <p className="text-tertiary-text border-border mt-4 rounded-xl border border-dashed py-4 text-center text-sm">
-                No links added yet.
-              </p>
-            )}
-          </div>
-        </section>
-      )}
 
-      {/* PROJECTS SECTION */}
-      {projectsSection &&
-        (() => {
-          const projectsToRender = projectsSection.projects || [];
+                  <div className="flex flex-col">
+                    <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight break-all">
+                      {profile?.fullName || "Micaela Robinson"}
+                    </h1>
+                    <p className="text-secondary-text mt-1 text-[15px] break-all">
+                      {getDisplayProfileUrl(profile?.username || "micaela")}
+                    </p>
+                  </div>
+                </div>
+
+                {ctaSection?.visible && ctaSection?.url && (
+                  <a
+                    href={sanitizeUrl(ctaSection.url)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="border-brand-hover-bg bg-brand-hover-bg/5 text-brand-hover-bg hover:bg-brand-hover-bg/10 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-sm font-semibold transition-colors"
+                  >
+                    {ctaSection.iconSrc ? (
+                      <div
+                        className="bg-brand-hover-bg h-4 w-4"
+                        style={{
+                          maskImage: `url(${ctaSection.iconSrc})`,
+                          WebkitMaskImage: `url(${ctaSection.iconSrc})`,
+                          maskSize: "contain",
+                          WebkitMaskSize: "contain",
+                          maskRepeat: "no-repeat",
+                          WebkitMaskRepeat: "no-repeat",
+                          maskPosition: "center",
+                          WebkitMaskPosition: "center",
+                        }}
+                      />
+                    ) : (
+                      <Mail size={16} />
+                    )}
+                    {ctaSection.buttonText || "Email"}
+                  </a>
+                )}
+              </header>
+
+              <section className="mt-6 px-6">
+                <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed break-all whitespace-pre-wrap">
+                  {section.bio || "Write a little bit about yourself here..."}
+                </p>
+              </section>
+            </div>
+          );
+        }
+
+        if (section.type === "links") {
+          return (
+            <section
+              key={section.id}
+              className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""}`}
+              style={(() => {
+                const { gap: _gap, ...rest } = getSectionStyle(section);
+                return rest;
+              })()}
+            >
+              {renderControls(section)}
+
+              <h2 className="text-tertiary-text mb-4 text-[13px]">
+                {section.subtitle || "Links"}
+              </h2>
+              <div
+                className="border-border flex flex-col border-t"
+                style={{
+                  gap: section.gap ? `${section.gap}px` : undefined,
+                }}
+              >
+                {section.links && section.links.length > 0 ? (
+                  section.links.map((link: SavedLink, idx: number) => (
+                    <a
+                      key={link.id ?? idx}
+                      href={sanitizeUrl(link.url || "")}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group border-border hover:bg-hover-bg/30 flex items-center justify-between border-b py-4 transition-colors"
+                    >
+                      <span className="text-primary-text group-hover:text-brand-hover-bg text-[15px] font-bold transition-colors">
+                        {link.title || link.label}
+                      </span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-secondary-text text-[14px]">
+                          {(() => {
+                            try {
+                              return link.url
+                                ? new URL(
+                                    link.url.startsWith("http")
+                                      ? link.url
+                                      : `https://${link.url}`
+                                  ).hostname.replace("www.", "")
+                                : "";
+                            } catch {
+                              return link.url || "";
+                            }
+                          })()}
+                        </span>
+                        <ExternalLink
+                          size={16}
+                          className="text-tertiary-text group-hover:text-brand-hover-bg transition-colors"
+                        />
+                      </div>
+                    </a>
+                  ))
+                ) : (
+                  <p className="text-tertiary-text border-border mt-4 rounded-xl border border-dashed py-4 text-center text-sm">
+                    No links added yet.
+                  </p>
+                )}
+              </div>
+            </section>
+          );
+        }
+
+        if (section.type === "projects") {
+          const projectsToRender = section.projects || [];
           const highlightedProject =
             projectsToRender.find(isProjectHighlighted);
           const remainingProjects = projectsToRender.filter(
-            (p) => p.id !== highlightedProject?.id
+            (p: { id?: string | number }) => p.id !== highlightedProject?.id
           );
 
           return (
-            <div className="flex flex-col gap-6">
-              <HighlightPreviewCard projectsSection={projectsSection} />
+            <div key={section.id} className="flex flex-col gap-6">
+              <HighlightPreviewCard projectsSection={section} />
               <section
-                className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!projectsSection.visible ? "opacity-50 grayscale" : ""}`}
+                className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""}`}
                 style={(() => {
-                  const { gap: _gap, ...rest } =
-                    getSectionStyle(projectsSection);
+                  const { gap: _gap, ...rest } = getSectionStyle(section);
                   return rest;
                 })()}
               >
-                {renderControls(projectsSection)}
+                {renderControls(section)}
 
-                <h2 className="text-tertiary-text mb-4 text-[13px]">
-                  {projectsSection.subtitle || "Selected Work"}
-                </h2>
+                <div className="mb-4 flex flex-col gap-1">
+                  {section.title && (
+                    <h2 className="text-primary-text text-xl font-bold tracking-tight">
+                      {section.title}
+                    </h2>
+                  )}
+                  {(section.subtitle || !section.title) && (
+                    <h3 className="text-tertiary-text text-[13px]">
+                      {section.subtitle || "Selected Work"}
+                    </h3>
+                  )}
+                </div>
                 <div
                   className={`grid gap-6 ${
-                    !projectsSection.layout || projectsSection.layout === "1"
+                    !section.layout || section.layout === "1"
                       ? "grid-cols-1"
-                      : projectsSection.layout === "3"
+                      : section.layout === "3"
                         ? "grid-cols-1 sm:grid-cols-2"
-                        : projectsSection.layout === "4"
+                        : section.layout === "4"
                           ? "grid-cols-1 sm:grid-cols-2"
                           : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
                   }`}
                   style={{
-                    gap: projectsSection.gap
-                      ? `${projectsSection.gap}px`
-                      : undefined,
+                    gap: section.gap ? `${section.gap}px` : undefined,
                   }}
                 >
                   {remainingProjects.length > 0 ? (
-                    remainingProjects.map((project) => {
-                      const layoutType = projectsSection.layout || "2";
+                    remainingProjects.map((project: ProjectItem) => {
+                      const layoutType = section.layout || "2";
                       const hasUrl = Boolean(project.url);
                       const displayImg = getImageUrl(project.imageSrc);
 
@@ -333,32 +382,59 @@ export default function ProfessionalPreview({
               </section>
             </div>
           );
-        })()}
+        }
 
-      {/* CTA SECTION */}
-      {ctaSection && (
-        <section
-          className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!ctaSection.visible ? "opacity-50 grayscale" : ""}`}
-          style={getSectionStyle(ctaSection)}
-        >
-          {renderControls(ctaSection)}
+        if (section.type === "experience") {
+          return (
+            <section
+              key={section.id}
+              className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""}`}
+              style={getSectionStyle(section)}
+            >
+              {renderControls(section)}
 
-          <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
-            {ctaSection.title || "Open to new projects."}
-          </h2>
-          <p className="text-secondary-text mt-2 mb-6 max-w-[500px] text-[15px]">
-            {ctaSection.subtitle || "Have an idea or product you're building?"}
-          </p>
-          <a
-            href={sanitizeUrl(ctaSection.url)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm transition-all active:scale-95"
-          >
-            {ctaSection.buttonText || "Work with me"}
-          </a>
-        </section>
-      )}
+              <div
+                className={`flex flex-col ${section.layout === "2" ? "items-start text-left" : section.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
+              >
+                {section.iconSrc && (
+                  <div className="mb-6 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-transparent">
+                    <div
+                      className="bg-brand-hover-bg h-8 w-8"
+                      style={{
+                        maskImage: `url(${section.iconSrc})`,
+                        WebkitMaskImage: `url(${section.iconSrc})`,
+                        maskSize: "contain",
+                        WebkitMaskSize: "contain",
+                        maskRepeat: "no-repeat",
+                        WebkitMaskRepeat: "no-repeat",
+                        maskPosition: "center",
+                        WebkitMaskPosition: "center",
+                      }}
+                    />
+                  </div>
+                )}
+                <h2 className="text-primary-text text-[28px] font-bold tracking-tight">
+                  {section.title || "Open to new projects."}
+                </h2>
+                <p className="text-secondary-text mt-3 mb-8 max-w-[600px] text-base leading-relaxed">
+                  {section.subtitle ||
+                    "Have an idea or product you're building?"}
+                </p>
+                <a
+                  href={sanitizeUrl(section.url || "#")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
+                >
+                  {section.buttonText || "Let's Connect"}
+                </a>
+              </div>
+            </section>
+          );
+        }
+
+        return null;
+      })}
     </div>
   );
 }

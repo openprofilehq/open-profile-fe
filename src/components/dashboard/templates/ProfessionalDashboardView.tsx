@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowRight, ExternalLink, Mail } from "lucide-react";
 
 import {
   DashboardProfileResponse,
@@ -10,6 +10,7 @@ import {
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
 import { getImageUrl, isProjectHighlighted } from "@/utils/profile";
+import { getInitials } from "@/utils/avatar";
 import { TemplateFooter } from "./TemplateFooter";
 import HighlightCard from "../HighlightCard";
 
@@ -86,15 +87,21 @@ export default function ProfessionalDashboardView({
     : null;
 
   return (
-    <div className="text-primary-text bg-secondary-bg flex w-full flex-col font-sans antialiased">
+    <div className="text-primary-text flex min-h-screen w-full flex-col font-sans antialiased">
       <div
         className="mx-auto flex w-full max-w-5xl flex-col px-6 pt-8 pb-16 sm:pb-24"
         style={{ gap: "var(--op-spacing, 2rem)" }}
       >
         {/* HEADER SECTION */}
-        <header className="flex w-full flex-col justify-between gap-6 sm:flex-row sm:items-start">
-          <div className="flex items-center gap-6">
-            <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
+        <header
+          className="flex w-full flex-col justify-between sm:flex-row sm:items-start"
+          style={{ gap: "var(--op-spacing, 24px)" }}
+        >
+          <div
+            className="flex items-center"
+            style={{ gap: "var(--op-spacing, 24px)" }}
+          >
+            <div className="border-border bg-secondary-bg relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-full border">
               {photoSrc ? (
                 <Image
                   src={photoSrc}
@@ -104,8 +111,8 @@ export default function ProfessionalDashboardView({
                   unoptimized
                 />
               ) : (
-                <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-full w-full items-center justify-center text-[40px] font-bold">
-                  {name.charAt(0).toUpperCase()}
+                <div className="bg-brand-hover-bg text-inverse-text flex h-full w-full items-center justify-center text-[32px] font-bold">
+                  {getInitials(name)}
                 </div>
               )}
             </div>
@@ -119,6 +126,33 @@ export default function ProfessionalDashboardView({
               </p>
             </div>
           </div>
+          {details?.cta?.visible !== false && (cta?.value ?? cta?.url) && (
+            <a
+              href={cta?.value ?? cta?.url ?? ""}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border-brand-hover-bg bg-brand-hover-bg/5 text-brand-hover-bg hover:bg-brand-hover-bg/10 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-sm font-semibold transition-colors"
+            >
+              {cta?.iconSrc ? (
+                <div
+                  className="bg-brand-hover-bg h-4 w-4"
+                  style={{
+                    maskImage: `url(${cta.iconSrc})`,
+                    WebkitMaskImage: `url(${cta.iconSrc})`,
+                    maskSize: "contain",
+                    WebkitMaskSize: "contain",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskPosition: "center",
+                    WebkitMaskPosition: "center",
+                  }}
+                />
+              ) : (
+                <Mail size={16} />
+              )}
+              {cta?.label || "Email"}
+            </a>
+          )}
         </header>
 
         {/* BIO SECTION */}
@@ -266,23 +300,43 @@ export default function ProfessionalDashboardView({
           })()}
 
         {/* CTA SECTION */}
-        {details?.cta?.visible !== false && (
+        {details?.cta?.visible !== false && (cta?.value ?? cta?.url) && (
           <section className="w-full">
-            <h2 className="text-primary-text text-[24px] font-bold tracking-tight">
-              {cta?.title || "Open to new projects."}
-            </h2>
-            <p className="text-secondary-text mt-2 mb-6 max-w-[500px] text-[15px]">
-              {cta?.subtitle ||
-                "Have an idea or product you're building? I can help you design it the right way."}
-            </p>
-            <a
-              href={cta?.url || "mailto:hello@example.com"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center rounded-md px-6 text-sm font-bold text-white shadow-sm transition-all active:scale-95"
+            <div
+              className={`flex flex-col ${cta?.layout === "2" ? "items-start text-left" : cta?.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
             >
-              {cta?.label || "Work with me"}
-            </a>
+              {cta?.iconSrc && (
+                <div className="mb-6 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-transparent">
+                  <div
+                    className="bg-brand-hover-bg h-8 w-8"
+                    style={{
+                      maskImage: `url(${cta.iconSrc})`,
+                      WebkitMaskImage: `url(${cta.iconSrc})`,
+                      maskSize: "contain",
+                      WebkitMaskSize: "contain",
+                      maskRepeat: "no-repeat",
+                      WebkitMaskRepeat: "no-repeat",
+                      maskPosition: "center",
+                      WebkitMaskPosition: "center",
+                    }}
+                  />
+                </div>
+              )}
+              <h2 className="text-primary-text text-[28px] font-bold tracking-tight">
+                {cta?.title || "Open to new projects."}
+              </h2>
+              <p className="text-secondary-text mt-3 mb-8 max-w-[600px] text-base leading-relaxed">
+                {cta?.subtitle || "Have an idea or product you're building?"}
+              </p>
+              <a
+                href={cta?.value ?? cta?.url ?? ""}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
+              >
+                {cta?.label || "Work with me"}
+              </a>
+            </div>
           </section>
         )}
 
