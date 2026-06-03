@@ -3,11 +3,19 @@
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { CircleCheck, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { CircleCheck, Loader2, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getBaseDisplayUrl } from "@/utils/profile";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
+import { searchProfilesOption } from "@/api/search/search.options";
 
 const profiles = [
   {
@@ -44,9 +52,22 @@ const fadeUp = (delay = 0) => ({
 
 export function Hero() {
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 400);
+  const [inputFocused, setInputFocused] = useState(false);
   const [current, setCurrent] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  const searchContainerRef = useOutsideClick(() => setInputFocused(false));
+
+  const {
+    data: searchData,
+    isFetching,
+    isError,
+    error,
+  } = useQuery({
+    ...searchProfilesOption(debouncedQuery, 1, 2),
+    enabled: debouncedQuery.trim().length >= 3,
+  });
 
   const displayUrl = getBaseDisplayUrl();
 
@@ -58,15 +79,33 @@ export function Hero() {
     return () => clearInterval(id);
   }, []);
 
+  useEffect(() => {
+    if (isError && error) {
+      const axiosError = error as unknown as AxiosError;
+      const status = axiosError.response?.status;
+      if (status === 429) {
+        toast.error("Too many searches. Please slow down.");
+      } else if (status !== 400) {
+        toast.error("Search failed. Please check your connection.");
+      }
+    }
+  }, [isError, error]);
+
   const getProfile = (offset: number) =>
     profiles[(current + offset) % profiles.length];
 
   function handleSearch() {
     const username = query.trim();
-    if (!username) return;
-    setIsLoading(true);
-    router.push(`/${encodeURIComponent(username)}`);
+    if (username.length < 3) return;
+    router.push(`/search?q=${encodeURIComponent(username)}`);
   }
+
+  const showDropdown = inputFocused && debouncedQuery.trim().length >= 3;
+  const searchResults = isError ? [] : searchData?.results || [];
+  const isSearchPending = isFetching || query !== debouncedQuery;
+  const previewResults = searchResults.slice(0, 2);
+  const totalResults = searchData?.total || 0;
+  const remainingCount = Math.max(0, totalResults - 2);
 
   return (
     <section className="w-full overflow-hidden bg-white">
@@ -107,9 +146,10 @@ export function Hero() {
           {/* Search */}
           <motion.div
             {...fadeUp(0.2)}
-            className="flex w-full max-w-[512px] flex-col items-stretch gap-1.75 sm:flex-row"
+            className="relative flex w-full max-w-[512px] flex-col items-stretch gap-1.75 sm:flex-row"
+            ref={searchContainerRef}
           >
-            <div className="border-secondary-b bg-primary-bg focus-within:ring-brand-hover-bg/40 flex h-12 min-h-12 flex-1 items-center rounded-[5.57px] border px-3.5 focus-within:ring-2 lg:h-12.5 lg:min-h-12.5">
+            <div className="border-secondary-b bg-primary-bg focus-within:ring-brand-hover-bg/40 relative flex h-12 min-h-12 flex-1 items-center rounded-[5.57px] border px-3.5 focus-within:ring-2 lg:h-12.5 lg:min-h-12.5">
               <span
                 className="text-label-text shrink-0 text-[16px] leading-6 select-none"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
@@ -120,36 +160,134 @@ export function Hero() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) =>
-                  !isLoading && e.key === "Enter" && handleSearch()
-                }
-                disabled={isLoading}
-                placeholder="username"
-                className="text-label-text placeholder:text-secondary-b h-full min-w-0 flex-1 bg-transparent text-[16px] leading-6 outline-none disabled:opacity-50"
+                onFocus={() => setInputFocused(true)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                placeholder="Search by name or username..."
+                className="text-label-text placeholder:text-secondary-b h-full min-w-0 flex-1 bg-transparent pl-1 text-[16px] leading-6 outline-none disabled:opacity-50"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               />
+              {isFetching && debouncedQuery.trim().length >= 3 && (
+                <Loader2 className="ml-2 h-4 w-4 shrink-0 animate-spin text-[#666]" />
+              )}
             </div>
             <Button
               onClick={handleSearch}
-              disabled={isLoading}
-              className="bg-link-hover-text hover:bg-button-brand-bg h-12 w-full rounded-[8px] px-4 text-[16px] leading-6 whitespace-nowrap text-white transition-colors disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto lg:h-12.5"
+              disabled={query.trim().length < 3}
+              className="bg-link-hover-text hover:bg-button-brand-bg h-12 w-full rounded-[8px] px-4 text-[16px] leading-6 whitespace-nowrap text-white transition-colors disabled:cursor-not-allowed disabled:bg-[#E5E5E5] disabled:text-[#A3A3A3] sm:w-auto lg:h-12.5"
               style={{ fontFamily: "'Afacad', sans-serif" }}
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Searching...
-                </>
-              ) : (
-                "Search a Profile"
-              )}
+              Search a Profile
             </Button>
+
+            {/* Dropdown */}
+            <AnimatePresence>
+              {showDropdown && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 4 }}
+                  transition={{ duration: 0.15 }}
+                  className="border-border absolute top-full left-0 z-50 mt-2 w-full overflow-hidden rounded-lg border bg-white shadow-lg"
+                >
+                  {isSearchPending && searchResults.length === 0 ? (
+                    <div
+                      className="text-secondary-text p-4 text-center text-sm"
+                      style={{ fontFamily: "'Afacad', sans-serif" }}
+                    >
+                      Searching...
+                    </div>
+                  ) : searchResults.length === 0 ? (
+                    <div
+                      className="text-secondary-text p-4 text-center text-sm"
+                      style={{ fontFamily: "'Afacad', sans-serif" }}
+                    >
+                      No profiles found for &quot;{debouncedQuery}&quot;.
+                    </div>
+                  ) : (
+                    <div className="flex flex-col">
+                      {previewResults.map((result) => (
+                        <Link
+                          key={result.id || result.username}
+                          href={`/${result.username}`}
+                          onClick={() => setInputFocused(false)}
+                          className="border-border/50 flex items-center gap-3 border-b p-3 transition-colors last:border-0 hover:bg-[#FAFAFA]"
+                        >
+                          <Avatar className="border-border h-10 w-10 border">
+                            <AvatarImage
+                              src={
+                                result.photoUrl ||
+                                result.profilePicture ||
+                                result.profileImage ||
+                                result.avatar ||
+                                ""
+                              }
+                            />
+                            <AvatarFallback className="bg-brand text-xs text-white">
+                              {(
+                                result.fullName ||
+                                result.name ||
+                                result.username ||
+                                "?"
+                              )
+                                .charAt(0)
+                                .toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col overflow-hidden">
+                            <span
+                              className="text-primary-text truncate text-[15px] font-semibold"
+                              style={{ fontFamily: "'Afacad', sans-serif" }}
+                            >
+                              {result.fullName ||
+                                result.name ||
+                                result.username}
+                            </span>
+                            <span
+                              className="text-secondary-text truncate text-[13px]"
+                              style={{ fontFamily: "'Afacad', sans-serif" }}
+                            >
+                              @{result.username}
+                            </span>
+                          </div>
+                        </Link>
+                      ))}
+                      <Link
+                        href={`/search?q=${encodeURIComponent(debouncedQuery)}`}
+                        onClick={() => setInputFocused(false)}
+                        className="border-border border-t bg-[#FEFEFE] p-3 text-center text-[14px] font-medium text-[#087583] transition-colors hover:bg-[#FAFAFA]"
+                        style={{ fontFamily: "'Afacad', sans-serif" }}
+                      >
+                        {remainingCount > 0
+                          ? `${remainingCount} more results, see more...`
+                          : "See all results"}
+                      </Link>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
+
+          {/* Character Hint */}
+          <AnimatePresence>
+            {query.trim().length > 0 && query.trim().length < 3 && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-1 ml-1 flex items-center gap-1.5 overflow-hidden text-[13px] text-[#FF3158]"
+                style={{ fontFamily: "'Afacad', sans-serif" }}
+              >
+                <AlertCircle size={14} />
+                <span>Please enter at least 3 characters to search</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Social proof */}
           <motion.div
             {...fadeUp(0.28)}
-            className="flex flex-row items-center gap-3"
+            className="mt-4 flex flex-row items-center gap-3"
           >
             <div
               className="relative shrink-0"
