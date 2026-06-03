@@ -35,13 +35,14 @@ export default function DashboardHome() {
   const isContentLoading = profileContent.isPending;
 
   // Determine active template
-  // 1. Preview template (from TemplateSelectionModal) takes absolute priority
-  // 2. Appearance API (if backend returns it there)
-  // 3. Draft Content themeSettings (where we explicitly save it via upsertDraft)
-  // 4. Profile templateType (legacy top-level field)
+  // 1. Preview template from TemplateSelectionModal takes priority
+  // 2. Appearance API
+  // 3. Draft content themeSettings
+  // 4. Profile templateType fallback
   const themeSettings = (content as Record<string, unknown>)?.themeSettings as
     | Record<string, unknown>
     | undefined;
+
   const rawTemplate =
     previewTemplate ||
     profileAppearance.data?.appearance?.template ||
@@ -65,8 +66,8 @@ export default function DashboardHome() {
       : "default";
 
   return (
-    <div className="mx-auto grid w-full max-w-[1180px] grid-cols-1 gap-6 overflow-x-hidden xl:grid-cols-[0.8fr_1.2fr]">
-      <div className="flex flex-col gap-4">
+    <div className="mx-auto grid w-full max-w-[1360px] grid-cols-1 gap-5 overflow-x-hidden xl:grid-cols-[0.75fr_1.25fr] 2xl:max-w-[1480px]">
+      <div className="flex min-w-0 flex-col gap-4">
         <ProfileOverviewCard
           profile={profile}
           isLoading={isProfileLoading}
@@ -77,7 +78,7 @@ export default function DashboardHome() {
 
       <TemplateAppearanceProvider
         appearance={appearance}
-        className="flex flex-col gap-6"
+        className="flex min-w-0 flex-col gap-5"
       >
         {activeTemplate === "portfolio" ? (
           <PortfolioDashboardView
