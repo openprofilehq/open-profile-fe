@@ -601,7 +601,7 @@ export default function LeftSidebar({
                         e.stopPropagation();
                         onToggleSectionVisibility(section.id);
                       }}
-                      className="hover:bg-hover-bg text-secondary-text shrink-0 rounded-lg p-1.5 opacity-0 transition-all group-hover:opacity-100"
+                      className="hover:bg-hover-bg text-secondary-text shrink-0 rounded-lg p-1.5 opacity-40 transition-all group-hover:opacity-100 hover:opacity-100"
                       title={section.visible ? "Hide section" : "Show section"}
                       aria-label={`${section.visible ? "Hide" : "Show"} section ${section.title}`}
                     >
@@ -618,7 +618,7 @@ export default function LeftSidebar({
                         e.stopPropagation();
                         onRemoveSection(section.id);
                       }}
-                      className="hover:bg-hover-bg hover:text-negative-text text-secondary-text shrink-0 rounded-lg p-1.5 opacity-0 transition-all group-hover:opacity-100"
+                      className="hover:bg-hover-bg hover:text-negative-text text-secondary-text shrink-0 rounded-lg p-1.5 opacity-40 transition-all group-hover:opacity-100 hover:opacity-100"
                       title="Delete Section"
                       aria-label={`Delete section ${section.title}`}
                     >
