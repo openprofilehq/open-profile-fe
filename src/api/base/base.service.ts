@@ -14,12 +14,12 @@ declare module "axios" {
 }
 
 const isServer = typeof window === "undefined";
+const isClientDev = !isServer && process.env.NODE_ENV === "development";
+const publicApiOrigin = env.NEXT_PUBLIC_API_URL.replace(/\/+$/, "");
+const apiBase = isClientDev ? "/api/v1" : `${publicApiOrigin}/api/v1`;
 
 export const api = axios.create({
-  baseURL: `${env.NEXT_PUBLIC_API_URL}/api/v1`,
-  // baseURL: isServer
-  //   ? `${env.NEXT_PUBLIC_API_URL || "https://api.staging.open-profile.hng14.com"}/api/v1`
-  //   : "/api/v1",
+  baseURL: apiBase,
   timeout: 60 * 1000,
   withCredentials: true,
 });
@@ -74,11 +74,8 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      await axios.post(
-        `${env.NEXT_PUBLIC_API_URL}/api/v1/auth/refresh-token`,
-        {},
-        { withCredentials: true }
-      );
+      const refreshUrl = `${apiBase}/auth/refresh-token`;
+      await axios.post(refreshUrl, {}, { withCredentials: true });
       processQueue(null);
 
       return await api(originalRequest);
