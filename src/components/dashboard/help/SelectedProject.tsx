@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Pin } from "lucide-react";
 import {
   getImageUrl,
   sanitizeUrl,
@@ -22,32 +22,33 @@ export default function SelectedProject({ content, isLoading }: Props) {
     title?: string;
     description?: string;
     url?: string;
+    repoUrl?: string;
     imageSrc?: string | null;
     highlighted?: boolean;
     buttonText?: string;
   }[];
 
-  const highlightedProject = rawProjects.find(isProjectHighlighted);
-  const projects = rawProjects.filter((p) => p.id !== highlightedProject?.id);
-
-  if (!isLoading && rawProjects.length === 0) {
-    return (
-      <section className="border-border bg-background w-full rounded-[12px] border">
-        <h2 className="p-4 text-2xl font-bold">Selected Projects</h2>
-        <span className="text-secondary-text flex items-center justify-between p-4 text-sm">
-          Add your projects
-        </span>
-      </section>
-    );
-  }
-
-  if (!isLoading && projects.length === 0) {
-    return null;
-  }
+  const highlightedProjects = rawProjects.filter(isProjectHighlighted);
+  const visibleProjects =
+    highlightedProjects.length > 0
+      ? highlightedProjects
+      : rawProjects.slice(0, 4);
+  const hasProjects = rawProjects.length > 0;
 
   return (
     <section className="border-border bg-background w-full rounded-[12px] border">
-      <h2 className="p-4 text-2xl font-bold">Selected Projects</h2>
+      <div className="border-border flex items-center justify-between gap-3 border-b p-5">
+        <div>
+          <h2 className="text-primary-text text-2xl font-extrabold">
+            Highlighted Projects
+          </h2>
+          <p className="text-secondary-text mt-1 text-sm font-medium">
+            Pinned work appears here for quick profile visitors.
+          </p>
+        </div>
+
+        <Pin className="text-brand-hover-bg shrink-0" size={20} />
+      </div>
 
       {isLoading ? (
         <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2">
@@ -62,11 +63,14 @@ export default function SelectedProject({ content, isLoading }: Props) {
             </div>
           ))}
         </div>
+      ) : !hasProjects ? (
+        <span className="text-secondary-text flex items-center justify-between p-5 text-sm font-medium">
+          No projects added yet
+        </span>
       ) : (
         <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2">
-          {projects.map((project, index) => {
-            const projectUrl =
-              project.url || (project as { repoUrl?: string }).repoUrl;
+          {visibleProjects.map((project, index) => {
+            const projectUrl = project.url || project.repoUrl;
             const hasUrl = Boolean(projectUrl);
             const rawImageSrc = project.imageSrc;
             const displayImg = rawImageSrc
@@ -81,9 +85,10 @@ export default function SelectedProject({ content, isLoading }: Props) {
               "/profile-preview/feature3.jpg",
             ];
             const fallbackImg = dummyImages[index % dummyImages.length];
+            const isHighlighted = isProjectHighlighted(project);
 
             const card = (
-              <div className="flex flex-col gap-4">
+              <div className="border-border hover:border-brand-hover-bg/40 flex h-full flex-col gap-4 rounded-xl border p-4 transition-colors">
                 <div className="border-border relative aspect-video w-full overflow-hidden rounded-lg border">
                   {displayImg ? (
                     <Image
@@ -103,15 +108,27 @@ export default function SelectedProject({ content, isLoading }: Props) {
                     />
                   )}
                 </div>
-                <div className="flex min-w-0 flex-col items-start">
-                  <h5 className="text-primary-text text-xl font-bold break-all">
+
+                <div className="flex flex-1 flex-col items-start">
+                  {isHighlighted && (
+                    <span className="bg-brand-subtle-bg text-brand-hover-bg mb-2 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold">
+                      <Pin size={12} />
+                      Pinned
+                    </span>
+                  )}
+
+                  <h5 className="text-primary-text text-xl font-extrabold break-all">
                     {project.title}
                   </h5>
-                  <p className="text-secondary-text break-all">
+
+                  <p className="text-secondary-text mt-1 break-all">
                     {project.description}
                   </p>
-                  <span className="text-brand-hover-bg mt-2 flex items-center gap-1 text-sm font-semibold">
-                    {hasUrl ? "View project" : "Edit project"}
+
+                  <span className="text-brand-hover-bg mt-auto flex items-center gap-1 pt-3 text-sm font-bold">
+                    {hasUrl
+                      ? project.buttonText || "View project"
+                      : "Edit project"}
                     <ChevronRight size={16} />
                   </span>
                 </div>

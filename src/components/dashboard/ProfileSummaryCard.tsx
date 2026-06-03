@@ -11,12 +11,31 @@ type Props = {
   isLoading?: boolean;
 };
 
+function getInitials(fullName?: string | null) {
+  const parts = fullName?.trim().split(/\s+/).filter(Boolean) ?? [];
+
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+  }
+
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+
+  return "U";
+}
+
 export default function ProfileSummaryCard({ profile, isLoading }: Props) {
   const rawUrl = profile?.photoUrl;
-  const profileImageUrl = rawUrl ? (rawUrl.startsWith("/profile-preview/") ? rawUrl : getImageUrl(rawUrl)) : null;
+  const profileImageUrl = rawUrl
+    ? rawUrl.startsWith("/profile-preview/")
+      ? rawUrl
+      : getImageUrl(rawUrl)
+    : null;
+  const initials = getInitials(profile?.fullName);
 
   return (
-    <section className="flex flex-col gap-5 rounded-[12px] border border-border bg-background p-6 md:flex-row md:items-start">
+    <section className="border-border bg-background flex flex-col gap-5 rounded-[12px] border p-6 md:flex-row md:items-start">
       {isLoading ? (
         <Skeleton className="h-24 w-24 shrink-0 rounded-full" />
       ) : profileImageUrl ? (
@@ -29,8 +48,8 @@ export default function ProfileSummaryCard({ profile, isLoading }: Props) {
           className="h-24 w-24 rounded-full object-cover"
         />
       ) : (
-        <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-brand-subtle-bg text-3xl font-bold text-brand-hover-bg">
-          {profile?.fullName?.charAt(0).toUpperCase() ?? "U"}
+        <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-24 w-24 shrink-0 items-center justify-center rounded-full text-3xl font-extrabold">
+          {initials}
         </div>
       )}
 
@@ -38,7 +57,7 @@ export default function ProfileSummaryCard({ profile, isLoading }: Props) {
         {isLoading ? (
           <Skeleton className="h-9" />
         ) : (
-          <h2 className="text-3xl font-bold break-all">
+          <h2 className="text-primary-text text-3xl font-extrabold tracking-tight break-all md:text-4xl">
             {profile?.fullName ?? "No Name"}
           </h2>
         )}
@@ -46,7 +65,7 @@ export default function ProfileSummaryCard({ profile, isLoading }: Props) {
         {isLoading ? (
           <Skeleton className="mt-4 h-5" />
         ) : (
-          <p className="mt-4 max-w-[650px] break-all text-xl leading-8 text-primary-text">
+          <p className="text-primary-text mt-4 max-w-[650px] text-xl leading-8 font-medium break-all">
             {profile?.bio ?? "No bio added yet."}
           </p>
         )}
