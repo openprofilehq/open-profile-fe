@@ -16,6 +16,7 @@ import {
   getSectionStyle,
   isProjectHighlighted,
 } from "@/utils/profile";
+import { getInitials } from "@/utils/avatar";
 import type { Section, ProfilePreview } from "../types";
 import HighlightPreviewCard from "./HighlightPreviewCard";
 
@@ -122,8 +123,8 @@ export default function DefaultPreview({
               className="h-24 w-24 shrink-0 rounded-full object-cover"
             />
           ) : (
-            <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-24 w-24 shrink-0 items-center justify-center rounded-full text-3xl font-bold">
-              {profile?.fullName?.charAt(0).toUpperCase() ?? "U"}
+            <div className="bg-brand-hover-bg text-inverse-text flex h-24 w-24 shrink-0 items-center justify-center rounded-full text-3xl font-bold">
+              {getInitials(profile?.fullName)}
             </div>
           )}
 

@@ -15,6 +15,7 @@ import {
   getSectionStyle,
   getDisplayProfileUrl,
 } from "@/utils/profile";
+import { getInitials } from "@/utils/avatar";
 import type { Section, ProfilePreview } from "../types";
 import { TemplateLinkCard } from "../../shared/TemplateLinkCard";
 import HighlightPreviewCard from "./HighlightPreviewCard";
@@ -116,10 +117,8 @@ export default function PortfolioPreview({
                     unoptimized
                   />
                 ) : (
-                  <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-full w-full items-center justify-center text-[32px] font-bold">
-                    {(profile?.fullName || "John Smith")
-                      .charAt(0)
-                      .toUpperCase()}
+                  <div className="bg-brand-hover-bg text-inverse-text flex h-full w-full items-center justify-center text-[32px] font-bold">
+                    {getInitials(profile?.fullName || "John Smith")}
                   </div>
                 )}
               </div>

@@ -16,6 +16,7 @@ import {
   getSectionStyle,
   getDisplayProfileUrl,
 } from "@/utils/profile";
+import { getInitials } from "@/utils/avatar";
 import type { Section, ProfilePreview } from "../types";
 import HighlightPreviewCard from "./HighlightPreviewCard";
 
@@ -116,8 +117,8 @@ export default function ProfessionalPreview({
                     unoptimized
                   />
                 ) : (
-                  <div className="text-brand-text flex h-full items-center justify-center text-[32px] font-bold">
-                    {(profile?.fullName || "M").charAt(0).toUpperCase()}
+                  <div className="bg-brand-hover-bg text-inverse-text flex h-full w-full items-center justify-center text-[32px] font-bold">
+                    {getInitials(profile?.fullName || "Micaela Robinson")}
                   </div>
                 )}
               </div>
