@@ -22,9 +22,6 @@ export const api = axios.create({
   baseURL: apiBase,
   timeout: 60 * 1000,
   withCredentials: true,
-  headers: {
-    "ngrok-skip-browser-warning": "true",
-  },
 });
 
 // ─── Silent token refresh ─────────────────────────────────────────────────────
