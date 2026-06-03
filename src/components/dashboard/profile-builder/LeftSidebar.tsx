@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { Reorder } from "motion/react";
 import {
@@ -19,7 +18,6 @@ import BioSidebar from "./BioSidebar";
 import ProjectsSidebar from "./ProjectsSidebar";
 import CtaSidebar from "./CtaSidebar";
 import type { Section } from "./types";
-import { ROUTES } from "@/constants/routes";
 
 interface LeftSidebarProps {
   sections: Section[];
@@ -503,17 +501,6 @@ export default function LeftSidebar({
 
   return (
     <aside className="border-tertiary-b animate-in fade-in bg-background hidden h-full w-[290px] shrink-0 flex-col rounded-2xl border p-6 shadow-sm duration-200 select-none lg:flex">
-      {/* Back Button */}
-      <div className="mb-6">
-        <Link
-          href={ROUTES.dashboard.home}
-          className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
-        >
-          <ChevronLeft size={20} />
-          <span>Home</span>
-        </Link>
-      </div>
-
       {/* Search Input */}
       <div className="relative mb-6">
         <span className="text-tertiary-text absolute inset-y-0 left-3 flex items-center">
