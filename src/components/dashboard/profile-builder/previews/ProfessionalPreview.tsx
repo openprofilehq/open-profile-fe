@@ -135,8 +135,9 @@ export default function ProfessionalPreview({
 
                 {ctaSection?.visible && ctaSection?.url && (
                   <a
-                    href="#"
-                    onClick={(e) => e.preventDefault()}
+                    href={sanitizeUrl(ctaSection.url)}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="border-brand-hover-bg bg-brand-hover-bg/5 text-brand-hover-bg hover:bg-brand-hover-bg/10 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-sm font-semibold transition-colors"
                   >
                     {ctaSection.iconSrc ? (
@@ -420,8 +421,9 @@ export default function ProfessionalPreview({
                     "Have an idea or product you're building?"}
                 </p>
                 <a
-                  href="#"
-                  onClick={(e) => e.preventDefault()}
+                  href={sanitizeUrl(section.url || "#")}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
                 >
                   {section.buttonText || "Let's Connect"}

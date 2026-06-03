@@ -17,7 +17,7 @@ import LinkSidebar from "./LinkSidebar";
 import BioSidebar from "./BioSidebar";
 import ProjectsSidebar from "./ProjectsSidebar";
 import CtaSidebar from "./CtaSidebar";
-import type { Section } from "./types";
+import type { Section, ProfilePreview } from "./types";
 
 interface LeftSidebarProps {
   sections: Section[];
@@ -34,6 +34,17 @@ interface LeftSidebarProps {
   profile?: {
     fullName?: string;
   } | null;
+}
+
+function getDisplayTitle(
+  section: Section,
+  profile: ProfilePreview | null | undefined
+) {
+  const isBioTitle =
+    section.title === "Bio - John Smith" || section.title === "Bio";
+  return section.type === "bio" && isBioTitle && profile?.fullName
+    ? `Bio - ${profile.fullName}`
+    : section.title;
 }
 
 export default function LeftSidebar({
@@ -90,12 +101,7 @@ export default function LeftSidebar({
   const [linkSidebarOpen, setLinkSidebarOpen] = useState(false);
 
   const filteredSections = sections.filter((section) => {
-    const displayTitle =
-      section.type === "bio" &&
-      section.title === "Bio - John Smith" &&
-      profile?.fullName
-        ? `Bio - ${profile.fullName}`
-        : section.title;
+    const displayTitle = getDisplayTitle(section, profile);
     return displayTitle.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
@@ -618,11 +624,7 @@ function SortableSectionItem({
                   : "text-primary-text"
             }`}
           >
-            {section.type === "bio" &&
-            section.title === "Bio" &&
-            profile?.fullName
-              ? `Bio - ${profile.fullName}`
-              : section.title}
+            {getDisplayTitle(section, profile)}
           </p>
 
           <p className="text-secondary-text mt-0.5 truncate text-xs">
@@ -658,7 +660,8 @@ function SortableSectionItem({
         </div>
       </div>
 
-      <div
+      <button
+        type="button"
         onClick={(e) => e.stopPropagation()}
         onPointerDown={(e) => {
           if (searchQuery) {
@@ -679,7 +682,7 @@ function SortableSectionItem({
         }
       >
         <GripVertical size={16} />
-      </div>
+      </button>
     </Reorder.Item>
   );
 }
