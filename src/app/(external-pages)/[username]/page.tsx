@@ -16,6 +16,7 @@ import ProfessionalDashboardView from "@/components/dashboard/templates/Professi
 import PortfolioDashboardView from "@/components/dashboard/templates/PortfolioDashboardView";
 import TemplateAppearanceProvider from "@/components/dashboard/templates/TemplateAppearanceProvider";
 import HighlightCard from "@/components/dashboard/HighlightCard";
+import { getGlobalAppearance } from "@/utils/profileAppearance";
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -112,10 +113,13 @@ export default async function UserProfilePage({ params }: Props) {
     return undefined;
   };
 
-  const rawAppearance = (profile.appearance ||
-    profile.themeSettings ||
-    (content as LegacyContent | null)?.themeSettings ||
-    {}) as PublicProfileAppearance;
+  const contentThemeSettings = (content as LegacyContent | null)?.themeSettings;
+
+  const rawAppearance = {
+    ...(getGlobalAppearance(contentThemeSettings) ?? {}),
+    ...(getGlobalAppearance(profile.themeSettings) ?? {}),
+    ...(getGlobalAppearance(profile.appearance) ?? {}),
+  } as PublicProfileAppearance;
 
   const themeSettings: PublicProfileAppearance = {
     ...rawAppearance,
