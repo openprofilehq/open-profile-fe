@@ -18,6 +18,10 @@ import {
 import { isQueryEnabled } from "@/api/base/base.util";
 import { QueryStaleTime } from "@/api/base/base.const";
 import { QueryBaseKeys } from "@/constants/query-keys";
+import {
+  createProfileAppearanceRequest,
+  getAppearanceResponseGlobal,
+} from "@/utils/profileAppearance";
 
 export const createProfileOption = mutationOptions({
   mutationKey: [QueryBaseKeys.profile, "create"],
@@ -88,10 +92,10 @@ export const saveTemplateOption = mutationOptions({
   mutationFn: async (templateType: TemplateType) => {
     const template = templateType.toLowerCase();
 
-    let currentAppearance: Partial<ProfileAppearanceRequest> = {};
+    let currentAppearance: Partial<ProfileAppearanceRequest["global"]> = {};
     try {
       const res = await getProfileAppearance();
-      currentAppearance = res?.appearance ?? res?.data ?? {};
+      currentAppearance = getAppearanceResponseGlobal(res) ?? {};
     } catch (e) {
       console.warn(
         "Could not fetch current appearance, proceeding with minimal payload",
@@ -99,10 +103,14 @@ export const saveTemplateOption = mutationOptions({
       );
     }
 
-    const appearanceRes = await updateProfileAppearance({
+    const nextAppearance = {
       ...currentAppearance,
       template,
-    });
+    };
+
+    const appearanceRes = await updateProfileAppearance(
+      createProfileAppearanceRequest(nextAppearance)
+    );
 
     try {
       const {
@@ -112,7 +120,7 @@ export const saveTemplateOption = mutationOptions({
         backgroundColour: _backgroundColour,
         textColour: _textColour,
         ...allowedThemeSettings
-      } = currentAppearance as Record<string, unknown>;
+      } = nextAppearance as Record<string, unknown>;
       await upsertDraft({
         themeSettings: {
           ...allowedThemeSettings,

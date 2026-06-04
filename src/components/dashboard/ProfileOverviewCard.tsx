@@ -26,6 +26,7 @@ import {
 import { getDisplayUrl, getProfileUrl } from "@/utils/profile";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "../ui/skeleton";
+import { getAppearanceResponseGlobal } from "@/utils/profileAppearance";
 
 const actions = [
   {
@@ -80,10 +81,11 @@ export default function ProfileOverviewCard({
   const themeSettings = (contentData as Record<string, unknown>)
     ?.themeSettings as Record<string, unknown> | undefined;
 
+  const apiAppearance = getAppearanceResponseGlobal(appearanceData);
+
   const rawTemplate =
     previewTemplate ||
-    appearanceData?.appearance?.template ||
-    appearanceData?.data?.template ||
+    apiAppearance?.template ||
     themeSettings?.template ||
     profile?.templateType;
 

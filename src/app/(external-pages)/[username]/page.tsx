@@ -16,6 +16,7 @@ import ProfessionalDashboardView from "@/components/dashboard/templates/Professi
 import PortfolioDashboardView from "@/components/dashboard/templates/PortfolioDashboardView";
 import TemplateAppearanceProvider from "@/components/dashboard/templates/TemplateAppearanceProvider";
 import HighlightCard from "@/components/dashboard/HighlightCard";
+import { getGlobalAppearance } from "@/utils/profileAppearance";
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -112,10 +113,13 @@ export default async function UserProfilePage({ params }: Props) {
     return undefined;
   };
 
-  const rawAppearance = (profile.appearance ||
-    profile.themeSettings ||
-    (content as LegacyContent | null)?.themeSettings ||
-    {}) as PublicProfileAppearance;
+  const contentThemeSettings = (content as LegacyContent | null)?.themeSettings;
+
+  const rawAppearance = {
+    ...(getGlobalAppearance(contentThemeSettings) ?? {}),
+    ...(getGlobalAppearance(profile.themeSettings) ?? {}),
+    ...(getGlobalAppearance(profile.appearance) ?? {}),
+  } as PublicProfileAppearance;
 
   const themeSettings: PublicProfileAppearance = {
     ...rawAppearance,
@@ -163,7 +167,10 @@ export default async function UserProfilePage({ params }: Props) {
 
     if (activeTemplate === "creator") {
       return (
-        <TemplateAppearanceProvider appearance={themeSettings} className="flex min-h-screen w-full flex-col">
+        <TemplateAppearanceProvider
+          appearance={themeSettings}
+          className="flex min-h-screen w-full flex-col"
+        >
           <CreatorDashboardView
             profile={dashboardProfile}
             content={profileContent}
@@ -175,7 +182,10 @@ export default async function UserProfilePage({ params }: Props) {
 
     if (activeTemplate === "professional") {
       return (
-        <TemplateAppearanceProvider appearance={themeSettings} className="flex min-h-screen w-full flex-col">
+        <TemplateAppearanceProvider
+          appearance={themeSettings}
+          className="flex min-h-screen w-full flex-col"
+        >
           <ProfessionalDashboardView
             profile={dashboardProfile}
             content={profileContent}
@@ -187,7 +197,10 @@ export default async function UserProfilePage({ params }: Props) {
 
     if (activeTemplate === "portfolio") {
       return (
-        <TemplateAppearanceProvider appearance={themeSettings} className="flex min-h-screen w-full flex-col">
+        <TemplateAppearanceProvider
+          appearance={themeSettings}
+          className="flex min-h-screen w-full flex-col"
+        >
           <PortfolioDashboardView
             profile={dashboardProfile}
             content={profileContent}

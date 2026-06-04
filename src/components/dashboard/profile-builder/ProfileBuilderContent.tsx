@@ -27,6 +27,10 @@ import type {
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { isApiError } from "@/api/base";
 import { ROUTES } from "@/constants/routes";
+import {
+  createProfileAppearanceRequest,
+  getAppearanceResponseGlobal,
+} from "@/utils/profileAppearance";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
@@ -221,10 +225,9 @@ export default function ProfileBuilderContent() {
       dashboardProfile.data
     );
 
-    const appearanceSettings =
-      profileAppearance.data?.appearance ??
-      profileAppearance.data?.data ??
-      null;
+    const appearanceSettings = getAppearanceResponseGlobal(
+      profileAppearance.data
+    );
 
     if (appearanceSettings) {
       appearanceHydratingRef.current = true;
@@ -412,15 +415,18 @@ export default function ProfileBuilderContent() {
     }
 
     appearanceTimerRef.current = setTimeout(() => {
-      saveAppearance({
-        template,
-        accentColour: normalizeColorForApi(iconColor),
-        backgroundColour: normalizeColorForApi(bgColor),
-        textColour: normalizeColorForApi(textColor),
-        font: mapFontToApi(font),
-        cornerStyle: mapCornerStyleToApi(borderRadius),
-        spacing: clampSpacingForApi(spacing),
-      });
+      saveAppearance(
+        createProfileAppearanceRequest({
+          template,
+          accentColour: normalizeColorForApi(iconColor),
+          backgroundColour: normalizeColorForApi(bgColor),
+          textColour: normalizeColorForApi(textColor),
+          font: mapFontToApi(font),
+          cornerStyle: mapCornerStyleToApi(borderRadius),
+          spacing: clampSpacingForApi(spacing),
+          theme: "light",
+        })
+      );
       appearanceTimerRef.current = null;
     }, 1000);
 

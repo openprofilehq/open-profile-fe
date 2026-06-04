@@ -26,7 +26,7 @@ export type ProfileResponse = {
   isPublished?: boolean;
   templateType?: TemplateType | null;
   themeSettings?: unknown | null;
-  appearance?: ProfileAppearanceSettings | null;
+  appearance?: ProfileAppearanceSettings | ProfileAppearanceEnvelope | null;
   content?: ProfileContentDetails | null;
 };
 
@@ -167,7 +167,7 @@ export type ProfileAppearanceCornerStyle =
   | "pill"
   | string;
 
-export type ProfileAppearanceSettings = {
+export type ProfileAppearanceValues = {
   template: string;
   accentColour: string;
   backgroundColour?: string;
@@ -177,21 +177,31 @@ export type ProfileAppearanceSettings = {
   font: ProfileAppearanceFont;
   cornerStyle: ProfileAppearanceCornerStyle;
   spacing: number;
+  theme?: "light" | "dark" | string;
 };
 
-export type ProfileAppearanceRequest = {
-  template?: string;
-  accentColour?: string;
-  backgroundColour?: string;
-  textColour?: string;
-  font?: ProfileAppearanceFont;
-  cornerStyle?: ProfileAppearanceCornerStyle;
-  spacing?: number;
+export type ProfileAppearanceSettings = ProfileAppearanceValues;
+
+export type ProfileAppearanceComponentKey =
+  | "bio"
+  | "links"
+  | "projects"
+  | "cta";
+
+export type ProfileAppearanceEnvelope = {
+  global: ProfileAppearanceValues;
+  components?: Partial<
+    Record<ProfileAppearanceComponentKey, ProfileAppearanceValues>
+  >;
 };
+
+export type ProfileAppearanceRequest = ProfileAppearanceEnvelope;
 
 export type ProfileAppearanceResponse = {
   status: string;
   message: string;
+  appearance?: ProfileAppearanceEnvelope | ProfileAppearanceSettings | null;
+  data?: ProfileAppearanceEnvelope | ProfileAppearanceSettings | null;
 };
 
 /**
@@ -206,7 +216,7 @@ export type ProfileAppearanceResponse = {
 export type GetProfileAppearanceResponse = {
   status: string;
   message?: string;
-  appearance?: ProfileAppearanceSettings | null;
+  appearance?: ProfileAppearanceSettings | ProfileAppearanceEnvelope | null;
   /** @deprecated Use `appearance` instead. */
   data?: ProfileAppearanceSettings | null;
 };
