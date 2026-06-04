@@ -225,17 +225,18 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
       </form>
 
       {isSignup && (
-        <div className="flex gap-2">
+        <div className="flex items-center justify-center gap-3">
           <Checkbox
             id="toggle-checkbox"
             checked={agreed}
             onCheckedChange={(checked) => setAgreed(!!checked)}
+            className="h-5 w-5 cursor-pointer border-gray-500"
           />
           <label
             htmlFor="toggle-checkbox"
-            className="text-label-text text-center"
+            className="text-label-text cursor-pointer text-center text-sm leading-tight"
           >
-            By Continuing, you agree to Openprofile&apos;s{" "}
+            By continuing, you agree to Openprofile&apos;s{" "}
             <Link
               href={ROUTES.public.privacy}
               className="text-link-hover-text font-semibold hover:underline"
