@@ -45,7 +45,7 @@ function getRgbaColor(color: string, alpha: number) {
   return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
 }
 
-function getFontClass(font?: string | null) {
+export function getFontClass(font?: string | null) {
   const normalizedFont = font?.toLowerCase();
 
   const fontClassMap: Record<string, string> = {

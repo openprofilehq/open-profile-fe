@@ -17,6 +17,7 @@ import {
   getDisplayProfileUrl,
 } from "@/utils/profile";
 import type { Section, ProfilePreview, SavedLink, ProjectItem } from "../types";
+import { getFontClass } from "../../templates/TemplateAppearanceProvider";
 import HighlightPreviewCard from "./HighlightPreviewCard";
 
 interface ProfessionalPreviewProps {
@@ -91,7 +92,7 @@ export default function ProfessionalPreview({
           return (
             <div
               key={section.id}
-              className={`group relative rounded-2xl transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""}`}
+              className={`group relative rounded-2xl transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
               style={getSectionStyle(section)}
             >
               {renderControls(section, true)}
@@ -175,7 +176,7 @@ export default function ProfessionalPreview({
           return (
             <section
               key={section.id}
-              className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""}`}
+              className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
               style={(() => {
                 const { gap: _gap, ...rest } = getSectionStyle(section);
                 return rest;
@@ -249,7 +250,7 @@ export default function ProfessionalPreview({
             <div key={section.id} className="flex flex-col gap-6">
               <HighlightPreviewCard projectsSection={section} />
               <section
-                className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""}`}
+                className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
                 style={(() => {
                   const { gap: _gap, ...rest } = getSectionStyle(section);
                   return rest;
@@ -388,7 +389,7 @@ export default function ProfessionalPreview({
           return (
             <section
               key={section.id}
-              className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""}`}
+              className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
               style={getSectionStyle(section)}
             >
               {renderControls(section)}
