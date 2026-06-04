@@ -27,10 +27,6 @@ import type {
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { isApiError } from "@/api/base";
 import { ROUTES } from "@/constants/routes";
-import {
-  createProfileAppearanceRequest,
-  getAppearanceResponseGlobal,
-} from "@/utils/profileAppearance";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
@@ -229,9 +225,42 @@ export default function ProfileBuilderContent() {
       dashboardProfile.data
     );
 
-    const appearanceSettings = getAppearanceResponseGlobal(
-      profileAppearance.data
-    );
+    const appearanceSettingsData =
+      profileAppearance.data?.appearance ??
+      profileAppearance.data?.data ??
+      null;
+
+    const components = appearanceSettingsData?.components;
+    if (components) {
+      loadedSections.forEach((section) => {
+        const componentKey =
+          section.type === "experience" ? "cta" : section.type;
+        const compApp = components[componentKey] as
+          | {
+              backgroundColour?: string;
+              bgColor?: string;
+              textColour?: string;
+              textColor?: string;
+              accentColour?: string;
+              iconColor?: string;
+            }
+          | undefined;
+        if (compApp) {
+          if (compApp.backgroundColour)
+            section.bgColor = compApp.backgroundColour;
+          else if (compApp.bgColor) section.bgColor = compApp.bgColor;
+
+          if (compApp.textColour) section.textColor = compApp.textColour;
+          else if (compApp.textColor) section.textColor = compApp.textColor;
+
+          if (compApp.accentColour) section.iconColor = compApp.accentColour;
+          else if (compApp.iconColor) section.iconColor = compApp.iconColor;
+        }
+      });
+    }
+
+    const appearanceSettings =
+      appearanceSettingsData?.global ?? appearanceSettingsData;
 
     if (appearanceSettings) {
       appearanceHydratingRef.current = true;
@@ -411,6 +440,10 @@ export default function ProfileBuilderContent() {
     sectionsRef.current = sections;
   }, [sections]);
 
+  const sectionAppearanceDeps = sections
+    .map((s) => `${s.id}-${s.bgColor}-${s.textColor}-${s.iconColor}-${s.font}`)
+    .join("|");
+
   useEffect(() => {
     if (!contentLoadedRef.current) return;
 
@@ -426,18 +459,44 @@ export default function ProfileBuilderContent() {
     }
 
     appearanceTimerRef.current = setTimeout(() => {
-      saveAppearance(
-        createProfileAppearanceRequest({
-          template,
-          accentColour: normalizeColorForApi(iconColor),
-          backgroundColour: normalizeColorForApi(bgColor),
-          textColour: normalizeColorForApi(textColor),
-          font: mapFontToApi(font),
-          cornerStyle: mapCornerStyleToApi(borderRadius),
-          spacing: clampSpacingForApi(spacing),
-          theme: appearanceTheme,
-        })
-      );
+      const globalAppearance = {
+        template: template,
+        accentColour: normalizeColorForApi(iconColor),
+        backgroundColour: normalizeColorForApi(bgColor),
+        textColour: normalizeColorForApi(textColor),
+        font: mapFontToApi(font),
+        cornerStyle: mapCornerStyleToApi(borderRadius),
+        spacing: clampSpacingForApi(spacing),
+        theme: "light",
+      };
+
+      const buildComponentAppearance = (sectionType: string) => {
+        const sec = sectionsRef.current.find((s) => s.type === sectionType);
+        if (!sec) return globalAppearance;
+        return {
+          ...globalAppearance,
+          ...(sec.bgColor && {
+            backgroundColour: normalizeColorForApi(sec.bgColor),
+          }),
+          ...(sec.textColor && {
+            textColour: normalizeColorForApi(sec.textColor),
+          }),
+          ...(sec.iconColor && {
+            accentColour: normalizeColorForApi(sec.iconColor),
+          }),
+          ...(sec.font && { font: mapFontToApi(sec.font) }),
+        };
+      };
+
+      saveAppearance({
+        global: globalAppearance,
+        components: {
+          bio: buildComponentAppearance("bio"),
+          links: buildComponentAppearance("links"),
+          projects: buildComponentAppearance("projects"),
+          cta: buildComponentAppearance("experience"),
+        },
+      });
       appearanceTimerRef.current = null;
     }, 1000);
 
@@ -456,6 +515,7 @@ export default function ProfileBuilderContent() {
     borderRadius,
     appearanceTheme,
     saveAppearance,
+    sectionAppearanceDeps,
   ]);
 
   useEffect(() => {
@@ -642,7 +702,7 @@ export default function ProfileBuilderContent() {
 
   return (
     <>
-      <div className="bg-secondary-bg flex min-h-screen flex-col items-center justify-center px-6 text-center lg:hidden">
+      <div className="bg-secondary-bg flex min-h-screen flex-col items-center justify-center px-4 text-center lg:hidden">
         <h1 className="text-primary-text text-2xl font-bold">
           Profile editor works best on desktop
         </h1>
@@ -660,7 +720,7 @@ export default function ProfileBuilderContent() {
       <div className="bg-primary-bg hidden w-full flex-1 flex-col overflow-hidden lg:flex">
         {/* <BuilderHeader onPublish={handlePublish} isPublishing={isPublishing} /> */}
 
-        <div className="bg-secondary-bg flex flex-1 gap-4 overflow-hidden p-4 lg:p-6 lg:px-8">
+        <div className="bg-secondary-bg flex flex-1 gap-4 overflow-hidden p-4 lg:p-4 xl:p-6 xl:px-8">
           <LeftSidebar
             sections={resolvedSections}
             selectedSectionId={selectedSectionId}

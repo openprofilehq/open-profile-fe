@@ -1,11 +1,12 @@
 import { ApiError } from "@/api/base/base.error";
 import { ApiResponse } from "@/api/base/base.type";
-import { env } from "@/env/client";
 import axios, {
   AxiosError,
   AxiosRequestConfig,
   InternalAxiosRequestConfig,
 } from "axios";
+
+import { env } from "@/env/client";
 
 declare module "axios" {
   interface InternalAxiosRequestConfig {
@@ -14,7 +15,10 @@ declare module "axios" {
 }
 
 export const api = axios.create({
-  baseURL: `${env.NEXT_PUBLIC_API_URL}/api/v1`,
+  baseURL:
+    process.env.NODE_ENV === "development"
+      ? "/api/v1"
+      : `${env.NEXT_PUBLIC_API_URL}/api/v1`,
   timeout: 60 * 1000,
   withCredentials: true,
 });
@@ -65,6 +69,14 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
+      // Call the internal refresh endpoint which will set the new cookies
+      await axios.post(
+        "/api/internal/auth/refresh",
+        {},
+        { withCredentials: true }
+      );
+
+      // Retry the original request
       const result = await api(originalRequest);
       processQueue(null);
       return result;

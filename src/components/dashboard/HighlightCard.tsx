@@ -3,17 +3,23 @@ import {
   getImageUrl,
   sanitizeUrl,
   isProjectHighlighted,
+  getSectionStyle,
 } from "@/utils/profile";
-import { ProfileContentDetails } from "@/api/profile/profile.type";
 import { ExternalLink } from "lucide-react";
+import type { Section } from "./profile-builder/types";
+import { getFontClass } from "./templates/TemplateAppearanceProvider";
 
 type Props = {
-  details?: ProfileContentDetails | null;
+  projectsSection?: Section;
+  variant?: "default" | "transparent";
 };
 
-export default function HighlightCard({ details }: Props) {
-  const projects = details?.projects?.items ?? [];
-  const highlightedProject = projects.find(isProjectHighlighted);
+export default function HighlightCard({
+  projectsSection,
+  variant = "default",
+}: Props) {
+  const projectsToRender = projectsSection?.projects || [];
+  const highlightedProject = projectsToRender.find(isProjectHighlighted);
 
   if (!highlightedProject) {
     return null;
@@ -27,7 +33,10 @@ export default function HighlightCard({ details }: Props) {
     : null;
 
   return (
-    <section className="border-border bg-background rounded-[12px] border p-4 sm:p-6">
+    <section
+      className={`${variant === "default" ? "border-border bg-background rounded-[12px] border p-4 shadow-sm sm:p-6" : ""} ${projectsSection?.font ? getFontClass(projectsSection.font) : ""}`}
+      style={projectsSection ? getSectionStyle(projectsSection) : undefined}
+    >
       <h2 className="text-xl font-bold">Highlight</h2>
 
       <div className="mt-4 flex flex-col gap-6 md:flex-row md:items-center">
@@ -42,7 +51,9 @@ export default function HighlightCard({ details }: Props) {
               unoptimized
             />
           ) : (
-            <div className="bg-background text-tertiary-text flex h-[120px] w-full max-w-[160px] items-center justify-center rounded-[12px] text-sm">
+            <div
+              className={`${variant === "default" ? "bg-background" : "bg-neutral-200"} text-tertiary-text flex h-[120px] w-full max-w-[160px] items-center justify-center rounded-[12px] text-sm`}
+            >
               No image
             </div>
           )}

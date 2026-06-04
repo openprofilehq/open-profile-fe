@@ -59,7 +59,8 @@ export default function DashboardHome() {
   const apiAppearance = getAppearanceResponseGlobal(profileAppearance.data);
   const profile = dashboardProfile.data;
   const content = profileContent.data;
-  const isProfileLoading = dashboardProfile.isPending;
+  const isProfileLoading =
+    dashboardProfile.isPending || profileAppearance.isPending;
   const isContentLoading = profileContent.isPending;
 
   // Determine active template and appearance settings
@@ -71,11 +72,18 @@ export default function DashboardHome() {
     | Record<string, unknown>
     | undefined;
 
+  const appearanceSettingsData =
+    (profileAppearance.data as any)?.appearance ||
+    (profileAppearance.data as any)?.data ||
+    profileAppearance.data;
+  const components = (appearanceSettingsData as any)?.components;
+
   const appearance =
-    apiAppearance || themeSettings
+    apiAppearance || themeSettings || components
       ? ({
           ...(themeSettings ?? {}),
           ...(apiAppearance ?? {}),
+          ...(components ? { components } : {}),
         } as ProfileAppearanceSettings)
       : null;
 
@@ -137,7 +145,7 @@ export default function DashboardHome() {
       </div>
 
       <TemplateAppearanceProvider
-        appearance={appearance}
+        appearance={appearance?.global ?? appearance}
         className="flex min-w-0 flex-col gap-5"
       >
         {activeTemplate === "portfolio" ? (

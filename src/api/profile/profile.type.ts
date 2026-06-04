@@ -26,7 +26,7 @@ export type ProfileResponse = {
   isPublished?: boolean;
   templateType?: TemplateType | null;
   themeSettings?: unknown | null;
-  appearance?: ProfileAppearanceSettings | ProfileAppearanceEnvelope | null;
+  appearance?: ProfileAppearanceSettings | null;
   content?: ProfileContentDetails | null;
 };
 
@@ -166,53 +166,85 @@ export type ProfileAppearanceCornerStyle =
   | "rounded"
   | "pill";
 
-/**
- * Appearance values used by the profile appearance API.
- *
- * Backend/API canonical colour keys use British spelling:
- * - accentColour
- * - backgroundColour
- * - textColour
- *
- * Legacy frontend aliases are kept temporarily for read compatibility only.
- */
+export type ComponentAppearance = {
+  backgroundColour?: string;
+  /** @deprecated Use `backgroundColour` instead */
+  bgColor?: string;
+  textColour?: string;
+  /** @deprecated Use `textColour` instead */
+  textColor?: string;
+  accentColour?: string;
+  /** @deprecated Use `accentColour` instead */
+  iconColor?: string;
+  [key: string]: unknown;
+};
+
 export type ProfileAppearanceValues = {
   template: string;
   accentColour: string;
   backgroundColour?: string;
   textColour?: string;
-  /** @deprecated Use `textColour` instead. */
-  textColor?: string;
-  /** @deprecated Use `backgroundColour` instead. */
-  bgColor?: string;
   font: ProfileAppearanceFont;
   cornerStyle: ProfileAppearanceCornerStyle;
   spacing: number;
-  theme?: "light" | "dark" | string;
+  theme?: string;
 };
 
-export type ProfileAppearanceSettings = ProfileAppearanceValues;
-
-export type ProfileAppearanceComponentKey =
-  | "bio"
-  | "links"
-  | "projects"
-  | "cta";
-
-export type ProfileAppearanceEnvelope = {
-  global: ProfileAppearanceValues;
-  components?: Partial<
-    Record<ProfileAppearanceComponentKey, ProfileAppearanceValues>
-  >;
+export type ProfileAppearanceSettings = {
+  global?: {
+    template: string;
+    accentColour: string;
+    backgroundColour?: string;
+    textColour?: string;
+    /** @deprecated Use `textColour` instead */
+    textColor?: string;
+    /** @deprecated Use `backgroundColour` instead */
+    bgColor?: string;
+    font: ProfileAppearanceFont;
+    cornerStyle: ProfileAppearanceCornerStyle;
+    spacing: number;
+    theme?: string;
+  };
+  components?: Record<string, ComponentAppearance>;
+  template?: string;
+  accentColour?: string;
+  backgroundColour?: string;
+  textColour?: string;
+  /** @deprecated Use `textColour` instead */
+  textColor?: string;
+  /** @deprecated Use `backgroundColour` instead */
+  bgColor?: string;
+  font?: ProfileAppearanceFont;
+  cornerStyle?: ProfileAppearanceCornerStyle;
+  spacing?: number;
+  theme?: string;
 };
 
-export type ProfileAppearanceRequest = ProfileAppearanceEnvelope;
+export type ProfileAppearanceRequest = {
+  global?: {
+    template?: string;
+    accentColour?: string;
+    backgroundColour?: string;
+    textColour?: string;
+    font?: ProfileAppearanceFont;
+    cornerStyle?: ProfileAppearanceCornerStyle;
+    spacing?: number;
+    theme?: string;
+  };
+  components?: {
+    bio?: Record<string, unknown>;
+    links?: Record<string, unknown>;
+    projects?: Record<string, unknown>;
+    cta?: Record<string, unknown>;
+    [key: string]: unknown;
+  };
+};
 
 export type ProfileAppearanceResponse = {
   status: string;
   message: string;
-  appearance?: ProfileAppearanceEnvelope | ProfileAppearanceSettings | null;
-  data?: ProfileAppearanceEnvelope | ProfileAppearanceSettings | null;
+  appearance?: ProfileAppearanceSettings | null;
+  data?: ProfileAppearanceSettings | null;
 };
 
 /**
@@ -227,7 +259,7 @@ export type ProfileAppearanceResponse = {
 export type GetProfileAppearanceResponse = {
   status: string;
   message?: string;
-  appearance?: ProfileAppearanceSettings | ProfileAppearanceEnvelope | null;
+  appearance?: ProfileAppearanceSettings | null;
   /** @deprecated Use `appearance` instead. */
   data?: ProfileAppearanceSettings | null;
 };

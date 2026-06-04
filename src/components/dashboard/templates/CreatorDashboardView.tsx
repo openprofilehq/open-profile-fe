@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { ArrowRight, MessageSquare } from "lucide-react";
+import { MessageSquare, ChevronRight } from "lucide-react";
 import { TemplateLinkCard, getLinkIcon } from "../shared/TemplateLinkCard";
 import {
   DashboardProfileResponse,
@@ -11,10 +11,19 @@ import {
   ProjectItem,
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
-import { getImageUrl, isProjectHighlighted } from "@/utils/profile";
+import {
+  getImageUrl,
+  isProjectHighlighted,
+  getSectionStyle,
+  sanitizeUrl,
+  getDisplayProfileUrl,
+} from "@/utils/profile";
 import { getInitials } from "@/utils/avatar";
 import { TemplateFooter } from "./TemplateFooter";
 import HighlightCard from "../HighlightCard";
+import { contentToSections } from "../profile-builder/builder.utils";
+import type { SavedLink } from "../profile-builder/types";
+import { getFontClass } from "./TemplateAppearanceProvider";
 
 type Props = {
   profile?: DashboardProfileResponse;
@@ -59,52 +68,70 @@ const DEFAULT_PROJECTS = [
     url: "#",
     imageSrc: "/profile-preview/feature3.jpg",
   },
-  {
-    id: "proj-4",
-    title: "Documentary Series",
-    description: "A 3-part YouTube series exploring the creator economy.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature3.jpg",
-  },
 ] as ProjectItem[];
 
 export default function CreatorDashboardView({
   profile,
   content,
+  isLoadingProfile,
+  isLoadingContent,
+  appearance,
   isPreview,
 }: Props) {
   const [activeTab, setActiveTab] = useState<"projects" | "links" | "about">(
     "projects"
   );
 
-  const name =
-    profile?.fullName ?? profile?.username ?? "John Smith - Product designer";
-  const username = profile?.username ?? "johnsmith";
+  if (isLoadingProfile || isLoadingContent) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <div className="border-brand-hover-bg h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+      </div>
+    );
+  }
 
-  const details = content?.content;
-  const bio =
-    profile?.bio ??
-    details?.bio?.content ??
-    "I'm John Smith—a creator focused on building and sharing things that feel simple and useful. I spend most of my time working on ideas, collaborating with others, and turning rough concepts into something real. Some of it sticks, some of it doesn't, but that's part of the process.\n\nThis is where everything lives—my work, my links, and a way to get in touch if you want to build something together.";
+  const rawSections = contentToSections(
+    content || ({ content: {} } as any),
+    profile || ({} as any)
+  );
 
-  const rawLinks = (details?.links?.items ?? []) as LinkItem[];
-  const links = rawLinks.length > 0 ? rawLinks : isPreview ? DEFAULT_LINKS : [];
+  const componentsAppearance =
+    (appearance as any)?.components ||
+    (profile as any)?.appearance?.components ||
+    {};
 
-  const rawProjects = (details?.projects?.items ?? []) as ProjectItem[];
-  const projects =
-    rawProjects.length > 0 ? rawProjects : isPreview ? DEFAULT_PROJECTS : [];
+  const sections = rawSections.map((section) => {
+    const appearanceKey = section.type === "experience" ? "cta" : section.type;
+    const secAppearance = componentsAppearance[appearanceKey] || {};
+    return {
+      ...section,
+      bgColor:
+        secAppearance.backgroundColour ||
+        secAppearance.bgColor ||
+        section.bgColor,
+      textColor:
+        secAppearance.textColour ||
+        secAppearance.textColor ||
+        section.textColor,
+      iconColor:
+        secAppearance.accentColour ||
+        secAppearance.iconColor ||
+        section.iconColor,
+      font: (secAppearance as any).font || section.font,
+    };
+  });
 
-  const cta = details?.cta;
+  const visibleSections = sections.filter((section) => section.visible);
 
-  const rawPhotoSrc = profile?.photoUrl;
-  const photoSrc = rawPhotoSrc
-    ? rawPhotoSrc.startsWith("/profile-preview/")
-      ? rawPhotoSrc
-      : getImageUrl(rawPhotoSrc)
-    : null;
+  const bioSection = sections.find((s) => s.type === "bio");
+  const linksSection = sections.find((s) => s.type === "links");
+  const ctaSection = sections.find((s) => s.type === "experience");
+  const resolvedName = profile?.fullName || "Micaela Robinson";
 
-  const socialLinks = links
+  const allLinks = (
+    linksSection?.links?.length ? linksSection.links : DEFAULT_LINKS
+  ) as SavedLink[];
+  const socialLinks = allLinks
     .filter((link) => {
       const url = (link.url || "").toLowerCase();
       return (
@@ -118,32 +145,37 @@ export default function CreatorDashboardView({
       );
     })
     .slice(0, 4);
+
   return (
-    <div className="text-primary-text flex min-h-screen w-full flex-col font-sans antialiased">
-      <div className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-24">
-        <header className="flex w-full flex-col items-center gap-4 text-center">
-          <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border shadow-sm">
-            {photoSrc ? (
+    <div className="flex w-full flex-col px-4 sm:px-6">
+      {/* CREATOR HEADER (Bio Section) */}
+      {(!bioSection || bioSection.visible !== false) && (
+        <div
+          className={`relative mt-6 flex w-full flex-col items-center gap-4 rounded-2xl p-6 text-center ${bioSection?.font ? getFontClass(bioSection.font) : ""}`}
+          style={getSectionStyle(bioSection)}
+        >
+          <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
+            {getImageUrl(profile?.photoUrl) ? (
               <Image
-                src={photoSrc}
-                alt={name}
+                src={getImageUrl(profile?.photoUrl) || ""}
+                alt={profile?.fullName ?? "Profile avatar"}
                 fill
                 className="object-cover"
                 unoptimized
               />
             ) : (
               <div className="bg-brand-hover-bg text-inverse-text flex h-full w-full items-center justify-center text-[40px] font-bold">
-                {getInitials(name)}
+                {getInitials(resolvedName)}
               </div>
             )}
           </div>
 
           <div className="flex flex-col items-center">
             <h1 className="text-primary-text flex items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
-              {name}
+              {resolvedName}
             </h1>
             <p className="text-secondary-text mt-1 text-[15px]">
-              openprofile.app/{username}
+              {getDisplayProfileUrl(profile?.username || "micaela")}
             </p>
           </div>
 
@@ -153,7 +185,7 @@ export default function CreatorDashboardView({
                 return (
                   <a
                     key={i}
-                    href={link.url}
+                    href={sanitizeUrl(link.url || "")}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-secondary-text hover:text-primary-text transition-colors"
@@ -167,180 +199,272 @@ export default function CreatorDashboardView({
             </div>
           )}
 
-          {details?.cta?.visible !== false && (
-            <a
-              href={cta?.url || "mailto:hello@example.com"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-brand-hover-bg hover:bg-button-brand-bg mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all active:scale-95"
-            >
-              {cta?.iconSrc ? (
-                <Image
-                  src={getImageUrl(cta.iconSrc) || ""}
-                  alt="CTA Icon"
-                  width={16}
-                  height={16}
-                  className="h-4 w-4 object-contain brightness-0 invert"
-                  unoptimized
-                />
-              ) : (
-                <MessageSquare size={16} />
-              )}
-              {cta?.buttonText || cta?.label || "Let's Collaborate"}
-            </a>
+          {ctaSection && ctaSection.visible && ctaSection.url && (
+            <div className="relative mt-4">
+              <a
+                href={sanitizeUrl(ctaSection.url)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
+              >
+                {ctaSection.iconSrc ? (
+                  <Image
+                    src={getImageUrl(ctaSection.iconSrc) || ""}
+                    alt="CTA Icon"
+                    width={16}
+                    height={16}
+                    className="h-4 w-4 object-contain brightness-0 invert"
+                    unoptimized
+                  />
+                ) : (
+                  <MessageSquare size={16} />
+                )}
+                {ctaSection.buttonText || "Let's Collaborate"}
+              </a>
+            </div>
           )}
-        </header>
+        </div>
+      )}
 
-        {/* TABS NAVIGATION */}
+      {/* CREATOR TABS */}
+      {visibleSections.some((s) =>
+        ["projects", "links", "bio"].includes(s.type)
+      ) && (
         <div
           className="border-border flex items-center justify-center gap-8 border-b"
-          style={{ marginTop: "var(--op-spacing, 3rem)" }}
+          style={{ marginTop: "var(--op-spacing, 2rem)" }}
         >
-          <button
-            onClick={() => setActiveTab("projects")}
-            className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "projects" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
-          >
-            Projects
-            {activeTab === "projects" && (
-              <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("links")}
-            className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "links" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
-          >
-            Links
-            {activeTab === "links" && (
-              <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("about")}
-            className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "about" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
-          >
-            About
-            {activeTab === "about" && (
-              <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
-            )}
-          </button>
-        </div>
-
-        {/* TABS CONTENT */}
-        <div
-          className="min-h-[400px] w-full"
-          style={{ marginTop: "var(--op-spacing, 2.5rem)" }}
-        >
-          {activeTab === "projects" &&
-            (() => {
-              const highlightedProject = projects.find(isProjectHighlighted);
-              const remainingProjects = projects.filter(
-                (p) => p.id !== highlightedProject?.id
-              );
-
+          {visibleSections
+            .filter((s) => ["projects", "links", "bio"].includes(s.type))
+            .map((section) => {
+              const tabKey = section.type === "bio" ? "about" : section.type;
+              const label =
+                section.type === "bio"
+                  ? "About"
+                  : section.type === "links"
+                    ? "Links"
+                    : "Projects";
               return (
-                <div className="flex flex-col gap-10">
-                  <HighlightCard details={content?.content} />
+                <button
+                  key={section.id}
+                  onClick={() =>
+                    setActiveTab(tabKey as "projects" | "links" | "about")
+                  }
+                  className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === tabKey ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
+                >
+                  {label}
+                  {activeTab === tabKey && (
+                    <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
+                  )}
+                </button>
+              );
+            })}
+        </div>
+      )}
+
+      <div
+        className="mt-12 w-full"
+        style={{ paddingBottom: "var(--op-spacing, 4rem)" }}
+      >
+        {visibleSections.map((section) => {
+          // Projects Tab
+          if (section.type === "projects" && activeTab === "projects") {
+            const projectsToRender = (
+              section.projects?.length ? section.projects : DEFAULT_PROJECTS
+            ) as ProjectItem[];
+            const highlightedProject =
+              projectsToRender.find(isProjectHighlighted);
+            const remainingProjects = projectsToRender.filter(
+              (p: { id?: string | number }) => p.id !== highlightedProject?.id
+            );
+
+            return (
+              <div
+                key={section.id}
+                className={`relative flex w-full flex-col gap-6 ${section.font ? getFontClass(section.font) : ""}`}
+                style={(() => {
+                  const { gap: _gap, ...rest } = getSectionStyle(section);
+                  return rest;
+                })()}
+              >
+                {highlightedProject && (
+                  <HighlightCard
+                    projectsSection={section}
+                    variant="transparent"
+                  />
+                )}
+
+                <div className="relative w-full">
                   {remainingProjects.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div
+                      className={`grid gap-6 ${
+                        section.layout === "1"
+                          ? "grid-cols-1"
+                          : section.layout === "3"
+                            ? "grid-cols-1 sm:grid-cols-2"
+                            : section.layout === "4"
+                              ? "grid-cols-1 sm:grid-cols-2"
+                              : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+                      }`}
+                      style={{
+                        gap: section.gap ? `${section.gap}px` : undefined,
+                      }}
+                    >
                       {remainingProjects.map((project) => {
-                        const projectUrl =
-                          project.url ||
-                          (project as { repoUrl?: string }).repoUrl;
-                        return (
+                        const layoutType = section.layout || "2";
+                        const hasUrl = Boolean(project.url);
+                        const displayImg = getImageUrl(project.imageSrc);
+
+                        const card = (
                           <div
-                            key={project.id}
-                            className="border-border bg-background flex flex-col overflow-hidden rounded-[12px] border transition-shadow hover:shadow-md"
+                            className={`group border-border bg-background hover:border-brand-hover-bg/30 flex rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md ${
+                              layoutType === "1"
+                                ? "flex-col justify-between sm:flex-row sm:items-center"
+                                : layoutType === "3"
+                                  ? "flex-col sm:flex-row sm:items-start"
+                                  : layoutType === "4"
+                                    ? "flex-col sm:flex-row-reverse sm:items-start"
+                                    : "flex-col" // Layout 2
+                            }`}
                           >
-                            <div className="bg-secondary-bg relative h-[200px] w-full shrink-0">
-                              {project.imageSrc ? (
-                                <Image
-                                  src={
-                                    project.imageSrc.startsWith(
-                                      "/profile-preview/"
-                                    )
-                                      ? project.imageSrc
-                                      : getImageUrl(project.imageSrc) || ""
-                                  }
-                                  alt={project.title || "Project"}
-                                  fill
-                                  className="object-cover"
-                                  unoptimized
-                                />
-                              ) : (
-                                <div className="h-full w-full bg-neutral-200" />
-                              )}
-                            </div>
-                            <div className="flex flex-col p-6">
-                              <h3 className="text-primary-text text-[17px] font-bold">
+                            {/* IMAGE */}
+                            {layoutType !== "1" && (
+                              <div
+                                className={`border-border bg-secondary-bg relative mb-4 shrink-0 overflow-hidden rounded-lg border ${
+                                  layoutType === "2"
+                                    ? "aspect-video w-full"
+                                    : "h-[120px] w-full sm:mb-0 sm:w-[140px]"
+                                } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
+                              >
+                                {displayImg ? (
+                                  <Image
+                                    src={displayImg}
+                                    alt={project.title ?? "Project"}
+                                    className="object-cover"
+                                    fill
+                                    unoptimized
+                                  />
+                                ) : (
+                                  <div className="text-tertiary-text flex h-full w-full items-center justify-center text-xs">
+                                    No image
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {/* CONTENT */}
+                            <div className="flex min-w-0 flex-1 flex-col items-start">
+                              <h5 className="text-primary-text text-xl font-bold break-all">
                                 {project.title}
-                              </h3>
-                              {project.description && (
-                                <p className="text-secondary-text mt-3 line-clamp-3 text-[14px] leading-relaxed">
-                                  {project.description}
-                                </p>
-                              )}
-                              {projectUrl && (
-                                <a
-                                  href={projectUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-brand-hover-bg mt-6 inline-flex items-center gap-1.5 text-[14px] font-bold hover:underline"
-                                >
-                                  {project.buttonText || "View Project"}
-                                  <ArrowRight size={16} strokeWidth={2.5} />
-                                </a>
+                              </h5>
+                              <p
+                                className={`text-secondary-text mt-1 break-all ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"}`}
+                              >
+                                {project.description}
+                              </p>
+                              {layoutType !== "1" && hasUrl && (
+                                <span className="text-brand-hover-bg mt-3 flex items-center gap-1 text-sm font-semibold hover:underline">
+                                  {project.buttonText || "View project"}
+                                  <ChevronRight size={16} />
+                                </span>
                               )}
                             </div>
+
+                            {/* BUTTON FOR LAYOUT 1 */}
+                            {layoutType === "1" && hasUrl && (
+                              <div className="mt-4 shrink-0 sm:mt-0 sm:ml-6">
+                                <span className="text-brand-hover-bg flex items-center gap-1 text-sm font-bold hover:underline">
+                                  {project.buttonText || "View project"}
+                                  <ChevronRight size={16} />
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        );
+
+                        return (
+                          <div key={project.id} className="w-full">
+                            {hasUrl ? (
+                              <a
+                                href={sanitizeUrl(project.url || "")}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block h-full no-underline"
+                              >
+                                {card}
+                              </a>
+                            ) : (
+                              <div className="h-full">{card}</div>
+                            )}
                           </div>
                         );
                       })}
                     </div>
-                  ) : projects.length === 0 ? (
+                  ) : (
                     <p className="text-tertiary-text border-border rounded-xl border border-dashed py-8 text-center text-sm">
-                      Add your projects
+                      No projects added yet.
                     </p>
-                  ) : null}
+                  )}
                 </div>
-              );
-            })()}
+              </div>
+            );
+          }
 
-          {activeTab === "links" && (
-            <>
-              {links.length > 0 ? (
-                <div className="mx-auto flex w-full flex-col gap-4">
-                  <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    {links.map((link) => (
+          // Links Tab
+          if (section.type === "links" && activeTab === "links") {
+            return (
+              <div
+                key={section.id}
+                className={`relative mx-auto flex w-full flex-col gap-4 ${section.font ? getFontClass(section.font) : ""}`}
+                style={(() => {
+                  const { gap: _gap, ...rest } = getSectionStyle(section);
+                  return rest;
+                })()}
+              >
+                {allLinks.length > 0 ? (
+                  <div
+                    className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+                    style={{
+                      gap: section.gap ? `${section.gap}px` : undefined,
+                    }}
+                  >
+                    {allLinks.map((link) => (
                       <TemplateLinkCard
                         key={link.id}
                         id={link.id}
                         title={link.title || link.label || ""}
-                        url={link.url || ""}
+                        url={link.url ? sanitizeUrl(link.url) : "#"}
                       />
                     ))}
                   </div>
-                </div>
-              ) : (
-                <p className="text-tertiary-text border-border rounded-xl border border-dashed py-8 text-center text-sm">
-                  Add your links
+                ) : (
+                  <p className="text-tertiary-text border-border rounded-xl border border-dashed py-8 text-center text-sm">
+                    No links added yet.
+                  </p>
+                )}
+              </div>
+            );
+          }
+
+          // About Tab
+          if (section.type === "bio" && activeTab === "about") {
+            return (
+              <div
+                key={section.id}
+                className={`border-border mx-auto max-w-2xl rounded-3xl border p-8 sm:p-10 ${section.font ? getFontClass(section.font) : ""}`}
+                style={getSectionStyle(section)}
+              >
+                <p className="text-secondary-text text-center text-[15px] leading-relaxed break-all whitespace-pre-wrap">
+                  {section.bio || "Write a little bit about yourself here..."}
                 </p>
-              )}
-            </>
-          )}
+              </div>
+            );
+          }
 
-          {activeTab === "about" && (
-            <div className="border-border bg-background mx-auto max-w-2xl rounded-[12px] border p-8 sm:p-12">
-              <p className="text-secondary-text text-center text-[16px] leading-relaxed whitespace-pre-wrap">
-                {bio}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* FOOTER */}
-        <div className="mt-20">
-          <TemplateFooter />
-        </div>
+          return null;
+        })}
       </div>
+      {!isPreview && <TemplateFooter />}
     </div>
   );
 }

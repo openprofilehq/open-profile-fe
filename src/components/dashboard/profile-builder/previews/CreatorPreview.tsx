@@ -15,6 +15,7 @@ import {
   getSectionStyle,
 } from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
+import { getFontClass } from "../../templates/TemplateAppearanceProvider";
 import { TemplateLinkCard, getLinkIcon } from "../../shared/TemplateLinkCard";
 import HighlightPreviewCard from "./HighlightPreviewCard";
 import { getInitials } from "@/utils/avatar";
@@ -122,7 +123,7 @@ export default function CreatorPreview({
         selectedSectionId === bioSectionId ||
         selectedSectionId === ctaSection?.id) && (
         <div
-          className="relative mt-6 flex w-full flex-col items-center gap-4 rounded-2xl p-6 text-center"
+          className={`relative mt-6 flex w-full flex-col items-center gap-4 rounded-2xl p-6 text-center ${bioSection?.font ? getFontClass(bioSection.font) : ""}`}
           style={getSectionStyle(bioSection)}
         >
           {renderControls(bioSection, true)}
@@ -295,13 +296,16 @@ export default function CreatorPreview({
                 return (
                   <div
                     key={section.id}
-                    className="relative flex w-full flex-col gap-6"
+                    className={`relative flex w-full flex-col gap-6 ${section.font ? getFontClass(section.font) : ""}`}
                     style={(() => {
                       const { gap: _gap, ...rest } = getSectionStyle(section);
                       return rest;
                     })()}
                   >
-                    <HighlightPreviewCard projectsSection={section} />
+                    <HighlightPreviewCard
+                      projectsSection={section}
+                      variant="transparent"
+                    />
                     <div className="relative w-full">
                       {renderControls(section)}
                       {remainingProjects.length > 0 ? (
@@ -424,7 +428,7 @@ export default function CreatorPreview({
                 return (
                   <div
                     key={section.id}
-                    className="relative mx-auto flex w-full flex-col gap-4"
+                    className={`relative mx-auto flex w-full flex-col gap-4 ${section.font ? getFontClass(section.font) : ""}`}
                     style={(() => {
                       const { gap: _gap, ...rest } = getSectionStyle(section);
                       return rest;
@@ -461,7 +465,7 @@ export default function CreatorPreview({
                 return (
                   <div
                     key={section.id}
-                    className="border-border mx-auto max-w-2xl rounded-3xl border p-8 sm:p-10"
+                    className={`border-border mx-auto max-w-2xl rounded-3xl border p-8 sm:p-10 ${section.font ? getFontClass(section.font) : ""}`}
                     style={getSectionStyle(section)}
                   >
                     <p className="text-secondary-text text-center text-[15px] leading-relaxed break-all whitespace-pre-wrap">
