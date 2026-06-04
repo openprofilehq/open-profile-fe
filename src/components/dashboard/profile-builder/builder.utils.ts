@@ -336,7 +336,6 @@ export function sectionsToContent(
           iconId: ctaSection.iconId ?? null,
           iconSrc: ctaSection.iconSrc ?? null,
           iconLabel: ctaSection.iconLabel ?? null,
-          ...sectionStyleFields(ctaSection),
         }
       : undefined,
   };
