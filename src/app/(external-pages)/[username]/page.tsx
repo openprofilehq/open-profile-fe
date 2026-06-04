@@ -271,7 +271,11 @@ export default async function UserProfilePage({ params }: Props) {
     <TemplateAppearanceProvider appearance={themeSettings}>
       <div className="bg-primary-bg flex min-h-screen flex-col transition-colors duration-200">
         <div className="flex justify-center pt-6">
-          <Link href="/">
+          <Link
+            href="/"
+            aria-label="Go to Open Profile home"
+            className="hover:bg-hover-bg inline-flex rounded-xl p-2 transition-colors active:scale-95"
+          >
             <Image
               src="/auth/logo.png"
               alt="Open.Profile"
