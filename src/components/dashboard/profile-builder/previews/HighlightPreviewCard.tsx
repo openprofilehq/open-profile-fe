@@ -5,8 +5,10 @@ import {
   getImageUrl,
   sanitizeUrl,
   isProjectHighlighted,
+  getSectionStyle,
 } from "@/utils/profile";
 import type { Section } from "../types";
+import { getFontClass } from "../../templates/TemplateAppearanceProvider";
 
 type Props = {
   projectsSection?: Section;
@@ -29,7 +31,8 @@ export default function HighlightPreviewCard({ projectsSection }: Props) {
 
   return (
     <section
-      className={`border-border bg-background rounded-[12px] border p-4 shadow-sm transition-opacity duration-200 sm:p-6 ${!projectsSection?.visible ? "opacity-50 grayscale" : ""}`}
+      className={`border-border bg-background rounded-[12px] border p-4 shadow-sm transition-opacity duration-200 sm:p-6 ${!projectsSection?.visible ? "opacity-50 grayscale" : ""} ${projectsSection?.font ? getFontClass(projectsSection.font) : ""}`}
+      style={projectsSection ? getSectionStyle(projectsSection) : undefined}
     >
       <h2 className="text-xl font-bold">Highlight</h2>
       <div className="mt-4 flex flex-col gap-6 md:flex-row md:items-center">
