@@ -6,6 +6,8 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 
+import { env } from "@/env/client";
+
 declare module "axios" {
   interface InternalAxiosRequestConfig {
     silent?: boolean;
@@ -13,7 +15,10 @@ declare module "axios" {
 }
 
 export const api = axios.create({
-  baseURL: "/api/v1", // Use relative path to hit Next.js API proxy routes
+  baseURL:
+    process.env.NODE_ENV === "development"
+      ? "/api/v1"
+      : `${env.NEXT_PUBLIC_API_URL}/api/v1`,
   timeout: 60 * 1000,
   withCredentials: true,
 });
