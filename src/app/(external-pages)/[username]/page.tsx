@@ -163,7 +163,10 @@ export default async function UserProfilePage({ params }: Props) {
 
     if (activeTemplate === "creator") {
       return (
-        <TemplateAppearanceProvider appearance={themeSettings} className="flex min-h-screen w-full flex-col">
+        <TemplateAppearanceProvider
+          appearance={themeSettings}
+          className="flex min-h-screen w-full flex-col"
+        >
           <CreatorDashboardView
             profile={dashboardProfile}
             content={profileContent}
@@ -175,7 +178,10 @@ export default async function UserProfilePage({ params }: Props) {
 
     if (activeTemplate === "professional") {
       return (
-        <TemplateAppearanceProvider appearance={themeSettings} className="flex min-h-screen w-full flex-col">
+        <TemplateAppearanceProvider
+          appearance={themeSettings}
+          className="flex min-h-screen w-full flex-col"
+        >
           <ProfessionalDashboardView
             profile={dashboardProfile}
             content={profileContent}
@@ -187,7 +193,10 @@ export default async function UserProfilePage({ params }: Props) {
 
     if (activeTemplate === "portfolio") {
       return (
-        <TemplateAppearanceProvider appearance={themeSettings} className="flex min-h-screen w-full flex-col">
+        <TemplateAppearanceProvider
+          appearance={themeSettings}
+          className="flex min-h-screen w-full flex-col"
+        >
           <PortfolioDashboardView
             profile={dashboardProfile}
             content={profileContent}

@@ -92,7 +92,11 @@ async function proxyRequest(
   let loginSuccess = false;
   for (const cookieStr of setCookies) {
     const { name, value, cookieOptions } = parseSetCookie(cookieStr);
-    delete cookieOptions.domain;
+    if (env.COOKIE_DOMAIN) {
+      cookieOptions.domain = env.COOKIE_DOMAIN;
+    } else {
+      delete cookieOptions.domain;
+    }
     response.cookies.set(name, value, cookieOptions);
     if (name === "accessToken") loginSuccess = true;
   }
@@ -102,6 +106,7 @@ async function proxyRequest(
       path: "/",
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60, // 7 days
+      ...(env.COOKIE_DOMAIN ? { domain: env.COOKIE_DOMAIN } : {}),
     });
   }
 
