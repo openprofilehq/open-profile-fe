@@ -59,7 +59,8 @@ export default function DashboardHome() {
   const apiAppearance = getAppearanceResponseGlobal(profileAppearance.data);
   const profile = dashboardProfile.data;
   const content = profileContent.data;
-  const isProfileLoading = dashboardProfile.isPending;
+  const isProfileLoading =
+    dashboardProfile.isPending || profileAppearance.isPending;
   const isContentLoading = profileContent.isPending;
 
   // Determine active template and appearance settings
