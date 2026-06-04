@@ -17,7 +17,6 @@ import {
 } from "@/api/profile/profile.options";
 import { isApiError } from "@/api/base";
 import { uploadImage } from "@/api/uploads/uploads.service";
-import { updateProfile } from "@/api/profile/profile.service";
 
 type UsernameStatus = "available" | "taken" | "error" | "checking" | "";
 
@@ -31,6 +30,7 @@ export default function CreateProfileForm() {
   const [lastName, setLastName] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoUrl, setPhotoUrl] = useState("");
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const debouncedUsername = useDebounce(username, 300);
   const isUsernameSynced = username === debouncedUsername;
 
@@ -59,19 +59,17 @@ export default function CreateProfileForm() {
 
   const createProfile = useMutation({
     ...createProfileOption,
-    onSuccess: async () => {
-      if (photoFile) {
-        try {
-          const { url } = await uploadImage(photoFile, "profiles");
-          await updateProfile(username, { photoUrl: url });
-          setPhotoUrl(url);
-        } catch {
-          toast.error("Profile created but photo upload failed.");
-        }
-      }
+    onSuccess: async (_, variables) => {
       queryClient.setQueryData<import("@/api/auth/auth.type").User>(
         ["auth", "me"],
-        (prev) => (prev ? { ...prev, onboardingComplete: true } : prev)
+        (prev) =>
+          prev
+            ? {
+                ...prev,
+                onboardingComplete: true,
+                photoUrl: variables.photoUrl || prev.photoUrl,
+              }
+            : prev
       );
       setCurrentStep(3);
     },
@@ -88,7 +86,7 @@ export default function CreateProfileForm() {
     },
   });
 
-  function submitProfile() {
+  async function submitProfile() {
     if (
       currentStep !== 2 ||
       !firstName.trim() ||
@@ -98,11 +96,28 @@ export default function CreateProfileForm() {
     )
       return;
 
+    let finalPhotoUrl = photoUrl;
+    if (photoFile && (!photoUrl || !photoUrl.startsWith("http"))) {
+      setIsUploadingImage(true);
+      try {
+        const { url } = await uploadImage(photoFile, "profiles");
+        finalPhotoUrl = url;
+        setPhotoUrl(url);
+      } catch {
+        toast.error("Failed to upload photo. You can try again later.");
+        setIsUploadingImage(false);
+        return; // Halt if upload fails to ensure we don't create profile without requested photo
+      }
+      setIsUploadingImage(false);
+    }
+
     createProfile.mutate({
       username,
       fullName: `${firstName.trim()} ${lastName.trim()}`,
       bio,
-      ...(photoUrl && photoUrl.startsWith("http") ? { photoUrl } : {}),
+      ...(finalPhotoUrl && finalPhotoUrl.startsWith("http")
+        ? { photoUrl: finalPhotoUrl }
+        : {}),
     });
   }
 
@@ -148,7 +163,7 @@ export default function CreateProfileForm() {
             onUpdateFirstName={(e) => setFirstName(e.target.value)}
             onUpdateLastName={(e) => setLastName(e.target.value)}
             onUpdateStep={submitProfile}
-            isPending={createProfile.isPending}
+            isPending={createProfile.isPending || isUploadingImage}
             photoUrl={photoUrl}
             onPhotoUrl={setPhotoUrl}
             photoFile={photoFile}
