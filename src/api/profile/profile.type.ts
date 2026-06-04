@@ -26,7 +26,7 @@ export type ProfileResponse = {
   isPublished?: boolean;
   templateType?: TemplateType | null;
   themeSettings?: unknown | null;
-  appearance?: ProfileAppearanceSettings | ProfileAppearanceEnvelope | null;
+  appearance?: ProfileAppearanceSettings | null;
   content?: ProfileContentDetails | null;
 };
 
@@ -179,6 +179,17 @@ export type ComponentAppearance = {
   [key: string]: unknown;
 };
 
+export type ProfileAppearanceValues = {
+  template: string;
+  accentColour: string;
+  backgroundColour?: string;
+  textColour?: string;
+  font: ProfileAppearanceFont;
+  cornerStyle: ProfileAppearanceCornerStyle;
+  spacing: number;
+  theme?: string;
+};
+
 export type ProfileAppearanceSettings = {
   global?: {
     template: string;
@@ -206,6 +217,7 @@ export type ProfileAppearanceSettings = {
   font?: ProfileAppearanceFont;
   cornerStyle?: ProfileAppearanceCornerStyle;
   spacing?: number;
+  theme?: string;
 };
 
 export type ProfileAppearanceRequest = {
@@ -231,8 +243,8 @@ export type ProfileAppearanceRequest = {
 export type ProfileAppearanceResponse = {
   status: string;
   message: string;
-  appearance?: ProfileAppearanceEnvelope | ProfileAppearanceSettings | null;
-  data?: ProfileAppearanceEnvelope | ProfileAppearanceSettings | null;
+  appearance?: ProfileAppearanceSettings | null;
+  data?: ProfileAppearanceSettings | null;
 };
 
 /**
@@ -247,7 +259,7 @@ export type ProfileAppearanceResponse = {
 export type GetProfileAppearanceResponse = {
   status: string;
   message?: string;
-  appearance?: ProfileAppearanceSettings | ProfileAppearanceEnvelope | null;
+  appearance?: ProfileAppearanceSettings | null;
   /** @deprecated Use `appearance` instead. */
   data?: ProfileAppearanceSettings | null;
 };

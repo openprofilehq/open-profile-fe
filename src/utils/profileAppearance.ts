@@ -1,6 +1,5 @@
 import type {
   ProfileAppearanceRequest,
-  ProfileAppearanceSettings,
   ProfileAppearanceValues,
 } from "@/api/profile/profile.type";
 
@@ -12,20 +11,20 @@ function isObject(value: unknown): value is Record<string, unknown> {
 
 export function getGlobalAppearance(
   appearance?: unknown
-): Partial<ProfileAppearanceSettings> | null {
+): Partial<ProfileAppearanceValues> | null {
   if (!isObject(appearance)) return null;
 
   if (isObject(appearance.global)) {
-    return appearance.global as Partial<ProfileAppearanceSettings>;
+    return appearance.global as Partial<ProfileAppearanceValues>;
   }
 
-  return appearance as Partial<ProfileAppearanceSettings>;
+  return appearance as Partial<ProfileAppearanceValues>;
 }
 
 export function mergeAppearanceSources(
   ...sources: unknown[]
-): Partial<ProfileAppearanceSettings> | null {
-  const merged = sources.reduce<Partial<ProfileAppearanceSettings>>(
+): Partial<ProfileAppearanceValues> | null {
+  const merged = sources.reduce<Partial<ProfileAppearanceValues>>(
     (acc, source) => {
       const globalAppearance = getGlobalAppearance(source);
       return globalAppearance ? { ...acc, ...globalAppearance } : acc;
@@ -66,6 +65,6 @@ export function getAppearanceResponseGlobal(
     appearance?: unknown;
     data?: unknown;
   } | null
-): Partial<ProfileAppearanceSettings> | null {
+): Partial<ProfileAppearanceValues> | null {
   return mergeAppearanceSources(response?.data, response?.appearance);
 }
