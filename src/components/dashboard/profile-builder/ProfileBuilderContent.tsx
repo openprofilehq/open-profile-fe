@@ -192,6 +192,10 @@ export default function ProfileBuilderContent() {
     "sharp" | "rounded" | "pill"
   >("rounded");
 
+  const [appearanceTheme, setAppearanceTheme] = useState<"light" | "dark">(
+    "light"
+  );
+
   const [template, setTemplate] = useState<string>("creator");
   const [sections, setSections] = useState<Section[]>([]);
   const [sectionToDelete, setSectionToDelete] = useState<string | null>(null);
@@ -264,6 +268,13 @@ export default function ProfileBuilderContent() {
           setBorderRadius(
             mapCornerStyleFromApi(appearanceSettings.cornerStyle)
           );
+        }
+
+        if (
+          appearanceSettings.theme === "light" ||
+          appearanceSettings.theme === "dark"
+        ) {
+          setAppearanceTheme(appearanceSettings.theme);
         }
 
         queueMicrotask(() => {
@@ -424,7 +435,7 @@ export default function ProfileBuilderContent() {
           font: mapFontToApi(font),
           cornerStyle: mapCornerStyleToApi(borderRadius),
           spacing: clampSpacingForApi(spacing),
-          theme: "light",
+          theme: appearanceTheme,
         })
       );
       appearanceTimerRef.current = null;
@@ -443,6 +454,7 @@ export default function ProfileBuilderContent() {
     iconColor,
     spacing,
     borderRadius,
+    appearanceTheme,
     saveAppearance,
   ]);
 

@@ -164,15 +164,26 @@ export type ProfileAppearanceCornerStyle =
   | "medium"
   | "round"
   | "rounded"
-  | "pill"
-  | string;
+  | "pill";
 
+/**
+ * Appearance values used by the profile appearance API.
+ *
+ * Backend/API canonical colour keys use British spelling:
+ * - accentColour
+ * - backgroundColour
+ * - textColour
+ *
+ * Legacy frontend aliases are kept temporarily for read compatibility only.
+ */
 export type ProfileAppearanceValues = {
   template: string;
   accentColour: string;
   backgroundColour?: string;
   textColour?: string;
+  /** @deprecated Use `textColour` instead. */
   textColor?: string;
+  /** @deprecated Use `backgroundColour` instead. */
   bgColor?: string;
   font: ProfileAppearanceFont;
   cornerStyle: ProfileAppearanceCornerStyle;

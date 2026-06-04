@@ -7,7 +7,7 @@ import type {
 const COMPONENT_KEYS = ["bio", "links", "projects", "cta"] as const;
 
 function isObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 export function getGlobalAppearance(

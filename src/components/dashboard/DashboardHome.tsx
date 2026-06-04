@@ -34,6 +34,7 @@ export default function DashboardHome() {
   const profileAppearance = useQuery(profileAppearanceOption());
 
   const { mutate: saveTemplate } = useMutation({
+    mutationKey: saveTemplateOption.mutationKey,
     mutationFn: saveTemplateOption.mutationFn,
     onSuccess() {
       void profileAppearance.refetch();
@@ -126,11 +127,11 @@ export default function DashboardHome() {
           onPreviewChange={handleTemplateSelection}
         />
       )}
+
       <div className="flex min-w-0 flex-col gap-4">
         <ProfileOverviewCard
           profile={profile}
           isLoading={isProfileLoading}
-          onPreviewChange={handleTemplateSelection}
           previewTemplate={previewTemplate}
         />
       </div>
