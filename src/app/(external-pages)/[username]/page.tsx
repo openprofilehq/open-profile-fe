@@ -1,5 +1,4 @@
 import Image from "next/image";
-export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -12,6 +11,8 @@ import ProfessionalDashboardView from "@/components/dashboard/templates/Professi
 import PortfolioDashboardView from "@/components/dashboard/templates/PortfolioDashboardView";
 import DefaultDashboardView from "@/components/dashboard/templates/DefaultDashboardView";
 import TemplateAppearanceProvider from "@/components/dashboard/templates/TemplateAppearanceProvider";
+
+export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ username: string }>;

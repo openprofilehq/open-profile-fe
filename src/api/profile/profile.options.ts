@@ -102,7 +102,11 @@ export const saveTemplateOption = mutationOptions({
         typeof appearanceEnvelope === "object" &&
         "components" in appearanceEnvelope
       ) {
-        currentComponents = (appearanceEnvelope as any).components;
+        currentComponents = (
+          appearanceEnvelope as {
+            components?: Record<string, ComponentAppearance>;
+          }
+        ).components;
       }
     } catch (e) {
       console.warn(
@@ -116,7 +120,7 @@ export const saveTemplateOption = mutationOptions({
         ...currentGlobalAppearance,
         template,
       },
-      components: currentComponents as any,
+      components: currentComponents as ProfileAppearanceRequest["components"],
     });
 
     try {

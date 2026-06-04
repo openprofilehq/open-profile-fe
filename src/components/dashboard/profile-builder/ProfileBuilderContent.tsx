@@ -235,9 +235,16 @@ export default function ProfileBuilderContent() {
       loadedSections.forEach((section) => {
         const componentKey =
           section.type === "experience" ? "cta" : section.type;
-        const compApp = components[
-          componentKey as keyof typeof components
-        ] as any;
+        const compApp = components[componentKey] as
+          | {
+              backgroundColour?: string;
+              bgColor?: string;
+              textColour?: string;
+              textColor?: string;
+              accentColour?: string;
+              iconColor?: string;
+            }
+          | undefined;
         if (compApp) {
           if (compApp.backgroundColour)
             section.bgColor = compApp.backgroundColour;
