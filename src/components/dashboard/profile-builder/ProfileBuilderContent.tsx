@@ -27,10 +27,6 @@ import type {
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { isApiError } from "@/api/base";
 import { ROUTES } from "@/constants/routes";
-import {
-  createProfileAppearanceRequest,
-  getAppearanceResponseGlobal,
-} from "@/utils/profileAppearance";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
@@ -699,7 +695,7 @@ export default function ProfileBuilderContent() {
 
   return (
     <>
-      <div className="bg-secondary-bg flex min-h-screen flex-col items-center justify-center px-6 text-center lg:hidden">
+      <div className="bg-secondary-bg flex min-h-screen flex-col items-center justify-center px-4 text-center lg:hidden">
         <h1 className="text-primary-text text-2xl font-bold">
           Profile editor works best on desktop
         </h1>
@@ -717,7 +713,7 @@ export default function ProfileBuilderContent() {
       <div className="bg-primary-bg hidden w-full flex-1 flex-col overflow-hidden lg:flex">
         {/* <BuilderHeader onPublish={handlePublish} isPublishing={isPublishing} /> */}
 
-        <div className="bg-secondary-bg flex flex-1 gap-4 overflow-hidden p-4 lg:p-6 lg:px-8">
+        <div className="bg-secondary-bg flex flex-1 gap-4 overflow-hidden p-4 lg:p-4 xl:p-6 xl:px-8">
           <LeftSidebar
             sections={resolvedSections}
             selectedSectionId={selectedSectionId}
