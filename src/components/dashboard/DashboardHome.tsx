@@ -71,11 +71,18 @@ export default function DashboardHome() {
     | Record<string, unknown>
     | undefined;
 
+  const appearanceSettingsData =
+    (profileAppearance.data as any)?.appearance ||
+    (profileAppearance.data as any)?.data ||
+    profileAppearance.data;
+  const components = (appearanceSettingsData as any)?.components;
+
   const appearance =
-    apiAppearance || themeSettings
+    apiAppearance || themeSettings || components
       ? ({
           ...(themeSettings ?? {}),
           ...(apiAppearance ?? {}),
+          ...(components ? { components } : {}),
         } as ProfileAppearanceSettings)
       : null;
 

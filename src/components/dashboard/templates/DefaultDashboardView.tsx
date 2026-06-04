@@ -19,7 +19,7 @@ import {
   sanitizeUrl,
 } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
-import HighlightPreviewCard from "../profile-builder/previews/HighlightPreviewCard";
+import HighlightCard from "../HighlightCard";
 import { contentToSections } from "../profile-builder/builder.utils";
 import type { SavedLink } from "../profile-builder/types";
 import TemplateAppearanceProvider, {
@@ -78,6 +78,7 @@ export default function DefaultDashboardView({
         secAppearance.accentColour ||
         secAppearance.iconColor ||
         section.iconColor,
+      font: (secAppearance as any).font || section.font,
     };
   });
 
@@ -236,7 +237,7 @@ export default function DefaultDashboardView({
               return (
                 <div key={section.id} className="flex flex-col gap-6">
                   {/* HIGHLIGHT CARD */}
-                  <HighlightPreviewCard projectsSection={section} />
+                  <HighlightCard projectsSection={section} />
 
                   <div
                     className={`group relative transition-opacity duration-200 ${section.font ? getFontClass(section.font) : ""}`}

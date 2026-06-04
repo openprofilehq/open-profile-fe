@@ -20,6 +20,7 @@ import { TemplateFooter } from "./TemplateFooter";
 import HighlightCard from "../HighlightCard";
 import { contentToSections } from "../profile-builder/builder.utils";
 import type { SavedLink } from "../profile-builder/types";
+import { getFontClass } from "./TemplateAppearanceProvider";
 
 type Props = {
   profile?: DashboardProfileResponse;
@@ -83,7 +84,7 @@ export default function ProfessionalDashboardView({
     content || ({ content: {} } as any),
     profile || ({} as any)
   );
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const componentsAppearance =
     (appearance as any)?.components ||
     (profile as any)?.appearance?.components ||
@@ -106,6 +107,7 @@ export default function ProfessionalDashboardView({
         secAppearance.accentColour ||
         secAppearance.iconColor ||
         section.iconColor,
+      font: (secAppearance as any).font || section.font,
     };
   });
 
@@ -126,7 +128,7 @@ export default function ProfessionalDashboardView({
             return (
               <div
                 key={section.id}
-                className="group relative rounded-2xl transition-opacity duration-200"
+                className={`group relative rounded-2xl transition-opacity duration-200 ${section.font ? getFontClass(section.font) : ""}`}
                 style={getSectionStyle(section)}
               >
                 <header
@@ -211,7 +213,7 @@ export default function ProfessionalDashboardView({
             return (
               <section
                 key={section.id}
-                className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
+                className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${section.font ? getFontClass(section.font) : ""}`}
                 style={(() => {
                   const { gap: _gap, ...rest } = getSectionStyle(section);
                   return rest;
@@ -282,12 +284,14 @@ export default function ProfessionalDashboardView({
             );
 
             return (
-              <div key={section.id} className="flex flex-col gap-6">
+              <div
+                key={section.id}
+                className={`flex flex-col gap-6 ${section.font ? getFontClass(section.font) : ""}`}
+              >
                 {highlightedProject && (
                   <HighlightCard
-                    details={content?.content}
-                    // @ts-expect-error - passing explicitly since HighlightCard might expect raw content
-                    project={highlightedProject}
+                    projectsSection={section}
+                    variant="transparent"
                   />
                 )}
 
@@ -429,7 +433,7 @@ export default function ProfessionalDashboardView({
             return (
               <section
                 key={section.id}
-                className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
+                className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${section.font ? getFontClass(section.font) : ""}`}
                 style={getSectionStyle(section)}
               >
                 <div

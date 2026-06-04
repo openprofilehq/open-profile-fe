@@ -162,6 +162,27 @@ export function contentToSections(
       iconId: content?.cta?.iconId ?? null,
       iconSrc: content?.cta?.iconSrc ?? null,
       iconLabel: content?.cta?.iconLabel ?? null,
+      textColor: (content?.cta as Record<string, unknown>)?.textColor as
+        | string
+        | undefined,
+      bgColor: (content?.cta as Record<string, unknown>)?.bgColor as
+        | string
+        | undefined,
+      font: (content?.cta as Record<string, unknown>)?.font as
+        | string
+        | undefined,
+      iconColor: (content?.cta as Record<string, unknown>)?.iconColor as
+        | string
+        | undefined,
+      paddingTop: (content?.cta as Record<string, unknown>)?.paddingTop as
+        | number
+        | undefined,
+      paddingBottom: (content?.cta as Record<string, unknown>)
+        ?.paddingBottom as number | undefined,
+      gap: (content?.cta as Record<string, unknown>)?.gap as number | undefined,
+      padding: (content?.cta as Record<string, unknown>)?.padding as
+        | number
+        | undefined,
     };
   });
 }
@@ -245,74 +266,78 @@ export function sectionsToContent(
     sectionOrder,
     bio: bioSection
       ? {
-        visible: bioSection.visible,
-        content: bioSection.bio ?? "",
-        ...sectionStyleFields(bioSection),
-      }
+          visible: bioSection.visible,
+          content: bioSection.bio ?? "",
+          ...sectionStyleFields(bioSection),
+        }
       : undefined,
     links: linksSection
       ? {
-        visible: linksSection.visible,
-        sectionTitle: linksSection.subtitle ?? "Links",
-        items: (linksSection.links ?? []).map((l) => ({
-          id: l.id,
-          label: l.title || "",
-          url: l.url ? encodeUrlForBackend(l.url, l.iconId) : "",
-          visible: true,
-        })) as unknown as LinkItem[],
-        ...sectionStyleFields(linksSection),
-      }
+          visible: linksSection.visible,
+          sectionTitle: linksSection.subtitle ?? "Links",
+          items: (linksSection.links ?? []).map((l) => ({
+            id: l.id,
+            label: l.title || "",
+            url: l.url ? encodeUrlForBackend(l.url, l.iconId) : "",
+            visible: true,
+          })) as unknown as LinkItem[],
+          ...sectionStyleFields(linksSection),
+        }
       : undefined,
     projects: projectsSection
       ? {
-        visible: projectsSection.visible,
-        sectionTitle: projectsSection.subtitle ?? "Projects",
-        ...(projectsSection.layout && { layout: projectsSection.layout }),
-        ...sectionStyleFields(projectsSection),
-        items: (projectsSection.projects ?? []).map((p) => {
-          const isHighlighted = p.highlighted === true || String(p.highlighted) === "true";
-          // Note: The "hl_" prefix is a presentation-layer convention used for the highlighted project feature.
-          // We defensively strip it here to ensure the backend only receives the original UUID.
-          const baseId = String(p.id).startsWith("hl_") ? String(p.id).slice(3) : p.id;
-          const mappedProject: Record<string, unknown> = {
-            id: isHighlighted ? `hl_${baseId}` : baseId,
-            title: p.title || "",
-            description: p.description || "",
-            visible: true,
-          };
-          if (p.imageSrc) {
-            mappedProject.imageSrc = p.imageSrc;
-          }
-          if (p.buttonText) {
-            mappedProject.buttonText = p.buttonText;
-          }
-          if (p.url) {
-            mappedProject.repoUrl = encodeUrlForBackend(p.url);
-          }
-          return mappedProject;
-        }) as unknown as ApiProjectItem[],
-      }
+          visible: projectsSection.visible,
+          sectionTitle: projectsSection.subtitle ?? "Projects",
+          ...(projectsSection.layout && { layout: projectsSection.layout }),
+          ...sectionStyleFields(projectsSection),
+          items: (projectsSection.projects ?? []).map((p) => {
+            const isHighlighted =
+              p.highlighted === true || String(p.highlighted) === "true";
+            // Note: The "hl_" prefix is a presentation-layer convention used for the highlighted project feature.
+            // We defensively strip it here to ensure the backend only receives the original UUID.
+            const baseId = String(p.id).startsWith("hl_")
+              ? String(p.id).slice(3)
+              : p.id;
+            const mappedProject: Record<string, unknown> = {
+              id: isHighlighted ? `hl_${baseId}` : baseId,
+              title: p.title || "",
+              description: p.description || "",
+              visible: true,
+            };
+            if (p.imageSrc) {
+              mappedProject.imageSrc = p.imageSrc;
+            }
+            if (p.buttonText) {
+              mappedProject.buttonText = p.buttonText;
+            }
+            if (p.url) {
+              mappedProject.repoUrl = encodeUrlForBackend(p.url);
+            }
+            return mappedProject;
+          }) as unknown as ApiProjectItem[],
+        }
       : undefined,
     cta: ctaSection
       ? {
-        visible: ctaSection.visible,
-        type:
-          ctaSection.ctaType ??
-          (ctaSection.url?.includes("@") ||
+          visible: ctaSection.visible,
+          type:
+            ctaSection.ctaType ??
+            (ctaSection.url?.includes("@") ||
             ctaSection.url?.startsWith("mailto:")
-            ? "email"
-            : "link"),
-        label: ctaSection.buttonText ?? "",
-        value: ctaSection.url
-          ? encodeUrlForBackend(ctaSection.url, ctaSection.iconId)
-          : null,
-        title: ctaSection.title ?? "",
-        subtitle: ctaSection.subtitle ?? "",
-        layout: ctaSection.layout ?? "1",
-        iconId: ctaSection.iconId ?? null,
-        iconSrc: ctaSection.iconSrc ?? null,
-        iconLabel: ctaSection.iconLabel ?? null,
-      }
+              ? "email"
+              : "link"),
+          label: ctaSection.buttonText ?? "",
+          value: ctaSection.url
+            ? encodeUrlForBackend(ctaSection.url, ctaSection.iconId)
+            : null,
+          title: ctaSection.title ?? "",
+          subtitle: ctaSection.subtitle ?? "",
+          layout: ctaSection.layout ?? "1",
+          iconId: ctaSection.iconId ?? null,
+          iconSrc: ctaSection.iconSrc ?? null,
+          iconLabel: ctaSection.iconLabel ?? null,
+          ...sectionStyleFields(ctaSection),
+        }
       : undefined,
   };
 }

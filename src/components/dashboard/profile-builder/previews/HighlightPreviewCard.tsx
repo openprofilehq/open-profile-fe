@@ -12,9 +12,13 @@ import { getFontClass } from "../../templates/TemplateAppearanceProvider";
 
 type Props = {
   projectsSection?: Section;
+  variant?: "default" | "transparent";
 };
 
-export default function HighlightPreviewCard({ projectsSection }: Props) {
+export default function HighlightPreviewCard({
+  projectsSection,
+  variant = "default",
+}: Props) {
   const projectsToRender = projectsSection?.projects || [];
   const highlightedProject = projectsToRender.find(isProjectHighlighted);
 
@@ -31,7 +35,7 @@ export default function HighlightPreviewCard({ projectsSection }: Props) {
 
   return (
     <section
-      className={`border-border bg-background rounded-[12px] border p-4 shadow-sm transition-opacity duration-200 sm:p-6 ${!projectsSection?.visible ? "opacity-50 grayscale" : ""} ${projectsSection?.font ? getFontClass(projectsSection.font) : ""}`}
+      className={`${variant === "default" ? "border-border bg-background rounded-[12px] border p-4 shadow-sm sm:p-6" : ""} transition-opacity duration-200 ${!projectsSection?.visible ? "opacity-50 grayscale" : ""} ${projectsSection?.font ? getFontClass(projectsSection.font) : ""}`}
       style={projectsSection ? getSectionStyle(projectsSection) : undefined}
     >
       <h2 className="text-xl font-bold">Highlight</h2>

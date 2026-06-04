@@ -248,7 +248,10 @@ export default function ProfessionalPreview({
 
           return (
             <div key={section.id} className="flex flex-col gap-6">
-              <HighlightPreviewCard projectsSection={section} />
+              <HighlightPreviewCard
+                projectsSection={section}
+                variant="transparent"
+              />
               <section
                 className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
                 style={(() => {

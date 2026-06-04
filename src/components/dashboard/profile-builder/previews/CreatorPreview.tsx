@@ -302,7 +302,10 @@ export default function CreatorPreview({
                       return rest;
                     })()}
                   >
-                    <HighlightPreviewCard projectsSection={section} />
+                    <HighlightPreviewCard
+                      projectsSection={section}
+                      variant="transparent"
+                    />
                     <div className="relative w-full">
                       {renderControls(section)}
                       {remainingProjects.length > 0 ? (

@@ -23,6 +23,7 @@ import { TemplateFooter } from "./TemplateFooter";
 import HighlightCard from "../HighlightCard";
 import { contentToSections } from "../profile-builder/builder.utils";
 import type { SavedLink } from "../profile-builder/types";
+import { getFontClass } from "./TemplateAppearanceProvider";
 
 type Props = {
   profile?: DashboardProfileResponse;
@@ -93,7 +94,7 @@ export default function CreatorDashboardView({
     content || ({ content: {} } as any),
     profile || ({} as any)
   );
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const componentsAppearance =
     (appearance as any)?.components ||
     (profile as any)?.appearance?.components ||
@@ -116,6 +117,7 @@ export default function CreatorDashboardView({
         secAppearance.accentColour ||
         secAppearance.iconColor ||
         section.iconColor,
+      font: (secAppearance as any).font || section.font,
     };
   });
 
@@ -149,7 +151,7 @@ export default function CreatorDashboardView({
       {/* CREATOR HEADER (Bio Section) */}
       {(!bioSection || bioSection.visible !== false) && (
         <div
-          className="relative mt-6 flex w-full flex-col items-center gap-4 rounded-2xl p-6 text-center"
+          className={`relative mt-6 flex w-full flex-col items-center gap-4 rounded-2xl p-6 text-center ${bioSection?.font ? getFontClass(bioSection.font) : ""}`}
           style={getSectionStyle(bioSection)}
         >
           <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
@@ -279,7 +281,7 @@ export default function CreatorDashboardView({
             return (
               <div
                 key={section.id}
-                className="relative flex w-full flex-col gap-6"
+                className={`relative flex w-full flex-col gap-6 ${section.font ? getFontClass(section.font) : ""}`}
                 style={(() => {
                   const { gap: _gap, ...rest } = getSectionStyle(section);
                   return rest;
@@ -287,9 +289,8 @@ export default function CreatorDashboardView({
               >
                 {highlightedProject && (
                   <HighlightCard
-                    details={content?.content}
-                    // @ts-expect-error - passing explicitly since HighlightCard expects raw content
-                    project={highlightedProject}
+                    projectsSection={section}
+                    variant="transparent"
                   />
                 )}
 
@@ -414,7 +415,7 @@ export default function CreatorDashboardView({
             return (
               <div
                 key={section.id}
-                className="relative mx-auto flex w-full flex-col gap-4"
+                className={`relative mx-auto flex w-full flex-col gap-4 ${section.font ? getFontClass(section.font) : ""}`}
                 style={(() => {
                   const { gap: _gap, ...rest } = getSectionStyle(section);
                   return rest;
@@ -450,7 +451,7 @@ export default function CreatorDashboardView({
             return (
               <div
                 key={section.id}
-                className="border-border mx-auto max-w-2xl rounded-3xl border p-8 sm:p-10"
+                className={`border-border mx-auto max-w-2xl rounded-3xl border p-8 sm:p-10 ${section.font ? getFontClass(section.font) : ""}`}
                 style={getSectionStyle(section)}
               >
                 <p className="text-secondary-text text-center text-[15px] leading-relaxed break-all whitespace-pre-wrap">
