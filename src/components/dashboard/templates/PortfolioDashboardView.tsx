@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { ArrowRight, Mail } from "lucide-react";
-import { TemplateLinkCard } from "../shared/TemplateLinkCard";
+
 import {
   DashboardProfileResponse,
   ProfileContentResponse,
@@ -9,10 +9,18 @@ import {
   ProjectItem,
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
-import { getImageUrl, isProjectHighlighted } from "@/utils/profile";
-import { getInitials } from "@/utils/avatar";
+import {
+  getImageUrl,
+  isProjectHighlighted,
+  getSectionStyle,
+  sanitizeUrl,
+  getDisplayProfileUrl,
+} from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
 import HighlightCard from "../HighlightCard";
+import { TemplateLinkCard } from "../shared/TemplateLinkCard";
+import { contentToSections } from "../profile-builder/builder.utils";
+import type { SavedLink } from "../profile-builder/types";
 
 type Props = {
   profile?: DashboardProfileResponse;
@@ -58,301 +66,388 @@ const DEFAULT_PROJECTS = [
   },
   {
     id: "proj-4",
-    title: "Origin Collective",
-    description:
-      "A minimalist e-commerce website for a high-end furniture brand.",
+    title: "Crypto Wallet App",
+    description: "A mobile app design for a cryptocurrency wallet.",
     buttonText: "View Project",
     url: "#",
-    imageSrc: "/profile-preview/feature2.jpg",
-  },
-  {
-    id: "proj-5",
-    title: "Apex Banking App",
-    description: "Redesigning the core user journey of a modern banking app.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature1.jpg",
-  },
-  {
-    id: "proj-6",
-    title: "Form Branding System",
-    description: "A cohesive visual identity and branding system.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature3.jpg",
+    imageSrc: "/profile-preview/feature4.jpg",
   },
 ] as ProjectItem[];
 
 export default function PortfolioDashboardView({
   profile,
   content,
+  isLoadingProfile,
+  isLoadingContent,
   isPreview,
 }: Props) {
-  const name = profile?.fullName ?? profile?.username ?? "John Smith";
-  const username = profile?.username ?? "johnsmith";
-  const details = content?.content;
-  const bio =
-    profile?.bio ??
-    details?.bio?.content ??
-    "I help teams craft thoughtful, user-centered products — from the first sketch to a polished design system. Currently shaping fintech and SaaS experiences.";
+  if (isLoadingProfile || isLoadingContent) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <div className="border-brand-hover-bg h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+      </div>
+    );
+  }
 
-  const rawLinks = (details?.links?.items ?? []) as LinkItem[];
-  const links = rawLinks.length > 0 ? rawLinks : isPreview ? DEFAULT_LINKS : [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rawSections = contentToSections(
+    content || ({ content: {} } as any),
+    profile || ({} as any)
+  );
 
-  const rawProjects = (details?.projects?.items ?? []) as ProjectItem[];
-  const projects =
-    rawProjects.length > 0 ? rawProjects : isPreview ? DEFAULT_PROJECTS : [];
+  // Patch sections with overrides from profile appearance components
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const componentsAppearance = (profile as any)?.appearance?.components || {};
 
-  const cta = details?.cta;
+  const sections = rawSections.map((section) => {
+    // Map 'experience' section type back to 'cta' for appearance lookups
+    const appearanceKey = section.type === "experience" ? "cta" : section.type;
+    const secAppearance = componentsAppearance[appearanceKey] || {};
+    return {
+      ...section,
+      bgColor:
+        secAppearance.backgroundColour ||
+        secAppearance.bgColor ||
+        section.bgColor,
+      textColor:
+        secAppearance.textColour ||
+        secAppearance.textColor ||
+        section.textColor,
+      iconColor:
+        secAppearance.accentColour ||
+        secAppearance.iconColor ||
+        section.iconColor,
+    };
+  });
 
-  const rawPhotoSrc = profile?.photoUrl;
-  const photoSrc = rawPhotoSrc
-    ? rawPhotoSrc.startsWith("/profile-preview/")
-      ? rawPhotoSrc
-      : getImageUrl(rawPhotoSrc)
-    : null;
+  const ctaSection = sections.find(
+    (s) => s.type === "experience" || s.type === "cta"
+  );
 
   return (
-    <div className="text-primary-text flex w-full flex-col font-sans antialiased">
+    <div className="flex w-full flex-col">
       <div
-        className="mx-auto flex w-full max-w-5xl flex-col px-6 pt-8 pb-16 sm:pb-24"
+        className="text-primary-text mx-auto flex w-full max-w-5xl flex-col py-8 pt-6"
         style={{ gap: "var(--op-spacing, 2rem)" }}
       >
-        {/* HEADER SECTION */}
-        <header
-          className="flex w-full flex-col justify-between sm:flex-row sm:items-start"
-          style={{ gap: "var(--op-spacing, 24px)" }}
-        >
-          <div
-            className="flex flex-col"
-            style={{ gap: "var(--op-spacing, 24px)" }}
-          >
-            <div className="border-border bg-secondary-bg relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-full border">
-              {photoSrc ? (
-                <Image
-                  src={photoSrc}
-                  alt={name}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                <div className="bg-brand-hover-bg text-inverse-text flex h-full w-full items-center justify-center text-[32px] font-bold">
-                  {getInitials(name)}
-                </div>
-              )}
-            </div>
+        {sections.map((section) => {
+          if (!section.visible) return null;
 
-            <div className="flex flex-col">
-              <h1 className="text-primary-text text-[26px] leading-tight font-bold tracking-tight">
-                {name}
-              </h1>
-              <p className="text-secondary-text mt-1 text-[14px]">
-                openprofile.app/{username}
-              </p>
-            </div>
-          </div>
-          {details?.cta?.visible !== false && (cta?.value ?? cta?.url) && (
-            <a
-              href={cta?.value ?? cta?.url ?? ""}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
-            >
-              {cta?.iconSrc ? (
-                <div
-                  className="bg-brand-hover-bg h-4 w-4"
+          if (section.type === "bio") {
+            return (
+              <div
+                key={section.id}
+                className="group relative rounded-2xl transition-opacity duration-200"
+                style={getSectionStyle(section)}
+              >
+                <header
+                  className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between rounded-2xl border border-transparent transition-colors sm:flex-row sm:items-start"
                   style={{
-                    maskImage: `url(${cta.iconSrc})`,
-                    WebkitMaskImage: `url(${cta.iconSrc})`,
-                    maskSize: "contain",
-                    WebkitMaskSize: "contain",
-                    maskRepeat: "no-repeat",
-                    WebkitMaskRepeat: "no-repeat",
-                    maskPosition: "center",
-                    WebkitMaskPosition: "center",
+                    gap: "var(--op-spacing, 24px)",
+                    padding: "var(--op-spacing, 24px)",
                   }}
-                />
-              ) : (
-                <Mail size={16} />
-              )}
-              {cta?.label || "Email"}
-            </a>
-          )}
-        </header>
+                >
+                  <div
+                    className="flex flex-col"
+                    style={{ gap: "var(--op-spacing, 24px)" }}
+                  >
+                    <div className="border-border bg-secondary-bg relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-full border">
+                      {getImageUrl(profile?.photoUrl) ? (
+                        <Image
+                          src={getImageUrl(profile?.photoUrl)!}
+                          alt={profile?.fullName || "User"}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-full w-full items-center justify-center text-[32px] font-bold">
+                          {(profile?.fullName || "M").charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </div>
 
-        {/* BIO SECTION */}
-        <section>
-          <p className="text-secondary-text max-w-3xl text-[15px] leading-relaxed">
-            {bio}
-          </p>
-        </section>
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2">
+                        <h1 className="text-primary-text text-[26px] leading-tight font-bold tracking-tight">
+                          {profile?.fullName || "Micaela Robinson"}
+                        </h1>
+                      </div>
+                      <p className="text-secondary-text mt-1 text-[14px]">
+                        {getDisplayProfileUrl(profile?.username || "micaela")}
+                      </p>
+                    </div>
+                  </div>
 
-        {/* LINKS SECTION */}
-        {details?.links?.visible !== false && (
-          <section className="w-full">
-            <h2 className="text-tertiary-text mb-4 text-[13px]">Links</h2>
-            {links.length > 0 ? (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {links.map((link) => (
-                  <TemplateLinkCard
-                    key={link.id}
-                    id={link.id}
-                    title={link.title || link.label || ""}
-                    url={link.url || ""}
-                  />
-                ))}
+                  {ctaSection?.visible && ctaSection?.url && (
+                    <a
+                      href={sanitizeUrl(ctaSection.url)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
+                    >
+                      {ctaSection.iconSrc ? (
+                        <div
+                          className="bg-brand-hover-bg h-4 w-4"
+                          style={{
+                            maskImage: `url(${ctaSection.iconSrc})`,
+                            WebkitMaskImage: `url(${ctaSection.iconSrc})`,
+                            maskSize: "contain",
+                            WebkitMaskSize: "contain",
+                            maskRepeat: "no-repeat",
+                            WebkitMaskRepeat: "no-repeat",
+                            maskPosition: "center",
+                            WebkitMaskPosition: "center",
+                          }}
+                        />
+                      ) : (
+                        <Mail size={16} />
+                      )}
+                      {ctaSection.buttonText || "Email"}
+                    </a>
+                  )}
+                </header>
+
+                <section className="mt-8 px-6">
+                  <p className="text-secondary-text max-w-3xl text-[15px] leading-relaxed whitespace-pre-wrap">
+                    {section.bio || "Write a little bit about yourself here..."}
+                  </p>
+                </section>
               </div>
-            ) : (
-              <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
-                Add your links
-              </p>
-            )}
-          </section>
-        )}
+            );
+          }
 
-        {/* PROJECTS SECTION */}
-        {details?.projects?.visible !== false &&
-          (() => {
-            const highlightedProject = projects.find(isProjectHighlighted);
-            const remainingProjects = projects.filter(
-              (p) => p.id !== highlightedProject?.id
+          if (section.type === "links") {
+            const links = (
+              section.links?.length ? section.links : DEFAULT_LINKS
+            ) as SavedLink[];
+            return (
+              <section
+                key={section.id}
+                className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
+                style={(() => {
+                  const { gap: _gap, ...rest } = getSectionStyle(section);
+                  return rest;
+                })()}
+              >
+                <h2 className="text-tertiary-text mb-4 text-[13px]">
+                  {section.subtitle || "Links"}
+                </h2>
+                {links.length > 0 ? (
+                  <div
+                    className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+                    style={{
+                      gap: section.gap ? `${section.gap}px` : undefined,
+                    }}
+                  >
+                    {links.map((link: SavedLink) => (
+                      <TemplateLinkCard
+                        key={link.id}
+                        id={link.id}
+                        title={link.title || link.label || ""}
+                        url={sanitizeUrl(link.url || "")}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
+                    No links added yet.
+                  </p>
+                )}
+              </section>
+            );
+          }
+
+          if (section.type === "projects") {
+            const projectsToRender = (
+              section.projects?.length ? section.projects : DEFAULT_PROJECTS
+            ) as ProjectItem[];
+            const highlightedProject =
+              projectsToRender.find(isProjectHighlighted);
+            const remainingProjects = projectsToRender.filter(
+              (p: { id?: string | number }) => p.id !== highlightedProject?.id
             );
 
             return (
-              <div className="flex w-full flex-col gap-10">
-                <HighlightCard details={content?.content} />
-                {remainingProjects.length > 0 ? (
-                  <section className="w-full">
-                    <h2 className="text-tertiary-text mb-6 text-[13px]">
-                      {details?.projects?.sectionTitle || "Featured Projects"}
-                    </h2>
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                      {remainingProjects.map((project, idx) => {
-                        const numberStr = String(idx + 1).padStart(2, "0");
-                        const projectUrl =
-                          project.url ||
-                          (project as { repoUrl?: string }).repoUrl;
-                        return (
-                          <div
-                            key={project.id}
-                            className="group border-border bg-background flex flex-col overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md"
-                          >
-                            {/* Project Image Placeholder */}
-                            <div className="bg-secondary-bg border-border relative aspect-16/10 w-full overflow-hidden border-b">
-                              {project.imageSrc ? (
-                                <Image
-                                  src={
-                                    project.imageSrc.startsWith(
-                                      "/profile-preview/"
-                                    )
-                                      ? project.imageSrc
-                                      : getImageUrl(project.imageSrc) || ""
-                                  }
-                                  alt={project.title || "Project"}
-                                  fill
-                                  className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                                  unoptimized
-                                />
-                              ) : (
-                                <div className="text-tertiary-text flex h-full w-full items-center justify-center bg-neutral-200 text-xs transition-transform duration-500 group-hover:scale-[1.02]">
-                                  No image
-                                </div>
-                              )}
-                            </div>
+              <div key={section.id} className="flex flex-col gap-6">
+                {highlightedProject && (
+                  <HighlightCard
+                    details={content?.content}
+                    // @ts-expect-error - passing explicitly since HighlightCard expects raw content
+                    project={highlightedProject}
+                  />
+                )}
 
-                            <div className="flex flex-1 flex-col p-6">
-                              <div className="mb-2 flex items-start gap-2">
-                                <span className="text-primary-text text-[16px] font-bold">
-                                  {numberStr}
-                                </span>
-                                <h3 className="text-primary-text min-w-0 flex-1 text-[16px] font-bold">
-                                  {project.title}
-                                </h3>
+                <section
+                  className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
+                  style={(() => {
+                    const { gap: _gap, ...rest } = getSectionStyle(section);
+                    return rest;
+                  })()}
+                >
+                  <div className="mb-6 flex flex-col gap-1">
+                    {section.title && (
+                      <h2 className="text-primary-text text-[26px] font-bold">
+                        {section.title}
+                      </h2>
+                    )}
+                    {(section.subtitle || !section.title) && (
+                      <h3 className="text-tertiary-text text-[13px]">
+                        {section.subtitle || "Featured Projects"}
+                      </h3>
+                    )}
+                  </div>
+                  {remainingProjects.length > 0 ? (
+                    <div
+                      className={`grid gap-6 ${
+                        section.layout === "1"
+                          ? "grid-cols-1"
+                          : section.layout === "3"
+                            ? "grid-cols-1 sm:grid-cols-2"
+                            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                      }`}
+                      style={{
+                        gap: section.gap ? `${section.gap}px` : undefined,
+                      }}
+                    >
+                      {remainingProjects.map(
+                        (project: ProjectItem, idx: number) => {
+                          const numberStr = String(idx + 1).padStart(2, "0");
+
+                          const card = (
+                            <div
+                              className={`group/proj border-border bg-background flex h-full overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md ${
+                                section.layout === "1"
+                                  ? "flex-col sm:flex-row"
+                                  : "flex-col"
+                              }`}
+                            >
+                              <div
+                                className={`bg-secondary-bg border-border relative overflow-hidden ${
+                                  section.layout === "1"
+                                    ? "w-full shrink-0 border-b sm:w-[320px] sm:border-r sm:border-b-0"
+                                    : "aspect-16/10 w-full border-b"
+                                }`}
+                              >
+                                {getImageUrl(project.imageSrc) ? (
+                                  <Image
+                                    src={getImageUrl(project.imageSrc) || ""}
+                                    alt={project.title || "Project"}
+                                    fill
+                                    className="object-cover transition-transform duration-500 group-hover/proj:scale-[1.02]"
+                                    unoptimized
+                                  />
+                                ) : (
+                                  <div className="h-full w-full bg-neutral-200 transition-transform duration-500 group-hover/proj:scale-[1.02]" />
+                                )}
                               </div>
 
-                              {project.description && (
-                                <p className="text-secondary-text mb-6 ml-6 line-clamp-2 text-[13px]">
-                                  {project.description}
-                                </p>
-                              )}
+                              <div className="flex flex-1 flex-col p-6">
+                                <div className="mb-1 flex items-start gap-2">
+                                  <span className="text-primary-text text-[16px] font-bold">
+                                    {numberStr}
+                                  </span>
+                                  <h3 className="text-primary-text text-[16px] font-bold">
+                                    {project.title}
+                                  </h3>
+                                </div>
 
-                              {projectUrl && (
+                                {project.description && (
+                                  <p className="text-secondary-text mb-6 ml-6 line-clamp-2 text-[13px]">
+                                    {project.description}
+                                  </p>
+                                )}
+
+                                {project.url && (
+                                  <span className="text-brand-hover-bg mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
+                                    {project.buttonText || "View Project"}
+                                    <ArrowRight size={14} strokeWidth={2.5} />
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          );
+
+                          return (
+                            <div key={project.id} className="w-full">
+                              {project.url ? (
                                 <a
-                                  href={projectUrl}
+                                  href={sanitizeUrl(project.url)}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-brand-hover-bg mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
+                                  className="block h-full no-underline"
                                 >
-                                  {project.buttonText || "View Project"}
-                                  <ArrowRight size={14} strokeWidth={2.5} />
+                                  {card}
                                 </a>
+                              ) : (
+                                <div className="h-full">{card}</div>
                               )}
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        }
+                      )}
                     </div>
-                  </section>
-                ) : projects.length === 0 ? (
-                  <section className="w-full">
-                    <h2 className="text-tertiary-text mb-6 text-[13px]">
-                      {details?.projects?.sectionTitle || "Featured Projects"}
-                    </h2>
+                  ) : (
                     <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
-                      Add your projects
+                      No projects added yet.
                     </p>
-                  </section>
-                ) : null}
+                  )}
+                </section>
               </div>
             );
-          })()}
+          }
 
-        {/* CTA SECTION */}
-        {details?.cta?.visible !== false && (cta?.value ?? cta?.url) && (
-          <section className="w-full py-8">
-            <div
-              className={`flex flex-col ${cta?.layout === "2" ? "items-start text-left" : cta?.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
-            >
-              {cta?.iconSrc && (
-                <div className="mb-6 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-transparent">
-                  <div
-                    className="bg-brand-hover-bg h-8 w-8"
-                    style={{
-                      maskImage: `url(${cta.iconSrc})`,
-                      WebkitMaskImage: `url(${cta.iconSrc})`,
-                      maskSize: "contain",
-                      WebkitMaskSize: "contain",
-                      maskRepeat: "no-repeat",
-                      WebkitMaskRepeat: "no-repeat",
-                      maskPosition: "center",
-                      WebkitMaskPosition: "center",
-                    }}
-                  />
-                </div>
-              )}
-              <h2 className="text-primary-text text-[28px] font-bold tracking-tight">
-                {cta?.title || "Interested in working together?"}
-              </h2>
-              <p className="text-secondary-text mt-3 mb-8 max-w-[600px] text-base leading-relaxed">
-                {cta?.subtitle ||
-                  "I am currently available for freelance project"}
-              </p>
-              <a
-                href={cta?.value ?? cta?.url ?? ""}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
+          if (section.type === "experience") {
+            return (
+              <section
+                key={section.id}
+                className="group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors"
+                style={getSectionStyle(section)}
               >
-                {cta?.label || "Let's Connect"}
-              </a>
-            </div>
-          </section>
-        )}
+                <div
+                  className={`flex flex-col ${section.layout === "2" ? "items-start text-left" : section.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
+                >
+                  {section.iconSrc && (
+                    <div className="mb-6 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-transparent">
+                      <div
+                        className="bg-brand-hover-bg h-8 w-8"
+                        style={{
+                          maskImage: `url(${section.iconSrc})`,
+                          WebkitMaskImage: `url(${section.iconSrc})`,
+                          maskSize: "contain",
+                          WebkitMaskSize: "contain",
+                          maskRepeat: "no-repeat",
+                          WebkitMaskRepeat: "no-repeat",
+                          maskPosition: "center",
+                          WebkitMaskPosition: "center",
+                        }}
+                      />
+                    </div>
+                  )}
+                  <h2 className="text-primary-text text-[28px] font-bold tracking-tight">
+                    {section.title || "Interested in working together?"}
+                  </h2>
+                  <p className="text-secondary-text mt-3 mb-8 max-w-[600px] text-base leading-relaxed">
+                    {section.subtitle ||
+                      "I am currently available for freelance project"}
+                  </p>
+                  <a
+                    href={sanitizeUrl(section.url || "#")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
+                  >
+                    {section.buttonText || "Let's Connect"}
+                  </a>
+                </div>
+              </section>
+            );
+          }
 
-        {/* FOOTER */}
-        <TemplateFooter />
+          return null;
+        })}
       </div>
+      {!isPreview && <TemplateFooter />}
     </div>
   );
 }
