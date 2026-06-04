@@ -221,10 +221,13 @@ export default function ProfileBuilderContent() {
       dashboardProfile.data
     );
 
-    const appearanceSettings =
+    const appearanceSettingsData =
       profileAppearance.data?.appearance ??
       profileAppearance.data?.data ??
       null;
+
+    const appearanceSettings =
+      appearanceSettingsData?.global ?? appearanceSettingsData;
 
     if (appearanceSettings) {
       appearanceHydratingRef.current = true;
@@ -412,14 +415,43 @@ export default function ProfileBuilderContent() {
     }
 
     appearanceTimerRef.current = setTimeout(() => {
-      saveAppearance({
-        template,
+      const globalAppearance = {
+        template: template,
         accentColour: normalizeColorForApi(iconColor),
         backgroundColour: normalizeColorForApi(bgColor),
         textColour: normalizeColorForApi(textColor),
         font: mapFontToApi(font),
         cornerStyle: mapCornerStyleToApi(borderRadius),
         spacing: clampSpacingForApi(spacing),
+        theme: "light",
+      };
+
+      const buildComponentAppearance = (sectionType: string) => {
+        const sec = sections.find((s) => s.type === sectionType);
+        if (!sec) return globalAppearance;
+        return {
+          ...globalAppearance,
+          ...(sec.bgColor && {
+            backgroundColour: normalizeColorForApi(sec.bgColor),
+          }),
+          ...(sec.textColor && {
+            textColour: normalizeColorForApi(sec.textColor),
+          }),
+          ...(sec.iconColor && {
+            accentColour: normalizeColorForApi(sec.iconColor),
+          }),
+          ...(sec.font && { font: mapFontToApi(sec.font) }),
+        };
+      };
+
+      saveAppearance({
+        global: globalAppearance,
+        components: {
+          bio: buildComponentAppearance("bio"),
+          links: buildComponentAppearance("links"),
+          projects: buildComponentAppearance("projects"),
+          cta: buildComponentAppearance("experience"),
+        },
       });
       appearanceTimerRef.current = null;
     }, 1000);

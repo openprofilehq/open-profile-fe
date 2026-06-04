@@ -112,10 +112,16 @@ export default async function UserProfilePage({ params }: Props) {
     return undefined;
   };
 
-  const rawAppearance = (profile.appearance ||
+  const appearanceObj = (profile.appearance ||
     profile.themeSettings ||
     (content as LegacyContent | null)?.themeSettings ||
-    {}) as PublicProfileAppearance;
+    {}) as Record<string, any>;
+
+  const rawAppearance = (
+    appearanceObj && "global" in appearanceObj && appearanceObj.global
+      ? appearanceObj.global
+      : appearanceObj
+  ) as PublicProfileAppearance;
 
   const themeSettings: PublicProfileAppearance = {
     ...rawAppearance,
@@ -163,7 +169,10 @@ export default async function UserProfilePage({ params }: Props) {
 
     if (activeTemplate === "creator") {
       return (
-        <TemplateAppearanceProvider appearance={themeSettings} className="flex min-h-screen w-full flex-col">
+        <TemplateAppearanceProvider
+          appearance={themeSettings}
+          className="flex min-h-screen w-full flex-col"
+        >
           <CreatorDashboardView
             profile={dashboardProfile}
             content={profileContent}
@@ -175,7 +184,10 @@ export default async function UserProfilePage({ params }: Props) {
 
     if (activeTemplate === "professional") {
       return (
-        <TemplateAppearanceProvider appearance={themeSettings} className="flex min-h-screen w-full flex-col">
+        <TemplateAppearanceProvider
+          appearance={themeSettings}
+          className="flex min-h-screen w-full flex-col"
+        >
           <ProfessionalDashboardView
             profile={dashboardProfile}
             content={profileContent}
@@ -187,7 +199,10 @@ export default async function UserProfilePage({ params }: Props) {
 
     if (activeTemplate === "portfolio") {
       return (
-        <TemplateAppearanceProvider appearance={themeSettings} className="flex min-h-screen w-full flex-col">
+        <TemplateAppearanceProvider
+          appearance={themeSettings}
+          className="flex min-h-screen w-full flex-col"
+        >
           <PortfolioDashboardView
             profile={dashboardProfile}
             content={profileContent}
@@ -283,8 +298,17 @@ export default async function UserProfilePage({ params }: Props) {
 
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const secProps = (content?.bio || {}) as any;
-              const secBgColor = secProps.bgColor || globalBgColor;
-              const secTextColor = secProps.textColor || globalTextColor;
+              const secAppearance = profile.appearance?.components?.bio || {};
+              const secBgColor =
+                secAppearance.backgroundColour ||
+                secAppearance.bgColor ||
+                secProps.bgColor ||
+                globalBgColor;
+              const secTextColor =
+                secAppearance.textColour ||
+                secAppearance.textColor ||
+                secProps.textColor ||
+                globalTextColor;
 
               const cardStyle = {
                 ...defaultCardStyle,
@@ -342,8 +366,17 @@ export default async function UserProfilePage({ params }: Props) {
               const links = (content.links.items || []) as LinkItem[];
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const secProps = content.links as any;
-              const secBgColor = secProps.bgColor || globalBgColor;
-              const secTextColor = secProps.textColor || globalTextColor;
+              const secAppearance = profile.appearance?.components?.links || {};
+              const secBgColor =
+                secAppearance.backgroundColour ||
+                secAppearance.bgColor ||
+                secProps.bgColor ||
+                globalBgColor;
+              const secTextColor =
+                secAppearance.textColour ||
+                secAppearance.textColor ||
+                secProps.textColor ||
+                globalTextColor;
               const cardStyle = {
                 ...defaultCardStyle,
                 backgroundColor: secBgColor,
@@ -457,9 +490,23 @@ export default async function UserProfilePage({ params }: Props) {
 
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const secProps = content.projects as any;
-              const secBgColor = secProps.bgColor || globalBgColor;
-              const secTextColor = secProps.textColor || globalTextColor;
-              const secIconColor = secProps.iconColor || globalIconColor;
+              const secAppearance =
+                profile.appearance?.components?.projects || {};
+              const secBgColor =
+                secAppearance.backgroundColour ||
+                secAppearance.bgColor ||
+                secProps.bgColor ||
+                globalBgColor;
+              const secTextColor =
+                secAppearance.textColour ||
+                secAppearance.textColor ||
+                secProps.textColor ||
+                globalTextColor;
+              const secIconColor =
+                secAppearance.accentColour ||
+                secAppearance.iconColor ||
+                secProps.iconColor ||
+                globalIconColor;
               const cardStyle = {
                 ...defaultCardStyle,
                 backgroundColor: secBgColor,
@@ -713,9 +760,22 @@ export default async function UserProfilePage({ params }: Props) {
               if (!content.cta.visible) return null;
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const secProps = content.cta as any;
-              const secBgColor = secProps.bgColor || globalBgColor;
-              const secTextColor = secProps.textColor || globalTextColor;
-              const secIconColor = secProps.iconColor || globalIconColor;
+              const secAppearance = profile.appearance?.components?.cta || {};
+              const secBgColor =
+                secAppearance.backgroundColour ||
+                secAppearance.bgColor ||
+                secProps.bgColor ||
+                globalBgColor;
+              const secTextColor =
+                secAppearance.textColour ||
+                secAppearance.textColor ||
+                secProps.textColor ||
+                globalTextColor;
+              const secIconColor =
+                secAppearance.accentColour ||
+                secAppearance.iconColor ||
+                secProps.iconColor ||
+                globalIconColor;
               const cardStyle = {
                 ...defaultCardStyle,
                 backgroundColor: secBgColor,

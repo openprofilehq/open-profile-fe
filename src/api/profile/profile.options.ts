@@ -101,8 +101,11 @@ export const saveTemplateOption = mutationOptions({
 
     const appearanceRes = await updateProfileAppearance({
       ...currentAppearance,
-      template,
-    });
+      global: {
+        ...(currentAppearance.global || {}),
+        template,
+      } as any,
+    } as any);
 
     try {
       const {
@@ -112,7 +115,10 @@ export const saveTemplateOption = mutationOptions({
         backgroundColour: _backgroundColour,
         textColour: _textColour,
         ...allowedThemeSettings
-      } = currentAppearance as Record<string, unknown>;
+      } = (currentAppearance.global || currentAppearance) as Record<
+        string,
+        unknown
+      >;
       await upsertDraft({
         themeSettings: {
           ...allowedThemeSettings,

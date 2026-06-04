@@ -168,25 +168,48 @@ export type ProfileAppearanceCornerStyle =
   | string;
 
 export type ProfileAppearanceSettings = {
-  template: string;
-  accentColour: string;
-  backgroundColour?: string;
-  textColour?: string;
-  textColor?: string;
-  bgColor?: string;
-  font: ProfileAppearanceFont;
-  cornerStyle: ProfileAppearanceCornerStyle;
-  spacing: number;
-};
-
-export type ProfileAppearanceRequest = {
+  global?: {
+    template: string;
+    accentColour: string;
+    backgroundColour?: string;
+    textColour?: string;
+    textColor?: string;
+    bgColor?: string;
+    font: ProfileAppearanceFont;
+    cornerStyle: ProfileAppearanceCornerStyle;
+    spacing: number;
+    theme?: string;
+  };
+  components?: Record<string, any>;
   template?: string;
   accentColour?: string;
   backgroundColour?: string;
   textColour?: string;
+  textColor?: string;
+  bgColor?: string;
   font?: ProfileAppearanceFont;
   cornerStyle?: ProfileAppearanceCornerStyle;
   spacing?: number;
+};
+
+export type ProfileAppearanceRequest = {
+  global: {
+    template?: string;
+    accentColour?: string;
+    backgroundColour?: string;
+    textColour?: string;
+    font?: ProfileAppearanceFont;
+    cornerStyle?: ProfileAppearanceCornerStyle;
+    spacing?: number;
+    theme?: string;
+  };
+  components?: {
+    bio?: Record<string, unknown>;
+    links?: Record<string, unknown>;
+    projects?: Record<string, unknown>;
+    cta?: Record<string, unknown>;
+    [key: string]: unknown;
+  };
 };
 
 export type ProfileAppearanceResponse = {
