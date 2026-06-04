@@ -8,9 +8,15 @@ export async function GET(request: NextRequest) {
   const accessToken = searchParams.get("accessToken");
   const refreshToken = searchParams.get("refreshToken");
 
-  // Backend sets cookies in its redirect response — just proceed
   if (accessToken && refreshToken) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    const response = NextResponse.redirect(new URL("/dashboard", request.url));
+    response.cookies.set("auth", "1", {
+      path: "/",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60,
+      ...(env.COOKIE_DOMAIN ? { domain: env.COOKIE_DOMAIN } : {}),
+    });
+    return response;
   }
 
   const code = searchParams.get("code");
@@ -45,9 +51,14 @@ export async function GET(request: NextRequest) {
     response.cookies.set(name, value, cookieOptions);
   }
 
-  const hasAccessToken = setCookies.some((s) =>
-    /^accessToken=/i.test(s.trim())
-  );
+  const hasAccessToken = setCookies.some((s) => {
+    const trimmed = s.trim();
+    const separatorIndex = trimmed.indexOf("=");
+    return (
+      separatorIndex !== -1 &&
+      trimmed.slice(0, separatorIndex) === "accessToken"
+    );
+  });
   if (hasAccessToken) {
     response.cookies.set("auth", "1", {
       path: "/",
