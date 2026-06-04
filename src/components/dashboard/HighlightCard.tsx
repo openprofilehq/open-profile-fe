@@ -16,29 +16,7 @@ export default function HighlightCard({ details }: Props) {
   const highlightedProject = projects.find(isProjectHighlighted);
 
   if (!highlightedProject) {
-    return (
-      <section className="border-border bg-background rounded-[12px] border p-4 sm:p-6">
-        <h2 className="text-xl font-bold">Highlight</h2>
-
-        <div className="mt-4 flex flex-col gap-6 md:flex-row md:items-center">
-          <div className="bg-secondary-bg flex flex-1 justify-center rounded-[12px] p-4">
-            <div className="text-tertiary-text flex h-[120px] w-full max-w-[160px] items-center justify-center rounded-[12px] bg-neutral-200 text-sm">
-              No image
-            </div>
-          </div>
-
-          <div className="min-w-0 flex-1">
-            <h3 className="text-secondary-text text-xl font-bold">
-              No project highlighted
-            </h3>
-            <p className="text-tertiary-text mt-2 text-sm">
-              Edit your projects and check &quot;Highlight&quot; to feature a
-              project here.
-            </p>
-          </div>
-        </div>
-      </section>
-    );
+    return null;
   }
 
   const rawImageSrc = highlightedProject.imageSrc;

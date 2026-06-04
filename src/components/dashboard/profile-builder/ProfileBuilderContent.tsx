@@ -27,6 +27,10 @@ import type {
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { isApiError } from "@/api/base";
 import { ROUTES } from "@/constants/routes";
+import {
+  createProfileAppearanceRequest,
+  getAppearanceResponseGlobal,
+} from "@/utils/profileAppearance";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
@@ -188,6 +192,10 @@ export default function ProfileBuilderContent() {
     "sharp" | "rounded" | "pill"
   >("rounded");
 
+  const [appearanceTheme, setAppearanceTheme] = useState<"light" | "dark">(
+    "light"
+  );
+
   const [template, setTemplate] = useState<string>("creator");
   const [sections, setSections] = useState<Section[]>([]);
   const [sectionToDelete, setSectionToDelete] = useState<string | null>(null);
@@ -286,6 +294,13 @@ export default function ProfileBuilderContent() {
           setBorderRadius(
             mapCornerStyleFromApi(appearanceSettings.cornerStyle)
           );
+        }
+
+        if (
+          appearanceSettings.theme === "light" ||
+          appearanceSettings.theme === "dark"
+        ) {
+          setAppearanceTheme(appearanceSettings.theme);
         }
 
         queueMicrotask(() => {
@@ -495,6 +510,7 @@ export default function ProfileBuilderContent() {
     iconColor,
     spacing,
     borderRadius,
+    appearanceTheme,
     saveAppearance,
     sectionAppearanceDeps,
   ]);
