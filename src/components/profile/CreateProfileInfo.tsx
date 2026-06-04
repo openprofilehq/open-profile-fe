@@ -160,7 +160,7 @@ export default function CreateProfileInfo({
                     setErrors({ ...errors, firstName: undefined });
                 }}
                 placeholder="Enter your first name"
-                className={`border-2 bg-white shadow-none ${errors.firstName ? "focus-visible:ring-danger-text border-danger-text" : "border-active-bg"}`}
+                className={`border-2 bg-white shadow-none ${errors.firstName ? "border-danger-text focus-visible:ring-danger-text" : "border-active-bg"}`}
               />
               {errors.firstName && (
                 <p className="text-danger-text mt-1 text-sm">

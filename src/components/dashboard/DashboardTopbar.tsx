@@ -34,6 +34,7 @@ export default function DashboardTopbar() {
   const draftUpdatedAtRef = useRef<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const dropdownRef = useOutsideClick(() => setDropdownOpen(false));
   const profileFullName = profile?.fullName?.trim();
@@ -166,14 +167,14 @@ export default function DashboardTopbar() {
                 aria-label="User menu"
                 className="bg-brand-hover-bg text-inverse-text flex h-9 w-9 cursor-pointer items-center justify-center overflow-hidden rounded-full text-xs font-bold transition-opacity hover:opacity-90"
               >
-                {profilePhotoUrl ? (
+                {!imageError && profilePhotoUrl ? (
                   <Image
                     src={profilePhotoUrl}
                     alt="Profile"
                     width={36}
                     height={36}
                     className="h-full w-full object-cover"
-                    unoptimized
+                    onError={() => setImageError(true)}
                   />
                 ) : (
                   initials
