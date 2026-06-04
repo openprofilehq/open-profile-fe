@@ -162,6 +162,27 @@ export function contentToSections(
       iconId: content?.cta?.iconId ?? null,
       iconSrc: content?.cta?.iconSrc ?? null,
       iconLabel: content?.cta?.iconLabel ?? null,
+      textColor: (content?.cta as Record<string, unknown>)?.textColor as
+        | string
+        | undefined,
+      bgColor: (content?.cta as Record<string, unknown>)?.bgColor as
+        | string
+        | undefined,
+      font: (content?.cta as Record<string, unknown>)?.font as
+        | string
+        | undefined,
+      iconColor: (content?.cta as Record<string, unknown>)?.iconColor as
+        | string
+        | undefined,
+      paddingTop: (content?.cta as Record<string, unknown>)?.paddingTop as
+        | number
+        | undefined,
+      paddingBottom: (content?.cta as Record<string, unknown>)
+        ?.paddingBottom as number | undefined,
+      gap: (content?.cta as Record<string, unknown>)?.gap as number | undefined,
+      padding: (content?.cta as Record<string, unknown>)?.padding as
+        | number
+        | undefined,
     };
   });
 }
@@ -270,10 +291,13 @@ export function sectionsToContent(
           ...(projectsSection.layout && { layout: projectsSection.layout }),
           ...sectionStyleFields(projectsSection),
           items: (projectsSection.projects ?? []).map((p) => {
-            const isHighlighted = p.highlighted === true || String(p.highlighted) === "true";
+            const isHighlighted =
+              p.highlighted === true || String(p.highlighted) === "true";
             // Note: The "hl_" prefix is a presentation-layer convention used for the highlighted project feature.
             // We defensively strip it here to ensure the backend only receives the original UUID.
-            const baseId = String(p.id).startsWith("hl_") ? String(p.id).slice(3) : p.id;
+            const baseId = String(p.id).startsWith("hl_")
+              ? String(p.id).slice(3)
+              : p.id;
             const mappedProject: Record<string, unknown> = {
               id: isHighlighted ? `hl_${baseId}` : baseId,
               title: p.title || "",

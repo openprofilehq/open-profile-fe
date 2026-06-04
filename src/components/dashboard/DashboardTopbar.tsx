@@ -16,6 +16,7 @@ import { isApiError } from "@/api/base";
 import { publishProfile } from "@/api/profile/profile.service";
 import { dashboardProfileOption } from "@/api/profile/profile.options";
 import { getInitials } from "@/utils/avatar";
+import { getImageUrl } from "@/utils/profile";
 import type { PublishProfileResponse } from "@/api/profile/profile.type";
 
 const navLinks = [
@@ -33,6 +34,7 @@ export default function DashboardTopbar() {
   const draftUpdatedAtRef = useRef<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const dropdownRef = useOutsideClick(() => setDropdownOpen(false));
   const profileFullName = profile?.fullName?.trim();
@@ -43,6 +45,8 @@ export default function DashboardTopbar() {
   const initials = getInitials(displayName, {
     fallback: "??",
   });
+
+  const profilePhotoUrl = getImageUrl(profile?.photoUrl || user?.photoUrl);
 
   const { mutate: doPublish, isPending: isPublishing } = useMutation<
     PublishProfileResponse,
@@ -161,9 +165,20 @@ export default function DashboardTopbar() {
               <button
                 onClick={() => setDropdownOpen((o) => !o)}
                 aria-label="User menu"
-                className="bg-brand-hover-bg text-inverse-text flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-xs font-bold transition-opacity hover:opacity-90"
+                className="bg-brand-hover-bg text-inverse-text flex h-9 w-9 cursor-pointer items-center justify-center overflow-hidden rounded-full text-xs font-bold transition-opacity hover:opacity-90"
               >
-                {initials}
+                {!imageError && profilePhotoUrl ? (
+                  <Image
+                    src={profilePhotoUrl}
+                    alt="Profile"
+                    width={36}
+                    height={36}
+                    className="h-full w-full object-cover"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  initials
+                )}
               </button>
 
               <AnimatePresence>

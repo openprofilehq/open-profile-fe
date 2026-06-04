@@ -1,11 +1,12 @@
 import { ApiError } from "@/api/base/base.error";
 import { ApiResponse } from "@/api/base/base.type";
-import { env } from "@/env/client";
 import axios, {
   AxiosError,
   AxiosRequestConfig,
   InternalAxiosRequestConfig,
 } from "axios";
+
+import { env } from "@/env/client";
 
 declare module "axios" {
   interface InternalAxiosRequestConfig {
@@ -13,13 +14,11 @@ declare module "axios" {
   }
 }
 
-const isServer = typeof window === "undefined";
-const isClientDev = !isServer && process.env.NODE_ENV === "development";
-const publicApiOrigin = env.NEXT_PUBLIC_API_URL.replace(/\/+$/, "");
-const apiBase = isClientDev ? "/api/v1" : `${publicApiOrigin}/api/v1`;
-
 export const api = axios.create({
-  baseURL: apiBase,
+  baseURL:
+    process.env.NODE_ENV === "development"
+      ? "/api/v1"
+      : `${env.NEXT_PUBLIC_API_URL}/api/v1`,
   timeout: 60 * 1000,
   withCredentials: true,
 });
@@ -45,7 +44,6 @@ api.interceptors.response.use(
 
     const originalRequest = error.config as AxiosRequestConfig & {
       _retry?: boolean;
-      silent?: boolean;
     };
 
     const isAuthEndpoint =
@@ -53,7 +51,6 @@ api.interceptors.response.use(
       !originalRequest.url?.match(/\/auth\/me(?:$|\?|\/)/);
 
     if (
-      isServer || // Prevent server-side silent token refresh (CR1)
       error.response?.status !== 401 ||
       originalRequest._retry ||
       isAuthEndpoint
@@ -65,43 +62,26 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       return new Promise<void>((resolve, reject) => {
         failedQueue.push({ resolve, reject });
-      })
-        .then(() => api(originalRequest))
-        .catch((err) => Promise.reject(err));
+      }).then(() => api(originalRequest));
     }
 
     originalRequest._retry = true;
     isRefreshing = true;
 
     try {
-      const refreshUrl = `/auth/refresh-token`;
-      await api.post(refreshUrl, {}, { withCredentials: true });
+      // Call the internal refresh endpoint which will set the new cookies
+      await axios.post(
+        "/api/internal/auth/refresh",
+        {},
+        { withCredentials: true }
+      );
+
+      // Retry the original request
+      const result = await api(originalRequest);
       processQueue(null);
-
-      return await api(originalRequest);
-    } catch (refreshError: unknown) {
-      const err = refreshError as AxiosError;
-      const isSilent = originalRequest.silent === true;
-
-      if (!isSilent) {
-        console.error(
-          "[Interceptor] Refresh failed!",
-          err?.response?.status,
-          err?.response?.data
-        );
-      }
+      return result;
+    } catch (refreshError) {
       processQueue(refreshError);
-
-      if (typeof window !== "undefined" && !isSilent) {
-        if (!window.location.pathname.startsWith("/login")) {
-          const returnTo = encodeURIComponent(
-            window.location.pathname +
-              window.location.search +
-              window.location.hash
-          );
-          window.location.href = `/login?returnTo=${returnTo}`;
-        }
-      }
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;

@@ -17,6 +17,7 @@ import {
   isProjectHighlighted,
 } from "@/utils/profile";
 import type { Section, ProfilePreview, SavedLink, ProjectItem } from "../types";
+import { getFontClass } from "../../templates/TemplateAppearanceProvider";
 import HighlightPreviewCard from "./HighlightPreviewCard";
 
 interface DefaultPreviewProps {
@@ -94,7 +95,7 @@ export default function DefaultPreview({
           return (
             <div
               key={section.id}
-              className={`group relative transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""}`}
+              className={`group relative transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
             >
               {renderControls(section, true)}
               <section
@@ -133,7 +134,7 @@ export default function DefaultPreview({
           return (
             <div
               key={section.id}
-              className={`group relative transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""}`}
+              className={`group relative transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
             >
               {renderControls(section)}
               <section
@@ -233,7 +234,7 @@ export default function DefaultPreview({
               <HighlightPreviewCard projectsSection={section} />
 
               <div
-                className={`group relative transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""}`}
+                className={`group relative transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
               >
                 {renderControls(section)}
                 <section
@@ -370,7 +371,7 @@ export default function DefaultPreview({
           return (
             <div
               key={section.id}
-              className={`group relative transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""}`}
+              className={`group relative transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
             >
               {renderControls(section)}
               <section
@@ -383,13 +384,38 @@ export default function DefaultPreview({
                     gap: section.gap ? `${section.gap}px` : undefined,
                   }}
                 >
-                  <span className="inline-flex items-center gap-2 rounded-md border p-2 text-sm font-medium">
-                    <MessageSquare size={12} />
+                  <span className="inline-flex items-center gap-2 p-2 font-medium">
+                    {section.iconSrc ? (
+                      <div
+                        className="bg-brand-hover-bg h-8 w-8"
+                        style={{
+                          maskImage: `url(${section.iconSrc})`,
+                          WebkitMaskImage: `url(${section.iconSrc})`,
+                          maskSize: "contain",
+                          WebkitMaskSize: "contain",
+                          maskRepeat: "no-repeat",
+                          WebkitMaskRepeat: "no-repeat",
+                          maskPosition: "center",
+                          WebkitMaskPosition: "center",
+                        }}
+                      />
+                    ) : (
+                      <MessageSquare
+                        size={32}
+                        className="text-brand-hover-bg"
+                      />
+                    )}
                   </span>
-                  <h4 className="text-center text-2xl font-bold break-all">
-                    {section.title || "Your CTA"}
-                  </h4>
-
+                  <div className="flex flex-col items-center gap-2">
+                    <h4 className="text-center text-2xl font-bold break-all">
+                      {section.title || "Your CTA"}
+                    </h4>
+                    {section.subtitle && (
+                      <p className="text-secondary-text text-center text-[15px] break-all whitespace-pre-wrap">
+                        {section.subtitle}
+                      </p>
+                    )}
+                  </div>
                   {section.title || section.url ? (
                     <a
                       href={sanitizeUrl(section.url || "#")}

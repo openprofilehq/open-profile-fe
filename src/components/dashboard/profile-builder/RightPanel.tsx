@@ -62,7 +62,7 @@ export default function RightPanel({
   onChangeTemplate,
 }: RightPanelProps) {
   return (
-    <aside className="border-tertiary-b animate-in fade-in bg-background hidden h-full w-[290px] shrink-0 flex-col rounded-2xl border p-6 shadow-sm duration-200 select-none lg:flex">
+    <aside className="border-tertiary-b animate-in fade-in bg-background hidden h-full w-[260px] shrink-0 flex-col rounded-2xl border p-6 shadow-sm duration-200 select-none lg:flex xl:w-[290px]">
       {/* Header */}
       <div className="border-tertiary-b border-b pb-4">
         {selectedSection ? (

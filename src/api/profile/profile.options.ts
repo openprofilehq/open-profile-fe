@@ -3,6 +3,8 @@ import type {
   UpsertDraftRequest,
   ProfileAppearanceRequest,
   TemplateType,
+  ProfileAppearanceValues,
+  ComponentAppearance,
 } from "./profile.type";
 import {
   createProfile,
@@ -18,6 +20,7 @@ import {
 import { isQueryEnabled } from "@/api/base/base.util";
 import { QueryStaleTime } from "@/api/base/base.const";
 import { QueryBaseKeys } from "@/constants/query-keys";
+import { getAppearanceResponseGlobal } from "@/utils/profileAppearance";
 
 export const createProfileOption = mutationOptions({
   mutationKey: [QueryBaseKeys.profile, "create"],
@@ -88,10 +91,23 @@ export const saveTemplateOption = mutationOptions({
   mutationFn: async (templateType: TemplateType) => {
     const template = templateType.toLowerCase();
 
-    let currentAppearance: Partial<ProfileAppearanceRequest> = {};
+    let currentGlobalAppearance: Partial<ProfileAppearanceValues> = {};
+    let currentComponents: Record<string, ComponentAppearance> | undefined;
     try {
       const res = await getProfileAppearance();
-      currentAppearance = res?.appearance ?? res?.data ?? {};
+      currentGlobalAppearance = getAppearanceResponseGlobal(res) ?? {};
+      const appearanceEnvelope = res.appearance || res.data;
+      if (
+        appearanceEnvelope &&
+        typeof appearanceEnvelope === "object" &&
+        "components" in appearanceEnvelope
+      ) {
+        currentComponents = (
+          appearanceEnvelope as {
+            components?: Record<string, ComponentAppearance>;
+          }
+        ).components;
+      }
     } catch (e) {
       console.warn(
         "Could not fetch current appearance, proceeding with minimal payload",
@@ -100,11 +116,15 @@ export const saveTemplateOption = mutationOptions({
     }
 
     const appearanceRes = await updateProfileAppearance({
-      ...currentAppearance,
-      template,
+      global: {
+        ...currentGlobalAppearance,
+        template,
+      },
+      components: currentComponents as ProfileAppearanceRequest["components"],
     });
 
     try {
+      // TODO: Remove fallback to flat currentAppearance once all profiles migrated to nested global structure
       const {
         cornerStyle: _cornerStyle,
         spacing: _spacing,
@@ -112,7 +132,7 @@ export const saveTemplateOption = mutationOptions({
         backgroundColour: _backgroundColour,
         textColour: _textColour,
         ...allowedThemeSettings
-      } = currentAppearance as Record<string, unknown>;
+      } = currentGlobalAppearance as Record<string, unknown>;
       await upsertDraft({
         themeSettings: {
           ...allowedThemeSettings,

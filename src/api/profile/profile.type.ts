@@ -164,34 +164,87 @@ export type ProfileAppearanceCornerStyle =
   | "medium"
   | "round"
   | "rounded"
-  | "pill"
-  | string;
+  | "pill";
 
-export type ProfileAppearanceSettings = {
+export type ComponentAppearance = {
+  backgroundColour?: string;
+  /** @deprecated Use `backgroundColour` instead */
+  bgColor?: string;
+  textColour?: string;
+  /** @deprecated Use `textColour` instead */
+  textColor?: string;
+  accentColour?: string;
+  /** @deprecated Use `accentColour` instead */
+  iconColor?: string;
+  [key: string]: unknown;
+};
+
+export type ProfileAppearanceValues = {
   template: string;
   accentColour: string;
   backgroundColour?: string;
   textColour?: string;
-  textColor?: string;
-  bgColor?: string;
   font: ProfileAppearanceFont;
   cornerStyle: ProfileAppearanceCornerStyle;
   spacing: number;
+  theme?: string;
 };
 
-export type ProfileAppearanceRequest = {
+export type ProfileAppearanceSettings = {
+  global?: {
+    template: string;
+    accentColour: string;
+    backgroundColour?: string;
+    textColour?: string;
+    /** @deprecated Use `textColour` instead */
+    textColor?: string;
+    /** @deprecated Use `backgroundColour` instead */
+    bgColor?: string;
+    font: ProfileAppearanceFont;
+    cornerStyle: ProfileAppearanceCornerStyle;
+    spacing: number;
+    theme?: string;
+  };
+  components?: Record<string, ComponentAppearance>;
   template?: string;
   accentColour?: string;
   backgroundColour?: string;
   textColour?: string;
+  /** @deprecated Use `textColour` instead */
+  textColor?: string;
+  /** @deprecated Use `backgroundColour` instead */
+  bgColor?: string;
   font?: ProfileAppearanceFont;
   cornerStyle?: ProfileAppearanceCornerStyle;
   spacing?: number;
+  theme?: string;
+};
+
+export type ProfileAppearanceRequest = {
+  global?: {
+    template?: string;
+    accentColour?: string;
+    backgroundColour?: string;
+    textColour?: string;
+    font?: ProfileAppearanceFont;
+    cornerStyle?: ProfileAppearanceCornerStyle;
+    spacing?: number;
+    theme?: string;
+  };
+  components?: {
+    bio?: Record<string, unknown>;
+    links?: Record<string, unknown>;
+    projects?: Record<string, unknown>;
+    cta?: Record<string, unknown>;
+    [key: string]: unknown;
+  };
 };
 
 export type ProfileAppearanceResponse = {
   status: string;
   message: string;
+  appearance?: ProfileAppearanceSettings | null;
+  data?: ProfileAppearanceSettings | null;
 };
 
 /**

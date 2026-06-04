@@ -210,7 +210,35 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
             </Link>
           </div>
         )}
-
+        {isSignup && (
+          <div className="flex items-start justify-center gap-3">
+            <Checkbox
+              id="toggle-checkbox"
+              checked={agreed}
+              onCheckedChange={(checked) => setAgreed(!!checked)}
+              className="h-5 w-5 cursor-pointer border-gray-500"
+            />
+            <label
+              htmlFor="toggle-checkbox"
+              className="text-label-text cursor-pointer text-left text-sm leading-tight"
+            >
+              By continuing, you agree to Openprofile&apos;s{" "}
+              <Link
+                href={ROUTES.public.privacy}
+                className="text-link-hover-text font-semibold hover:underline"
+              >
+                privacy policy
+              </Link>
+              , and{" "}
+              <Link
+                href={ROUTES.public.terms}
+                className="text-link-hover-text font-semibold hover:underline"
+              >
+                Terms and Conditions
+              </Link>
+            </label>
+          </div>
+        )}
         <Button
           type="submit"
           disabled={pending || !email || !password || (isSignup && !agreed)}
@@ -223,35 +251,6 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
           {pending ? "Please wait…" : "Continue"}
         </Button>
       </form>
-
-      {isSignup && (
-        <div className="flex gap-2">
-          <Checkbox
-            id="toggle-checkbox"
-            checked={agreed}
-            onCheckedChange={(checked) => setAgreed(!!checked)}
-          />
-          <label
-            htmlFor="toggle-checkbox"
-            className="text-label-text text-center"
-          >
-            By Continuing, you agree to Openprofile&apos;s{" "}
-            <Link
-              href={ROUTES.public.privacy}
-              className="text-link-hover-text font-semibold hover:underline"
-            >
-              privacy policy
-            </Link>
-            , and{" "}
-            <Link
-              href={ROUTES.public.terms}
-              className="text-link-hover-text font-semibold hover:underline"
-            >
-              Terms and Conditions
-            </Link>
-          </label>
-        </div>
-      )}
 
       <div className="text-label-text text-center text-xs">OR</div>
 

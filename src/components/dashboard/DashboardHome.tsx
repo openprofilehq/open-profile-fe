@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import ProfileOverviewCard from "./ProfileOverviewCard";
 
@@ -16,8 +16,13 @@ import {
   dashboardProfileOption,
   profileContentOption,
   profileAppearanceOption,
+  saveTemplateOption,
 } from "@/api/profile/profile.options";
-import { TemplateType } from "@/api/profile/profile.type";
+import type {
+  ProfileAppearanceSettings,
+  TemplateType,
+} from "@/api/profile/profile.type";
+import { getAppearanceResponseGlobal } from "@/utils/profileAppearance";
 
 export default function DashboardHome() {
   const [previewTemplate, setPreviewTemplate] = useState<TemplateType | null>(
@@ -28,14 +33,37 @@ export default function DashboardHome() {
   const profileContent = useQuery(profileContentOption());
   const profileAppearance = useQuery(profileAppearanceOption());
 
-  const appearance =
-    profileAppearance.data?.appearance ?? profileAppearance.data?.data ?? null;
+  const { mutate: saveTemplate } = useMutation({
+    mutationKey: saveTemplateOption.mutationKey,
+    mutationFn: saveTemplateOption.mutationFn,
+    onSuccess() {
+      void profileAppearance.refetch();
+      void dashboardProfile.refetch();
+      void profileContent.refetch();
+    },
+    onError(error: unknown) {
+      console.error(
+        error instanceof Error ? error.message : "Failed to save template."
+      );
+    },
+  });
+
+  const handleTemplateSelection = (selectedTemplate: TemplateType | null) => {
+    setPreviewTemplate(selectedTemplate);
+
+    if (selectedTemplate) {
+      saveTemplate(selectedTemplate);
+    }
+  };
+
+  const apiAppearance = getAppearanceResponseGlobal(profileAppearance.data);
   const profile = dashboardProfile.data;
   const content = profileContent.data;
-  const isProfileLoading = dashboardProfile.isPending;
+  const isProfileLoading =
+    dashboardProfile.isPending || profileAppearance.isPending;
   const isContentLoading = profileContent.isPending;
 
-  // Determine active template
+  // Determine active template and appearance settings
   // 1. Preview template from TemplateSelectionModal takes priority
   // 2. Appearance API
   // 3. Draft content themeSettings
@@ -44,12 +72,23 @@ export default function DashboardHome() {
     | Record<string, unknown>
     | undefined;
 
+  const appearanceSettingsData =
+    (profileAppearance.data as any)?.appearance ||
+    (profileAppearance.data as any)?.data ||
+    profileAppearance.data;
+  const components = (appearanceSettingsData as any)?.components;
+
+  const appearance =
+    apiAppearance || themeSettings || components
+      ? ({
+          ...(themeSettings ?? {}),
+          ...(apiAppearance ?? {}),
+          ...(components ? { components } : {}),
+        } as ProfileAppearanceSettings)
+      : null;
+
   const rawTemplate =
-    previewTemplate ||
-    profileAppearance.data?.appearance?.template ||
-    profileAppearance.data?.data?.template ||
-    themeSettings?.template ||
-    profile?.templateType;
+    previewTemplate || appearance?.template || profile?.templateType;
 
   const activeTemplateMap: Record<
     string,
@@ -93,20 +132,20 @@ export default function DashboardHome() {
         <TemplateSelectionModal
           initialTemplate={initialModalTemplate}
           defaultOpen={true}
-          onPreviewChange={setPreviewTemplate}
+          onPreviewChange={handleTemplateSelection}
         />
       )}
+
       <div className="flex min-w-0 flex-col gap-4">
         <ProfileOverviewCard
           profile={profile}
           isLoading={isProfileLoading}
-          onPreviewChange={setPreviewTemplate}
           previewTemplate={previewTemplate}
         />
       </div>
 
       <TemplateAppearanceProvider
-        appearance={appearance}
+        appearance={appearance?.global ?? appearance}
         className="flex min-w-0 flex-col gap-5"
       >
         {activeTemplate === "portfolio" ? (
