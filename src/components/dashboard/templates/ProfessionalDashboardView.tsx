@@ -68,6 +68,7 @@ export default function ProfessionalDashboardView({
   content,
   isLoadingProfile,
   isLoadingContent,
+  appearance,
   isPreview,
 }: Props) {
   if (isLoadingProfile || isLoadingContent) {
@@ -84,7 +85,7 @@ export default function ProfessionalDashboardView({
     profile || ({} as any)
   );
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const componentsAppearance = (profile as any)?.appearance?.components || {};
+  const componentsAppearance = (appearance as any)?.components || (profile as any)?.appearance?.components || {};
 
   const sections = rawSections.map((section) => {
     const appearanceKey = section.type === "experience" ? "cta" : section.type;
@@ -111,7 +112,7 @@ export default function ProfessionalDashboardView({
   );
 
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex w-full flex-col px-4 sm:px-6">
       <div
         className="text-primary-text mx-auto flex w-full max-w-4xl flex-col py-8 pt-6"
         style={{ gap: "var(--op-spacing, 2rem)" }}

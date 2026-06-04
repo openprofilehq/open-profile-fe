@@ -226,6 +226,24 @@ export default function ProfileBuilderContent() {
       profileAppearance.data?.data ??
       null;
 
+    const components = appearanceSettingsData?.components;
+    if (components) {
+      loadedSections.forEach((section) => {
+        const componentKey = section.type === "experience" ? "cta" : section.type;
+        const compApp = components[componentKey as keyof typeof components] as any;
+        if (compApp) {
+          if (compApp.backgroundColour) section.bgColor = compApp.backgroundColour;
+          else if (compApp.bgColor) section.bgColor = compApp.bgColor;
+          
+          if (compApp.textColour) section.textColor = compApp.textColour;
+          else if (compApp.textColor) section.textColor = compApp.textColor;
+          
+          if (compApp.accentColour) section.iconColor = compApp.accentColour;
+          else if (compApp.iconColor) section.iconColor = compApp.iconColor;
+        }
+      });
+    }
+
     const appearanceSettings =
       appearanceSettingsData?.global ?? appearanceSettingsData;
 
@@ -470,6 +488,7 @@ export default function ProfileBuilderContent() {
     spacing,
     borderRadius,
     saveAppearance,
+    sections,
   ]);
 
   useEffect(() => {

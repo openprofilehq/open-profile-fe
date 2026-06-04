@@ -106,7 +106,7 @@ export default function DashboardHome() {
       </div>
 
       <TemplateAppearanceProvider
-        appearance={appearance}
+        appearance={(appearance as any)?.global ?? appearance}
         className="flex min-w-0 flex-col gap-5"
       >
         {activeTemplate === "portfolio" ? (

@@ -74,6 +74,7 @@ export default function CreatorDashboardView({
   content,
   isLoadingProfile,
   isLoadingContent,
+  appearance,
   isPreview,
 }: Props) {
   const [activeTab, setActiveTab] = useState<"projects" | "links" | "about">(
@@ -94,7 +95,7 @@ export default function CreatorDashboardView({
     profile || ({} as any)
   );
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const componentsAppearance = (profile as any)?.appearance?.components || {};
+  const componentsAppearance = (appearance as any)?.components || (profile as any)?.appearance?.components || {};
 
   const sections = rawSections.map((section) => {
     const appearanceKey = section.type === "experience" ? "cta" : section.type;
@@ -142,7 +143,7 @@ export default function CreatorDashboardView({
     .slice(0, 4);
 
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex w-full flex-col px-4 sm:px-6">
       {/* CREATOR HEADER (Bio Section) */}
       <div
         className="relative mt-6 flex w-full flex-col items-center gap-4 rounded-2xl p-6 text-center"

@@ -1,4 +1,5 @@
 import Image from "next/image";
+export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -173,11 +174,25 @@ export default async function UserProfilePage({ params }: Props) {
           appearance={themeSettings}
           className="flex min-h-screen w-full flex-col"
         >
-          <CreatorDashboardView
-            profile={dashboardProfile}
-            content={profileContent}
-            appearance={themeSettings as unknown as ProfileAppearanceSettings}
-          />
+          <div className="flex w-full shrink-0 justify-center py-6 z-50 relative">
+            <Link href="/">
+              <Image
+                src="/auth/logo.png"
+                alt="Open.Profile"
+                width={120}
+                height={28}
+                className="object-contain drop-shadow-sm dark:invert transition-opacity hover:opacity-80"
+                priority
+              />
+            </Link>
+          </div>
+          <div className="flex-1">
+            <CreatorDashboardView
+              profile={dashboardProfile}
+              content={profileContent}
+              appearance={themeSettings as unknown as ProfileAppearanceSettings}
+            />
+          </div>
         </TemplateAppearanceProvider>
       );
     }
@@ -188,11 +203,25 @@ export default async function UserProfilePage({ params }: Props) {
           appearance={themeSettings}
           className="flex min-h-screen w-full flex-col"
         >
-          <ProfessionalDashboardView
-            profile={dashboardProfile}
-            content={profileContent}
-            appearance={themeSettings as unknown as ProfileAppearanceSettings}
-          />
+          <div className="flex w-full shrink-0 justify-center py-6 z-50 relative">
+            <Link href="/">
+              <Image
+                src="/auth/logo.png"
+                alt="Open.Profile"
+                width={120}
+                height={28}
+                className="object-contain drop-shadow-sm dark:invert transition-opacity hover:opacity-80"
+                priority
+              />
+            </Link>
+          </div>
+          <div className="flex-1">
+            <ProfessionalDashboardView
+              profile={dashboardProfile}
+              content={profileContent}
+              appearance={themeSettings as unknown as ProfileAppearanceSettings}
+            />
+          </div>
         </TemplateAppearanceProvider>
       );
     }
@@ -203,11 +232,25 @@ export default async function UserProfilePage({ params }: Props) {
           appearance={themeSettings}
           className="flex min-h-screen w-full flex-col"
         >
-          <PortfolioDashboardView
-            profile={dashboardProfile}
-            content={profileContent}
-            appearance={themeSettings as unknown as ProfileAppearanceSettings}
-          />
+          <div className="flex w-full shrink-0 justify-center py-6 z-50 relative">
+            <Link href="/">
+              <Image
+                src="/auth/logo.png"
+                alt="Open.Profile"
+                width={120}
+                height={28}
+                className="object-contain drop-shadow-sm dark:invert transition-opacity hover:opacity-80"
+                priority
+              />
+            </Link>
+          </div>
+          <div className="flex-1">
+            <PortfolioDashboardView
+              profile={dashboardProfile}
+              content={profileContent}
+              appearance={themeSettings as unknown as ProfileAppearanceSettings}
+            />
+          </div>
         </TemplateAppearanceProvider>
       );
     }
