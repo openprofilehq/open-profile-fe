@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import ProfileOverviewCard from "./ProfileOverviewCard";
@@ -10,6 +10,7 @@ import CreatorDashboardView from "./templates/CreatorDashboardView";
 import PortfolioDashboardView from "./templates/PortfolioDashboardView";
 import ProfessionalDashboardView from "./templates/ProfessionalDashboardView";
 import TemplateAppearanceProvider from "./templates/TemplateAppearanceProvider";
+import { TemplateSelectionModal } from "./TemplateSelectionModal";
 
 import {
   dashboardProfileOption,
@@ -65,8 +66,36 @@ export default function DashboardHome() {
       ? activeTemplateMap[rawTemplate.toLowerCase()] || "default"
       : "default";
 
+  const [hasSeenModal, setHasSeenModal] = useState(true);
+
+  useEffect(() => {
+    if (profile && !profile.templateType) {
+      const storageKey = `hasSeenTemplateModal_${profile.username}`;
+      const seen = localStorage.getItem(storageKey);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setHasSeenModal(Boolean(seen));
+      if (!seen) {
+        localStorage.setItem(storageKey, "true");
+      }
+    }
+  }, [profile]);
+
+  const isFirstTimeUser = !!(profile && !profile.templateType && !hasSeenModal);
+  const initialModalTemplate = (
+    activeTemplate === "default"
+      ? "Default"
+      : activeTemplate.charAt(0).toUpperCase() + activeTemplate.slice(1)
+  ) as TemplateType;
+
   return (
     <div className="mx-auto grid w-full max-w-[1360px] grid-cols-1 gap-5 overflow-x-hidden xl:grid-cols-[0.75fr_1.25fr] 2xl:max-w-[1480px]">
+      {isFirstTimeUser && (
+        <TemplateSelectionModal
+          initialTemplate={initialModalTemplate}
+          defaultOpen={true}
+          onPreviewChange={setPreviewTemplate}
+        />
+      )}
       <div className="flex min-w-0 flex-col gap-4">
         <ProfileOverviewCard
           profile={profile}

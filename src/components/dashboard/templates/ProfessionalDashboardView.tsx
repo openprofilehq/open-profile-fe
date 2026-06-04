@@ -10,6 +10,7 @@ import {
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
 import { getImageUrl, isProjectHighlighted } from "@/utils/profile";
+import { getInitials } from "@/utils/avatar";
 import { TemplateFooter } from "./TemplateFooter";
 import HighlightCard from "../HighlightCard";
 
@@ -110,8 +111,8 @@ export default function ProfessionalDashboardView({
                   unoptimized
                 />
               ) : (
-                <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-full w-full items-center justify-center text-[32px] font-bold">
-                  {name.charAt(0).toUpperCase()}
+                <div className="bg-brand-hover-bg text-inverse-text flex h-full w-full items-center justify-center text-[32px] font-bold">
+                  {getInitials(name)}
                 </div>
               )}
             </div>

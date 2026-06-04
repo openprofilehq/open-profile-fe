@@ -128,25 +128,28 @@ export async function callApi<TResData>({
   } catch (e) {
     if (e instanceof AxiosError) {
       if (e.code === "ERR_CANCELED") throw e; // silently propagate aborts
-      if (process.env.NODE_ENV === "development") {
-        console.error(
-          "[callApi] error",
-          e.response?.status,
-          JSON.stringify(e.response?.data),
-          "code:",
-          e.code,
-          "msg:",
-          e.message
-        );
-      } else {
-        console.error(
-          "[callApi] error",
-          e.response?.status,
-          "code:",
-          e.code,
-          "msg:",
-          e.message
-        );
+
+      if (!silent) {
+        if (process.env.NODE_ENV === "development") {
+          console.error(
+            "[callApi] error",
+            e.response?.status,
+            e.response?.data,
+            "code:",
+            e.code,
+            "msg:",
+            e.message
+          );
+        } else {
+          console.error(
+            "[callApi] error",
+            e.response?.status,
+            "code:",
+            e.code,
+            "msg:",
+            e.message
+          );
+        }
       }
       throw new ApiError(
         e.response ? getApiErrorMessage(e.response.data?.message) : e.message,

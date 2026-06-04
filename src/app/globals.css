@@ -54,11 +54,14 @@
   --color-primary-text: var(--primary-text);
   --color-secondary-text: var(--secondary-text);
   --color-tertiary-text: var(--tertiary-text);
+  --color-tertiary-foreground-text: var(--tertiary-foreground-text);
   --color-inverse-text: var(--inverse-text);
   --color-disabled-text: var(--disabled-text);
   --color-brand-text: var(--brand-text);
+  --color-danger-text: var(--danger-text);
   --color-brand-subtle-text: var(--brand-subtle-text);
   --color-link-text: var(--link-text);
+  --color-secondary-foreground-text: var(--secondary-foreground-text);
   --color-link-hover-text: var(--link-hover-text);
   --color-link-active-text: var(--link-active-text);
   --color-info-text: var(--info-text);
@@ -77,6 +80,7 @@
 
   /* bg colors */
   --color-primary-bg: var(--primary-bg);
+  --color-primary-foreground-bg: var(--primary-foreground-bg);
   --color-secondary-bg: var(--secondary-bg);
   --color-hover-bg: var(--hover-bg);
   --color-active-bg: var(--active-bg);
@@ -110,6 +114,7 @@
 
   /* border colors */
   --color-primary-b: var(--primary-b);
+  --color-primary-foreground-b: var(--primary-foreground-b);
   --color-secondary-b: var(--secondary-b);
   --color-tertiary-b: var(--tertiary-b);
   --color-disabled-b: var(--disabled-b);
@@ -270,7 +275,10 @@
   --primary-text: #050505;
   --secondary-text: #454545;
   --tertiary-text: #747474;
+  --tertiary-foreground-text: #525252;
+  --secondary-foreground-text: #6b7280;
   --inverse-text: #e8e8e8;
+  --danger-text: #d92d20;
   --disabled-text: #a2a2a2;
   --brand-text: #0a92a4;
   --brand-subtle-text: #daf2f5;
@@ -294,6 +302,7 @@
 
   /* bg */
   --primary-bg: #fafafa;
+  --primary-foreground-bg: #f2fdfe;
   --secondary-bg: #f6f6f6;
   --hover-bg: #f1f1f1;
   --active-bg: #ededed;
@@ -327,6 +336,7 @@
 
   /* border */
   --primary-b: #ababab;
+  --primary-foreground-b: #e5e5e5;
   --secondary-b: #c9c9c9;
   --tertiary-b: #ededed;
   --disabled-b: #f1f1f1;
@@ -435,4 +445,31 @@
 }
 .custom-slider::-moz-range-thumb:hover {
   background-color: #a5a5a5;
+}
+
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-25%);
+  }
+}
+@keyframes marquee-right {
+  from {
+    transform: translateX(-25%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+.animate-marquee-left {
+  animation: marquee-left 35s linear infinite;
+}
+.animate-marquee-right {
+  animation: marquee-right 35s linear infinite;
+}
+.animate-marquee-left:hover,
+.animate-marquee-right:hover {
+  animation-play-state: paused;
 }
