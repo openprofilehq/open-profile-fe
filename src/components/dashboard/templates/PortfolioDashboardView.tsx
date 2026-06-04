@@ -90,7 +90,6 @@ export default function PortfolioDashboardView({
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const rawSections = contentToSections(
     content || ({ content: {} } as any),
     profile || ({} as any)
@@ -98,7 +97,10 @@ export default function PortfolioDashboardView({
 
   // Patch sections with overrides from profile appearance components
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const componentsAppearance = (appearance as any)?.components || (profile as any)?.appearance?.components || {};
+  const componentsAppearance =
+    (appearance as any)?.components ||
+    (profile as any)?.appearance?.components ||
+    {};
 
   const sections = rawSections.map((section) => {
     // Map 'experience' section type back to 'cta' for appearance lookups
@@ -191,8 +193,8 @@ export default function PortfolioDashboardView({
                         <div
                           className="bg-brand-hover-bg h-4 w-4"
                           style={{
-                            maskImage: `url(${ctaSection.iconSrc})`,
-                            WebkitMaskImage: `url(${ctaSection.iconSrc})`,
+                            maskImage: `url(${getImageUrl(ctaSection.iconSrc)})`,
+                            WebkitMaskImage: `url(${getImageUrl(ctaSection.iconSrc)})`,
                             maskSize: "contain",
                             WebkitMaskSize: "contain",
                             maskRepeat: "no-repeat",
@@ -413,8 +415,8 @@ export default function PortfolioDashboardView({
                       <div
                         className="bg-brand-hover-bg h-8 w-8"
                         style={{
-                          maskImage: `url(${section.iconSrc})`,
-                          WebkitMaskImage: `url(${section.iconSrc})`,
+                          maskImage: `url(${getImageUrl(section.iconSrc)})`,
+                          WebkitMaskImage: `url(${getImageUrl(section.iconSrc)})`,
                           maskSize: "contain",
                           WebkitMaskSize: "contain",
                           maskRepeat: "no-repeat",

@@ -167,25 +167,42 @@ export type ProfileAppearanceCornerStyle =
   | "pill"
   | string;
 
+export type ComponentAppearance = {
+  backgroundColour?: string;
+  /** @deprecated Use `backgroundColour` instead */
+  bgColor?: string;
+  textColour?: string;
+  /** @deprecated Use `textColour` instead */
+  textColor?: string;
+  accentColour?: string;
+  /** @deprecated Use `accentColour` instead */
+  iconColor?: string;
+  [key: string]: unknown;
+};
+
 export type ProfileAppearanceSettings = {
   global?: {
     template: string;
     accentColour: string;
     backgroundColour?: string;
     textColour?: string;
+    /** @deprecated Use `textColour` instead */
     textColor?: string;
+    /** @deprecated Use `backgroundColour` instead */
     bgColor?: string;
     font: ProfileAppearanceFont;
     cornerStyle: ProfileAppearanceCornerStyle;
     spacing: number;
     theme?: string;
   };
-  components?: Record<string, any>;
+  components?: Record<string, ComponentAppearance>;
   template?: string;
   accentColour?: string;
   backgroundColour?: string;
   textColour?: string;
+  /** @deprecated Use `textColour` instead */
   textColor?: string;
+  /** @deprecated Use `backgroundColour` instead */
   bgColor?: string;
   font?: ProfileAppearanceFont;
   cornerStyle?: ProfileAppearanceCornerStyle;
@@ -193,7 +210,7 @@ export type ProfileAppearanceSettings = {
 };
 
 export type ProfileAppearanceRequest = {
-  global: {
+  global?: {
     template?: string;
     accentColour?: string;
     backgroundColour?: string;

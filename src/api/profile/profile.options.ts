@@ -100,14 +100,15 @@ export const saveTemplateOption = mutationOptions({
     }
 
     const appearanceRes = await updateProfileAppearance({
-      ...currentAppearance,
       global: {
         ...(currentAppearance.global || {}),
         template,
-      } as any,
-    } as any);
+      },
+      components: currentAppearance.components,
+    });
 
     try {
+      // TODO: Remove fallback to flat currentAppearance once all profiles migrated to nested global structure
       const {
         cornerStyle: _cornerStyle,
         spacing: _spacing,

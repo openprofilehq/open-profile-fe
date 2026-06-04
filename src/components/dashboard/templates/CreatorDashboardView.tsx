@@ -89,13 +89,15 @@ export default function CreatorDashboardView({
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const rawSections = contentToSections(
     content || ({ content: {} } as any),
     profile || ({} as any)
   );
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const componentsAppearance = (appearance as any)?.components || (profile as any)?.appearance?.components || {};
+  const componentsAppearance =
+    (appearance as any)?.components ||
+    (profile as any)?.appearance?.components ||
+    {};
 
   const sections = rawSections.map((section) => {
     const appearanceKey = section.type === "experience" ? "cta" : section.type;
@@ -145,114 +147,118 @@ export default function CreatorDashboardView({
   return (
     <div className="flex w-full flex-col px-4 sm:px-6">
       {/* CREATOR HEADER (Bio Section) */}
-      <div
-        className="relative mt-6 flex w-full flex-col items-center gap-4 rounded-2xl p-6 text-center"
-        style={getSectionStyle(bioSection)}
-      >
-        <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
-          {getImageUrl(profile?.photoUrl) ? (
-            <Image
-              src={getImageUrl(profile?.photoUrl) || ""}
-              alt={profile?.fullName ?? "Profile avatar"}
-              fill
-              className="object-cover"
-              unoptimized
-            />
-          ) : (
-            <div className="bg-brand-hover-bg text-inverse-text flex h-full w-full items-center justify-center text-[40px] font-bold">
-              {getInitials(resolvedName)}
+      {(!bioSection || bioSection.visible !== false) && (
+        <div
+          className="relative mt-6 flex w-full flex-col items-center gap-4 rounded-2xl p-6 text-center"
+          style={getSectionStyle(bioSection)}
+        >
+          <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
+            {getImageUrl(profile?.photoUrl) ? (
+              <Image
+                src={getImageUrl(profile?.photoUrl) || ""}
+                alt={profile?.fullName ?? "Profile avatar"}
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            ) : (
+              <div className="bg-brand-hover-bg text-inverse-text flex h-full w-full items-center justify-center text-[40px] font-bold">
+                {getInitials(resolvedName)}
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col items-center">
+            <h1 className="text-primary-text flex items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
+              {resolvedName}
+            </h1>
+            <p className="text-secondary-text mt-1 text-[15px]">
+              {getDisplayProfileUrl(profile?.username || "micaela")}
+            </p>
+          </div>
+
+          {socialLinks.length > 0 && (
+            <div className="mt-2 flex items-center gap-4">
+              {socialLinks.map((link, i) => {
+                return (
+                  <a
+                    key={i}
+                    href={sanitizeUrl(link.url || "")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-secondary-text hover:text-primary-text transition-colors"
+                  >
+                    {getLinkIcon(
+                      (link.url || "") + " " + (link.title || link.label || "")
+                    )}
+                  </a>
+                );
+              })}
+            </div>
+          )}
+
+          {ctaSection && ctaSection.visible && ctaSection.url && (
+            <div className="relative mt-4">
+              <a
+                href={sanitizeUrl(ctaSection.url)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
+              >
+                {ctaSection.iconSrc ? (
+                  <Image
+                    src={getImageUrl(ctaSection.iconSrc) || ""}
+                    alt="CTA Icon"
+                    width={16}
+                    height={16}
+                    className="h-4 w-4 object-contain brightness-0 invert"
+                    unoptimized
+                  />
+                ) : (
+                  <MessageSquare size={16} />
+                )}
+                {ctaSection.buttonText || "Let's Collaborate"}
+              </a>
             </div>
           )}
         </div>
-
-        <div className="flex flex-col items-center">
-          <h1 className="text-primary-text flex items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
-            {resolvedName}
-          </h1>
-          <p className="text-secondary-text mt-1 text-[15px]">
-            {getDisplayProfileUrl(profile?.username || "micaela")}
-          </p>
-        </div>
-
-        {socialLinks.length > 0 && (
-          <div className="mt-2 flex items-center gap-4">
-            {socialLinks.map((link, i) => {
-              return (
-                <a
-                  key={i}
-                  href={sanitizeUrl(link.url || "")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-secondary-text hover:text-primary-text transition-colors"
-                >
-                  {getLinkIcon(
-                    (link.url || "") + " " + (link.title || link.label || "")
-                  )}
-                </a>
-              );
-            })}
-          </div>
-        )}
-
-        {ctaSection && ctaSection.visible && ctaSection.url && (
-          <div className="relative mt-4">
-            <a
-              href={sanitizeUrl(ctaSection.url)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
-            >
-              {ctaSection.iconSrc ? (
-                <Image
-                  src={getImageUrl(ctaSection.iconSrc) || ""}
-                  alt="CTA Icon"
-                  width={16}
-                  height={16}
-                  className="h-4 w-4 object-contain brightness-0 invert"
-                  unoptimized
-                />
-              ) : (
-                <MessageSquare size={16} />
-              )}
-              {ctaSection.buttonText || "Let's Collaborate"}
-            </a>
-          </div>
-        )}
-      </div>
+      )}
 
       {/* CREATOR TABS */}
-      <div
-        className="border-border flex items-center justify-center gap-8 border-b"
-        style={{ marginTop: "var(--op-spacing, 2rem)" }}
-      >
-        <button
-          onClick={() => setActiveTab("projects")}
-          className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "projects" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
+      {visibleSections.some((s) =>
+        ["projects", "links", "bio"].includes(s.type)
+      ) && (
+        <div
+          className="border-border flex items-center justify-center gap-8 border-b"
+          style={{ marginTop: "var(--op-spacing, 2rem)" }}
         >
-          Projects
-          {activeTab === "projects" && (
-            <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
-          )}
-        </button>
-        <button
-          onClick={() => setActiveTab("links")}
-          className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "links" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
-        >
-          Links
-          {activeTab === "links" && (
-            <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
-          )}
-        </button>
-        <button
-          onClick={() => setActiveTab("about")}
-          className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "about" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
-        >
-          About
-          {activeTab === "about" && (
-            <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
-          )}
-        </button>
-      </div>
+          {visibleSections
+            .filter((s) => ["projects", "links", "bio"].includes(s.type))
+            .map((section) => {
+              const tabKey = section.type === "bio" ? "about" : section.type;
+              const label =
+                section.type === "bio"
+                  ? "About"
+                  : section.type === "links"
+                    ? "Links"
+                    : "Projects";
+              return (
+                <button
+                  key={section.id}
+                  onClick={() =>
+                    setActiveTab(tabKey as "projects" | "links" | "about")
+                  }
+                  className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === tabKey ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
+                >
+                  {label}
+                  {activeTab === tabKey && (
+                    <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
+                  )}
+                </button>
+              );
+            })}
+        </div>
+      )}
 
       <div
         className="mt-12 w-full"
