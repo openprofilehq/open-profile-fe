@@ -420,20 +420,30 @@ export default function DefaultDashboardView({
                           </p>
                         )}
                       </div>
-                      {section.title || section.url ? (
+                      {section.url ? (
                         <a
-                          href={sanitizeUrl(section.url || "#")}
+                          href={sanitizeUrl(section.url)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-11 items-center rounded-xl px-8 text-sm font-bold text-white transition-colors"
                         >
                           {section.buttonText || "Visit"}
                         </a>
-                      ) : (
-                        <span className="text-brand-hover-bg flex cursor-pointer items-center gap-1 text-sm font-semibold hover:underline">
-                          Add your CTA <ChevronRight size={14} />
-                        </span>
-                      )}
+                      ) : isPreview ? (
+                        section.title ? (
+                          <a
+                            href="#"
+                            onClick={(e) => e.preventDefault()}
+                            className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-11 items-center rounded-xl px-8 text-sm font-bold text-white transition-colors"
+                          >
+                            {section.buttonText || "Visit"}
+                          </a>
+                        ) : (
+                          <span className="text-brand-hover-bg flex cursor-pointer items-center gap-1 text-sm font-semibold hover:underline">
+                            Add your CTA <ChevronRight size={14} />
+                          </span>
+                        )
+                      ) : null}
                     </div>
                   </section>
                 </div>

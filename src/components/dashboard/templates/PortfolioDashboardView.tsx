@@ -438,14 +438,24 @@ export default function PortfolioDashboardView({
                     {section.subtitle ||
                       "I am currently available for freelance project"}
                   </p>
-                  <a
-                    href={sanitizeUrl(section.url || "#")}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
-                  >
-                    {section.buttonText || "Let's Connect"}
-                  </a>
+                  {section.url ? (
+                    <a
+                      href={sanitizeUrl(section.url)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
+                    >
+                      {section.buttonText || "Let's Connect"}
+                    </a>
+                  ) : isPreview ? (
+                    <a
+                      href="#"
+                      onClick={(e) => e.preventDefault()}
+                      className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
+                    >
+                      {section.buttonText || "Let's Connect"}
+                    </a>
+                  ) : null}
                 </div>
               </section>
             );
