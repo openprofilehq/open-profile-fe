@@ -5,7 +5,6 @@ import { ArrowRight, ExternalLink, Mail } from "lucide-react";
 import {
   DashboardProfileResponse,
   ProfileContentResponse,
-  LinkItem,
   ProjectItem,
   ProfileAppearanceSettings,
 } from "@/api/profile/profile.type";
@@ -30,39 +29,6 @@ type Props = {
   appearance?: ProfileAppearanceSettings | null;
   isPreview?: boolean;
 };
-
-const DEFAULT_LINKS = [
-  { id: "link-1", title: "Portfolio", url: "https://john.studio" },
-  { id: "link-2", title: "Twitter", url: "https://twitter.com/johnsmith" },
-  { id: "link-3", title: "GitHub", url: "https://github.com/johnsmith" },
-] as LinkItem[];
-
-const DEFAULT_PROJECTS = [
-  {
-    id: "proj-1",
-    title: "Atlas - Onboarding kit for SaaS",
-    description: "A complete design system and onboarding flow",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature1.jpg",
-  },
-  {
-    id: "proj-2",
-    title: "Field - Mobile Journaling app",
-    description: "A calm journaling experience with a custom typography stack.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature2.jpg",
-  },
-  {
-    id: "proj-3",
-    title: "Northwind Analytics",
-    description: "Dashboard rework for a B2B analytics products.",
-    buttonText: "View Project",
-    url: "#",
-    imageSrc: "/profile-preview/feature3.jpg",
-  },
-] as ProjectItem[];
 
 export default function ProfessionalDashboardView({
   profile,
@@ -207,9 +173,7 @@ export default function ProfessionalDashboardView({
           }
 
           if (section.type === "links") {
-            const links = (
-              section.links?.length ? section.links : DEFAULT_LINKS
-            ) as SavedLink[];
+            const links = (section.links || []) as SavedLink[];
             return (
               <section
                 key={section.id}
@@ -274,9 +238,7 @@ export default function ProfessionalDashboardView({
           }
 
           if (section.type === "projects") {
-            const projectsToRender = (
-              section.projects?.length ? section.projects : DEFAULT_PROJECTS
-            ) as ProjectItem[];
+            const projectsToRender = (section.projects || []) as ProjectItem[];
             const highlightedProject =
               projectsToRender.find(isProjectHighlighted);
             const remainingProjects = projectsToRender.filter(
