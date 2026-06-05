@@ -151,7 +151,7 @@ export default function CreatorDashboardView({
       {/* CREATOR HEADER (Bio Section) */}
       {(!bioSection || bioSection.visible !== false) && (
         <div
-          className={`relative mt-6 flex w-full flex-col items-center gap-4 rounded-2xl p-6 text-center ${bioSection?.font ? getFontClass(bioSection.font) : ""}`}
+          className={`relative mx-auto mt-6 flex w-full max-w-3xl flex-col items-center gap-4 rounded-2xl p-6 text-center ${bioSection?.font ? getFontClass(bioSection.font) : ""}`}
           style={getSectionStyle(bioSection)}
         >
           <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
@@ -231,7 +231,7 @@ export default function CreatorDashboardView({
         ["projects", "links", "bio"].includes(s.type)
       ) && (
         <div
-          className="border-border flex items-center justify-center gap-8 border-b"
+          className="border-border mx-auto flex w-full max-w-3xl items-center justify-center gap-8 border-b"
           style={{ marginTop: "var(--op-spacing, 2rem)" }}
         >
           {visibleSections
@@ -263,7 +263,7 @@ export default function CreatorDashboardView({
       )}
 
       <div
-        className="mt-12 w-full"
+        className="mx-auto mt-12 w-full max-w-3xl"
         style={{ paddingBottom: "var(--op-spacing, 4rem)" }}
       >
         {visibleSections.map((section) => {
@@ -283,7 +283,11 @@ export default function CreatorDashboardView({
                 key={section.id}
                 className={`relative flex w-full flex-col gap-6 ${section.font ? getFontClass(section.font) : ""}`}
                 style={(() => {
-                  const { gap: _gap, ...rest } = getSectionStyle(section);
+                  const {
+                    gap: _gap,
+                    backgroundColor: _backgroundColor,
+                    ...rest
+                  } = getSectionStyle(section);
                   return rest;
                 })()}
               >
@@ -297,23 +301,26 @@ export default function CreatorDashboardView({
                 <div className="relative w-full">
                   {remainingProjects.length > 0 ? (
                     <div
-                      className={`grid gap-6 ${
-                        section.layout === "1"
-                          ? "grid-cols-1"
-                          : section.layout === "3"
-                            ? "grid-cols-1 sm:grid-cols-2"
-                            : section.layout === "4"
-                              ? "grid-cols-1 sm:grid-cols-2"
-                              : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
-                      }`}
+                      className="flex w-full flex-wrap justify-center"
                       style={{
-                        gap: section.gap ? `${section.gap}px` : undefined,
+                        gap: section.gap ? `${section.gap}px` : "24px",
                       }}
                     >
                       {remainingProjects.map((project) => {
                         const layoutType = section.layout || "2";
                         const hasUrl = Boolean(project.url);
                         const displayImg = getImageUrl(project.imageSrc);
+
+                        let widthClass = "w-full";
+                        if (layoutType === "1") {
+                          widthClass = "w-full max-w-2xl";
+                        } else if (layoutType === "3" || layoutType === "4") {
+                          widthClass =
+                            "w-full sm:w-[calc(50%-12px)] max-w-[420px]";
+                        } else {
+                          widthClass =
+                            "w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] max-w-[320px]";
+                        }
 
                         const card = (
                           <div
@@ -383,7 +390,7 @@ export default function CreatorDashboardView({
                         );
 
                         return (
-                          <div key={project.id} className="w-full">
+                          <div key={project.id} className={widthClass}>
                             {hasUrl ? (
                               <a
                                 href={sanitizeUrl(project.url || "")}
@@ -417,24 +424,32 @@ export default function CreatorDashboardView({
                 key={section.id}
                 className={`relative mx-auto flex w-full flex-col gap-4 ${section.font ? getFontClass(section.font) : ""}`}
                 style={(() => {
-                  const { gap: _gap, ...rest } = getSectionStyle(section);
+                  const {
+                    gap: _gap,
+                    backgroundColor: _backgroundColor,
+                    ...rest
+                  } = getSectionStyle(section);
                   return rest;
                 })()}
               >
                 {allLinks.length > 0 ? (
                   <div
-                    className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+                    className="flex w-full flex-wrap justify-center"
                     style={{
-                      gap: section.gap ? `${section.gap}px` : undefined,
+                      gap: section.gap ? `${section.gap}px` : "16px",
                     }}
                   >
                     {allLinks.map((link) => (
-                      <TemplateLinkCard
+                      <div
                         key={link.id}
-                        id={link.id}
-                        title={link.title || link.label || ""}
-                        url={link.url ? sanitizeUrl(link.url) : "#"}
-                      />
+                        className="w-full max-w-[280px] sm:w-[calc(50%-8px)] md:w-[calc(33.333%-11px)]"
+                      >
+                        <TemplateLinkCard
+                          id={link.id}
+                          title={link.title || link.label || ""}
+                          url={link.url ? sanitizeUrl(link.url) : "#"}
+                        />
+                      </div>
                     ))}
                   </div>
                 ) : (
