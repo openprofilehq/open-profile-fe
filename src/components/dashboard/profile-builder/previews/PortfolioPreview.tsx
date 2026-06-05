@@ -216,6 +216,7 @@ export default function PortfolioPreview({
         }
 
         if (section.type === "projects") {
+          const layoutType = section.layout || "1";
           const projectsToRender = section.projects || [];
           const highlightedProject =
             projectsToRender.find(isProjectHighlighted);
@@ -253,80 +254,102 @@ export default function PortfolioPreview({
                 {remainingProjects.length > 0 ? (
                   <div
                     className={`grid gap-6 ${
-                      section.layout === "1"
-                        ? "grid-cols-1"
-                        : section.layout === "3"
-                          ? "grid-cols-1 sm:grid-cols-2"
-                          : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                      layoutType === "1"
+                        ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                        : "grid-cols-1"
                     }`}
                     style={{
                       gap: section.gap ? `${section.gap}px` : undefined,
                     }}
                   >
-                    {remainingProjects.map(
-                      (project: ProjectItem, idx: number) => {
-                        const numberStr = String(idx + 1).padStart(2, "0");
-                        return (
-                          <div
-                            key={project.id}
-                            className={`group/proj border-border bg-background flex overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md ${
-                              section.layout === "1"
-                                ? "flex-col sm:flex-row"
-                                : "flex-col"
-                            }`}
-                          >
+                    {remainingProjects.map((project: ProjectItem) => {
+                      const hasUrl = Boolean(project.url);
+                      const displayImg = getImageUrl(project.imageSrc);
+
+                      const card = (
+                        <div
+                          className={`group/proj flex rounded-[12px] p-4 transition-all ${
+                            layoutType === "1"
+                              ? "border-border bg-background hover:border-brand-hover-bg/30 border shadow-sm hover:shadow-md"
+                              : "border-none bg-transparent shadow-none hover:border-transparent hover:shadow-none"
+                          } ${
+                            layoutType === "1" || layoutType === "2"
+                              ? "flex-col"
+                              : layoutType === "3"
+                                ? "flex-col sm:flex-row sm:items-start"
+                                : "flex-col sm:flex-row-reverse sm:items-start" // Layout 4
+                          }`}
+                        >
+                          {/* IMAGE */}
+                          {(displayImg || true) && (
                             <div
-                              className={`bg-secondary-bg border-border relative overflow-hidden ${
-                                section.layout === "1"
-                                  ? "w-full shrink-0 border-b sm:w-[320px] sm:border-r sm:border-b-0"
-                                  : "aspect-16/10 w-full border-b"
-                              }`}
+                              className={`border-border bg-secondary-bg relative mb-4 shrink-0 overflow-hidden rounded-lg border ${
+                                layoutType === "1" || layoutType === "2"
+                                  ? "aspect-video w-full"
+                                  : "h-[180px] w-full sm:mb-0 sm:h-[150px] sm:w-[220px]"
+                              } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
                             >
-                              {getImageUrl(project.imageSrc) ? (
+                              {displayImg ? (
                                 <Image
-                                  src={getImageUrl(project.imageSrc) || ""}
+                                  src={displayImg}
                                   alt={project.title || "Project"}
                                   fill
                                   className="object-cover transition-transform duration-500 group-hover/proj:scale-[1.02]"
                                   unoptimized
                                 />
                               ) : (
-                                <div className="h-full w-full bg-neutral-200 transition-transform duration-500 group-hover/proj:scale-[1.02]" />
+                                <div className="text-tertiary-text flex h-full w-full items-center justify-center text-xs">
+                                  No image
+                                </div>
                               )}
                             </div>
+                          )}
 
-                            <div className="flex flex-1 flex-col p-6">
-                              <div className="mb-1 flex items-start gap-2">
-                                <span className="text-primary-text text-[16px] font-bold">
-                                  {numberStr}
-                                </span>
-                                <h3 className="text-primary-text text-[16px] font-bold">
-                                  {project.title}
-                                </h3>
-                              </div>
+                          {/* CONTENT */}
+                          <div className="flex min-w-0 flex-1 flex-col items-start">
+                            <h3 className="text-primary-text text-[16px] font-bold break-all">
+                              {project.title}
+                            </h3>
 
-                              {project.description && (
-                                <p className="text-secondary-text mb-6 ml-6 line-clamp-2 text-[13px]">
-                                  {project.description}
-                                </p>
-                              )}
+                            {project.description && (
+                              <p
+                                className={`text-secondary-text mt-1 break-all ${
+                                  layoutType === "1"
+                                    ? "line-clamp-1"
+                                    : "line-clamp-2"
+                                } text-[13px]`}
+                              >
+                                {project.description}
+                              </p>
+                            )}
 
-                              {project.url && (
-                                <a
-                                  href={sanitizeUrl(project.url)}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-brand-hover-bg mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
-                                >
-                                  {project.buttonText || "View Project"}
-                                  <ArrowRight size={14} strokeWidth={2.5} />
-                                </a>
-                              )}
-                            </div>
+                            {hasUrl && (
+                              <span className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
+                                {project.buttonText || "View Project"}
+                                <ArrowRight size={14} strokeWidth={2.5} />
+                              </span>
+                            )}
                           </div>
-                        );
-                      }
-                    )}
+                        </div>
+                      );
+
+                      return (
+                        <div key={project.id} className="w-full">
+                          {hasUrl ? (
+                            <a
+                              href={sanitizeUrl(project.url)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block h-full no-underline"
+                            >
+                              {card}
+                            </a>
+                          ) : (
+                            <div className="h-full">{card}</div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">

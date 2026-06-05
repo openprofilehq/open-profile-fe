@@ -260,14 +260,13 @@ export default function DefaultDashboardView({
                       </div>
 
                       {(() => {
+                        const layoutType = section.layout || "1";
                         return remainingProjects.length > 0 ? (
                           <div
                             className={`grid gap-6 p-6 ${
-                              section.layout === "1"
-                                ? "grid-cols-1"
-                                : section.layout === "3"
-                                  ? "grid-cols-1 sm:grid-cols-2"
-                                  : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+                              layoutType === "1"
+                                ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+                                : "grid-cols-1"
                             }`}
                             style={{
                               gap: section.gap ? `${section.gap}px` : undefined,
@@ -286,57 +285,60 @@ export default function DefaultDashboardView({
 
                               const card = (
                                 <div
-                                  className={`group flex ${section.layout === "1" ? "flex-col sm:flex-row sm:items-center" : "flex-col"} gap-4`}
+                                  className={`group flex rounded-[12px] p-4 transition-all ${
+                                    layoutType === "1"
+                                      ? "border-border bg-background hover:border-brand-hover-bg/30 border shadow-sm hover:shadow-md"
+                                      : "border-none bg-transparent shadow-none hover:border-transparent hover:shadow-none"
+                                  } ${
+                                    layoutType === "1" || layoutType === "2"
+                                      ? "flex-col"
+                                      : layoutType === "3"
+                                        ? "flex-col sm:flex-row sm:items-start"
+                                        : "flex-col sm:flex-row-reverse sm:items-start" // Layout 4
+                                  }`}
                                 >
-                                  <div
-                                    className={`border-border bg-secondary-bg relative shrink-0 overflow-hidden rounded-[8px] border shadow-sm ${
-                                      section.layout === "1"
-                                        ? "aspect-video w-full sm:w-[280px]"
-                                        : "aspect-video w-full"
-                                    }`}
-                                  >
-                                    {displayImg ? (
+                                  {/* IMAGE */}
+                                  {displayImg && (
+                                    <div
+                                      className={`border-border bg-secondary-bg relative mb-4 shrink-0 overflow-hidden rounded-lg border ${
+                                        layoutType === "1" || layoutType === "2"
+                                          ? "aspect-video w-full"
+                                          : "h-[180px] w-full sm:mb-0 sm:h-[150px] sm:w-[220px]"
+                                      } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
+                                    >
                                       <Image
                                         src={displayImg}
                                         alt={project.title ?? "Project preview"}
-                                        fill
                                         className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                        fill
                                         unoptimized
                                       />
-                                    ) : (
-                                      <div className="text-tertiary-text flex h-full w-full items-center justify-center bg-neutral-200 text-sm">
-                                        No image
-                                      </div>
-                                    )}
-                                  </div>
-                                  <div className="flex min-w-0 flex-1 flex-col gap-1">
+                                    </div>
+                                  )}
+
+                                  {/* CONTENT */}
+                                  <div className="flex min-w-0 flex-1 flex-col items-start">
                                     <h3 className="text-primary-text font-bold break-all">
                                       {project.title}
                                     </h3>
                                     {project.description && (
-                                      <p className="text-secondary-text line-clamp-2 text-sm break-all">
+                                      <p
+                                        className={`text-secondary-text mt-1 break-all ${
+                                          layoutType === "1"
+                                            ? "line-clamp-1"
+                                            : "line-clamp-2"
+                                        } text-sm`}
+                                      >
                                         {project.description}
                                       </p>
                                     )}
-                                    {hasUrl && section.layout !== "1" && (
-                                      <span className="text-brand-hover-bg mt-1 flex items-center gap-1 text-sm font-semibold group-hover:underline">
-                                        {(project as { buttonText?: string })
-                                          .buttonText || "View project"}{" "}
-                                        <ExternalLink size={14} />
+                                    {hasUrl && (
+                                      <span className="text-brand-hover-bg mt-3 flex items-center gap-1 text-sm font-semibold hover:underline">
+                                        {project.buttonText || "View project"}
+                                        <ChevronRight size={16} />
                                       </span>
                                     )}
                                   </div>
-
-                                  {/* BUTTON FOR LAYOUT 1 */}
-                                  {section.layout === "1" && (
-                                    <div className="mt-4 shrink-0 sm:mt-0 sm:ml-6">
-                                      <span className="text-brand-hover-bg flex items-center gap-1 text-sm font-bold hover:underline">
-                                        {(project as { buttonText?: string })
-                                          .buttonText || "View project"}
-                                        <ChevronRight size={16} />
-                                      </span>
-                                    </div>
-                                  )}
                                 </div>
                               );
 

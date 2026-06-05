@@ -282,14 +282,6 @@ export default function CreatorDashboardView({
               <div
                 key={section.id}
                 className={`relative flex w-full flex-col gap-6 ${section.font ? getFontClass(section.font) : ""}`}
-                style={(() => {
-                  const {
-                    gap: _gap,
-                    backgroundColor: _backgroundColor,
-                    ...rest
-                  } = getSectionStyle(section);
-                  return rest;
-                })()}
               >
                 {highlightedProject && (
                   <HighlightCard
@@ -298,7 +290,10 @@ export default function CreatorDashboardView({
                   />
                 )}
 
-                <div className="relative w-full">
+                <div
+                  className="relative w-full rounded-3xl"
+                  style={getSectionStyle(section)}
+                >
                   {remainingProjects.length > 0 ? (
                     <div
                       className="flex w-full flex-wrap justify-center"
@@ -307,55 +302,48 @@ export default function CreatorDashboardView({
                       }}
                     >
                       {remainingProjects.map((project) => {
-                        const layoutType = section.layout || "2";
+                        const layoutType = section.layout || "1";
                         const hasUrl = Boolean(project.url);
                         const displayImg = getImageUrl(project.imageSrc);
 
                         let widthClass = "w-full";
                         if (layoutType === "1") {
-                          widthClass = "w-full max-w-2xl";
-                        } else if (layoutType === "3" || layoutType === "4") {
-                          widthClass =
-                            "w-full sm:w-[calc(50%-12px)] max-w-[420px]";
-                        } else {
                           widthClass =
                             "w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] max-w-[320px]";
+                        } else {
+                          widthClass = "w-full max-w-2xl";
                         }
 
                         const card = (
                           <div
-                            className={`group border-border bg-background hover:border-brand-hover-bg/30 flex rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md ${
+                            className={`group flex rounded-[12px] p-4 transition-all ${
                               layoutType === "1"
-                                ? "flex-col justify-between sm:flex-row sm:items-center"
+                                ? "border-border bg-background hover:border-brand-hover-bg/30 border shadow-sm hover:shadow-md"
+                                : "border-none bg-transparent shadow-none hover:border-transparent hover:shadow-none"
+                            } ${
+                              layoutType === "1" || layoutType === "2"
+                                ? "flex-col"
                                 : layoutType === "3"
                                   ? "flex-col sm:flex-row sm:items-start"
-                                  : layoutType === "4"
-                                    ? "flex-col sm:flex-row-reverse sm:items-start"
-                                    : "flex-col" // Layout 2
+                                  : "flex-col sm:flex-row-reverse sm:items-start" // Layout 4
                             }`}
                           >
                             {/* IMAGE */}
-                            {layoutType !== "1" && (
+                            {displayImg && (
                               <div
                                 className={`border-border bg-secondary-bg relative mb-4 shrink-0 overflow-hidden rounded-lg border ${
-                                  layoutType === "2"
+                                  layoutType === "1" || layoutType === "2"
                                     ? "aspect-video w-full"
-                                    : "h-[120px] w-full sm:mb-0 sm:w-[140px]"
+                                    : "h-[180px] w-full sm:mb-0 sm:h-[150px] sm:w-[220px]"
                                 } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
                               >
-                                {displayImg ? (
-                                  <Image
-                                    src={displayImg}
-                                    alt={project.title ?? "Project"}
-                                    className="object-cover"
-                                    fill
-                                    unoptimized
-                                  />
-                                ) : (
-                                  <div className="text-tertiary-text flex h-full w-full items-center justify-center text-xs">
-                                    No image
-                                  </div>
-                                )}
+                                <Image
+                                  src={displayImg}
+                                  alt={project.title ?? "Project"}
+                                  className="object-cover"
+                                  fill
+                                  unoptimized
+                                />
                               </div>
                             )}
 
@@ -365,27 +353,21 @@ export default function CreatorDashboardView({
                                 {project.title}
                               </h5>
                               <p
-                                className={`text-secondary-text mt-1 break-all ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"}`}
+                                className={`text-secondary-text mt-1 break-all ${
+                                  layoutType === "1"
+                                    ? "line-clamp-1"
+                                    : "line-clamp-2"
+                                }`}
                               >
                                 {project.description}
                               </p>
-                              {layoutType !== "1" && hasUrl && (
+                              {hasUrl && (
                                 <span className="text-brand-hover-bg mt-3 flex items-center gap-1 text-sm font-semibold hover:underline">
                                   {project.buttonText || "View project"}
                                   <ChevronRight size={16} />
                                 </span>
                               )}
                             </div>
-
-                            {/* BUTTON FOR LAYOUT 1 */}
-                            {layoutType === "1" && hasUrl && (
-                              <div className="mt-4 shrink-0 sm:mt-0 sm:ml-6">
-                                <span className="text-brand-hover-bg flex items-center gap-1 text-sm font-bold hover:underline">
-                                  {project.buttonText || "View project"}
-                                  <ChevronRight size={16} />
-                                </span>
-                              </div>
-                            )}
                           </div>
                         );
 

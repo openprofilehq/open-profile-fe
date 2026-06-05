@@ -79,7 +79,12 @@ const createSection = (type: string, customTitle?: string): Section | null => {
           : undefined,
     links: resolvedType === "links" ? [] : undefined,
     projects: resolvedType === "projects" ? [] : undefined,
-    layout: resolvedType === "experience" ? "1" : undefined,
+    layout:
+      resolvedType === "projects"
+        ? "1"
+        : resolvedType === "experience"
+          ? "1"
+          : undefined,
     buttonText:
       resolvedType === "experience" ? "Start a Conversation" : undefined,
     url: resolvedType === "experience" ? "" : undefined,
