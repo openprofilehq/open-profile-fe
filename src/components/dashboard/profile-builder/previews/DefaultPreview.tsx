@@ -157,6 +157,7 @@ export default function DefaultPreview({
                   >
                     {section.links.map((item: SavedLink, index: number) => {
                       const displayImg = getImageUrl(item.imageSrc);
+                      const iconUrl = getImageUrl(item.iconSrc);
                       return (
                         <a
                           key={item.id ?? index}
@@ -176,9 +177,9 @@ export default function DefaultPreview({
                                   className="rounded-[12px] object-cover"
                                   unoptimized
                                 />
-                              ) : item.iconSrc ? (
+                              ) : iconUrl ? (
                                 <Image
-                                  src={getImageUrl(item.iconSrc)}
+                                  src={iconUrl}
                                   alt={item.title ?? "Link"}
                                   width={24}
                                   height={24}
@@ -279,28 +280,28 @@ export default function DefaultPreview({
                                 : getImageUrl(rawImageSrc)
                               : null;
 
+                            const isHorizontal =
+                              layoutType === "3" || layoutType === "4";
                             const card = (
                               <div
-                                className={`group flex rounded-[12px] p-4 transition-all ${
+                                className={`group rounded-[12px] p-4 transition-all ${
                                   layoutType === "1"
                                     ? "border-border bg-background hover:border-brand-hover-bg/30 border shadow-sm hover:shadow-md"
-                                    : "border-none bg-transparent shadow-none hover:border-transparent hover:shadow-none"
+                                    : "mx-auto w-full max-w-2xl border-none bg-transparent shadow-none hover:border-transparent hover:shadow-none"
                                 } ${
-                                  layoutType === "1" || layoutType === "2"
-                                    ? "flex-col"
-                                    : layoutType === "3"
-                                      ? "flex-col sm:flex-row sm:items-start"
-                                      : "flex-col sm:flex-row-reverse sm:items-start" // Layout 4
+                                  isHorizontal
+                                    ? "grid grid-cols-1 gap-6 sm:grid-cols-5 sm:items-start"
+                                    : "flex flex-col"
                                 }`}
                               >
                                 {/* IMAGE */}
                                 {(displayImg || true) && (
                                   <div
-                                    className={`border-border bg-secondary-bg relative mb-4 shrink-0 overflow-hidden rounded-lg border ${
+                                    className={`border-border bg-secondary-bg relative shrink-0 overflow-hidden rounded-lg border ${
                                       layoutType === "1" || layoutType === "2"
-                                        ? "aspect-video w-full"
-                                        : "h-[180px] w-full sm:mb-0 sm:h-[150px] sm:w-[220px]"
-                                    } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
+                                        ? "mb-4 aspect-video w-full"
+                                        : "aspect-video w-full sm:col-span-3 sm:mb-0"
+                                    } ${layoutType === "4" ? "sm:order-2" : "sm:order-1"}`}
                                   >
                                     {displayImg ? (
                                       <Image
@@ -319,7 +320,13 @@ export default function DefaultPreview({
                                 )}
 
                                 {/* CONTENT */}
-                                <div className="flex min-w-0 flex-1 flex-col items-start">
+                                <div
+                                  className={`flex min-w-0 flex-1 flex-col items-start ${
+                                    isHorizontal
+                                      ? `sm:col-span-2 ${layoutType === "4" ? "sm:order-1" : "sm:order-2"}`
+                                      : ""
+                                  }`}
+                                >
                                   <h3 className="text-primary-text font-bold break-all">
                                     {project.title}
                                   </h3>

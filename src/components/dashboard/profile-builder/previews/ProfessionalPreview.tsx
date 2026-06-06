@@ -1,13 +1,13 @@
 import React from "react";
 import Image from "next/image";
 import {
-  ArrowRight,
   ExternalLink,
   MoreHorizontal,
   Eye,
   EyeOff,
   Trash2,
   Mail,
+  ChevronRight,
 } from "lucide-react";
 import {
   getImageUrl,
@@ -289,28 +289,28 @@ export default function ProfessionalPreview({
                       const hasUrl = Boolean(project.url);
                       const displayImg = getImageUrl(project.imageSrc);
 
+                      const isHorizontal =
+                        layoutType === "3" || layoutType === "4";
                       const card = (
                         <div
                           className={`group flex rounded-[12px] p-4 transition-all ${
                             layoutType === "1"
                               ? "border-border bg-background hover:border-brand-hover-bg/30 border shadow-sm hover:shadow-md"
-                              : "border-none bg-transparent shadow-none hover:border-transparent hover:shadow-none"
+                              : "mx-auto w-full max-w-2xl border-none bg-transparent shadow-none hover:border-transparent hover:shadow-none"
                           } ${
-                            layoutType === "1" || layoutType === "2"
-                              ? "flex-col"
-                              : layoutType === "3"
-                                ? "flex-col sm:flex-row sm:items-start"
-                                : "flex-col sm:flex-row-reverse sm:items-start" // Layout 4
+                            isHorizontal
+                              ? "grid grid-cols-1 gap-6 sm:grid-cols-5 sm:items-start"
+                              : "flex flex-col"
                           }`}
                         >
                           {/* IMAGE */}
                           {(displayImg || true) && (
                             <div
-                              className={`border-border bg-secondary-bg relative mb-4 shrink-0 overflow-hidden rounded-lg border ${
+                              className={`border-border bg-secondary-bg relative shrink-0 overflow-hidden rounded-lg border ${
                                 layoutType === "1" || layoutType === "2"
-                                  ? "aspect-video w-full"
-                                  : "h-[180px] w-full sm:mb-0 sm:h-[150px] sm:w-[220px]"
-                              } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
+                                  ? "mb-4 aspect-video w-full"
+                                  : "aspect-video w-full sm:col-span-3 sm:mb-0"
+                              } ${layoutType === "4" ? "sm:order-2" : "sm:order-1"}`}
                             >
                               {displayImg ? (
                                 <Image
@@ -329,7 +329,13 @@ export default function ProfessionalPreview({
                           )}
 
                           {/* CONTENT */}
-                          <div className="flex min-w-0 flex-1 flex-col items-start">
+                          <div
+                            className={`flex min-w-0 flex-1 flex-col items-start ${
+                              isHorizontal
+                                ? `sm:col-span-2 ${layoutType === "4" ? "sm:order-1" : "sm:order-2"}`
+                                : ""
+                            }`}
+                          >
                             <h3 className="text-primary-text text-[16px] font-bold">
                               {project.title}
                             </h3>
@@ -342,12 +348,12 @@ export default function ProfessionalPreview({
                             >
                               {project.description}
                             </p>
-                            {hasUrl && (
-                              <span className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
-                                {project.buttonText || "View Project"}
-                                <ArrowRight size={14} strokeWidth={2.5} />
-                              </span>
-                            )}
+                            <span className="text-brand-hover-bg mt-3 flex items-center gap-1 text-sm font-semibold hover:underline">
+                              {hasUrl
+                                ? project.buttonText || "View project"
+                                : "Edit project"}
+                              <ChevronRight size={16} />
+                            </span>
                           </div>
                         </div>
                       );
