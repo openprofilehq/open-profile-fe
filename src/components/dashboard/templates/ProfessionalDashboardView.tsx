@@ -115,6 +115,16 @@ export default function ProfessionalDashboardView({
     (s) => s.type === "experience" || s.type === "cta"
   );
 
+  const ctaHref = !ctaSection?.url
+    ? null
+    : ctaSection.ctaType === "email"
+      ? `mailto:${ctaSection.url}`
+      : ctaSection.ctaType === "phone"
+        ? `tel:${ctaSection.url}`
+        : ctaSection.ctaType === "whatsapp"
+          ? `https://wa.me/${ctaSection.url.replace(/\D/g, "")}`
+          : sanitizeUrl(ctaSection.url);
+
   return (
     <div className="flex w-full flex-col px-4 sm:px-6">
       <div
@@ -168,9 +178,9 @@ export default function ProfessionalDashboardView({
                     </div>
                   </div>
 
-                  {ctaSection?.visible && ctaSection?.url && (
+                  {ctaSection?.visible && ctaHref && (
                     <a
-                      href={sanitizeUrl(ctaSection.url)}
+                      href={ctaHref}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="border-brand-hover-bg bg-brand-hover-bg/5 text-brand-hover-bg hover:bg-brand-hover-bg/10 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-sm font-semibold transition-colors"
@@ -208,7 +218,11 @@ export default function ProfessionalDashboardView({
 
           if (section.type === "links") {
             const links = (
-              section.links?.length ? section.links : DEFAULT_LINKS
+              section.links?.length
+                ? section.links
+                : isPreview
+                  ? DEFAULT_LINKS
+                  : []
             ) as SavedLink[];
             return (
               <section
@@ -275,7 +289,11 @@ export default function ProfessionalDashboardView({
 
           if (section.type === "projects") {
             const projectsToRender = (
-              section.projects?.length ? section.projects : DEFAULT_PROJECTS
+              section.projects?.length
+                ? section.projects
+                : isPreview
+                  ? DEFAULT_PROJECTS
+                  : []
             ) as ProjectItem[];
             const highlightedProject =
               projectsToRender.find(isProjectHighlighted);
@@ -464,7 +482,15 @@ export default function ProfessionalDashboardView({
                       "Have an idea or product you're building?"}
                   </p>
                   <a
-                    href={sanitizeUrl(section.url || "#")}
+                    href={
+                      section.ctaType === "email"
+                        ? `mailto:${section.url}`
+                        : section.ctaType === "phone"
+                          ? `tel:${section.url}`
+                          : section.ctaType === "whatsapp"
+                            ? `https://wa.me/${(section.url || "").replace(/\D/g, "")}`
+                            : sanitizeUrl(section.url || "#")
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"

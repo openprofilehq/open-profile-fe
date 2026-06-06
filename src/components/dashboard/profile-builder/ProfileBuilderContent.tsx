@@ -532,10 +532,10 @@ export default function ProfileBuilderContent() {
     saveTimerRef.current = setTimeout(() => {
       const bioSection = sections.find((s) => s.type === "bio");
       const updatedAt = draftUpdatedAtRef.current;
-      // Appearance settings are persisted through updateProfileAppearance to avoid duplicate writes.
       const payload = {
         bio: bioSection?.bio ?? null,
         content: sectionsToContent(sections),
+        themeSettings: { template },
       };
       saveDraftRef.current({ data: payload, draftVersion: updatedAt });
       saveTimerRef.current = null;
@@ -546,7 +546,7 @@ export default function ProfileBuilderContent() {
         clearTimeout(saveTimerRef.current);
       }
     };
-  }, [sections]);
+  }, [sections, template]);
 
   useEffect(() => {
     return () => {
