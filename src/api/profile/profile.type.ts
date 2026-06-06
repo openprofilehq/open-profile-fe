@@ -85,7 +85,7 @@ export type ProfileContentSectionProjects = {
 
 export type ProfileContentSectionCta = {
   visible: boolean;
-  type?: "link" | "email";
+  type?: "link" | "email" | "phone" | "whatsapp";
   label: string;
   url?: string | null;
   value?: string | null;

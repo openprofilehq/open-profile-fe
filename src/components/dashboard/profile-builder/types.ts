@@ -54,7 +54,7 @@ export interface Section {
   iconSrc?: string | null;
   buttonText?: string;
   url?: string;
-  ctaType?: "link" | "email";
+  ctaType?: "link" | "email" | "phone" | "whatsapp";
 }
 
 export interface ProfilePreview {
