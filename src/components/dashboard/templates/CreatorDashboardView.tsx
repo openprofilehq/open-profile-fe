@@ -317,7 +317,7 @@ export default function CreatorDashboardView({
                   {remainingProjects.length > 0 ? (
                     <div
                       className={`grid gap-6 ${
-                        remainingProjects.length === 1 && !section.layout
+                        remainingProjects.length === 1
                           ? "grid-cols-[minmax(0,420px)] justify-center"
                           : section.layout === "1"
                             ? "grid-cols-1"
