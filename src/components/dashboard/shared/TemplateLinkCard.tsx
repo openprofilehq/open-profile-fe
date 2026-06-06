@@ -8,16 +8,56 @@ import {
   YoutubeIcon,
 } from "@/components/icons/BrandIcons";
 
-export const getLinkIcon = (title: string = "") => {
+const renderMaskIcon = (src: string, size: number) => (
+  <div
+    className="shrink-0 bg-current"
+    style={{
+      width: size,
+      height: size,
+      maskImage: `url(${src})`,
+      WebkitMaskImage: `url(${src})`,
+      maskSize: "contain",
+      WebkitMaskSize: "contain",
+      maskRepeat: "no-repeat",
+      WebkitMaskRepeat: "no-repeat",
+      maskPosition: "center",
+      WebkitMaskPosition: "center",
+    }}
+  />
+);
+
+export const getLinkIcon = (title: string = "", size: number = 18) => {
   const t = title.toLowerCase();
+
   if (t.includes("instagram"))
-    return <InstagramIcon style={{ fontSize: 18 }} />;
+    return <InstagramIcon style={{ fontSize: size }} />;
   if (t.includes("twitter") || t.includes("x.com") || t === "x")
-    return <XIcon style={{ fontSize: 18 }} />;
-  if (t.includes("linkedin")) return <LinkedInIcon style={{ fontSize: 18 }} />;
-  if (t.includes("github")) return <GithubIcon style={{ fontSize: 18 }} />;
-  if (t.includes("youtube")) return <YoutubeIcon style={{ fontSize: 18 }} />;
-  return <Globe size={18} />;
+    return <XIcon style={{ fontSize: size }} />;
+  if (t.includes("linkedin"))
+    return <LinkedInIcon style={{ fontSize: size }} />;
+  if (t.includes("github")) return <GithubIcon style={{ fontSize: size }} />;
+  if (t.includes("youtube")) return <YoutubeIcon style={{ fontSize: size }} />;
+
+  if (t.includes("whatsapp") || t.includes("wa.me"))
+    return renderMaskIcon("/profilebuilder_home/icons/whatsapp.svg", size);
+  if (t.includes("figma"))
+    return renderMaskIcon("/profilebuilder_home/icons/figma.svg", size);
+  if (t.includes("behance"))
+    return renderMaskIcon("/profilebuilder_home/icons/behance.svg", size);
+  if (t.includes("flickr"))
+    return renderMaskIcon("/profilebuilder_home/icons/flickr.svg", size);
+  if (t.includes("pinterest"))
+    return renderMaskIcon("/profilebuilder_home/icons/pinterest.svg", size);
+  if (t.includes("tiktok"))
+    return renderMaskIcon("/profilebuilder_home/icons/tiktok.svg", size);
+  if (t.includes("mailto:") || t.includes("mail") || t.includes("@"))
+    return renderMaskIcon("/profilebuilder_home/icons/mail.svg", size);
+  if (t.includes("chat"))
+    return renderMaskIcon("/profilebuilder_home/icons/chat.svg", size);
+  if (t.includes("eye"))
+    return renderMaskIcon("/profilebuilder_home/icons/eye.svg", size);
+
+  return <Globe size={size} />;
 };
 
 interface TemplateLinkCardProps {

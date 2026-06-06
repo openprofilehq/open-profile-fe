@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { ArrowRight, Mail } from "lucide-react";
+import { ArrowRight, Mail, ExternalLink } from "lucide-react";
 
 import {
   DashboardProfileResponse,
@@ -18,7 +18,7 @@ import {
 } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
 import HighlightCard from "../HighlightCard";
-import { TemplateLinkCard } from "../shared/TemplateLinkCard";
+import { getLinkIcon } from "../shared/TemplateLinkCard";
 import { contentToSections } from "../profile-builder/builder.utils";
 import type { SavedLink } from "../profile-builder/types";
 import { getFontClass } from "./TemplateAppearanceProvider";
@@ -235,23 +235,43 @@ export default function PortfolioDashboardView({
                   return rest;
                 })()}
               >
-                <h2 className="text-tertiary-text mb-4 text-[13px]">
-                  {section.subtitle || "Links"}
+                <h2 className="text-primary-text mb-6 text-[26px] font-bold">
+                  {section.title || section.subtitle || "Links"}
                 </h2>
                 {links.length > 0 ? (
                   <div
-                    className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+                    className="flex flex-wrap items-center justify-start gap-3"
                     style={{
                       gap: section.gap ? `${section.gap}px` : undefined,
                     }}
                   >
                     {links.map((link: SavedLink) => (
-                      <TemplateLinkCard
+                      <a
                         key={link.id}
-                        id={link.id}
-                        title={link.title || link.label || ""}
-                        url={sanitizeUrl(link.url || "")}
-                      />
+                        href={sanitizeUrl(link.url || "")}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group border-border bg-background/80 hover:bg-background hover:border-brand-hover-bg/30 inline-flex shrink-0 items-center gap-2.5 rounded-[16px] border px-4 py-2.5 whitespace-nowrap shadow-sm transition-all hover:shadow-md"
+                      >
+                        <div
+                          className="text-primary-text flex shrink-0 items-center gap-2 transition-colors group-hover:opacity-80"
+                          style={{ color: "var(--brand)" }}
+                        >
+                          {getLinkIcon(
+                            (link.url || "") +
+                              " " +
+                              (link.title || link.label || "")
+                          )}
+                          <span className="text-primary-text text-[14px] font-semibold">
+                            {link.title || link.label}
+                          </span>
+                        </div>
+                        <ExternalLink
+                          size={14}
+                          className="text-tertiary-text transition-colors group-hover:opacity-80"
+                          style={{ color: "var(--brand)" }}
+                        />
+                      </a>
                     ))}
                   </div>
                 ) : (

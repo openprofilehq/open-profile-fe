@@ -274,7 +274,7 @@ export function sectionsToContent(
     links: linksSection
       ? {
           visible: linksSection.visible,
-          sectionTitle: linksSection.subtitle ?? "Links",
+          sectionTitle: linksSection.title || linksSection.subtitle || "Links",
           items: (linksSection.links ?? []).map((l) => ({
             id: l.id,
             label: l.title || "",
@@ -287,7 +287,8 @@ export function sectionsToContent(
     projects: projectsSection
       ? {
           visible: projectsSection.visible,
-          sectionTitle: projectsSection.subtitle ?? "Projects",
+          sectionTitle:
+            projectsSection.title || projectsSection.subtitle || "Projects",
           ...(projectsSection.layout && { layout: projectsSection.layout }),
           ...sectionStyleFields(projectsSection),
           items: (projectsSection.projects ?? []).map((p) => {

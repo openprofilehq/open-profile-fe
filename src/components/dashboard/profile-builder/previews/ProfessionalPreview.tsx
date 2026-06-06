@@ -184,8 +184,8 @@ export default function ProfessionalPreview({
             >
               {renderControls(section)}
 
-              <h2 className="text-tertiary-text mb-4 text-[13px]">
-                {section.subtitle || "Links"}
+              <h2 className="text-primary-text mb-4 text-xl font-bold tracking-tight">
+                {section.title || section.subtitle || "Links"}
               </h2>
               <div
                 className="border-border flex flex-col border-t"

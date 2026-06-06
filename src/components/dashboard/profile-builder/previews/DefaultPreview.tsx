@@ -4,7 +4,6 @@ import {
   ExternalLink,
   ChevronRight,
   MessageSquare,
-  ImageIcon,
   Eye,
   EyeOff,
   Trash2,
@@ -19,6 +18,7 @@ import {
 import type { Section, ProfilePreview, SavedLink, ProjectItem } from "../types";
 import { getFontClass } from "../../templates/TemplateAppearanceProvider";
 import HighlightPreviewCard from "./HighlightPreviewCard";
+import { getLinkIcon } from "../../shared/TemplateLinkCard";
 
 interface DefaultPreviewProps {
   sections: Section[];
@@ -145,7 +145,7 @@ export default function DefaultPreview({
                 })()}
               >
                 <h2 className="text-2xl font-bold">
-                  {section.subtitle || "Featured Links"}
+                  {section.title || section.subtitle || "Featured Links"}
                 </h2>
 
                 {section.links && section.links.length > 0 ? (
@@ -163,32 +163,34 @@ export default function DefaultPreview({
                           href={sanitizeUrl(item.url || "")}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="border-border hover:border-brand-hover-bg/30 flex items-center justify-between rounded-[18px] border p-4 no-underline transition-colors"
+                          className="hover:border-brand-hover-bg/30 flex items-center justify-between rounded-[18px] border bg-transparent p-4 no-underline transition-colors"
                         >
                           <div className="flex items-center gap-5">
-                            <span className="border-border bg-secondary-bg flex h-14 w-14 items-center justify-center overflow-hidden rounded-[12px] border">
+                            <span className="text-primary-text flex h-14 w-14 shrink-0 items-center justify-center border-none bg-transparent shadow-none">
                               {displayImg ? (
                                 <Image
                                   src={displayImg}
                                   alt={item.title ?? "Link"}
                                   width={56}
                                   height={56}
-                                  className="object-cover"
+                                  className="rounded-[12px] object-cover"
                                   unoptimized
                                 />
                               ) : item.iconSrc ? (
                                 <Image
-                                  src={item.iconSrc}
+                                  src={getImageUrl(item.iconSrc)}
                                   alt={item.title ?? "Link"}
                                   width={24}
                                   height={24}
                                   unoptimized
                                 />
                               ) : (
-                                <ImageIcon
-                                  className="text-tertiary-text"
-                                  size={24}
-                                />
+                                <div className="flex items-center justify-center">
+                                  {getLinkIcon(
+                                    (item.url || "") + " " + (item.title || ""),
+                                    24
+                                  )}
+                                </div>
                               )}
                             </span>
                             <div className="min-w-0">
@@ -200,9 +202,9 @@ export default function DefaultPreview({
                               </p>
                             </div>
                           </div>
-                          <span className="border-border bg-secondary-bg group-hover:text-brand-hover-bg flex h-10 w-10 items-center justify-center rounded-full border transition-colors">
+                          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-transparent transition-colors">
                             <ExternalLink
-                              className="text-tertiary-text"
+                              className="text-primary-text group-hover:text-brand-hover-bg transition-colors"
                               size={20}
                             />
                           </span>
