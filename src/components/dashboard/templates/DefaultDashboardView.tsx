@@ -422,7 +422,15 @@ export default function DefaultDashboardView({
                       </div>
                       {section.title || section.url ? (
                         <a
-                          href={sanitizeUrl(section.url || "#")}
+                          href={
+                            section.ctaType === "email"
+                              ? `mailto:${section.url}`
+                              : section.ctaType === "phone"
+                                ? `tel:${section.url}`
+                                : section.ctaType === "whatsapp"
+                                  ? `https://wa.me/${(section.url || "").replace(/\D/g, "")}`
+                                  : sanitizeUrl(section.url || "#")
+                          }
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-11 items-center rounded-xl px-8 text-sm font-bold text-white transition-colors"

@@ -129,8 +129,23 @@ export default function CreatorDashboardView({
   const resolvedName = profile?.fullName || "Micaela Robinson";
 
   const allLinks = (
-    linksSection?.links?.length ? linksSection.links : DEFAULT_LINKS
+    linksSection?.links?.length
+      ? linksSection.links
+      : isPreview
+        ? DEFAULT_LINKS
+        : []
   ) as SavedLink[];
+
+  const ctaHref = !ctaSection?.url
+    ? null
+    : ctaSection.ctaType === "email"
+      ? `mailto:${ctaSection.url}`
+      : ctaSection.ctaType === "phone"
+        ? `tel:${ctaSection.url}`
+        : ctaSection.ctaType === "whatsapp"
+          ? `https://wa.me/${ctaSection.url.replace(/\D/g, "")}`
+          : sanitizeUrl(ctaSection.url);
+
   const socialLinks = allLinks
     .filter((link) => {
       const url = (link.url || "").toLowerCase();
@@ -199,10 +214,10 @@ export default function CreatorDashboardView({
             </div>
           )}
 
-          {ctaSection && ctaSection.visible && ctaSection.url && (
+          {ctaSection && ctaSection.visible && ctaHref && (
             <div className="relative mt-4">
               <a
-                href={sanitizeUrl(ctaSection.url)}
+                href={ctaHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
@@ -270,7 +285,11 @@ export default function CreatorDashboardView({
           // Projects Tab
           if (section.type === "projects" && activeTab === "projects") {
             const projectsToRender = (
-              section.projects?.length ? section.projects : DEFAULT_PROJECTS
+              section.projects?.length
+                ? section.projects
+                : isPreview
+                  ? DEFAULT_PROJECTS
+                  : []
             ) as ProjectItem[];
             const highlightedProject =
               projectsToRender.find(isProjectHighlighted);
@@ -298,13 +317,15 @@ export default function CreatorDashboardView({
                   {remainingProjects.length > 0 ? (
                     <div
                       className={`grid gap-6 ${
-                        section.layout === "1"
-                          ? "grid-cols-1"
-                          : section.layout === "3"
-                            ? "grid-cols-1 sm:grid-cols-2"
-                            : section.layout === "4"
+                        remainingProjects.length === 1
+                          ? "grid-cols-[minmax(0,420px)] justify-center"
+                          : section.layout === "1"
+                            ? "grid-cols-1"
+                            : section.layout === "3"
                               ? "grid-cols-1 sm:grid-cols-2"
-                              : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+                              : section.layout === "4"
+                                ? "grid-cols-1 sm:grid-cols-2"
+                                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
                       }`}
                       style={{
                         gap: section.gap ? `${section.gap}px` : undefined,
@@ -423,7 +444,11 @@ export default function CreatorDashboardView({
               >
                 {allLinks.length > 0 ? (
                   <div
-                    className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+                    className={`grid gap-4 ${
+                      allLinks.length === 1
+                        ? "grid-cols-[minmax(0,220px)] justify-center"
+                        : "w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                    }`}
                     style={{
                       gap: section.gap ? `${section.gap}px` : undefined,
                     }}
