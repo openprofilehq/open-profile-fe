@@ -4,6 +4,7 @@ import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import { validateFullName } from "@/utils/nameValidation";
 
 type CreateProfileInfoProps = {
   bio: string;
@@ -17,26 +18,6 @@ type CreateProfileInfoProps = {
   photoFile?: File | null;
   onPhotoFile?: (file: File | null) => void;
 };
-
-const normalizeFullName = (name: string) => name.trim().replace(/\s+/g, " ");
-
-function getFullNameError(fullName: string) {
-  const normalizedName = normalizeFullName(fullName);
-
-  if (!normalizedName) {
-    return "Full name is required.";
-  }
-
-  if (!/^[A-Za-z\s]+$/.test(normalizedName)) {
-    return "Full name can only include letters and spaces.";
-  }
-
-  if (normalizedName.split(" ").filter(Boolean).length < 2) {
-    return "Enter at least two names.";
-  }
-
-  return "";
-}
 
 export default function CreateProfileInfo({
   bio,
@@ -70,7 +51,7 @@ export default function CreateProfileInfo({
   }>({});
 
   const characterCount = bio?.length || 0;
-  const fullNameError = getFullNameError(fullName);
+  const fullNameError = validateFullName(fullName);
   const isFullNameValid = !fullNameError;
   const shouldShowFullNameError =
     Boolean(errors.fullName) || (hasTouchedFullName && Boolean(fullNameError));
@@ -79,7 +60,7 @@ export default function CreateProfileInfo({
 
   function handleContinue() {
     const newErrors: { fullName?: string; bio?: string } = {};
-    const currentFullNameError = getFullNameError(fullName);
+    const currentFullNameError = validateFullName(fullName);
 
     setHasTouchedFullName(true);
 
@@ -204,7 +185,8 @@ export default function CreateProfileInfo({
                 id="full-name-help"
                 className="text-tertiary-text mt-1 text-xs"
               >
-                Use letters only and enter at least two names.
+                Use letters, spaces, hyphens, or apostrophes and enter at least
+                two names.
               </p>
             )}
           </div>

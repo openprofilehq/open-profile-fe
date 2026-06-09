@@ -17,17 +17,9 @@ import {
 } from "@/api/profile/profile.options";
 import { isApiError } from "@/api/base";
 import { uploadImage } from "@/api/uploads/uploads.service";
+import { isValidFullName, normalizeFullName } from "@/utils/nameValidation";
 
 type UsernameStatus = "available" | "taken" | "error" | "checking" | "";
-
-const normalizeFullName = (name: string) => name.trim().replace(/\s+/g, " ");
-
-const isValidFullName = (name: string) => {
-  const normalizedName = normalizeFullName(name);
-  const nameParts = normalizedName.split(" ").filter(Boolean);
-
-  return /^[A-Za-z\s]+$/.test(normalizedName) && nameParts.length >= 2;
-};
 
 export default function CreateProfileForm() {
   const router = useRouter();
@@ -115,7 +107,7 @@ export default function CreateProfileForm() {
       } catch {
         toast.error("Failed to upload photo. You can try again later.");
         setIsUploadingImage(false);
-        return; // Halt if upload fails to ensure we don't create profile without requested photo
+        return;
       }
       setIsUploadingImage(false);
     }
