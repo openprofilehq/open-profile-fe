@@ -20,14 +20,22 @@ import { uploadImage } from "@/api/uploads/uploads.service";
 
 type UsernameStatus = "available" | "taken" | "error" | "checking" | "";
 
+const normalizeFullName = (name: string) => name.trim().replace(/\s+/g, " ");
+
+const isValidFullName = (name: string) => {
+  const normalizedName = normalizeFullName(name);
+  const nameParts = normalizedName.split(" ").filter(Boolean);
+
+  return /^[A-Za-z\s]+$/.test(normalizedName) && nameParts.length >= 2;
+};
+
 export default function CreateProfileForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [currentStep, setCurrentStep] = useState(1);
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [fullName, setFullName] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoUrl, setPhotoUrl] = useState("");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -87,10 +95,11 @@ export default function CreateProfileForm() {
   });
 
   async function submitProfile() {
+    const normalizedFullName = normalizeFullName(fullName);
+
     if (
       currentStep !== 2 ||
-      !firstName.trim() ||
-      !lastName.trim() ||
+      !isValidFullName(normalizedFullName) ||
       !bio.trim() ||
       bio.length > 300
     )
@@ -113,7 +122,7 @@ export default function CreateProfileForm() {
 
     createProfile.mutate({
       username,
-      fullName: `${firstName.trim()} ${lastName.trim()}`,
+      fullName: normalizedFullName,
       bio,
       ...(finalPhotoUrl && finalPhotoUrl.startsWith("http")
         ? { photoUrl: finalPhotoUrl }
@@ -125,6 +134,10 @@ export default function CreateProfileForm() {
     e.preventDefault();
     submitProfile();
   }
+
+  const normalizedFullName = normalizeFullName(fullName);
+  const [firstName = "", ...otherNames] = normalizedFullName.split(" ");
+  const lastName = otherNames.join(" ");
 
   return (
     <AuthLayout>
@@ -158,10 +171,8 @@ export default function CreateProfileForm() {
           <CreateProfileInfo
             bio={bio}
             onUpdateBio={(e) => setBio(e.target.value)}
-            firstName={firstName}
-            lastName={lastName}
-            onUpdateFirstName={(e) => setFirstName(e.target.value)}
-            onUpdateLastName={(e) => setLastName(e.target.value)}
+            fullName={fullName}
+            onUpdateFullName={(e) => setFullName(e.target.value)}
             onUpdateStep={submitProfile}
             isPending={createProfile.isPending || isUploadingImage}
             photoUrl={photoUrl}

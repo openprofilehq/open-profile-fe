@@ -8,10 +8,8 @@ import Image from "next/image";
 type CreateProfileInfoProps = {
   bio: string;
   onUpdateBio: (e: ChangeEvent<HTMLTextAreaElement>) => void;
-  firstName: string;
-  lastName: string;
-  onUpdateFirstName: (e: ChangeEvent<HTMLInputElement>) => void;
-  onUpdateLastName: (e: ChangeEvent<HTMLInputElement>) => void;
+  fullName: string;
+  onUpdateFullName: (e: ChangeEvent<HTMLInputElement>) => void;
   onUpdateStep: () => void;
   isPending?: boolean;
   photoUrl?: string;
@@ -19,6 +17,26 @@ type CreateProfileInfoProps = {
   photoFile?: File | null;
   onPhotoFile?: (file: File | null) => void;
 };
+
+const normalizeFullName = (name: string) => name.trim().replace(/\s+/g, " ");
+
+function getFullNameError(fullName: string) {
+  const normalizedName = normalizeFullName(fullName);
+
+  if (!normalizedName) {
+    return "Full name is required.";
+  }
+
+  if (!/^[A-Za-z\s]+$/.test(normalizedName)) {
+    return "Full name can only include letters and spaces.";
+  }
+
+  if (normalizedName.split(" ").filter(Boolean).length < 2) {
+    return "Enter at least two names.";
+  }
+
+  return "";
+}
 
 export default function CreateProfileInfo({
   bio,
@@ -28,14 +46,13 @@ export default function CreateProfileInfo({
   photoUrl,
   onPhotoUrl,
   onPhotoFile,
-  firstName,
-  lastName,
-  onUpdateFirstName,
-  onUpdateLastName,
+  fullName,
+  onUpdateFullName,
 }: CreateProfileInfoProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const currentBlobRef = useRef<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [hasTouchedFullName, setHasTouchedFullName] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -48,22 +65,28 @@ export default function CreateProfileInfo({
   const displayPhoto = preview ?? photoUrl;
 
   const [errors, setErrors] = useState<{
-    firstName?: string;
-    lastName?: string;
+    fullName?: string;
     bio?: string;
   }>({});
 
   const characterCount = bio?.length || 0;
+  const fullNameError = getFullNameError(fullName);
+  const isFullNameValid = !fullNameError;
+  const shouldShowFullNameError =
+    Boolean(errors.fullName) || (hasTouchedFullName && Boolean(fullNameError));
+
+  const displayedFullNameError = errors.fullName || fullNameError;
 
   function handleContinue() {
-    const newErrors: { firstName?: string; lastName?: string; bio?: string } =
-      {};
-    if (!firstName.trim()) {
-      newErrors.firstName = "First name is required.";
+    const newErrors: { fullName?: string; bio?: string } = {};
+    const currentFullNameError = getFullNameError(fullName);
+
+    setHasTouchedFullName(true);
+
+    if (currentFullNameError) {
+      newErrors.fullName = currentFullNameError;
     }
-    if (!lastName.trim()) {
-      newErrors.lastName = "Last name is required.";
-    }
+
     if (!bio.trim()) {
       newErrors.bio = "Bio is required.";
     } else if (characterCount > 300) {
@@ -74,6 +97,7 @@ export default function CreateProfileInfo({
       setErrors(newErrors);
       return;
     }
+
     setErrors({});
     onUpdateStep();
   }
@@ -146,48 +170,43 @@ export default function CreateProfileInfo({
           </Button>
         </div>
 
-        <div className="mt-16 flex flex-col gap-1.5">
-          <div className="flex w-full flex-col items-center gap-4 md:flex-row">
-            <span className="flex-1">
-              <label className="text-secondary-text mb-1 inline-block font-bold">
-                <span className="text-danger-text">*</span> First Name
-              </label>
-              <Input
-                value={firstName}
-                onChange={(e) => {
-                  onUpdateFirstName(e);
-                  if (errors.firstName)
-                    setErrors({ ...errors, firstName: undefined });
-                }}
-                placeholder="Enter your first name"
-                className={`border-2 bg-white shadow-none ${errors.firstName ? "border-danger-text focus-visible:ring-danger-text" : "border-active-bg"}`}
-              />
-              {errors.firstName && (
-                <p className="text-danger-text mt-1 text-sm">
-                  {errors.firstName}
-                </p>
-              )}
-            </span>
-            <span className="flex-1">
-              <label className="text-secondary-text mb-1 inline-block font-bold">
-                <span className="text-danger-text">*</span> Last Name
-              </label>
-              <Input
-                value={lastName}
-                onChange={(e) => {
-                  onUpdateLastName(e);
-                  if (errors.lastName)
-                    setErrors({ ...errors, lastName: undefined });
-                }}
-                placeholder="Enter your last name"
-                className={`border-2 bg-white shadow-none ${errors.lastName ? "border-danger-text focus-visible:ring-danger-text" : "border-active-bg"}`}
-              />
-              {errors.lastName && (
-                <p className="text-danger-text mt-1 text-sm">
-                  {errors.lastName}
-                </p>
-              )}
-            </span>
+        <div className="mt-8 flex w-full flex-col gap-1.5 sm:mt-12">
+          <div className="w-full">
+            <label className="text-secondary-text mb-1 inline-block font-bold">
+              <span className="text-danger-text">*</span> Full Name
+            </label>
+            <Input
+              value={fullName}
+              onChange={(e) => {
+                setHasTouchedFullName(true);
+                onUpdateFullName(e);
+
+                if (errors.fullName) {
+                  setErrors({ ...errors, fullName: undefined });
+                }
+              }}
+              onBlur={() => setHasTouchedFullName(true)}
+              placeholder="Enter your full name"
+              aria-invalid={shouldShowFullNameError}
+              aria-describedby="full-name-help"
+              className={`border-2 bg-white shadow-none ${
+                shouldShowFullNameError
+                  ? "border-danger-text focus-visible:ring-danger-text"
+                  : "border-active-bg"
+              }`}
+            />
+            {shouldShowFullNameError ? (
+              <p id="full-name-help" className="text-danger-text mt-1 text-sm">
+                {displayedFullNameError}
+              </p>
+            ) : (
+              <p
+                id="full-name-help"
+                className="text-tertiary-text mt-1 text-xs"
+              >
+                Use letters only and enter at least two names.
+              </p>
+            )}
           </div>
 
           <div className="mt-4">
@@ -195,7 +214,11 @@ export default function CreateProfileInfo({
               <span className="text-danger-text">*</span> Bio
             </label>
             <textarea
-              className={`w-full resize-none rounded-lg border-2 bg-white p-3 focus:outline-none ${errors.bio ? "focus:ring-danger-text border-danger-text focus:ring-1" : "border-active-bg"}`}
+              className={`w-full resize-none rounded-lg border-2 bg-white p-3 focus:outline-none ${
+                errors.bio
+                  ? "focus:ring-danger-text border-danger-text focus:ring-1"
+                  : "border-active-bg"
+              }`}
               value={bio}
               onChange={(e) => {
                 onUpdateBio(e);
@@ -206,7 +229,11 @@ export default function CreateProfileInfo({
             />
             <div className="mt-1 flex items-center justify-between">
               <span
-                className={`text-xs ${characterCount > 300 ? "text-danger-text font-medium" : "text-tertiary-text"}`}
+                className={`text-xs ${
+                  characterCount > 300
+                    ? "text-danger-text font-medium"
+                    : "text-tertiary-text"
+                }`}
               >
                 {characterCount <= 300
                   ? `${characterCount} / 300 characters`
@@ -222,8 +249,7 @@ export default function CreateProfileInfo({
             type="button"
             disabled={
               isPending ||
-              !firstName.trim() ||
-              !lastName.trim() ||
+              !isFullNameValid ||
               !bio.trim() ||
               characterCount > 300
             }
