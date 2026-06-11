@@ -68,7 +68,10 @@ const contactSchema = z.object({
     .min(1, "Email is required.")
     .email("Incorrect email format."),
   industry: z.string().optional(),
-  message: z.string().min(1, "Message is required."),
+  message: z
+    .string()
+    .min(1, "Message is required.")
+    .max(450, "Message cannot exceed 450 characters."),
 });
 
 type ContactFormValues = z.infer<typeof contactSchema>;
@@ -124,6 +127,8 @@ export default function ContactPage() {
   });
 
   const industry = watch("industry");
+  const messageVal = watch("message") || "";
+  const characterCount = messageVal.length;
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -401,16 +406,30 @@ export default function ContactPage() {
                       placeholder="Type your messages"
                       {...register("message")}
                       className={`placeholder:text-disabled-text w-full resize-none rounded-[8px] border px-4 py-3 text-[13px] transition focus:ring-2 focus:outline-none ${
-                        errors.message
+                        errors.message || characterCount > 450
                           ? "border-negative-text focus:ring-negative-text"
                           : "border-input-b focus:ring-brand focus:border-transparent"
                       }`}
                     />
-                    {errors.message?.message && (
-                      <p className="text-negative-text mt-1 text-xs">
-                        {errors.message.message}
-                      </p>
-                    )}
+                    <div className="mt-1 flex items-center justify-between">
+                      <div>
+                        {(errors.message?.message || characterCount > 450) && (
+                          <p className="text-negative-text text-xs">
+                            {errors.message?.message ||
+                              "Message cannot exceed 450 characters."}
+                          </p>
+                        )}
+                      </div>
+                      <span
+                        className={`text-xs ${
+                          characterCount > 450
+                            ? "text-negative-text font-medium"
+                            : "text-disabled-text"
+                        }`}
+                      >
+                        {characterCount} / 450
+                      </span>
+                    </div>
                   </div>
 
                   <Button
