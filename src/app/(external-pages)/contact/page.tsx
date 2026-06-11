@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { CTA } from "@/components/home/CTA";
 import { Mail, Phone, MapPin, ChevronDown } from "lucide-react";
@@ -53,6 +54,8 @@ const industries = [
   "Other",
 ];
 
+const MESSAGE_MAX_LENGTH = 450;
+
 const contactSchema = z.object({
   name: z.string().superRefine((val, ctx) => {
     const err = validateFullName(val);
@@ -71,36 +74,13 @@ const contactSchema = z.object({
   message: z
     .string()
     .min(1, "Message is required.")
-    .max(450, "Message cannot exceed 450 characters."),
+    .max(
+      MESSAGE_MAX_LENGTH,
+      `Message cannot exceed ${MESSAGE_MAX_LENGTH} characters.`
+    ),
 });
 
 type ContactFormValues = z.infer<typeof contactSchema>;
-
-const contactResolver = async (values: ContactFormValues) => {
-  const result = await contactSchema.safeParseAsync(values);
-  if (result.success) {
-    return { values: result.data, errors: {} };
-  }
-
-  const errors = result.error.issues.reduce(
-    (
-      acc: Record<string, { type: string; message: string }>,
-      current: z.ZodIssue
-    ) => {
-      const path = current.path[0] as string;
-      return {
-        ...acc,
-        [path]: {
-          type: current.code,
-          message: current.message,
-        },
-      };
-    },
-    {}
-  );
-
-  return { values: {}, errors };
-};
 
 export default function ContactPage() {
   const [success, setSuccess] = useState(false);
@@ -116,7 +96,7 @@ export default function ContactPage() {
     reset,
     formState: { errors, isValid },
   } = useForm<ContactFormValues>({
-    resolver: contactResolver,
+    resolver: zodResolver(contactSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -406,28 +386,29 @@ export default function ContactPage() {
                       placeholder="Type your messages"
                       {...register("message")}
                       className={`placeholder:text-disabled-text w-full resize-none rounded-[8px] border px-4 py-3 text-[13px] transition focus:ring-2 focus:outline-none ${
-                        errors.message || characterCount > 450
+                        errors.message || characterCount > MESSAGE_MAX_LENGTH
                           ? "border-negative-text focus:ring-negative-text"
                           : "border-input-b focus:ring-brand focus:border-transparent"
                       }`}
                     />
                     <div className="mt-1 flex items-center justify-between">
                       <div>
-                        {(errors.message?.message || characterCount > 450) && (
+                        {(errors.message?.message ||
+                          characterCount > MESSAGE_MAX_LENGTH) && (
                           <p className="text-negative-text text-xs">
                             {errors.message?.message ||
-                              "Message cannot exceed 450 characters."}
+                              `Message cannot exceed ${MESSAGE_MAX_LENGTH} characters.`}
                           </p>
                         )}
                       </div>
                       <span
                         className={`text-xs ${
-                          characterCount > 450
+                          characterCount > MESSAGE_MAX_LENGTH
                             ? "text-negative-text font-medium"
                             : "text-disabled-text"
                         }`}
                       >
-                        {characterCount} / 450
+                        {characterCount} / {MESSAGE_MAX_LENGTH}
                       </span>
                     </div>
                   </div>
