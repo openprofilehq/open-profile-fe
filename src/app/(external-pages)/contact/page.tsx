@@ -2,10 +2,14 @@
 
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { CTA } from "@/components/home/CTA";
 import { Mail, Phone, MapPin, ChevronDown } from "lucide-react";
 import { contactAction } from "@/app/actions/contact";
 import { Button } from "@/components/ui/button";
+import { validateFullName } from "@/utils/nameValidation";
+
 const XIcon = () => (
   <svg
     width="22"
@@ -49,17 +53,77 @@ const industries = [
   "Other",
 ];
 
+const contactSchema = z.object({
+  name: z.string().superRefine((val, ctx) => {
+    const err = validateFullName(val);
+    if (err) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: err,
+      });
+    }
+  }),
+  email: z
+    .string()
+    .min(1, "Email is required.")
+    .email("Incorrect email format."),
+  industry: z.string().optional(),
+  message: z.string().min(1, "Message is required."),
+});
+
+type ContactFormValues = z.infer<typeof contactSchema>;
+
+const contactResolver = async (values: ContactFormValues) => {
+  const result = await contactSchema.safeParseAsync(values);
+  if (result.success) {
+    return { values: result.data, errors: {} };
+  }
+
+  const errors = result.error.issues.reduce(
+    (
+      acc: Record<string, { type: string; message: string }>,
+      current: z.ZodIssue
+    ) => {
+      const path = current.path[0] as string;
+      return {
+        ...acc,
+        [path]: {
+          type: current.code,
+          message: current.message,
+        },
+      };
+    },
+    {}
+  );
+
+  return { values: {}, errors };
+};
+
 export default function ContactPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [industry, setIndustry] = useState("");
-  const [message, setMessage] = useState("");
+  const [success, setSuccess] = useState(false);
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
-  const [success, setSuccess] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const isValid = name.trim() && email.trim() && message.trim();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors, isValid },
+  } = useForm<ContactFormValues>({
+    resolver: contactResolver,
+    defaultValues: {
+      name: "",
+      email: "",
+      industry: "",
+      message: "",
+    },
+    mode: "onTouched",
+  });
+
+  const industry = watch("industry");
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -74,22 +138,23 @@ export default function ContactPage() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function onSubmit(data: ContactFormValues) {
     setPending(true);
     try {
-      const result = await contactAction(
-        undefined,
-        new FormData(e.currentTarget)
-      );
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("email", data.email);
+      if (data.industry) {
+        formData.append("industry", data.industry);
+      }
+      formData.append("message", data.message);
+
+      const result = await contactAction(undefined, formData);
       if (result?.error) {
         toast.error(result.error);
       } else if (result?.success) {
         setSuccess(true);
-        setName("");
-        setEmail("");
-        setIndustry("");
-        setMessage("");
+        reset();
       }
     } catch {
       toast.error("Something went wrong. Please try again.");
@@ -211,8 +276,12 @@ export default function ContactPage() {
                   </Button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <input type="hidden" name="industry" value={industry} />
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  noValidate
+                  className="space-y-5"
+                >
+                  <input type="hidden" {...register("industry")} />
 
                   <div className="space-y-1.5">
                     <label
@@ -223,13 +292,20 @@ export default function ContactPage() {
                     </label>
                     <input
                       id="name"
-                      name="name"
                       type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
                       placeholder="Shukuneh Itouer"
-                      className="border-input-b placeholder:text-disabled-text focus:ring-brand w-full rounded-[8px] border px-4 py-3 text-[13px] transition focus:border-transparent focus:ring-2 focus:outline-none"
+                      {...register("name")}
+                      className={`placeholder:text-disabled-text w-full rounded-[8px] border px-4 py-3 text-[13px] transition focus:ring-2 focus:outline-none ${
+                        errors.name
+                          ? "border-negative-text focus:ring-negative-text"
+                          : "border-input-b focus:ring-brand focus:border-transparent"
+                      }`}
                     />
+                    {errors.name?.message && (
+                      <p className="text-negative-text mt-1 text-xs">
+                        {errors.name.message}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">
@@ -241,13 +317,20 @@ export default function ContactPage() {
                     </label>
                     <input
                       id="email"
-                      name="email"
                       type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
                       placeholder="shukuneh025@gmail.com"
-                      className="border-input-b placeholder:text-disabled-text focus:ring-brand w-full rounded-[8px] border px-4 py-3 text-[13px] transition focus:border-transparent focus:ring-2 focus:outline-none"
+                      {...register("email")}
+                      className={`placeholder:text-disabled-text w-full rounded-[8px] border px-4 py-3 text-[13px] transition focus:ring-2 focus:outline-none ${
+                        errors.email
+                          ? "border-negative-text focus:ring-negative-text"
+                          : "border-input-b focus:ring-brand focus:border-transparent"
+                      }`}
                     />
+                    {errors.email?.message && (
+                      <p className="text-negative-text mt-1 text-xs">
+                        {errors.email.message}
+                      </p>
+                    )}
                   </div>
 
                   {/* Custom industry dropdown */}
@@ -289,7 +372,7 @@ export default function ContactPage() {
                             variant="dropdownItem"
                             type="button"
                             onClick={() => {
-                              setIndustry(i);
+                              setValue("industry", i, { shouldValidate: true });
                               setOpen(false);
                             }}
                             className={`hover:bg-brand-light-subtle-bg w-full px-4 py-2.5 text-left text-[13px] transition-colors ${
@@ -314,13 +397,20 @@ export default function ContactPage() {
                     </label>
                     <textarea
                       id="message"
-                      name="message"
                       rows={5}
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
                       placeholder="Type your messages"
-                      className="border-input-b placeholder:text-disabled-text focus:ring-brand w-full resize-none rounded-[8px] border px-4 py-3 text-[13px] transition focus:border-transparent focus:ring-2 focus:outline-none"
+                      {...register("message")}
+                      className={`placeholder:text-disabled-text w-full resize-none rounded-[8px] border px-4 py-3 text-[13px] transition focus:ring-2 focus:outline-none ${
+                        errors.message
+                          ? "border-negative-text focus:ring-negative-text"
+                          : "border-input-b focus:ring-brand focus:border-transparent"
+                      }`}
                     />
+                    {errors.message?.message && (
+                      <p className="text-negative-text mt-1 text-xs">
+                        {errors.message.message}
+                      </p>
+                    )}
                   </div>
 
                   <Button
