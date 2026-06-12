@@ -46,7 +46,7 @@ export function ContactInfo() {
                 Email Address
               </p>
               <p className="text-secondary-text text-[13px]">
-                openprofile@email.com
+                openprofile@gmail.com
               </p>
             </div>
           </li>

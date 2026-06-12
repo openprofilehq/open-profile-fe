@@ -23,22 +23,27 @@ const industries = [
 const MESSAGE_MAX_LENGTH = 450;
 
 const contactSchema = z.object({
-  name: z.string().superRefine((val, ctx) => {
-    const err = validateFullName(val);
-    if (err) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: err,
-      });
-    }
-  }),
+  name: z
+    .string()
+    .trim()
+    .superRefine((val, ctx) => {
+      const err = validateFullName(val);
+      if (err) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: err,
+        });
+      }
+    }),
   email: z
     .string()
+    .trim()
     .min(1, "Email is required.")
     .email("Incorrect email format."),
   industry: z.string().optional(),
   message: z
     .string()
+    .trim()
     .min(1, "Message is required.")
     .max(
       MESSAGE_MAX_LENGTH,
@@ -219,32 +224,28 @@ export function ContactForm() {
                 />
               </Button>
 
-              <div
-                className={`border-input-b absolute z-10 mt-1 w-full origin-top overflow-hidden rounded-[8px] border bg-white shadow-lg transition-all duration-200 ${
-                  open
-                    ? "scale-y-100 opacity-100"
-                    : "pointer-events-none scale-y-0 opacity-0"
-                }`}
-              >
-                {industries.map((i) => (
-                  <Button
-                    key={i}
-                    variant="dropdownItem"
-                    type="button"
-                    onClick={() => {
-                      setValue("industry", i, { shouldValidate: true });
-                      setOpen(false);
-                    }}
-                    className={`hover:bg-brand-light-subtle-bg w-full px-4 py-2.5 text-left text-[13px] transition-colors ${
-                      industry === i
-                        ? "text-brand font-medium"
-                        : "text-primary-text"
-                    }`}
-                  >
-                    {i}
-                  </Button>
-                ))}
-              </div>
+              {open && (
+                <div className="border-input-b absolute z-10 mt-1 w-full origin-top overflow-hidden rounded-[8px] border bg-white shadow-lg">
+                  {industries.map((i) => (
+                    <Button
+                      key={i}
+                      variant="dropdownItem"
+                      type="button"
+                      onClick={() => {
+                        setValue("industry", i, { shouldValidate: true });
+                        setOpen(false);
+                      }}
+                      className={`hover:bg-brand-light-subtle-bg w-full px-4 py-2.5 text-left text-[13px] transition-colors ${
+                        industry === i
+                          ? "text-brand font-medium"
+                          : "text-primary-text"
+                      }`}
+                    >
+                      {i}
+                    </Button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
