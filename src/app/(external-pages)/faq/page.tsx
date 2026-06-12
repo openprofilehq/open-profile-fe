@@ -18,21 +18,7 @@ export default function FaqPage() {
       answer:
         "Yes! Creating your profile and getting verified is completely free. There are no hidden fees or credit card requirements.",
     },
-    {
-      question: "How does verification work ?",
-      answer:
-        "We verify your identity through connected social media profiles, professional credentials, or other verified links to ensure authenticity and build trust on your profile.",
-    },
-    {
-      question: "Can people find me if I don't share my profile link ?",
-      answer:
-        "Yes, if you choose to be discoverable. You can control your visibility settings and choose to be listed in our global directory, allowing recruiters, clients, and other users to find you based on your profession and skills.",
-    },
-    {
-      question: "What happens when someone invites me ?",
-      answer:
-        "You will receive an email invitation to join, connect, or collaborate on the platform. It's a great way to grow your professional network and explore opportunities.",
-    },
+
     {
       question: "How do I share my profile",
       answer:
@@ -56,27 +42,12 @@ export default function FaqPage() {
     {
       question: "Will my profile changes be visible instantly?",
       answer:
-        "Yes, any updates or changes you make on your profile builder are saved and reflected on your public profile instantly.",
+        "Yes, any updates or changes you make on your profile builder are saved and reflected on your public profile instantly after publishing.",
     },
     {
       question: "What should I do if I forget my password?",
       answer:
         "If you forget your password, simply click the 'Forgot Password' link on the login page. We will send you an email with instructions and a link to securely reset it.",
-    },
-    {
-      question: "How do I delete my profile if I no longer need it?",
-      answer:
-        "You can delete your profile by navigating to your Account Settings page and selecting the option to delete/deactivate your account. This action will permanently remove all your data.",
-    },
-    {
-      question: "Is it possible to recover a deleted profile?",
-      answer:
-        "Once a profile is permanently deleted, all data is removed from our servers for privacy reasons and cannot be recovered. If you want to use the platform again, you will need to create a new profile.",
-    },
-    {
-      question: "How can I update my email address on my account?",
-      answer:
-        "You can update your email address by going to your settings dashboard, editing the email field, and verifying the new email address via the confirmation link sent to you.",
     },
   ];
 
