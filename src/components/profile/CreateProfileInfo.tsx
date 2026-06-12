@@ -9,7 +9,7 @@ import { validateFullName } from "@/utils/nameValidation";
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 const MAX_IMAGE_SIZE_MB = 5;
 const IMAGE_UPLOAD_HELPER_TEXT =
-  "Accepted file types: image files only, for example JPG, PNG, WebP, GIF, or SVG. Max size: 5MB.";
+  "Image files only: JPG, PNG, WebP, GIF, or SVG. Max size: 5MB.";
 
 type CreateProfileInfoProps = {
   bio: string;
