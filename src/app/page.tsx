@@ -23,13 +23,13 @@ export default function Home() {
         </div>
 
         <section className="w-full bg-[#FAFAFA]">
-          <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="mx-auto w-full max-w-[1100px] px-4 py-16 sm:px-6 lg:px-0">
             <Impression />
           </div>
         </section>
 
         <section className="w-full bg-[#FEFEFE]">
-          <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="mx-auto w-full max-w-[1100px] px-4 py-16 sm:px-6 lg:px-0">
             <Target />
           </div>
         </section>
