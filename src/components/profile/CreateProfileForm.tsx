@@ -104,8 +104,14 @@ export default function CreateProfileForm() {
         const { url } = await uploadImage(photoFile, "profiles");
         finalPhotoUrl = url;
         setPhotoUrl(url);
-      } catch {
-        toast.error("Failed to upload photo. You can try again later.");
+      } catch (error: unknown) {
+        toast.error(
+          isApiError(error)
+            ? error.message
+            : error instanceof Error
+              ? error.message
+              : "Failed to upload photo. Please check the selected image and try again."
+        );
         setIsUploadingImage(false);
         return;
       }
