@@ -120,7 +120,12 @@ export function Hero() {
               <span className="text-link-hover-text absolute -top-5 left-1/2 -translate-x-1/2 text-xl leading-none tracking-wider whitespace-nowrap">
                 \ | /
               </span>
-              <span className="text-link-hover-text italic">One</span>
+              <span
+                className="text-link-hover-text italic"
+                style={{ fontFamily: "'Dancing Script', cursive" }}
+              >
+                One
+              </span>
             </span>{" "}
             Searchable Profile People Can Find And Trust
           </motion.h1>
