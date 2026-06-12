@@ -1,10 +1,15 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { Camera } from "lucide-react";
+import { Camera, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { validateFullName } from "@/utils/nameValidation";
+
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
+const MAX_IMAGE_SIZE_MB = 5;
+const IMAGE_UPLOAD_HELPER_TEXT =
+  "Image files only: JPG, PNG, WebP, GIF, or SVG. Max size: 5MB.";
 
 type CreateProfileInfoProps = {
   bio: string;
@@ -34,6 +39,7 @@ export default function CreateProfileInfo({
   const currentBlobRef = useRef<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [hasTouchedFullName, setHasTouchedFullName] = useState(false);
+  const [photoError, setPhotoError] = useState("");
 
   useEffect(() => {
     return () => {
@@ -83,9 +89,49 @@ export default function CreateProfileInfo({
     onUpdateStep();
   }
 
+  function resetFileInput() {
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+  }
+
+  function handleRemovePhoto() {
+    if (currentBlobRef.current) {
+      URL.revokeObjectURL(currentBlobRef.current);
+      currentBlobRef.current = null;
+    }
+
+    setPreview(null);
+    setPhotoError("");
+    onPhotoUrl?.("");
+    onPhotoFile?.(null);
+    resetFileInput();
+  }
+
+  function getPhotoValidationError(file: File) {
+    if (!file.type.startsWith("image/")) {
+      return "Unsupported file type. Please upload an image file.";
+    }
+
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      return `Image is too large. Please upload an image that is ${MAX_IMAGE_SIZE_MB}MB or smaller.`;
+    }
+
+    return "";
+  }
+
   function handleFile(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const validationError = getPhotoValidationError(file);
+
+    if (validationError) {
+      setPhotoError(validationError);
+      onPhotoFile?.(null);
+      resetFileInput();
+      return;
+    }
 
     if (currentBlobRef.current) {
       URL.revokeObjectURL(currentBlobRef.current);
@@ -94,6 +140,7 @@ export default function CreateProfileInfo({
     const objectUrl = URL.createObjectURL(file);
     currentBlobRef.current = objectUrl;
 
+    setPhotoError("");
     setPreview(objectUrl);
     onPhotoUrl?.(objectUrl);
     onPhotoFile?.(file);
@@ -116,23 +163,37 @@ export default function CreateProfileInfo({
         </div>
 
         <div className="flex flex-col items-center justify-center">
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            className="border-brand mx-auto flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-3 border-dashed"
-          >
-            {displayPhoto ? (
-              <Image
-                src={displayPhoto}
-                alt="Photo preview"
-                width={64}
-                height={64}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <Camera className="text-brand" />
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              aria-describedby="photo-upload-help photo-upload-error"
+              className="border-brand mx-auto flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-3 border-dashed"
+            >
+              {displayPhoto ? (
+                <Image
+                  src={displayPhoto}
+                  alt="Photo preview"
+                  width={64}
+                  height={64}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <Camera className="text-brand" />
+              )}
+            </button>
+
+            {displayPhoto && (
+              <button
+                type="button"
+                onClick={handleRemovePhoto}
+                aria-label="Remove uploaded photo"
+                className="bg-negative-text hover:bg-negative-text/90 absolute -top-2 -right-2 flex h-7 w-7 items-center justify-center rounded-full text-white shadow-sm transition-colors"
+              >
+                <X size={15} />
+              </button>
             )}
-          </button>
+          </div>
 
           <input
             ref={inputRef}
@@ -149,6 +210,33 @@ export default function CreateProfileInfo({
           >
             {displayPhoto ? "Change Photo" : "Upload a Photo"}
           </Button>
+
+          <p
+            id="photo-upload-help"
+            className="text-tertiary-text mt-2 max-w-[320px] text-center text-xs leading-5"
+          >
+            {IMAGE_UPLOAD_HELPER_TEXT}
+          </p>
+
+          {photoError && (
+            <p
+              id="photo-upload-error"
+              role="alert"
+              className="text-danger-text mt-1 max-w-[320px] text-center text-sm"
+            >
+              {photoError}
+            </p>
+          )}
+
+          {displayPhoto && (
+            <button
+              type="button"
+              onClick={handleRemovePhoto}
+              className="text-danger-text mt-2 text-sm font-medium transition-colors hover:underline"
+            >
+              Remove photo
+            </button>
+          )}
         </div>
 
         <div className="mt-8 flex w-full flex-col gap-1.5 sm:mt-12">
