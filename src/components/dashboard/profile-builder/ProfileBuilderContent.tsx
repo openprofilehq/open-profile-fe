@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -210,6 +210,7 @@ export default function ProfileBuilderContent() {
   const draftUpdatedAtRef = useRef<string | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const profileMetaSnapshotRef = useRef<ProfileMetaSnapshot | null>(null);
+  const profileMetaSaveQueueRef = useRef<Promise<unknown>>(Promise.resolve());
 
   const appearanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -452,24 +453,45 @@ export default function ProfileBuilderContent() {
       toast.error(msg);
     },
   });
+  const enqueueProfileMetaSave = useCallback(
+    (variables: { username: string; next: ProfileMetaSnapshot }) => {
+      const runSave = async () => {
+        const previousProfileMeta = profileMetaSnapshotRef.current;
+
+        profileMetaSnapshotRef.current = variables.next;
+
+        try {
+          const response = await updateProfile(
+            variables.username,
+            variables.next
+          );
+
+          profileMetaSnapshotRef.current = variables.next;
+          queryClient.setQueryData(dashboardProfileOption().queryKey, response);
+          queryClient.invalidateQueries({
+            queryKey: dashboardProfileOption().queryKey,
+          });
+
+          return response;
+        } catch (error) {
+          profileMetaSnapshotRef.current = previousProfileMeta;
+          throw error;
+        }
+      };
+
+      const queuedSave = profileMetaSaveQueueRef.current.then(runSave, runSave);
+
+      profileMetaSaveQueueRef.current = queuedSave.catch(() => undefined);
+
+      return queuedSave;
+    },
+    [queryClient]
+  );
+
   const { mutate: saveProfileMeta } = useMutation({
     mutationKey: ["profile", "metadata", "update"],
-    mutationFn: (variables: {
-      username: string;
-      next: ProfileMetaSnapshot;
-      previous: ProfileMetaSnapshot | null;
-    }) => updateProfile(variables.username, variables.next),
-    onSuccess(response, variables) {
-      profileMetaSnapshotRef.current = variables.next;
-
-      queryClient.setQueryData(dashboardProfileOption().queryKey, response);
-      queryClient.invalidateQueries({
-        queryKey: dashboardProfileOption().queryKey,
-      });
-    },
-    onError(error: unknown, variables) {
-      profileMetaSnapshotRef.current = variables.previous;
-
+    mutationFn: enqueueProfileMetaSave,
+    onError(error: unknown) {
       const msg =
         error instanceof Error
           ? error.message
@@ -630,12 +652,9 @@ export default function ProfileBuilderContent() {
         !fullNameValidationError &&
         hasProfileMetaChanges
       ) {
-        profileMetaSnapshotRef.current = nextProfileMeta;
-
         saveProfileMetaRef.current({
           username: currentProfile.username,
           next: nextProfileMeta,
-          previous: previousProfileMeta,
         });
       }
 
@@ -695,25 +714,10 @@ export default function ProfileBuilderContent() {
           !fullNameValidationError &&
           hasProfileMetaChanges
         ) {
-          profileMetaSnapshotRef.current = nextProfileMeta;
-
-          updateProfile(currentProfile.username, nextProfileMeta)
-            .then((response) => {
-              queryClient.setQueryData(
-                dashboardProfileOption().queryKey,
-                response
-              );
-              queryClient.invalidateQueries({
-                queryKey: dashboardProfileOption().queryKey,
-              });
-            })
-            .catch((err) => {
-              profileMetaSnapshotRef.current = previousProfileMeta;
-              console.error(
-                "[profile] Unmount profile metadata save FAILED:",
-                err
-              );
-            });
+          saveProfileMetaRef.current({
+            username: currentProfile.username,
+            next: nextProfileMeta,
+          });
         }
       }
     };
