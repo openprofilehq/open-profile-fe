@@ -5,10 +5,8 @@ import {
   ChevronRight,
   MessageSquare,
   ImageIcon,
-  Eye,
   EyeOff,
   Trash2,
-  MoreHorizontal,
 } from "lucide-react";
 import {
   getImageUrl,
@@ -26,6 +24,7 @@ interface DefaultPreviewProps {
   selectedSectionId?: string | null;
   onToggleSectionVisibility: (id: string) => void;
   onRemoveSection: (id: string) => void;
+  onSelectSection: (id: string) => void;
 }
 
 export default function DefaultPreview({
@@ -34,6 +33,7 @@ export default function DefaultPreview({
   selectedSectionId: _selectedSectionId,
   onToggleSectionVisibility,
   onRemoveSection,
+  onSelectSection,
 }: DefaultPreviewProps) {
   const rawPhotoUrl = profile?.photoUrl;
   const profileImageUrl = rawPhotoUrl
@@ -42,45 +42,68 @@ export default function DefaultPreview({
       : getImageUrl(rawPhotoUrl)
     : null;
 
-  const renderControls = (section?: Section, isBio: boolean = false) => {
-    if (!section) return null;
-    return (
-      <div className="group/menu absolute top-4 right-4 z-50">
-        <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg bg-background/80 border-border/50 flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] border backdrop-blur-sm transition-colors">
-          <MoreHorizontal size={18} />
-        </button>
+  const visibleSections = sections.filter(
+    (section) => section.type === "bio" || section.visible
+  );
 
-        <div className="border-border bg-background invisible absolute top-full right-0 mt-2 flex w-40 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all group-hover/menu:visible group-hover/menu:opacity-100">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleSectionVisibility(section.id);
-            }}
-            className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors"
-          >
-            {section.visible ? (
-              <>
-                <EyeOff size={16} /> Hide
-              </>
-            ) : (
-              <>
-                <Eye size={16} /> Show
-              </>
-            )}
-          </button>
-          <button
-            onClick={(e) => {
-              if (!isBio) {
-                e.stopPropagation();
-                onRemoveSection(section.id);
-              }
-            }}
-            disabled={isBio}
-            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? "text-negative-text cursor-not-allowed opacity-50" : "text-negative-text hover:bg-negative-bg/20"}`}
-          >
-            <Trash2 size={16} /> Delete
-          </button>
-        </div>
+  const handleSelectSection = (
+    event: React.MouseEvent<HTMLElement>,
+    section: Section
+  ) => {
+    event.preventDefault();
+    onSelectSection(section.id);
+  };
+
+  const handleSectionKeyDown = (
+    event: React.KeyboardEvent<HTMLElement>,
+    section: Section
+  ) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+
+    event.preventDefault();
+    onSelectSection(section.id);
+  };
+
+  const renderControls = (
+    section?: Section,
+    positionClass = "top-4 right-4",
+    hoverTarget: "section" | "cta" = "section"
+  ) => {
+    if (!section || section.type === "bio") return null;
+
+    const visibilityClass =
+      hoverTarget === "cta"
+        ? "group-hover/cta:pointer-events-auto group-hover/cta:opacity-100 group-focus-within/cta:pointer-events-auto group-focus-within/cta:opacity-100"
+        : "group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100";
+
+    return (
+      <div
+        className={`pointer-events-none absolute z-50 flex items-center gap-2 opacity-0 transition-opacity ${visibilityClass} ${positionClass}`}
+      >
+        <button
+          type="button"
+          aria-label={`Hide ${section.title || "section"}`}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onToggleSectionVisibility(section.id);
+          }}
+          className="border-border/50 bg-background/90 text-tertiary-text hover:bg-hover-bg hover:text-primary-text flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] border shadow-sm backdrop-blur-sm transition-colors"
+        >
+          <EyeOff size={16} />
+        </button>
+        <button
+          type="button"
+          aria-label={`Delete ${section.title || "section"}`}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onRemoveSection(section.id);
+          }}
+          className="border-border/50 bg-background/90 text-negative-text hover:bg-negative-bg/20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] border shadow-sm backdrop-blur-sm transition-colors"
+        >
+          <Trash2 size={16} />
+        </button>
       </div>
     );
   };
@@ -90,14 +113,17 @@ export default function DefaultPreview({
       className="text-primary-text mx-auto flex w-full max-w-4xl flex-col py-12"
       style={{ gap: "var(--op-spacing, 1.5rem)" }}
     >
-      {sections.map((section) => {
+      {visibleSections.map((section) => {
         if (section.type === "bio") {
           return (
             <div
               key={section.id}
-              className={`group relative transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
+              role="button"
+              tabIndex={0}
+              onClick={(event) => handleSelectSection(event, section)}
+              onKeyDown={(event) => handleSectionKeyDown(event, section)}
+              className={`group relative cursor-pointer transition-opacity duration-200 ${section.font ? getFontClass(section.font) : ""}`}
             >
-              {renderControls(section, true)}
               <section
                 className="border-border bg-background flex flex-col gap-5 rounded-[12px] border p-6 pr-14 shadow-sm md:flex-row md:items-start"
                 style={getSectionStyle(section)}
@@ -134,7 +160,11 @@ export default function DefaultPreview({
           return (
             <div
               key={section.id}
-              className={`group relative transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
+              role="button"
+              tabIndex={0}
+              onClick={(event) => handleSelectSection(event, section)}
+              onKeyDown={(event) => handleSectionKeyDown(event, section)}
+              className={`group relative cursor-pointer transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
             >
               {renderControls(section)}
               <section
@@ -229,14 +259,21 @@ export default function DefaultPreview({
           );
 
           return (
-            <div key={section.id} className="flex flex-col gap-6">
+            <div
+              key={section.id}
+              role="button"
+              tabIndex={0}
+              onClick={(event) => handleSelectSection(event, section)}
+              onKeyDown={(event) => handleSectionKeyDown(event, section)}
+              className="group relative flex cursor-pointer flex-col gap-6"
+            >
+              {renderControls(section)}
               {/* HIGHLIGHT CARD */}
               <HighlightPreviewCard projectsSection={section} />
 
               <div
                 className={`group relative transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
               >
-                {renderControls(section)}
                 <section
                   className="border-border bg-background w-full rounded-[12px] border shadow-sm"
                   style={getSectionStyle(section)}
@@ -371,7 +408,11 @@ export default function DefaultPreview({
           return (
             <div
               key={section.id}
-              className={`group relative transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
+              role="button"
+              tabIndex={0}
+              onClick={(event) => handleSelectSection(event, section)}
+              onKeyDown={(event) => handleSectionKeyDown(event, section)}
+              className={`group relative cursor-pointer transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
             >
               {renderControls(section)}
               <section

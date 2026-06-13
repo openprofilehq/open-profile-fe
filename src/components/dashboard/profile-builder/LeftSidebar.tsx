@@ -68,9 +68,11 @@ export default function LeftSidebar({
   );
 
   useEffect(() => {
+    const sectionToEdit = selectedSectionId ?? initialEditingSectionId ?? null;
+
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setEditingSectionId(initialEditingSectionId ?? null);
-  }, [initialEditingSectionId]);
+    setEditingSectionId(sectionToEdit);
+  }, [initialEditingSectionId, selectedSectionId]);
 
   const [newExpRole, setNewExpRole] = useState("");
   const [newExpCompany, setNewExpCompany] = useState("");

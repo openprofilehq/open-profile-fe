@@ -1,13 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import {
-  ArrowRight,
-  Eye,
-  EyeOff,
-  Trash2,
-  MoreHorizontal,
-  Mail,
-} from "lucide-react";
+import { ArrowRight, EyeOff, Trash2, Mail } from "lucide-react";
 import {
   getImageUrl,
   sanitizeUrl,
@@ -26,6 +19,7 @@ interface PortfolioPreviewProps {
   selectedSectionId?: string | null;
   onToggleSectionVisibility: (id: string) => void;
   onRemoveSection: (id: string) => void;
+  onSelectSection: (id: string) => void;
 }
 
 export default function PortfolioPreview({
@@ -34,50 +28,83 @@ export default function PortfolioPreview({
   selectedSectionId: _selectedSectionId,
   onToggleSectionVisibility,
   onRemoveSection,
+  onSelectSection,
 }: PortfolioPreviewProps) {
-  const ctaSection = sections.find(
+  const visibleSections = sections.filter(
+    (section) => section.type === "bio" || section.visible
+  );
+
+  const ctaSection = visibleSections.find(
     (s) => s.type === "experience" || s.type === "cta"
   );
 
-  const renderControls = (section?: Section, isBio: boolean = false) => {
-    if (!section) return null;
-    return (
-      <div className="group/menu absolute -top-12 right-0 z-50">
-        <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
-          <MoreHorizontal size={18} />
-        </button>
+  const handleSelectSection = (
+    event: React.MouseEvent<HTMLElement>,
+    section: Section
+  ) => {
+    event.preventDefault();
+    onSelectSection(section.id);
+  };
 
-        <div className="border-border bg-background invisible absolute top-full right-0 mt-2 flex w-40 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all group-hover/menu:visible group-hover/menu:opacity-100">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleSectionVisibility(section.id);
-            }}
-            className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors"
-          >
-            {section.visible ? (
-              <>
-                <EyeOff size={16} /> Hide Section
-              </>
-            ) : (
-              <>
-                <Eye size={16} /> Show Section
-              </>
-            )}
-          </button>
-          <button
-            onClick={(e) => {
-              if (!isBio) {
-                e.stopPropagation();
-                onRemoveSection(section.id);
-              }
-            }}
-            disabled={isBio}
-            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? "text-negative-text cursor-not-allowed opacity-50" : "text-negative-text hover:bg-negative-bg/20"}`}
-          >
-            <Trash2 size={16} /> Delete
-          </button>
-        </div>
+  const handleSelectNestedSection = (
+    event: React.MouseEvent<HTMLElement>,
+    section: Section
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+    onSelectSection(section.id);
+  };
+
+  const handleSectionKeyDown = (
+    event: React.KeyboardEvent<HTMLElement>,
+    section: Section
+  ) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+
+    event.preventDefault();
+    onSelectSection(section.id);
+  };
+
+  const renderControls = (
+    section?: Section,
+    positionClass = "top-4 right-4",
+    hoverTarget: "section" | "cta" = "section"
+  ) => {
+    if (!section || section.type === "bio") return null;
+
+    const visibilityClass =
+      hoverTarget === "cta"
+        ? "group-hover/cta:pointer-events-auto group-hover/cta:opacity-100 group-focus-within/cta:pointer-events-auto group-focus-within/cta:opacity-100"
+        : "group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100";
+
+    return (
+      <div
+        className={`pointer-events-none absolute z-50 flex items-center gap-2 opacity-0 transition-opacity ${visibilityClass} ${positionClass}`}
+      >
+        <button
+          type="button"
+          aria-label={`Hide ${section.title || "section"}`}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onToggleSectionVisibility(section.id);
+          }}
+          className="border-border/50 bg-background/90 text-tertiary-text hover:bg-hover-bg hover:text-primary-text flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] border shadow-sm backdrop-blur-sm transition-colors"
+        >
+          <EyeOff size={16} />
+        </button>
+        <button
+          type="button"
+          aria-label={`Delete ${section.title || "section"}`}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onRemoveSection(section.id);
+          }}
+          className="border-border/50 bg-background/90 text-negative-text hover:bg-negative-bg/20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] border shadow-sm backdrop-blur-sm transition-colors"
+        >
+          <Trash2 size={16} />
+        </button>
       </div>
     );
   };
@@ -87,16 +114,18 @@ export default function PortfolioPreview({
       className="text-primary-text mx-auto flex w-full max-w-5xl flex-col py-8 pt-6"
       style={{ gap: "var(--op-spacing, 2rem)" }}
     >
-      {sections.map((section) => {
+      {visibleSections.map((section) => {
         if (section.type === "bio") {
           return (
             <div
               key={section.id}
-              className={`group relative rounded-2xl transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
+              role="button"
+              tabIndex={0}
+              onClick={(event) => handleSelectSection(event, section)}
+              onKeyDown={(event) => handleSectionKeyDown(event, section)}
+              className={`group relative cursor-pointer rounded-2xl transition-opacity duration-200 ${section.font ? getFontClass(section.font) : ""}`}
               style={getSectionStyle(section)}
             >
-              {renderControls(section, true)}
-
               <header
                 className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between rounded-2xl border border-transparent transition-colors sm:flex-row sm:items-start"
                 style={{
@@ -139,30 +168,41 @@ export default function PortfolioPreview({
                 </div>
 
                 {ctaSection?.visible && ctaSection?.url && (
-                  <a
-                    href="#"
-                    onClick={(e) => e.preventDefault()}
-                    className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
-                  >
-                    {ctaSection.iconSrc ? (
-                      <div
-                        className="bg-brand-hover-bg h-4 w-4"
-                        style={{
-                          maskImage: `url(${ctaSection.iconSrc})`,
-                          WebkitMaskImage: `url(${ctaSection.iconSrc})`,
-                          maskSize: "contain",
-                          WebkitMaskSize: "contain",
-                          maskRepeat: "no-repeat",
-                          WebkitMaskRepeat: "no-repeat",
-                          maskPosition: "center",
-                          WebkitMaskPosition: "center",
-                        }}
-                      />
-                    ) : (
-                      <Mail size={16} />
+                  <div className="group/cta relative shrink-0">
+                    {renderControls(
+                      ctaSection,
+                      "-top-10 left-1/2 -translate-x-1/2",
+                      "cta"
                     )}
-                    {ctaSection.buttonText || "Email"}
-                  </a>
+                    <a
+                      href={sanitizeUrl(ctaSection.url)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(event) =>
+                        handleSelectNestedSection(event, ctaSection)
+                      }
+                      className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
+                    >
+                      {ctaSection.iconSrc ? (
+                        <div
+                          className="bg-brand-hover-bg h-4 w-4"
+                          style={{
+                            maskImage: `url(${ctaSection.iconSrc})`,
+                            WebkitMaskImage: `url(${ctaSection.iconSrc})`,
+                            maskSize: "contain",
+                            WebkitMaskSize: "contain",
+                            maskRepeat: "no-repeat",
+                            WebkitMaskRepeat: "no-repeat",
+                            maskPosition: "center",
+                            WebkitMaskPosition: "center",
+                          }}
+                        />
+                      ) : (
+                        <Mail size={16} />
+                      )}
+                      {ctaSection.buttonText || "Email"}
+                    </a>
+                  </div>
                 )}
               </header>
 
@@ -179,7 +219,11 @@ export default function PortfolioPreview({
           return (
             <section
               key={section.id}
-              className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
+              role="button"
+              tabIndex={0}
+              onClick={(event) => handleSelectSection(event, section)}
+              onKeyDown={(event) => handleSectionKeyDown(event, section)}
+              className={`group hover:border-border hover:bg-background/50 relative w-full cursor-pointer rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
               style={(() => {
                 const { gap: _gap, ...rest } = getSectionStyle(section);
                 return rest;
@@ -224,7 +268,15 @@ export default function PortfolioPreview({
           );
 
           return (
-            <div key={section.id} className="flex flex-col gap-6">
+            <div
+              key={section.id}
+              role="button"
+              tabIndex={0}
+              onClick={(event) => handleSelectSection(event, section)}
+              onKeyDown={(event) => handleSectionKeyDown(event, section)}
+              className="group relative flex cursor-pointer flex-col gap-6"
+            >
+              {renderControls(section)}
               <HighlightPreviewCard
                 projectsSection={section}
                 variant="transparent"
@@ -236,8 +288,6 @@ export default function PortfolioPreview({
                   return rest;
                 })()}
               >
-                {renderControls(section)}
-
                 <div className="mb-6 flex flex-col gap-1">
                   {section.title && (
                     <h2 className="text-primary-text text-[26px] font-bold">
@@ -342,7 +392,11 @@ export default function PortfolioPreview({
           return (
             <section
               key={section.id}
-              className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
+              role="button"
+              tabIndex={0}
+              onClick={(event) => handleSelectSection(event, section)}
+              onKeyDown={(event) => handleSectionKeyDown(event, section)}
+              className={`group hover:border-border hover:bg-background/50 relative w-full cursor-pointer rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
               style={getSectionStyle(section)}
             >
               {renderControls(section)}
