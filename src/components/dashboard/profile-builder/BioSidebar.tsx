@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getImageUrl } from "@/utils/profile";
-import { validateFullName } from "@/utils/nameValidation";
+import { normalizeFullName, validateFullName } from "@/utils/nameValidation";
 import { uploadImage } from "@/api/uploads/uploads.service";
 import { updateProfile } from "@/api/profile/profile.service";
 import type { Section, ProfilePreview } from "./types";
@@ -28,10 +28,45 @@ export default function BioSidebar({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const fullName = section.fullName ?? profile?.fullName ?? "";
+
+  const savedFullName = section.fullName ?? profile?.fullName ?? "";
+  const [fullNameDraftState, setFullNameDraftState] = useState<{
+    sectionId: string;
+    sourceValue: string;
+    value: string;
+  }>({
+    sectionId: section.id,
+    sourceValue: savedFullName,
+    value: savedFullName,
+  });
+
+  const fullNameDraft =
+    fullNameDraftState.sectionId === section.id &&
+    fullNameDraftState.sourceValue === savedFullName
+      ? fullNameDraftState.value
+      : savedFullName;
+
   const bio = section.bio ?? "";
   const profilePhotoUrl = getImageUrl(profile?.photoUrl);
-  const fullNameError = validateFullName(fullName);
+  const fullNameError = validateFullName(fullNameDraft);
+
+  const handleFullNameChange = (value: string) => {
+    setFullNameDraftState({
+      sectionId: section.id,
+      sourceValue: savedFullName,
+      value,
+    });
+
+    const validationError = validateFullName(value);
+
+    if (validationError) {
+      return;
+    }
+
+    onUpdateSection(section.id, {
+      fullName: normalizeFullName(value),
+    });
+  };
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -96,10 +131,8 @@ export default function BioSidebar({
             <input
               type="text"
               id="bio-fullname"
-              value={fullName}
-              onChange={(e) =>
-                onUpdateSection(section.id, { fullName: e.target.value })
-              }
+              value={fullNameDraft}
+              onChange={(e) => handleFullNameChange(e.target.value)}
               placeholder="Enter full name"
               aria-invalid={!!fullNameError}
               className={`bg-background w-full rounded-[10px] border px-4 py-3 text-sm text-[#050505] transition-colors outline-none ${
