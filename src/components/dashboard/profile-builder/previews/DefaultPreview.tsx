@@ -59,6 +59,7 @@ export default function DefaultPreview({
     section: Section
   ) => {
     if (event.key !== "Enter" && event.key !== " ") return;
+    if (event.target !== event.currentTarget) return;
 
     event.preventDefault();
     onSelectSection(section.id);

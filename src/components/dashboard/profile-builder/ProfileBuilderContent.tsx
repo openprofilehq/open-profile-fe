@@ -620,11 +620,15 @@ export default function ProfileBuilderContent() {
     const newSection = createSection(type, title);
     if (!newSection) return;
 
+    let selectedId = newSection.id;
+
     setSections((prev) => {
       const existingSection = prev.find(
         (section) =>
           section.id === newSection.id || section.type === newSection.type
       );
+
+      selectedId = existingSection ? existingSection.id : newSection.id;
 
       if (existingSection) {
         return prev.map((section) =>
@@ -642,7 +646,7 @@ export default function ProfileBuilderContent() {
         : [newSection];
     });
 
-    setSelectedSectionId(newSection.id);
+    setSelectedSectionId(selectedId);
   };
   const handleRemoveSection = (id: string) => {
     setSectionToDelete(id);
