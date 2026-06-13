@@ -3,15 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Reorder, useDragControls } from "motion/react";
-import {
-  ChevronLeft,
-  Search,
-  Plus,
-  GripVertical,
-  Trash2,
-  Eye,
-  EyeOff,
-} from "lucide-react";
+import { ChevronLeft, Search, Plus, GripVertical, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LinkSidebar from "./LinkSidebar";
 import BioSidebar from "./BioSidebar";
@@ -55,8 +47,6 @@ export default function LeftSidebar({
   onSelectSection,
   onDeselectSection,
   onAddSection,
-  onRemoveSection,
-  onToggleSectionVisibility,
   onReorderSections,
   onUpdateSection,
   profile,
@@ -585,8 +575,6 @@ export default function LeftSidebar({
                 key={section.id}
                 section={section}
                 isSelected={isSelected}
-                onToggleSectionVisibility={onToggleSectionVisibility}
-                onRemoveSection={onRemoveSection}
                 handleOpenSectionForm={handleOpenSectionForm}
                 searchQuery={searchQuery}
                 profile={profile}
@@ -609,8 +597,6 @@ export default function LeftSidebar({
 function SortableSectionItem({
   section,
   isSelected,
-  onToggleSectionVisibility,
-  onRemoveSection,
   handleOpenSectionForm,
   searchQuery,
   profile,
@@ -618,8 +604,6 @@ function SortableSectionItem({
 }: {
   section: Section;
   isSelected: boolean;
-  onToggleSectionVisibility: (id: string) => void;
-  onRemoveSection: (id: string) => void;
   handleOpenSectionForm: (id: string) => void;
   searchQuery: string;
   profile?: { fullName?: string } | null;
@@ -664,37 +648,6 @@ function SortableSectionItem({
           <p className="text-secondary-text mt-0.5 truncate text-xs">
             {getSectionDescriptor(section)}
           </p>
-        </div>
-        <div>
-          {section.type !== "bio" && (
-            <>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleSectionVisibility(section.id);
-                }}
-                className="hover:bg-hover-bg text-secondary-text shrink-0 rounded-lg p-1.5 opacity-40 transition-all group-hover:opacity-100 hover:opacity-100"
-                title={section.visible ? "Hide section" : "Show section"}
-                aria-label={`${section.visible ? "Hide" : "Show"} section ${section.title}`}
-              >
-                {section.visible ? <Eye size={15} /> : <EyeOff size={15} />}
-              </button>
-
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onRemoveSection(section.id);
-                }}
-                className="hover:bg-hover-bg hover:text-negative-text text-secondary-text shrink-0 rounded-lg p-1.5 opacity-40 transition-all group-hover:opacity-100 hover:opacity-100"
-                title="Delete Section"
-                aria-label={`Delete section ${section.title}`}
-              >
-                <Trash2 size={15} />
-              </button>
-            </>
-          )}
         </div>
       </div>
 
