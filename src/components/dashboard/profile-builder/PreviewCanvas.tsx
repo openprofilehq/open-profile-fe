@@ -12,6 +12,7 @@ interface PreviewCanvasProps {
   iconColor: string;
   spacing: number;
   borderRadius: "sharp" | "rounded" | "pill";
+  appearanceTheme?: "light" | "dark";
   template?: string;
   sections: Section[];
   profile?: ProfilePreview | null;
@@ -31,9 +32,10 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
   const fontStyles: Record<string, string> = {
     Afacad: "font-afacad",
     Inter: "font-sans",
-    Serif: "font-serif",
+    Serif: "font-playfair",
+    "Playfair Display": "font-playfair",
     Mono: "font-mono",
-    Geologica: "font-sans",
+    Geologica: "font-geologica",
     Manrope: "font-sans",
   };
 
@@ -62,6 +64,7 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
           cornerStyle: props.borderRadius,
           borderRadius: props.borderRadius,
           spacing: props.spacing,
+          theme: props.appearanceTheme,
         }}
         className="flex h-full w-full min-w-0 flex-1 flex-col"
       >

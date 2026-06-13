@@ -128,7 +128,7 @@ export default function ProfessionalPreview({
                     <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight break-all">
                       {profile?.fullName || "Micaela Robinson"}
                     </h1>
-                    <p className="text-secondary-text mt-1 text-[15px] break-all">
+                    <p className="text-brand-hover-bg mt-1 text-[15px] break-all">
                       {getDisplayProfileUrl(profile?.username || "micaela")}
                     </p>
                   </div>

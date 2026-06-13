@@ -132,7 +132,7 @@ export default function PortfolioPreview({
                         {profile?.fullName || "John Smith"}
                       </h1>
                     </div>
-                    <p className="text-secondary-text mt-1 text-[14px]">
+                    <p className="text-brand-hover-bg mt-1 text-[14px]">
                       {getDisplayProfileUrl(profile?.username || "johnsmith")}
                     </p>
                   </div>

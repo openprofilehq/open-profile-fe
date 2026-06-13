@@ -467,7 +467,7 @@ export default function ProfileBuilderContent() {
         font: mapFontToApi(font),
         cornerStyle: mapCornerStyleToApi(borderRadius),
         spacing: clampSpacingForApi(spacing),
-        theme: "light",
+        theme: appearanceTheme,
       };
 
       const buildComponentAppearance = (sectionType: string) => {
@@ -780,6 +780,7 @@ export default function ProfileBuilderContent() {
             iconColor={iconColor}
             spacing={spacing}
             borderRadius={borderRadius}
+            appearanceTheme={appearanceTheme}
             template={template}
             sections={resolvedSections}
             profile={profile}
@@ -802,6 +803,8 @@ export default function ProfileBuilderContent() {
             onChangeSpacing={setSpacing}
             borderRadius={borderRadius}
             onChangeBorderRadius={setBorderRadius}
+            appearanceTheme={appearanceTheme}
+            onChangeAppearanceTheme={setAppearanceTheme}
             onBackToGlobal={() => setSelectedSectionId(null)}
             selectedSection={selectedSection}
             onUpdateSection={handleUpdateSection}
