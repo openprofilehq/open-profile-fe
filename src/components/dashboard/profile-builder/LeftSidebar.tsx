@@ -100,7 +100,20 @@ export default function LeftSidebar({
   }
   const [linkSidebarOpen, setLinkSidebarOpen] = useState(false);
 
-  const filteredSections = sections.filter((section) => {
+  const activeSections = sections.filter(
+    (section) => section.type === "bio" || section.visible
+  );
+
+  const hiddenSections = sections.filter(
+    (section) => section.type !== "bio" && !section.visible
+  );
+
+  const orderedActiveSections = [
+    ...activeSections.filter((section) => section.type === "bio"),
+    ...activeSections.filter((section) => section.type !== "bio"),
+  ];
+
+  const filteredSections = orderedActiveSections.filter((section) => {
     const displayTitle = getDisplayTitle(section, profile);
     return displayTitle.toLowerCase().includes(searchQuery.toLowerCase());
   });
@@ -110,10 +123,18 @@ export default function LeftSidebar({
     setIsAddingSection(false);
   };
 
-  const isLinksDisabled = sections.some((s) => s.type === "links");
-  const isBioDisabled = sections.some((s) => s.type === "bio");
-  const isProjectsDisabled = sections.some((s) => s.type === "projects");
-  const isCtaDisabled = sections.some((s) => s.type === "experience");
+  const isLinksDisabled = sections.some(
+    (section) => section.type === "links" && section.visible
+  );
+  const isBioDisabled = sections.some((section) => section.type === "bio");
+  const isProjectsDisabled = sections.some(
+    (section) => section.type === "projects" && section.visible
+  );
+  const isCtaDisabled = sections.some(
+    (section) =>
+      (section.type === "experience" || section.type === "cta") &&
+      section.visible
+  );
   const isDisabled = isLinksDisabled;
 
   const handleSwitchToAddLinkSection = () => {
@@ -536,10 +557,21 @@ export default function LeftSidebar({
       <div className="flex-1 overflow-y-auto pr-1">
         <Reorder.Group
           axis="y"
-          values={searchQuery ? filteredSections : sections}
+          values={searchQuery ? filteredSections : orderedActiveSections}
           onReorder={(newOrder) => {
             if (!searchQuery) {
-              onReorderSections(newOrder);
+              const bioSection = sections.find(
+                (section) => section.type === "bio"
+              );
+              const reorderedNonBioSections = newOrder.filter(
+                (section) => section.type !== "bio"
+              );
+
+              onReorderSections([
+                ...(bioSection ? [bioSection] : []),
+                ...reorderedNonBioSections,
+                ...hiddenSections,
+              ]);
             }
           }}
           className="flex flex-col gap-3"
@@ -632,31 +664,35 @@ function SortableSectionItem({
           </p>
         </div>
         <div>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleSectionVisibility(section.id);
-            }}
-            className="hover:bg-hover-bg text-secondary-text shrink-0 rounded-lg p-1.5 opacity-40 transition-all group-hover:opacity-100 hover:opacity-100"
-            title={section.visible ? "Hide section" : "Show section"}
-            aria-label={`${section.visible ? "Hide" : "Show"} section ${section.title}`}
-          >
-            {section.visible ? <Eye size={15} /> : <EyeOff size={15} />}
-          </button>
+          {section.type !== "bio" && (
+            <>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleSectionVisibility(section.id);
+                }}
+                className="hover:bg-hover-bg text-secondary-text shrink-0 rounded-lg p-1.5 opacity-40 transition-all group-hover:opacity-100 hover:opacity-100"
+                title={section.visible ? "Hide section" : "Show section"}
+                aria-label={`${section.visible ? "Hide" : "Show"} section ${section.title}`}
+              >
+                {section.visible ? <Eye size={15} /> : <EyeOff size={15} />}
+              </button>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemoveSection(section.id);
-            }}
-            className="hover:bg-hover-bg hover:text-negative-text text-secondary-text shrink-0 rounded-lg p-1.5 opacity-40 transition-all group-hover:opacity-100 hover:opacity-100"
-            title="Delete Section"
-            aria-label={`Delete section ${section.title}`}
-          >
-            <Trash2 size={15} />
-          </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemoveSection(section.id);
+                }}
+                className="hover:bg-hover-bg hover:text-negative-text text-secondary-text shrink-0 rounded-lg p-1.5 opacity-40 transition-all group-hover:opacity-100 hover:opacity-100"
+                title="Delete Section"
+                aria-label={`Delete section ${section.title}`}
+              >
+                <Trash2 size={15} />
+              </button>
+            </>
+          )}
         </div>
       </div>
 
