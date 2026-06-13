@@ -12,7 +12,7 @@ import {
   updateProfileAppearanceOption,
   profileAppearanceOption,
 } from "@/api/profile/profile.options";
-import { upsertDraft } from "@/api/profile/profile.service";
+import { updateProfile, upsertDraft } from "@/api/profile/profile.service";
 import LeftSidebar from "./LeftSidebar";
 import PreviewCanvas from "./PreviewCanvas";
 import RightPanel from "./RightPanel";
@@ -153,6 +153,12 @@ const mapCornerStyleFromApi = (cornerStyle: string) => {
   return cornerStyleMap[cornerStyle] ?? "rounded";
 };
 
+type ProfileMetaSnapshot = {
+  fullName: string;
+  bio: string | null;
+  photoUrl: string | null;
+};
+
 export default function ProfileBuilderContent() {
   const queryClient = useQueryClient();
 
@@ -202,6 +208,7 @@ export default function ProfileBuilderContent() {
   const appearanceEditedRef = useRef(false);
   const draftUpdatedAtRef = useRef<string | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const profileMetaSnapshotRef = useRef<ProfileMetaSnapshot | null>(null);
 
   const appearanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -337,6 +344,21 @@ export default function ProfileBuilderContent() {
     }
 
     setSections(loadedSections);
+
+    const loadedBioSection = loadedSections.find(
+      (section) => section.type === "bio"
+    );
+
+    profileMetaSnapshotRef.current = {
+      fullName:
+        loadedBioSection?.fullName ?? dashboardProfile.data.fullName ?? "",
+      bio: loadedBioSection?.bio ?? dashboardProfile.data.bio ?? null,
+      photoUrl:
+        loadedBioSection?.photoUrl !== undefined
+          ? loadedBioSection.photoUrl
+          : (dashboardProfile.data.photoUrl ?? null),
+    };
+
     draftUpdatedAtRef.current = draftState.data.updatedAt ?? null;
   }, [
     profileContent.isSuccess,
@@ -429,9 +451,40 @@ export default function ProfileBuilderContent() {
       toast.error(msg);
     },
   });
+  const { mutate: saveProfileMeta } = useMutation({
+    mutationKey: ["profile", "metadata", "update"],
+    mutationFn: (variables: {
+      username: string;
+      next: ProfileMetaSnapshot;
+      previous: ProfileMetaSnapshot | null;
+    }) => updateProfile(variables.username, variables.next),
+    onSuccess(response, variables) {
+      profileMetaSnapshotRef.current = variables.next;
+
+      queryClient.setQueryData(dashboardProfileOption().queryKey, response);
+      queryClient.invalidateQueries({
+        queryKey: dashboardProfileOption().queryKey,
+      });
+    },
+    onError(error: unknown, variables) {
+      profileMetaSnapshotRef.current = variables.previous;
+
+      const msg =
+        error instanceof Error
+          ? error.message
+          : "Failed to update profile details.";
+      toast.error(msg);
+    },
+  });
+
   const saveDraftRef = useRef(saveDraft);
   useEffect(() => {
     saveDraftRef.current = saveDraft;
+  });
+
+  const saveProfileMetaRef = useRef(saveProfileMeta);
+  useEffect(() => {
+    saveProfileMetaRef.current = saveProfileMeta;
   });
 
   const sectionsRef = useRef(sections);
@@ -439,6 +492,12 @@ export default function ProfileBuilderContent() {
   useEffect(() => {
     sectionsRef.current = sections;
   }, [sections]);
+
+  const profileRef = useRef(profile);
+
+  useEffect(() => {
+    profileRef.current = profile;
+  }, [profile]);
 
   const sectionAppearanceDeps = sections
     .map((s) => `${s.id}-${s.bgColor}-${s.textColor}-${s.iconColor}-${s.font}`)
@@ -532,12 +591,51 @@ export default function ProfileBuilderContent() {
     saveTimerRef.current = setTimeout(() => {
       const bioSection = sections.find((s) => s.type === "bio");
       const updatedAt = draftUpdatedAtRef.current;
+      const currentProfile = profileRef.current;
+
       const payload = {
         bio: bioSection?.bio ?? null,
         content: sectionsToContent(sections),
         themeSettings: { template },
       };
+
       saveDraftRef.current({ data: payload, draftVersion: updatedAt });
+
+      const nextProfileMeta: ProfileMetaSnapshot = {
+        fullName: (
+          bioSection?.fullName ??
+          currentProfile?.fullName ??
+          ""
+        ).trim(),
+        bio: bioSection?.bio ?? null,
+        photoUrl:
+          bioSection?.photoUrl !== undefined
+            ? bioSection.photoUrl
+            : (currentProfile?.photoUrl ?? null),
+      };
+
+      const previousProfileMeta = profileMetaSnapshotRef.current;
+
+      const hasProfileMetaChanges =
+        !previousProfileMeta ||
+        previousProfileMeta.fullName !== nextProfileMeta.fullName ||
+        previousProfileMeta.bio !== nextProfileMeta.bio ||
+        previousProfileMeta.photoUrl !== nextProfileMeta.photoUrl;
+
+      if (
+        currentProfile?.username &&
+        nextProfileMeta.fullName &&
+        hasProfileMetaChanges
+      ) {
+        profileMetaSnapshotRef.current = nextProfileMeta;
+
+        saveProfileMetaRef.current({
+          username: currentProfile.username,
+          next: nextProfileMeta,
+          previous: previousProfileMeta,
+        });
+      }
+
       saveTimerRef.current = null;
     }, 1000);
 
@@ -559,9 +657,59 @@ export default function ProfileBuilderContent() {
           bio: bioSection?.bio ?? null,
           content: sectionsToContent(sectionsRef.current),
         };
+
         upsertDraft(payload, updatedAt).catch((err) => {
           console.error("[draft] Unmount direct save FAILED:", err);
         });
+
+        const currentProfile = profileRef.current;
+
+        const nextProfileMeta: ProfileMetaSnapshot = {
+          fullName: (
+            bioSection?.fullName ??
+            currentProfile?.fullName ??
+            ""
+          ).trim(),
+          bio: bioSection?.bio ?? null,
+          photoUrl:
+            bioSection?.photoUrl !== undefined
+              ? bioSection.photoUrl
+              : (currentProfile?.photoUrl ?? null),
+        };
+
+        const previousProfileMeta = profileMetaSnapshotRef.current;
+
+        const hasProfileMetaChanges =
+          !previousProfileMeta ||
+          previousProfileMeta.fullName !== nextProfileMeta.fullName ||
+          previousProfileMeta.bio !== nextProfileMeta.bio ||
+          previousProfileMeta.photoUrl !== nextProfileMeta.photoUrl;
+
+        if (
+          currentProfile?.username &&
+          nextProfileMeta.fullName &&
+          hasProfileMetaChanges
+        ) {
+          profileMetaSnapshotRef.current = nextProfileMeta;
+
+          updateProfile(currentProfile.username, nextProfileMeta)
+            .then((response) => {
+              queryClient.setQueryData(
+                dashboardProfileOption().queryKey,
+                response
+              );
+              queryClient.invalidateQueries({
+                queryKey: dashboardProfileOption().queryKey,
+              });
+            })
+            .catch((err) => {
+              profileMetaSnapshotRef.current = previousProfileMeta;
+              console.error(
+                "[profile] Unmount profile metadata save FAILED:",
+                err
+              );
+            });
+        }
       }
     };
   }, []);
@@ -593,6 +741,24 @@ export default function ProfileBuilderContent() {
         }
       : section
   );
+
+  const bioSectionForPreview = resolvedSections.find(
+    (section) => section.type === "bio"
+  );
+
+  const previewPhotoUrl =
+    bioSectionForPreview?.photoUrl !== undefined
+      ? bioSectionForPreview.photoUrl
+      : profile?.photoUrl;
+
+  const previewProfile = profile
+    ? {
+        ...profile,
+        fullName: bioSectionForPreview?.fullName ?? profile.fullName ?? "",
+        bio: bioSectionForPreview?.bio ?? profile.bio ?? "",
+        photoUrl: previewPhotoUrl,
+      }
+    : profile;
 
   useEffect(() => {
     if (sectionParam) {
@@ -654,7 +820,11 @@ export default function ProfileBuilderContent() {
   };
 
   const handleUpdateSection = (id: string, updates: Partial<Section>) => {
-    setSections(sections.map((s) => (s.id === id ? { ...s, ...updates } : s)));
+    setSections((currentSections) =>
+      currentSections.map((section) =>
+        section.id === id ? { ...section, ...updates } : section
+      )
+    );
   };
 
   const selectedSection =
@@ -733,7 +903,7 @@ export default function ProfileBuilderContent() {
             onToggleSectionVisibility={handleToggleSectionVisibility}
             onReorderSections={setSections}
             onUpdateSection={handleUpdateSection}
-            profile={profile}
+            profile={previewProfile}
           />
 
           <PreviewCanvas
@@ -745,7 +915,7 @@ export default function ProfileBuilderContent() {
             borderRadius={borderRadius}
             template={template}
             sections={resolvedSections}
-            profile={profile}
+            profile={previewProfile}
             selectedSectionId={selectedSectionId}
             onToggleSectionVisibility={handleToggleSectionVisibility}
             onRemoveSection={handleRemoveSection}
