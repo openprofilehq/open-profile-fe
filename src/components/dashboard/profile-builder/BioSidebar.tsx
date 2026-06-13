@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getImageUrl } from "@/utils/profile";
+import { validateFullName } from "@/utils/nameValidation";
 import { uploadImage } from "@/api/uploads/uploads.service";
 import { updateProfile } from "@/api/profile/profile.service";
 import type { Section, ProfilePreview } from "./types";
@@ -27,10 +28,10 @@ export default function BioSidebar({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-
   const fullName = section.fullName ?? profile?.fullName ?? "";
   const bio = section.bio ?? "";
   const profilePhotoUrl = getImageUrl(profile?.photoUrl);
+  const fullNameError = validateFullName(fullName);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -100,8 +101,19 @@ export default function BioSidebar({
                 onUpdateSection(section.id, { fullName: e.target.value })
               }
               placeholder="Enter full name"
-              className="border-tertiary-b focus:border-brand-b bg-background w-full rounded-[10px] border px-4 py-3 text-sm text-[#050505] transition-colors outline-none"
+              aria-invalid={!!fullNameError}
+              className={`bg-background w-full rounded-[10px] border px-4 py-3 text-sm text-[#050505] transition-colors outline-none ${
+                fullNameError
+                  ? "border-[#D92D20] focus:border-[#D92D20]"
+                  : "border-tertiary-b focus:border-brand-b"
+              }`}
             />
+
+            {fullNameError && (
+              <p className="mt-1 text-xs font-medium text-[#D92D20]">
+                {fullNameError}
+              </p>
+            )}
           </div>
 
           {/* Bio */}

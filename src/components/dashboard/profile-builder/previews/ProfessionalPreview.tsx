@@ -119,14 +119,15 @@ export default function ProfessionalPreview({
                       />
                     ) : (
                       <div className="text-brand-text flex h-full items-center justify-center text-[32px] font-bold">
-                        {(profile?.fullName || "M").charAt(0).toUpperCase()}
+                        {(profile?.fullName ?? "").charAt(0).toUpperCase() ||
+                          "?"}
                       </div>
                     )}
                   </div>
 
                   <div className="flex flex-col">
                     <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight break-all">
-                      {profile?.fullName || "Micaela Robinson"}
+                      {profile?.fullName ?? ""}
                     </h1>
                     <p className="text-secondary-text mt-1 text-[15px] break-all">
                       {getDisplayProfileUrl(profile?.username || "micaela")}

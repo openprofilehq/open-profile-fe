@@ -26,6 +26,7 @@ import type {
 } from "@/api/profile/profile.type";
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { isApiError } from "@/api/base";
+import { normalizeFullName, validateFullName } from "@/utils/nameValidation";
 import { ROUTES } from "@/constants/routes";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -602,11 +603,9 @@ export default function ProfileBuilderContent() {
       saveDraftRef.current({ data: payload, draftVersion: updatedAt });
 
       const nextProfileMeta: ProfileMetaSnapshot = {
-        fullName: (
-          bioSection?.fullName ??
-          currentProfile?.fullName ??
-          ""
-        ).trim(),
+        fullName: normalizeFullName(
+          bioSection?.fullName ?? currentProfile?.fullName ?? ""
+        ),
         bio: bioSection?.bio ?? null,
         photoUrl:
           bioSection?.photoUrl !== undefined
@@ -622,9 +621,13 @@ export default function ProfileBuilderContent() {
         previousProfileMeta.bio !== nextProfileMeta.bio ||
         previousProfileMeta.photoUrl !== nextProfileMeta.photoUrl;
 
+      const fullNameValidationError = validateFullName(
+        nextProfileMeta.fullName
+      );
+
       if (
         currentProfile?.username &&
-        nextProfileMeta.fullName &&
+        !fullNameValidationError &&
         hasProfileMetaChanges
       ) {
         profileMetaSnapshotRef.current = nextProfileMeta;
@@ -665,11 +668,9 @@ export default function ProfileBuilderContent() {
         const currentProfile = profileRef.current;
 
         const nextProfileMeta: ProfileMetaSnapshot = {
-          fullName: (
-            bioSection?.fullName ??
-            currentProfile?.fullName ??
-            ""
-          ).trim(),
+          fullName: normalizeFullName(
+            bioSection?.fullName ?? currentProfile?.fullName ?? ""
+          ),
           bio: bioSection?.bio ?? null,
           photoUrl:
             bioSection?.photoUrl !== undefined
@@ -685,9 +686,13 @@ export default function ProfileBuilderContent() {
           previousProfileMeta.bio !== nextProfileMeta.bio ||
           previousProfileMeta.photoUrl !== nextProfileMeta.photoUrl;
 
+        const fullNameValidationError = validateFullName(
+          nextProfileMeta.fullName
+        );
+
         if (
           currentProfile?.username &&
-          nextProfileMeta.fullName &&
+          !fullNameValidationError &&
           hasProfileMetaChanges
         ) {
           profileMetaSnapshotRef.current = nextProfileMeta;
