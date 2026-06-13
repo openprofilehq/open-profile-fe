@@ -95,9 +95,10 @@ const createSection = (type: string, customTitle?: string): Section | null => {
 const normalizeColorForApi = (color: string) => {
   if (!color) return "#087583";
 
-  if (color.startsWith("#")) return color;
+  const normalized = color.trim();
+  const hex = normalized.split("__")[0].split("_")[0];
 
-  const hex = color.split("_")[0];
+  if (hex.startsWith("#")) return hex;
 
   return `#${hex}`;
 };
@@ -620,6 +621,11 @@ export default function ProfileBuilderContent() {
     const newSection = createSection(type, title);
     if (!newSection) return;
 
+    const sectionToSelect = sections.find(
+      (section) =>
+        section.id === newSection.id || section.type === newSection.type
+    );
+
     setSections((prev) => {
       const existingSection = prev.find(
         (section) =>
@@ -639,10 +645,10 @@ export default function ProfileBuilderContent() {
 
       return bioSection
         ? [bioSection, ...nonBioSections, newSection]
-        : [newSection];
+        : [...nonBioSections, newSection];
     });
 
-    setSelectedSectionId(newSection.id);
+    setSelectedSectionId(sectionToSelect?.id ?? newSection.id);
   };
   const handleRemoveSection = (id: string) => {
     setSectionToDelete(id);
@@ -673,6 +679,12 @@ export default function ProfileBuilderContent() {
   };
 
   const handleToggleSectionVisibility = (id: string) => {
+    const sectionToToggle = sections.find((section) => section.id === id);
+    const shouldClearSelection =
+      sectionToToggle?.type !== "bio" &&
+      sectionToToggle?.visible === true &&
+      selectedSectionId === id;
+
     setSections((currentSections) =>
       currentSections.map((section) => {
         if (section.id !== id) return section;
@@ -685,9 +697,9 @@ export default function ProfileBuilderContent() {
       })
     );
 
-    setSelectedSectionId((currentSelectedSectionId) =>
-      currentSelectedSectionId === id ? null : currentSelectedSectionId
-    );
+    if (shouldClearSelection) {
+      setSelectedSectionId(null);
+    }
   };
 
   const handleUpdateSection = (id: string, updates: Partial<Section>) => {

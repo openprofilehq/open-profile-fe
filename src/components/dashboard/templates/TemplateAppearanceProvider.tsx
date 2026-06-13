@@ -21,8 +21,9 @@ type Props = {
 };
 
 function isBlendTheme(color?: string | null) {
-  const normalized = normalizeColor(color);
-  return normalized?.toUpperCase() === "#7C3AED";
+  if (!color) return false;
+
+  return color.trim().toLowerCase().includes("blend");
 }
 
 function normalizeColor(color?: string | null) {

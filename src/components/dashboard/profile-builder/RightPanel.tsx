@@ -35,7 +35,7 @@ interface RightPanelProps {
   onChangeTemplate?: (template: string | null) => void;
 }
 
-const BLEND_THEME_VALUE = "#7C3AED";
+const BLEND_THEME_VALUE = "#7C3AED__blend";
 const BLEND_THEME_GRADIENT =
   "linear-gradient(135deg, #D63384 0%, #A855F7 48%, #4F46E5 100%)";
 
@@ -111,7 +111,16 @@ function normalizeThemeValue(color: string) {
 }
 
 function getComparableColor(color: string) {
-  return normalizeThemeValue(color).split("__")[0];
+  return normalizeThemeValue(color).split("__")[0].split("_")[0];
+}
+
+function normalizeFontValue(value: string) {
+  const normalized = value.trim().toLowerCase();
+
+  if (normalized === "playfair display") return "serif";
+  if (normalized === "inter sans") return "inter";
+
+  return normalized;
 }
 
 function isSelectedTheme(current: string, candidate: string) {
@@ -218,7 +227,8 @@ export default function RightPanel({
             </label>
             <div className="grid grid-cols-2 gap-2">
               {FONT_OPTIONS.map((option) => {
-                const selected = font === option.value;
+                const selected =
+                  normalizeFontValue(font) === normalizeFontValue(option.value);
 
                 return (
                   <button
