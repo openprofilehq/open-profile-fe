@@ -223,7 +223,7 @@ export default function CreatorPreview({
                 onClick={(event) =>
                   handleSelectNestedSection(event, ctaSection)
                 }
-                className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
+                className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
               >
                 {ctaSection.iconSrc ? (
                   <Image

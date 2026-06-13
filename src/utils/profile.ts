@@ -244,12 +244,6 @@ export function getSectionStyle(
     (style as any)["--background"] = section.bgColor;
   }
 
-  // Section-level icon color is intentionally not converted into global
-  // brand CSS variables here. The Profile Builder customization panel owns the
-  // brand/accent colour, and applying section icon colours as CSS variables
-  // causes stale section data to override the selected theme across CTAs,
-  // links, tabs, and profile handles.
-
   if (section.textColor) {
     style.color = section.textColor;
     // Override Tailwind CSS variables for children

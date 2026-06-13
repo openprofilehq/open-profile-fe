@@ -35,6 +35,10 @@ interface RightPanelProps {
   onChangeTemplate?: (template: string | null) => void;
 }
 
+const BLEND_THEME_VALUE = "#7C3AED";
+const BLEND_THEME_GRADIENT =
+  "linear-gradient(135deg, #D63384 0%, #A855F7 48%, #4F46E5 100%)";
+
 const TEMPLATE_OPTIONS = [
   { value: "professional", label: "Professional" },
   { value: "creator", label: "Creator" },
@@ -43,21 +47,38 @@ const TEMPLATE_OPTIONS = [
 ];
 
 const FONT_OPTIONS = [
-  { value: "Afacad", label: "Afacad", sample: "Aa" },
-  { value: "Geologica", label: "Geologica", sample: "Aa" },
-  { value: "Inter", label: "Inter", sample: "Aa" },
-  { value: "Serif", label: "Playfair Display", sample: "Aa" },
+  { value: "Afacad", label: "Afacad", sample: "Aa", className: "font-afacad" },
+  {
+    value: "Geologica",
+    label: "Geologica",
+    sample: "Aa",
+    className: "font-geologica",
+  },
+  { value: "Inter", label: "Inter", sample: "Aa", className: "font-sans" },
+  {
+    value: "Serif",
+    label: "Playfair Display",
+    sample: "Aa",
+    className: "font-playfair",
+  },
 ];
 
 const THEME_SWATCHES = [
-  { name: "Teal", brand: THEME_DEFAULTS.ACCENT_COLORS.DEFAULT },
-  { name: "Rose", brand: "#C75B7A" },
-  { name: "Clay", brand: "#9A604B" },
-  { name: "Red", brand: "#D92D20" },
-  { name: "Violet", brand: "#6D3FD1" },
-  { name: "Purple", brand: "#7C3AED" },
-  { name: "Pink", brand: "#D63384" },
-  { name: "Green", brand: "#4D7C0F" },
+  {
+    name: "Teal",
+    brand: THEME_DEFAULTS.ACCENT_COLORS.DEFAULT,
+    ring: THEME_DEFAULTS.ACCENT_COLORS.DEFAULT,
+  },
+  {
+    name: "Blend",
+    brand: BLEND_THEME_VALUE,
+    ring: BLEND_THEME_GRADIENT,
+  },
+  { name: "Clay", brand: "#9A604B", ring: "#9A604B" },
+  { name: "Red", brand: "#D92D20", ring: "#D92D20" },
+  { name: "Violet", brand: "#6D3FD1", ring: "#6D3FD1" },
+  { name: "Magenta", brand: "#D63384", ring: "#D63384" },
+  { name: "Green", brand: "#4D7C0F", ring: "#4D7C0F" },
 ];
 
 const BACKGROUND_SWATCHES = [
@@ -85,12 +106,23 @@ const RADIUS_OPTIONS: {
   { label: "Rounded", value: "pill", icon: "rounded" },
 ];
 
-function normalizeHex(color: string) {
+function normalizeThemeValue(color: string) {
   return color.trim().toUpperCase();
 }
 
+function getComparableColor(color: string) {
+  return normalizeThemeValue(color).split("__")[0];
+}
+
+function isSelectedTheme(current: string, candidate: string) {
+  if (normalizeThemeValue(current) === normalizeThemeValue(candidate))
+    return true;
+
+  return getComparableColor(current) === getComparableColor(candidate);
+}
+
 function isSelectedColor(current: string, candidate: string) {
-  return normalizeHex(current) === normalizeHex(candidate);
+  return normalizeThemeValue(current) === normalizeThemeValue(candidate);
 }
 
 function RadiusIcon({ type }: { type: "sharp" | "soft" | "rounded" }) {
@@ -199,10 +231,14 @@ export default function RightPanel({
                         : "text-secondary-text hover:border-brand-b hover:bg-hover-bg"
                     }`}
                   >
-                    <span className="text-primary-text text-base leading-none font-semibold">
+                    <span
+                      className={`text-primary-text text-base leading-none font-semibold ${option.className}`}
+                    >
                       {option.sample}
                     </span>
-                    <span className="text-tertiary-text mt-1 text-xs leading-none">
+                    <span
+                      className={`text-tertiary-text mt-1 text-xs leading-none ${option.className}`}
+                    >
                       {option.label}
                     </span>
                   </button>
@@ -215,26 +251,34 @@ export default function RightPanel({
             <label className="text-primary-text mb-2 block text-xs font-bold">
               Themes
             </label>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="border-tertiary-b bg-background flex w-full flex-nowrap items-center justify-between gap-1 rounded-[12px] border px-2 py-2">
               {THEME_SWATCHES.map((theme) => {
-                const selected = isSelectedColor(iconColor, theme.brand);
+                const selected = isSelectedTheme(iconColor, theme.brand);
+                const isBlend = theme.name === "Blend";
 
                 return (
                   <button
                     key={theme.name}
                     type="button"
                     aria-label={`Use ${theme.name} theme`}
+                    aria-pressed={selected}
                     onClick={() => onChangeIconColor(theme.brand)}
-                    className={`flex h-6 w-6 items-center justify-center rounded-full border bg-white transition-all ${
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all hover:scale-105 active:scale-95 ${
                       selected
-                        ? "border-primary-text ring-primary-text/10 ring-2"
-                        : "border-tertiary-b hover:border-primary-text"
+                        ? "border-primary-text bg-background ring-primary-text/10 shadow-sm ring-2"
+                        : "border-transparent bg-transparent"
                     }`}
                   >
                     <span
-                      className="h-4 w-4 rounded-full border border-black/10"
-                      style={{ backgroundColor: theme.brand }}
-                    />
+                      className="relative block h-5 w-5 shrink-0 rounded-full"
+                      style={
+                        isBlend
+                          ? { background: theme.ring }
+                          : { backgroundColor: String(theme.ring) }
+                      }
+                    >
+                      <span className="bg-background absolute inset-[3px] rounded-full" />
+                    </span>
                   </button>
                 );
               })}

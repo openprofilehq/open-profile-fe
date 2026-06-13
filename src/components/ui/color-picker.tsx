@@ -20,7 +20,10 @@ export function ColorPicker({ color, onChange, label }: ColorPickerProps) {
   const [popupStyle, setPopupStyle] = useState<React.CSSProperties>({});
   const triggerRef = useRef<HTMLButtonElement>(null);
   const ref = useOutsideClick(() => setOpen(false));
-  const safeColor = isValidHex(color) ? color : THEME_DEFAULTS.TEXT_COLOR;
+  const normalizedColor = color?.split("__")[0]?.split("_")[0] || color;
+  const safeColor = isValidHex(normalizedColor)
+    ? normalizedColor
+    : THEME_DEFAULTS.TEXT_COLOR;
 
   const rgb = hexToRgb(safeColor);
   const hsl = hexToHsl(safeColor);

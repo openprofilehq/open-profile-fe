@@ -433,7 +433,7 @@ export default function DefaultDashboardView({
                           }
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-11 items-center rounded-xl px-8 text-sm font-bold text-white transition-colors"
+                          className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-11 items-center rounded-xl px-8 text-sm font-bold text-white transition-colors"
                         >
                           {section.buttonText || "Visit"}
                         </a>

@@ -20,14 +20,28 @@ type Props = {
   className?: string;
 };
 
+function isBlendTheme(color?: string | null) {
+  const normalized = normalizeColor(color);
+  return normalized?.toUpperCase() === "#7C3AED";
+}
+
 function normalizeColor(color?: string | null) {
   if (!color) return null;
 
-  if (color.startsWith("#")) return color;
+  const normalized = color.trim();
+  const baseColor = normalized.split("__")[0].split("_")[0];
 
-  const hex = color.split("_")[0];
+  if (baseColor.startsWith("#")) return baseColor;
 
-  return `#${hex}`;
+  return `#${baseColor}`;
+}
+
+function getAccentBackground(color?: string | null) {
+  if (isBlendTheme(color)) {
+    return "linear-gradient(135deg, #D63384 0%, #A855F7 48%, #4F46E5 100%)";
+  }
+
+  return normalizeColor(color) || "#087583";
 }
 
 function getRgbaColor(color: string, alpha: number) {
@@ -90,9 +104,12 @@ export default function TemplateAppearanceProvider({
   children,
   className = "",
 }: Props) {
-  const accentColor =
-    normalizeColor(appearance?.accentColour || appearance?.iconColor) ||
-    "#087583";
+  const rawAccentColor = appearance?.accentColour || appearance?.iconColor;
+  const accentColor = normalizeColor(rawAccentColor) || "#087583";
+  const accentBackground = getAccentBackground(rawAccentColor);
+  const accentGradient = isBlendTheme(rawAccentColor)
+    ? "linear-gradient(135deg, #D63384 0%, #A855F7 48%, #4F46E5 100%)"
+    : "none";
 
   const selectedBgColor =
     normalizeColor(appearance?.backgroundColour || appearance?.bgColor) ||
@@ -129,12 +146,10 @@ export default function TemplateAppearanceProvider({
 
     "--brand": accentColor,
     "--brand-text": accentColor,
-    "--brand-bg": accentColor,
-    "--brand-hover-bg": accentColor,
-    "--brand-active-bg": accentColor,
-    "--button-brand-bg": accentColor,
-    "--purple-brand": accentColor,
-    "--purple-brand-hover": accentColor,
+    "--brand-bg": accentBackground,
+    "--brand-hover-bg": accentBackground,
+    "--brand-active-bg": accentBackground,
+    "--button-brand-bg": accentBackground,
     "--brand-b": accentColor,
     "--link-text": accentColor,
     "--link-hover-text": accentColor,
@@ -157,6 +172,9 @@ export default function TemplateAppearanceProvider({
     "--op-surface-color": surfaceColor,
     "--op-secondary-bg-color": secondarySurfaceColor,
     "--op-accent-color": accentColor,
+    "--op-accent-bg": accentBackground,
+    "--op-accent-fill-color": accentColor,
+    "--op-accent-fill-image": accentGradient,
     "--op-border-color": borderColor,
     "--op-rounded": radius,
     "--op-spacing": `${spacing}px`,
@@ -186,15 +204,35 @@ export default function TemplateAppearanceProvider({
 
           .template-appearance-scope .bg-brand-hover-bg,
           .template-appearance-scope .bg-brand-bg,
-          .template-appearance-scope .bg-button-brand-bg {
+          .template-appearance-scope .bg-button-brand-bg,
+          .template-appearance-scope .hover\:bg-button-brand-bg:hover,
+          .template-appearance-scope .hover\:bg-brand-hover-bg:hover {
             background-color: var(--op-accent-color) !important;
           }
 
+          .template-appearance-scope .op-brand-fill,
+          .template-appearance-scope .op-brand-fill:hover {
+            background-color: var(--op-accent-fill-color, var(--op-accent-color)) !important;
+            background-image: var(--op-accent-fill-image, none) !important;
+            background-size: 100% 100% !important;
+            background-repeat: no-repeat !important;
+          }
+
           .template-appearance-scope .border-brand-hover-bg,
-          .template-appearance-scope .border-brand-b {
+          .template-appearance-scope .border-brand-b,
+          .template-appearance-scope .border-brand-text {
             border-color: var(--op-accent-color) !important;
           }
 
+          .template-appearance-scope .fill-brand-hover-bg,
+          .template-appearance-scope .fill-brand-text {
+            fill: var(--op-accent-color) !important;
+          }
+
+          .template-appearance-scope .stroke-brand-hover-bg,
+          .template-appearance-scope .stroke-brand-text {
+            stroke: var(--op-accent-color) !important;
+          }
         `}
       </style>
       {children}
