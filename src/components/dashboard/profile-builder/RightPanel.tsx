@@ -67,18 +67,20 @@ const THEME_SWATCHES = [
   {
     name: "Teal",
     brand: THEME_DEFAULTS.ACCENT_COLORS.DEFAULT,
+    background: "#F3FBF8",
     ring: THEME_DEFAULTS.ACCENT_COLORS.DEFAULT,
   },
   {
     name: "Blend",
     brand: BLEND_THEME_VALUE,
+    background: "#FDF2F8",
     ring: BLEND_THEME_GRADIENT,
   },
-  { name: "Clay", brand: "#9A604B", ring: "#9A604B" },
-  { name: "Red", brand: "#D92D20", ring: "#D92D20" },
-  { name: "Violet", brand: "#6D3FD1", ring: "#6D3FD1" },
-  { name: "Magenta", brand: "#D63384", ring: "#D63384" },
-  { name: "Green", brand: "#4D7C0F", ring: "#4D7C0F" },
+  { name: "Clay", brand: "#9A604B", background: "#F8F4F1", ring: "#9A604B" },
+  { name: "Red", brand: "#D92D20", background: "#FFF5F5", ring: "#D92D20" },
+  { name: "Violet", brand: "#6D3FD1", background: "#F3F0FF", ring: "#6D3FD1" },
+  { name: "Magenta", brand: "#D63384", background: "#FDF2F8", ring: "#D63384" },
+  { name: "Green", brand: "#4D7C0F", background: "#F3FBF8", ring: "#4D7C0F" },
 ];
 
 const BACKGROUND_SWATCHES = [
@@ -110,10 +112,6 @@ function normalizeThemeValue(color: string) {
   return color.trim().toUpperCase();
 }
 
-function getComparableColor(color: string) {
-  return normalizeThemeValue(color).split("__")[0].split("_")[0];
-}
-
 function normalizeFontValue(value: string) {
   const normalized = value.trim().toLowerCase();
 
@@ -121,13 +119,6 @@ function normalizeFontValue(value: string) {
   if (normalized === "inter sans") return "inter";
 
   return normalized;
-}
-
-function isSelectedTheme(current: string, candidate: string) {
-  if (normalizeThemeValue(current) === normalizeThemeValue(candidate))
-    return true;
-
-  return getComparableColor(current) === getComparableColor(candidate);
 }
 
 function isSelectedColor(current: string, candidate: string) {
@@ -191,6 +182,50 @@ export default function RightPanel({
 }: RightPanelProps) {
   const selectedTemplate = template ? template.toLowerCase() : "creator";
   const [spacingMode, setSpacingMode] = useState<"basic" | "advanced">("basic");
+
+  const [colorMode, setColorMode] = useState<"theme" | "custom">("custom");
+  const [activeThemeName, setActiveThemeName] = useState<string | null>(null);
+  const [manualBgColor, setManualBgColor] = useState<string | null>(null);
+  const [manualBrandColor, setManualBrandColor] = useState<string | null>(null);
+
+  const isThemeActive = colorMode === "theme" && Boolean(activeThemeName);
+  const displayManualBgColor =
+    colorMode === "custom" ? bgColor : (manualBgColor ?? bgColor);
+  const displayManualBrandColor =
+    colorMode === "custom" ? iconColor : (manualBrandColor ?? iconColor);
+
+  const handleSelectTheme = (theme: (typeof THEME_SWATCHES)[number]) => {
+    setManualBgColor(bgColor);
+    setManualBrandColor(iconColor);
+    setColorMode("theme");
+    setActiveThemeName(theme.name);
+    onChangeBgColor(theme.background);
+    onChangeIconColor(theme.brand);
+  };
+
+  const handleUseManualColors = () => {
+    const nextBgColor = manualBgColor ?? bgColor;
+    const nextBrandColor = manualBrandColor ?? iconColor;
+
+    setColorMode("custom");
+    setActiveThemeName(null);
+    onChangeBgColor(nextBgColor);
+    onChangeIconColor(nextBrandColor);
+  };
+
+  const handleChangeBackgroundColor = (color: string) => {
+    setColorMode("custom");
+    setActiveThemeName(null);
+    setManualBgColor(color);
+    onChangeBgColor(color);
+  };
+
+  const handleChangeBrandColor = (color: string) => {
+    setColorMode("custom");
+    setActiveThemeName(null);
+    setManualBrandColor(color);
+    onChangeIconColor(color);
+  };
 
   return (
     <aside className="border-tertiary-b bg-background hidden h-full w-[260px] shrink-0 flex-col border-l select-none lg:flex xl:w-[290px]">
@@ -263,7 +298,8 @@ export default function RightPanel({
             </label>
             <div className="border-tertiary-b bg-background flex w-full flex-nowrap items-center justify-between gap-1 rounded-[12px] border px-2 py-2">
               {THEME_SWATCHES.map((theme) => {
-                const selected = isSelectedTheme(iconColor, theme.brand);
+                const selected =
+                  colorMode === "theme" && activeThemeName === theme.name;
                 const isBlend = theme.name === "Blend";
 
                 return (
@@ -272,7 +308,7 @@ export default function RightPanel({
                     type="button"
                     aria-label={`Use ${theme.name} theme`}
                     aria-pressed={selected}
-                    onClick={() => onChangeIconColor(theme.brand)}
+                    onClick={() => handleSelectTheme(theme)}
                     className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all hover:scale-105 active:scale-95 ${
                       selected
                         ? "border-primary-text bg-background ring-primary-text/10 shadow-sm ring-2"
@@ -296,25 +332,52 @@ export default function RightPanel({
           </div>
 
           <div>
-            <label className="text-primary-text mb-2 block text-xs font-bold">
-              Colors
-            </label>
-            <div className="border-tertiary-b bg-background flex flex-col gap-3 rounded-[12px] border p-3">
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <label className="text-primary-text block text-xs font-bold">
+                Colors
+              </label>
+              {isThemeActive && (
+                <button
+                  type="button"
+                  onClick={handleUseManualColors}
+                  className="text-link-hover-text text-[11px] font-semibold hover:underline"
+                >
+                  Use custom colors
+                </button>
+              )}
+            </div>
+            <div
+              className={`border-tertiary-b bg-background flex flex-col gap-3 rounded-[12px] border p-3 ${
+                isThemeActive ? "opacity-50" : ""
+              }`}
+              aria-disabled={isThemeActive}
+            >
+              {isThemeActive && (
+                <p className="text-tertiary-text text-xs font-medium">
+                  A theme is active. Switch to custom colors to edit background
+                  or brand colors manually.
+                </p>
+              )}
+
               <div>
                 <span className="text-tertiary-text mb-2 block text-xs font-medium">
                   Background
                 </span>
                 <div className="grid grid-cols-6 gap-1.5">
                   {BACKGROUND_SWATCHES.map((color) => {
-                    const selected = isSelectedColor(bgColor, color);
+                    const selected = isSelectedColor(
+                      displayManualBgColor,
+                      color
+                    );
 
                     return (
                       <button
                         key={color}
                         type="button"
                         aria-label={`Set background color to ${color}`}
-                        onClick={() => onChangeBgColor(color)}
-                        className={`flex h-8 w-full items-center justify-center rounded-[8px] border transition-all ${
+                        disabled={isThemeActive}
+                        onClick={() => handleChangeBackgroundColor(color)}
+                        className={`flex h-8 w-full items-center justify-center rounded-[8px] border transition-all disabled:cursor-not-allowed ${
                           selected
                             ? "border-primary-text"
                             : "border-tertiary-b hover:border-primary-text"
@@ -332,8 +395,12 @@ export default function RightPanel({
 
               <ColorPicker
                 label="Brand"
-                color={iconColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT}
-                onChange={onChangeIconColor}
+                color={
+                  displayManualBrandColor ||
+                  THEME_DEFAULTS.ACCENT_COLORS.DEFAULT
+                }
+                onChange={handleChangeBrandColor}
+                disabled={isThemeActive}
               />
             </div>
           </div>
@@ -445,7 +512,7 @@ export default function RightPanel({
 
           <div>
             <label className="text-primary-text mb-2 block text-xs font-bold">
-              Theme
+              Appearance mode
             </label>
             <div className="border-tertiary-b bg-background grid grid-cols-2 rounded-[10px] border p-1">
               <button
