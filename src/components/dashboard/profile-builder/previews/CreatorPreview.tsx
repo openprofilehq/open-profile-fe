@@ -57,7 +57,7 @@ const linksSection = visibleSections.find((s) => s.type === "links");
 const ctaSection = visibleSections.find(
   (s) => s.type === "experience" || s.type === "cta"
 );
-const bioSectionId = bioSection?.id ?? "bio";
+
 const resolvedName = profile?.fullName ?? "";
 
   const availableTabIds = [
@@ -91,10 +91,11 @@ const resolvedName = profile?.fullName ?? "";
     event: React.KeyboardEvent<HTMLElement>,
     section: Section
   ) => {
-    if (event.key !== "Enter" && event.key !== " ") return;
+if (event.key !== "Enter" && event.key !== " ") return;
+if (event.target !== event.currentTarget) return;
 
-    event.preventDefault();
-    onSelectSection(section.id);
+event.preventDefault();
+onSelectSection(section.id);
   };
 
   const renderControls = (
@@ -224,7 +225,7 @@ const resolvedName = profile?.fullName ?? "";
                 onClick={(event) =>
                   handleSelectNestedSection(event, ctaSection)
                 }
-                className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
+className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
               >
                 {ctaSection.iconSrc ? (
                   <Image

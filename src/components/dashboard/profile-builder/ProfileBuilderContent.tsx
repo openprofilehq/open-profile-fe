@@ -830,39 +830,46 @@ export default function ProfileBuilderContent() {
     setSelectedSectionId(id);
   };
 
-  const handleAddSection = (title: string, type: string) => {
-    const newSection = createSection(type, title);
-    if (!newSection) return;
+const handleAddSection = (title: string, type: string) => {
+  const newSection = createSection(type, title);
+  if (!newSection) return;
 
-    const sectionToSelect = sections.find(
+  const existingSection = sections.find(
+    (section) =>
+      section.id === newSection.id || section.type === newSection.type
+  );
+
+  setSections((prev) => {
+    const existingInPrev = prev.find(
       (section) =>
         section.id === newSection.id || section.type === newSection.type
     );
 
-    setSections((prev) => {
-      const existingSection = prev.find(
-        (section) =>
-          section.id === newSection.id || section.type === newSection.type
+    if (existingInPrev) {
+      return prev.map((section) =>
+        section.id === existingInPrev.id
+          ? { ...section, visible: true }
+          : section
       );
+    }
 
-      if (existingSection) {
-        return prev.map((section) =>
-          section.id === existingSection.id
-            ? { ...section, visible: true }
-            : section
-        );
-      }
+    const bioSection = prev.find((section) => section.type === "bio");
+    const nonBioSections = prev.filter((section) => section.type !== "bio");
 
-      const bioSection = prev.find((section) => section.type === "bio");
-      const nonBioSections = prev.filter((section) => section.type !== "bio");
+    if (newSection.type === "bio") {
+      return [newSection, ...nonBioSections];
+    }
 
-      return bioSection
-        ? [bioSection, ...nonBioSections, newSection]
-        : [...nonBioSections, newSection];
-    });
+    if (!bioSection) {
+      return [...nonBioSections, newSection];
+    }
 
-    setSelectedSectionId(sectionToSelect?.id ?? newSection.id);
-  };
+    return [bioSection, ...nonBioSections, newSection];
+  });
+
+  setSelectedSectionId(existingSection?.id ?? newSection.id);
+};
+
   const handleRemoveSection = (id: string) => {
     setSectionToDelete(id);
   };
@@ -891,37 +898,37 @@ export default function ProfileBuilderContent() {
     }
   };
 
-  const handleToggleSectionVisibility = (id: string) => {
-    const sectionToToggle = sections.find((section) => section.id === id);
-    const shouldClearSelection =
-      sectionToToggle?.type !== "bio" &&
-      sectionToToggle?.visible === true &&
-      selectedSectionId === id;
+ const handleToggleSectionVisibility = (id: string) => {
+  setSections((currentSections) => {
+    const targetSection = currentSections.find((section) => section.id === id);
 
-    setSections((currentSections) =>
-      currentSections.map((section) => {
-        if (section.id !== id) return section;
-
-        if (section.type === "bio") {
-          return { ...section, visible: true };
-        }
-
-        return { ...section, visible: !section.visible };
-      })
-    );
-
-    if (shouldClearSelection) {
-      setSelectedSectionId(null);
+    if (!targetSection || targetSection.type === "bio") {
+      return currentSections;
     }
-  };
 
-  const handleUpdateSection = (id: string, updates: Partial<Section>) => {
-    setSections((currentSections) =>
-      currentSections.map((section) =>
-        section.id === id ? { ...section, ...updates } : section
-      )
+    const willHideSection = targetSection.visible;
+
+    const updatedSections = currentSections.map((section) =>
+      section.id === id ? { ...section, visible: !section.visible } : section
     );
-  };
+
+    if (willHideSection) {
+      setSelectedSectionId((currentSelectedSectionId) =>
+        currentSelectedSectionId === id ? null : currentSelectedSectionId
+      );
+    }
+
+    return updatedSections;
+  });
+};
+
+const handleUpdateSection = (id: string, updates: Partial<Section>) => {
+  setSections((currentSections) =>
+    currentSections.map((section) =>
+      section.id === id ? { ...section, ...updates } : section
+    )
+  );
+};
 
   const selectedSection =
     resolvedSections.find((s) => s.id === selectedSectionId) || null;
