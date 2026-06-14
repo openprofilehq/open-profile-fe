@@ -833,36 +833,77 @@ export default function ProfileBuilderContent() {
     const newSection = createSection(type, title);
     if (!newSection) return;
 
-    setSections((prev) => {
-      const exists = prev.some(
-        (s) => s.id === newSection.id || s.type === newSection.type
-      );
-      if (exists) return prev;
-      return [...prev, newSection];
-    });
-    setSelectedSectionId(newSection.id);
-  };
+    let selectedId = newSection.id;
 
+    setSections((prev) => {
+      const existingSection = prev.find(
+        (section) =>
+          section.id === newSection.id || section.type === newSection.type
+      );
+
+      selectedId = existingSection ? existingSection.id : newSection.id;
+
+      if (existingSection) {
+        return prev.map((section) =>
+          section.id === existingSection.id
+            ? { ...section, visible: true }
+            : section
+        );
+      }
+
+      const bioSection = prev.find((section) => section.type === "bio");
+      const nonBioSections = prev.filter((section) => section.type !== "bio");
+
+      return bioSection
+        ? [bioSection, ...nonBioSections, newSection]
+        : [newSection];
+    });
+
+    setSelectedSectionId(selectedId);
+  };
   const handleRemoveSection = (id: string) => {
     setSectionToDelete(id);
   };
 
   const handleConfirmDelete = () => {
     if (sectionToDelete) {
-      const updated = sections.filter((s) => s.id !== sectionToDelete);
-      setSections(updated);
-      if (selectedSectionId === sectionToDelete) {
-        setSelectedSectionId(updated[0]?.id || null);
+      const section = sections.find((item) => item.id === sectionToDelete);
+
+      if (section?.type === "bio") {
+        setSectionToDelete(null);
+        return;
       }
+
+      const updated = sections.filter((item) => item.id !== sectionToDelete);
+
+      setSections(updated);
+
+      if (selectedSectionId === sectionToDelete) {
+        const nextVisibleSection =
+          updated.find((item) => item.visible)?.id ?? "bio";
+
+        setSelectedSectionId(nextVisibleSection);
+      }
+
       setSectionToDelete(null);
     }
   };
 
   const handleToggleSectionVisibility = (id: string) => {
     setSections((currentSections) =>
-      currentSections.map((section) =>
-        section.id === id ? { ...section, visible: !section.visible } : section
-      )
+      currentSections.map((section) => {
+        if (section.id !== id) return section;
+
+        if (section.type === "bio") {
+          return { ...section, visible: true };
+        }
+
+        return { ...section, visible: !section.visible };
+      })
+    );
+
+    setSelectedSectionId((currentSelectedSectionId) =>
+      currentSelectedSectionId === id ? null : currentSelectedSectionId
     );
   };
 
@@ -960,6 +1001,7 @@ export default function ProfileBuilderContent() {
             sections={resolvedSections}
             profile={previewProfile}
             selectedSectionId={selectedSectionId}
+            onSelectSection={handleSelectSection}
             onToggleSectionVisibility={handleToggleSectionVisibility}
             onRemoveSection={handleRemoveSection}
           />
