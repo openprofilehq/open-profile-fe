@@ -21,6 +21,7 @@ import { THEME_DEFAULTS } from "@/constants/theme";
 import type {
   ProfileAppearanceCornerStyle,
   ProfileAppearanceFont,
+  UpsertDraftRequest,
 } from "@/api/profile/profile.type";
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { isApiError } from "@/api/base";
@@ -412,7 +413,7 @@ export default function ProfileBuilderContent() {
   });
 
   const persistDraftBeforeMeta = useCallback(
-    async (payload: unknown, updatedAt: string | null) => {
+  async (payload: UpsertDraftRequest, updatedAt: string | null) => {
       try {
         const response = await upsertDraft(payload, updatedAt);
         const nextUpdatedAt = response?.data?.updatedAt;
