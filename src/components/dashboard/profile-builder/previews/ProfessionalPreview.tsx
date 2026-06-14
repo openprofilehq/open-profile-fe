@@ -1,14 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import {
-  ArrowRight,
-  ExternalLink,
-  MoreHorizontal,
-  Eye,
-  EyeOff,
-  Trash2,
-  Mail,
-} from "lucide-react";
+import { ArrowRight, ExternalLink, Mail } from "lucide-react";
 import {
   getImageUrl,
   sanitizeUrl,
@@ -19,6 +11,7 @@ import {
 import type { Section, ProfilePreview, SavedLink, ProjectItem } from "../types";
 import { getFontClass } from "../../templates/TemplateAppearanceProvider";
 import HighlightPreviewCard from "./HighlightPreviewCard";
+import PreviewSectionControls from "./PreviewSectionControls";
 
 interface ProfessionalPreviewProps {
   sections: Section[];
@@ -26,6 +19,7 @@ interface ProfessionalPreviewProps {
   selectedSectionId?: string | null;
   onToggleSectionVisibility: (id: string) => void;
   onRemoveSection: (id: string) => void;
+  onSelectSection: (id: string) => void;
 }
 
 export default function ProfessionalPreview({
@@ -34,69 +28,75 @@ export default function ProfessionalPreview({
   selectedSectionId: _selectedSectionId,
   onToggleSectionVisibility,
   onRemoveSection,
+  onSelectSection,
 }: ProfessionalPreviewProps) {
-  const ctaSection = sections.find(
+  const visibleSections = sections.filter(
+    (section) => section.type === "bio" || section.visible
+  );
+
+  const ctaSection = visibleSections.find(
     (s) => s.type === "experience" || s.type === "cta"
   );
 
-  const renderControls = (section?: Section, isBio: boolean = false) => {
-    if (!section) return null;
-    return (
-      <div className="group/menu absolute -top-12 right-0 z-50">
-        <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
-          <MoreHorizontal size={18} />
-        </button>
-
-        <div className="border-border bg-background invisible absolute top-full right-0 mt-2 flex w-40 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all group-hover/menu:visible group-hover/menu:opacity-100">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleSectionVisibility(section.id);
-            }}
-            className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors"
-          >
-            {section.visible ? (
-              <>
-                <EyeOff size={16} /> Hide Section
-              </>
-            ) : (
-              <>
-                <Eye size={16} /> Show Section
-              </>
-            )}
-          </button>
-          <button
-            onClick={(e) => {
-              if (!isBio) {
-                e.stopPropagation();
-                onRemoveSection(section.id);
-              }
-            }}
-            disabled={isBio}
-            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? "text-negative-text cursor-not-allowed opacity-50" : "text-negative-text hover:bg-negative-bg/20"}`}
-          >
-            <Trash2 size={16} /> Delete
-          </button>
-        </div>
-      </div>
-    );
+  const handleSelectSection = (
+    event: React.MouseEvent<HTMLElement>,
+    section: Section
+  ) => {
+    event.preventDefault();
+    onSelectSection(section.id);
   };
+
+  const handleSelectNestedSection = (
+    event: React.MouseEvent<HTMLElement>,
+    section: Section
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+    onSelectSection(section.id);
+  };
+
+  const handleSectionKeyDown = (
+    event: React.KeyboardEvent<HTMLElement>,
+    section: Section
+  ) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    if (event.target !== event.currentTarget) return;
+
+    event.preventDefault();
+    onSelectSection(section.id);
+  };
+
+  const renderControls = (
+    section?: Section,
+    positionClass = "top-4 right-4",
+    hoverTarget: "section" | "cta" = "section"
+  ) => (
+    <PreviewSectionControls
+      section={section}
+      positionClass={positionClass}
+      hoverTarget={hoverTarget}
+      onToggleSectionVisibility={onToggleSectionVisibility}
+      onRemoveSection={onRemoveSection}
+    />
+  );
 
   return (
     <div
       className="text-primary-text mx-auto flex w-full max-w-4xl flex-col py-8 pt-6"
       style={{ gap: "var(--op-spacing, 2rem)" }}
     >
-      {sections.map((section) => {
+      {visibleSections.map((section) => {
         if (section.type === "bio") {
           return (
             <div
               key={section.id}
-              className={`group relative rounded-2xl transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
+              role="button"
+              tabIndex={0}
+              onClick={(event) => handleSelectSection(event, section)}
+              onKeyDown={(event) => handleSectionKeyDown(event, section)}
+              className={`group relative cursor-pointer rounded-2xl transition-opacity duration-200 ${section.font ? getFontClass(section.font) : ""}`}
               style={getSectionStyle(section)}
             >
-              {renderControls(section, true)}
-
               <header
                 className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between rounded-2xl border border-transparent transition-colors sm:flex-row sm:items-start"
                 style={{
@@ -119,47 +119,58 @@ export default function ProfessionalPreview({
                       />
                     ) : (
                       <div className="text-brand-text flex h-full items-center justify-center text-[32px] font-bold">
-                        {(profile?.fullName || "M").charAt(0).toUpperCase()}
+                        {(profile?.fullName ?? "").charAt(0).toUpperCase() ||
+                          "?"}
                       </div>
                     )}
                   </div>
 
                   <div className="flex flex-col">
                     <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight break-all">
-                      {profile?.fullName || "Micaela Robinson"}
+                      {profile?.fullName ?? ""}
                     </h1>
-                    <p className="text-secondary-text mt-1 text-[15px] break-all">
+                    <p className="text-brand-hover-bg mt-1 text-[15px] break-all">
                       {getDisplayProfileUrl(profile?.username || "micaela")}
                     </p>
                   </div>
                 </div>
 
                 {ctaSection?.visible && ctaSection?.url && (
-                  <a
-                    href={sanitizeUrl(ctaSection.url)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="border-brand-hover-bg bg-brand-hover-bg/5 text-brand-hover-bg hover:bg-brand-hover-bg/10 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-sm font-semibold transition-colors"
-                  >
-                    {ctaSection.iconSrc ? (
-                      <div
-                        className="bg-brand-hover-bg h-4 w-4"
-                        style={{
-                          maskImage: `url(${ctaSection.iconSrc})`,
-                          WebkitMaskImage: `url(${ctaSection.iconSrc})`,
-                          maskSize: "contain",
-                          WebkitMaskSize: "contain",
-                          maskRepeat: "no-repeat",
-                          WebkitMaskRepeat: "no-repeat",
-                          maskPosition: "center",
-                          WebkitMaskPosition: "center",
-                        }}
-                      />
-                    ) : (
-                      <Mail size={16} />
+                  <div className="group/cta relative shrink-0">
+                    {renderControls(
+                      ctaSection,
+                      "top-1/2 left-full ml-3 -translate-y-1/2",
+                      "cta"
                     )}
-                    {ctaSection.buttonText || "Email"}
-                  </a>
+                    <a
+                      href={sanitizeUrl(ctaSection.url)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(event) =>
+                        handleSelectNestedSection(event, ctaSection)
+                      }
+                      className="border-brand-hover-bg bg-brand-hover-bg/5 text-brand-hover-bg hover:bg-brand-hover-bg/10 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-sm font-semibold transition-colors"
+                    >
+                      {ctaSection.iconSrc ? (
+                        <div
+                          className="bg-brand-hover-bg h-4 w-4"
+                          style={{
+                            maskImage: `url(${ctaSection.iconSrc})`,
+                            WebkitMaskImage: `url(${ctaSection.iconSrc})`,
+                            maskSize: "contain",
+                            WebkitMaskSize: "contain",
+                            maskRepeat: "no-repeat",
+                            WebkitMaskRepeat: "no-repeat",
+                            maskPosition: "center",
+                            WebkitMaskPosition: "center",
+                          }}
+                        />
+                      ) : (
+                        <Mail size={16} />
+                      )}
+                      {ctaSection.buttonText || "Email"}
+                    </a>
+                  </div>
                 )}
               </header>
 
@@ -176,7 +187,11 @@ export default function ProfessionalPreview({
           return (
             <section
               key={section.id}
-              className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
+              role="button"
+              tabIndex={0}
+              onClick={(event) => handleSelectSection(event, section)}
+              onKeyDown={(event) => handleSectionKeyDown(event, section)}
+              className={`group hover:border-border hover:bg-background/50 relative w-full cursor-pointer rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
               style={(() => {
                 const { gap: _gap, ...rest } = getSectionStyle(section);
                 return rest;
@@ -247,7 +262,15 @@ export default function ProfessionalPreview({
           );
 
           return (
-            <div key={section.id} className="flex flex-col gap-6">
+            <div
+              key={section.id}
+              role="button"
+              tabIndex={0}
+              onClick={(event) => handleSelectSection(event, section)}
+              onKeyDown={(event) => handleSectionKeyDown(event, section)}
+              className="group relative flex cursor-pointer flex-col gap-6"
+            >
+              {renderControls(section)}
               <HighlightPreviewCard
                 projectsSection={section}
                 variant="transparent"
@@ -259,8 +282,6 @@ export default function ProfessionalPreview({
                   return rest;
                 })()}
               >
-                {renderControls(section)}
-
                 <div className="mb-4 flex flex-col gap-1">
                   {section.title && (
                     <h2 className="text-primary-text text-xl font-bold tracking-tight">
@@ -392,7 +413,11 @@ export default function ProfessionalPreview({
           return (
             <section
               key={section.id}
-              className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
+              role="button"
+              tabIndex={0}
+              onClick={(event) => handleSelectSection(event, section)}
+              onKeyDown={(event) => handleSectionKeyDown(event, section)}
+              className={`group hover:border-border hover:bg-background/50 relative w-full cursor-pointer rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
               style={getSectionStyle(section)}
             >
               {renderControls(section)}
@@ -428,7 +453,7 @@ export default function ProfessionalPreview({
                   href={sanitizeUrl(section.url || "#")}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
+                  className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
                 >
                   {section.buttonText || "Let's Connect"}
                 </a>

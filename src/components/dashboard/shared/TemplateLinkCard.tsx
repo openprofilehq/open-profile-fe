@@ -36,16 +36,16 @@ export function TemplateLinkCard({ id, title, url }: TemplateLinkCardProps) {
       className="group border-border bg-background hover:border-brand-hover-bg/30 flex items-center justify-between rounded-[12px] border p-4 shadow-sm transition-all hover:shadow-md"
     >
       <div className="flex items-center gap-3">
-        <div className="text-primary-text group-hover:text-brand-hover-bg transition-colors">
+        <div className="text-brand-hover-bg transition-colors">
           {getLinkIcon(url + " " + title)}
         </div>
-        <span className="text-primary-text text-[14px] font-medium truncate max-w-[120px]">
+        <span className="text-primary-text max-w-[120px] truncate text-[14px] font-medium">
           {title}
         </span>
       </div>
       <ExternalLink
         size={14}
-        className="text-tertiary-text shrink-0 group-hover:text-brand-hover-bg transition-colors"
+        className="text-brand-hover-bg shrink-0 transition-colors"
       />
     </a>
   );

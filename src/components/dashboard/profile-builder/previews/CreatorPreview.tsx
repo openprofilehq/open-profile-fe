@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import {
-  Eye,
-  EyeOff,
-  Trash2,
-  MessageSquare,
-  ChevronRight,
-  MoreHorizontal,
-} from "lucide-react";
+import { MessageSquare, ChevronRight } from "lucide-react";
 import {
   getImageUrl,
   sanitizeUrl,
@@ -18,6 +11,7 @@ import type { Section, ProfilePreview } from "../types";
 import { getFontClass } from "../../templates/TemplateAppearanceProvider";
 import { TemplateLinkCard, getLinkIcon } from "../../shared/TemplateLinkCard";
 import HighlightPreviewCard from "./HighlightPreviewCard";
+import PreviewSectionControls from "./PreviewSectionControls";
 import { getInitials } from "@/utils/avatar";
 
 interface CreatorPreviewProps {
@@ -26,6 +20,7 @@ interface CreatorPreviewProps {
   selectedSectionId?: string | null;
   onToggleSectionVisibility: (id: string) => void;
   onRemoveSection: (id: string) => void;
+  onSelectSection: (id: string) => void;
 }
 
 export default function CreatorPreview({
@@ -34,70 +29,89 @@ export default function CreatorPreview({
   selectedSectionId,
   onToggleSectionVisibility,
   onRemoveSection,
+  onSelectSection,
 }: CreatorPreviewProps) {
   const [activeTab, setActiveTab] = useState<"projects" | "links" | "about">(
     "projects"
   );
 
   useEffect(() => {
-    if (selectedSectionId) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (selectedSectionId === "projects") setActiveTab("projects");
-      else if (selectedSectionId === "links") setActiveTab("links");
-      else if (selectedSectionId === "bio") setActiveTab("about");
-    }
-  }, [selectedSectionId]);
+    if (!selectedSectionId) return;
 
-  const visibleSections = sections.filter((section) => section.visible);
-
-  const bioSection = sections.find((s) => s.type === "bio");
-  const linksSection = sections.find((s) => s.type === "links");
-  const ctaSection = sections.find((s) => s.type === "experience");
-  const bioSectionId = bioSection?.id ?? "bio";
-  const resolvedName = profile?.fullName || "Micaela Robinson";
-
-  const renderControls = (section?: Section, isBio: boolean = false) => {
-    if (!section) return null;
-    return (
-      <div className="group/menu pointer-events-none absolute -top-12 right-0 z-50 opacity-0 transition-opacity group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100">
-        <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
-          <MoreHorizontal size={18} />
-        </button>
-
-        <div className="border-border bg-background invisible absolute top-full right-0 mt-2 flex w-40 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all group-hover/menu:visible group-hover/menu:opacity-100">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleSectionVisibility(section.id);
-            }}
-            className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors"
-          >
-            {section.visible ? (
-              <>
-                <EyeOff size={16} /> Hide Section
-              </>
-            ) : (
-              <>
-                <Eye size={16} /> Show Section
-              </>
-            )}
-          </button>
-          <button
-            onClick={(e) => {
-              if (!isBio) {
-                e.stopPropagation();
-                onRemoveSection(section.id);
-              }
-            }}
-            disabled={isBio}
-            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${isBio ? "text-negative-text cursor-not-allowed opacity-50" : "text-negative-text hover:bg-negative-bg/20"}`}
-          >
-            <Trash2 size={16} /> Delete
-          </button>
-        </div>
-      </div>
+    const selectedSection = sections.find(
+      (section) => section.id === selectedSectionId
     );
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (selectedSection?.type === "projects") setActiveTab("projects");
+    else if (selectedSection?.type === "links") setActiveTab("links");
+    else if (selectedSection?.type === "bio") setActiveTab("about");
+  }, [sections, selectedSectionId]);
+
+  const visibleSections = sections.filter(
+    (section) => section.type === "bio" || section.visible
+  );
+
+  const bioSection = visibleSections.find((s) => s.type === "bio");
+  const projectsSection = visibleSections.find((s) => s.type === "projects");
+  const linksSection = visibleSections.find((s) => s.type === "links");
+  const ctaSection = visibleSections.find(
+    (s) => s.type === "experience" || s.type === "cta"
+  );
+
+  const resolvedName = profile?.fullName ?? "";
+
+  const availableTabIds = [
+    projectsSection ? "projects" : null,
+    linksSection ? "links" : null,
+    bioSection ? "about" : null,
+  ].filter(Boolean) as Array<"projects" | "links" | "about">;
+
+  const currentActiveTab = availableTabIds.includes(activeTab)
+    ? activeTab
+    : availableTabIds[0] || "about";
+
+  const handleSelectSection = (
+    event: React.MouseEvent<HTMLElement>,
+    section: Section
+  ) => {
+    event.preventDefault();
+    onSelectSection(section.id);
   };
+
+  const handleSelectNestedSection = (
+    event: React.MouseEvent<HTMLElement>,
+    section: Section
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+    onSelectSection(section.id);
+  };
+
+  const handleSectionKeyDown = (
+    event: React.KeyboardEvent<HTMLElement>,
+    section: Section
+  ) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    if (event.target !== event.currentTarget) return;
+
+    event.preventDefault();
+    onSelectSection(section.id);
+  };
+
+  const renderControls = (
+    section?: Section,
+    positionClass = "top-4 right-4",
+    hoverTarget: "section" | "cta" = "section"
+  ) => (
+    <PreviewSectionControls
+      section={section}
+      positionClass={positionClass}
+      hoverTarget={hoverTarget}
+      onToggleSectionVisibility={onToggleSectionVisibility}
+      onRemoveSection={onRemoveSection}
+    />
+  );
 
   // Filter links for the header social row in Creator layout
   const allLinks = linksSection?.links || [];
@@ -119,15 +133,15 @@ export default function CreatorPreview({
   return (
     <div className="flex w-full flex-col">
       {/* CREATOR HEADER (Bio Section) */}
-      {(!selectedSectionId ||
-        selectedSectionId === bioSectionId ||
-        selectedSectionId === ctaSection?.id) && (
+      {bioSection && (
         <div
-          className={`relative mx-auto mt-6 flex w-full max-w-4xl flex-col items-center gap-4 rounded-2xl p-6 text-center ${bioSection?.font ? getFontClass(bioSection.font) : ""}`}
+          role="button"
+          tabIndex={0}
+          onClick={(event) => handleSelectSection(event, bioSection)}
+          onKeyDown={(event) => handleSectionKeyDown(event, bioSection)}
+          className={`group relative mx-auto mt-6 flex w-full max-w-4xl cursor-pointer flex-col items-center gap-4 rounded-2xl p-6 text-center ${bioSection.font ? getFontClass(bioSection.font) : ""}`}
           style={getSectionStyle(bioSection)}
         >
-          {renderControls(bioSection, true)}
-
           <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
             {getImageUrl(profile?.photoUrl) ? (
               <Image
@@ -139,7 +153,7 @@ export default function CreatorPreview({
               />
             ) : (
               <div className="bg-brand-hover-bg text-inverse-text flex h-full w-full items-center justify-center text-[40px] font-bold">
-                {getInitials(resolvedName)}
+                {resolvedName ? getInitials(resolvedName) : "?"}
               </div>
             )}
           </div>
@@ -148,7 +162,7 @@ export default function CreatorPreview({
             <h1 className="text-primary-text flex items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
               {resolvedName}
             </h1>
-            <p className="text-secondary-text mt-1 text-[15px]">
+            <p className="text-brand-hover-bg mt-1 text-[15px]">
               openprofile.app/{profile?.username || "micaela"}
             </p>
           </div>
@@ -159,7 +173,7 @@ export default function CreatorPreview({
                 return (
                   <div
                     key={i}
-                    className="text-secondary-text transition-colors"
+                    className="text-brand-hover-bg transition-colors"
                   >
                     {getLinkIcon(
                       (link.url || "") + " " + (link.title || link.label || "")
@@ -171,48 +185,18 @@ export default function CreatorPreview({
           )}
 
           {ctaSection && ctaSection.visible && (
-            <div className="group relative mt-4">
-              <div className="group/menu absolute -top-8 left-1/2 z-50 -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100">
-                <button className="text-tertiary-text hover:text-primary-text hover:bg-hover-bg flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] transition-colors">
-                  <MoreHorizontal size={16} />
-                </button>
-
-                <div className="border-border bg-background invisible absolute top-full left-1/2 mt-2 flex w-36 -translate-x-1/2 flex-col overflow-hidden rounded-xl border opacity-0 shadow-lg transition-all group-hover/menu:visible group-hover/menu:opacity-100">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onToggleSectionVisibility(ctaSection.id);
-                    }}
-                    className="text-secondary-text hover:bg-hover-bg hover:text-primary-text flex w-full items-center gap-3 px-3 py-2 text-[13px] font-medium transition-colors"
-                  >
-                    {ctaSection.visible ? (
-                      <>
-                        <EyeOff size={14} /> Hide
-                      </>
-                    ) : (
-                      <>
-                        <Eye size={14} /> Show
-                      </>
-                    )}
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      if (ctaSection.type !== "bio") {
-                        e.stopPropagation();
-                        onRemoveSection(ctaSection.id);
-                      }
-                    }}
-                    disabled={ctaSection.type === "bio"}
-                    className={`flex w-full items-center gap-3 px-3 py-2 text-[13px] font-medium transition-colors ${ctaSection.type === "bio" ? "text-negative-text cursor-not-allowed opacity-50" : "text-negative-text hover:bg-negative-bg/20"}`}
-                  >
-                    <Trash2 size={14} /> Delete
-                  </button>
-                </div>
-              </div>
+            <div className="group/cta relative mt-4">
+              {renderControls(
+                ctaSection,
+                "top-1/2 left-full ml-3 -translate-y-1/2",
+                "cta"
+              )}
               <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
+                href={sanitizeUrl(ctaSection.url || "#")}
+                onClick={(event) =>
+                  handleSelectNestedSection(event, ctaSection)
+                }
+                className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
               >
                 {ctaSection.iconSrc ? (
                   <Image
@@ -234,58 +218,57 @@ export default function CreatorPreview({
       )}
 
       {/* CREATOR TABS */}
-      {(!selectedSectionId ||
-        ["projects", "links", "bio"].includes(selectedSectionId)) && (
+      {availableTabIds.length > 0 && (
         <>
           <div
             className="border-border flex items-center justify-center gap-8 border-b"
             style={{ marginTop: "var(--op-spacing, 2rem)" }}
           >
-            <button
-              onClick={() => setActiveTab("projects")}
-              className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "projects" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
-            >
-              Projects
-              {activeTab === "projects" && (
-                <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab("links")}
-              className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "links" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
-            >
-              Links
-              {activeTab === "links" && (
-                <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab("about")}
-              className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === "about" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
-            >
-              About
-              {activeTab === "about" && (
-                <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
-              )}
-            </button>
+            {projectsSection && (
+              <button
+                onClick={() => setActiveTab("projects")}
+                className={`relative pb-3 text-[15px] font-semibold transition-colors ${currentActiveTab === "projects" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
+              >
+                Projects
+                {currentActiveTab === "projects" && (
+                  <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
+                )}
+              </button>
+            )}
+            {linksSection && (
+              <button
+                onClick={() => setActiveTab("links")}
+                className={`relative pb-3 text-[15px] font-semibold transition-colors ${currentActiveTab === "links" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
+              >
+                Links
+                {currentActiveTab === "links" && (
+                  <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
+                )}
+              </button>
+            )}
+            {bioSection && (
+              <button
+                onClick={() => setActiveTab("about")}
+                className={`relative pb-3 text-[15px] font-semibold transition-colors ${currentActiveTab === "about" ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
+              >
+                About
+                {currentActiveTab === "about" && (
+                  <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
+                )}
+              </button>
+            )}
           </div>
-
           <div
             className="w-full"
             style={{ marginTop: "var(--op-spacing, 2rem)" }}
           >
             {/* CREATOR TAB CONTENT */}
             {visibleSections.map((section) => {
-              if (
-                selectedSectionId &&
-                selectedSectionId !== section.id &&
-                selectedSectionId !== bioSectionId &&
-                section.id !== ctaSection?.id
-              )
-                return null;
-
               // Projects Tab
-              if (section.type === "projects" && activeTab === "projects") {
+              if (
+                section.type === "projects" &&
+                currentActiveTab === "projects"
+              ) {
                 const projectsToRender = section.projects || [];
                 const highlightedProject =
                   projectsToRender.find(isProjectHighlighted);
@@ -296,18 +279,22 @@ export default function CreatorPreview({
                 return (
                   <div
                     key={section.id}
-                    className={`relative mx-auto flex w-full max-w-4xl flex-col gap-6 ${section.font ? getFontClass(section.font) : ""}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={(event) => handleSelectSection(event, section)}
+                    onKeyDown={(event) => handleSectionKeyDown(event, section)}
+                    className={`group relative mx-auto flex w-full max-w-4xl cursor-pointer flex-col gap-6 ${section.font ? getFontClass(section.font) : ""}`}
                     style={(() => {
                       const { gap: _gap, ...rest } = getSectionStyle(section);
                       return rest;
                     })()}
                   >
+                    {renderControls(section)}
                     <HighlightPreviewCard
                       projectsSection={section}
                       variant="transparent"
                     />
                     <div className="relative w-full">
-                      {renderControls(section)}
                       {remainingProjects.length > 0 ? (
                         <div
                           className={`grid gap-6 ${
@@ -424,11 +411,15 @@ export default function CreatorPreview({
               }
 
               // Links Tab
-              if (section.type === "links" && activeTab === "links") {
+              if (section.type === "links" && currentActiveTab === "links") {
                 return (
                   <div
                     key={section.id}
-                    className={`relative mx-auto flex w-full max-w-4xl flex-col gap-4 rounded-3xl ${section.font ? getFontClass(section.font) : ""}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={(event) => handleSelectSection(event, section)}
+                    onKeyDown={(event) => handleSectionKeyDown(event, section)}
+                    className={`group relative mx-auto flex w-full max-w-4xl cursor-pointer flex-col gap-4 rounded-3xl ${section.font ? getFontClass(section.font) : ""}`}
                     style={(() => {
                       const { gap: _gap, ...rest } = getSectionStyle(section);
                       return rest;
@@ -461,11 +452,15 @@ export default function CreatorPreview({
               }
 
               // About Tab
-              if (section.type === "bio" && activeTab === "about") {
+              if (section.type === "bio" && currentActiveTab === "about") {
                 return (
                   <div
                     key={section.id}
-                    className={`border-border mx-auto max-w-4xl rounded-3xl border p-8 sm:p-10 ${section.font ? getFontClass(section.font) : ""}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={(event) => handleSelectSection(event, section)}
+                    onKeyDown={(event) => handleSectionKeyDown(event, section)}
+                    className={`border-border group mx-auto max-w-4xl cursor-pointer rounded-3xl border p-8 sm:p-10 ${section.font ? getFontClass(section.font) : ""}`}
                     style={getSectionStyle(section)}
                   >
                     <p className="text-secondary-text text-center text-[15px] leading-relaxed break-all whitespace-pre-wrap">
