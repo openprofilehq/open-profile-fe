@@ -8,7 +8,6 @@ import {
   dashboardProfileOption,
   profileContentOption,
   draftStateOption,
-  upsertDraftOption,
   updateProfileAppearanceOption,
   profileAppearanceOption,
 } from "@/api/profile/profile.options";
@@ -22,7 +21,6 @@ import { THEME_DEFAULTS } from "@/constants/theme";
 import type {
   ProfileAppearanceCornerStyle,
   ProfileAppearanceFont,
-  UpsertDraftResponse,
 } from "@/api/profile/profile.type";
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { isApiError } from "@/api/base";
@@ -159,6 +157,25 @@ type ProfileMetaSnapshot = {
   bio: string | null;
   photoUrl: string | null;
 };
+
+function isDraftConflictError(error: unknown) {
+  const errObj = error as Record<string, unknown>;
+
+  return (
+    errObj?.status === 409 ||
+    errObj?.statusCode === 409 ||
+    (error instanceof Error && error.message?.includes("409"))
+  );
+}
+
+function getBioValueForProfileMeta(
+  bioSection: Section | undefined,
+  currentProfile: { bio?: string | null } | null | undefined
+) {
+  return bioSection?.bio !== undefined
+    ? bioSection.bio
+    : (currentProfile?.bio ?? null);
+}
 
 export default function ProfileBuilderContent() {
   const queryClient = useQueryClient();
@@ -334,7 +351,6 @@ export default function ProfileBuilderContent() {
       setTemplate(rawTemplate.toLowerCase());
     }
 
-    // Automatically initialize section if requested via URL search param and missing
     if (sectionParam) {
       const exists = loadedSections.some((s) => s.id === sectionParam);
       if (!exists) {
@@ -354,7 +370,7 @@ export default function ProfileBuilderContent() {
     profileMetaSnapshotRef.current = {
       fullName:
         loadedBioSection?.fullName ?? dashboardProfile.data.fullName ?? "",
-      bio: loadedBioSection?.bio ?? dashboardProfile.data.bio ?? null,
+      bio: getBioValueForProfileMeta(loadedBioSection, dashboardProfile.data),
       photoUrl:
         loadedBioSection?.photoUrl !== undefined
           ? loadedBioSection.photoUrl
@@ -395,64 +411,62 @@ export default function ProfileBuilderContent() {
     },
   });
 
-  const { mutate: saveDraft } = useMutation({
-    mutationKey: upsertDraftOption.mutationKey,
-    mutationFn: upsertDraftOption.mutationFn,
-    onSuccess(response: UpsertDraftResponse) {
-      const updatedAt = response?.data?.updatedAt;
-      if (updatedAt) {
-        draftUpdatedAtRef.current = updatedAt;
-      } else {
-        console.warn(
-          "[draft] Save succeeded but response did not contain an updatedAt timestamp."
-        );
-      }
-      queryClient.invalidateQueries({
-        queryKey: profileContentOption().queryKey,
-      });
-    },
-    onError(error: unknown) {
-      const errObj = error as Record<string, unknown>;
+  const persistDraftBeforeMeta = useCallback(
+    async (payload: unknown, updatedAt: string | null) => {
+      try {
+        const response = await upsertDraft(payload, updatedAt);
+        const nextUpdatedAt = response?.data?.updatedAt;
 
-      // Backend verifies link URLs and returns 422 INVALID_LINKS when some fail
-      // (e.g. Twitter 403, Instagram blocks crawlers) but still saves the data.
-      // Treat this as a soft warning — the save succeeded.
-      if (
-        isApiError(error) &&
-        error.status === 422 &&
-        error.message?.includes("INVALID_LINKS")
-      ) {
+        if (nextUpdatedAt) {
+          draftUpdatedAtRef.current = nextUpdatedAt;
+        } else {
+          console.warn(
+            "[draft] Save succeeded but response did not contain an updatedAt timestamp."
+          );
+        }
+
         queryClient.invalidateQueries({
           queryKey: profileContentOption().queryKey,
         });
-        return;
+
+        return true;
+      } catch (error) {
+        if (
+          isApiError(error) &&
+          error.status === 422 &&
+          error.message?.includes("INVALID_LINKS")
+        ) {
+          queryClient.invalidateQueries({
+            queryKey: profileContentOption().queryKey,
+          });
+          return true;
+        }
+
+        console.error("[draft] Save FAILED! Full error object:", error);
+
+        if (isDraftConflictError(error)) {
+          toast.error(
+            "Draft was modified in another session. Reloading latest changes...",
+            { duration: 5000 }
+          );
+          queryClient.invalidateQueries({
+            queryKey: profileContentOption().queryKey,
+          });
+          queryClient.invalidateQueries({
+            queryKey: draftStateOption().queryKey,
+          });
+          return false;
+        }
+
+        const msg =
+          error instanceof Error ? error.message : "Failed to save draft.";
+        toast.error(msg);
+        return false;
       }
-
-      console.error("[draft] Save FAILED! Full error object:", error);
-
-      if (
-        errObj?.status === 409 ||
-        errObj?.statusCode === 409 ||
-        (error instanceof Error && error.message?.includes("409"))
-      ) {
-        toast.error(
-          "Draft was modified in another session. Reloading latest changes...",
-          { duration: 5000 }
-        );
-        queryClient.invalidateQueries({
-          queryKey: profileContentOption().queryKey,
-        });
-        queryClient.invalidateQueries({
-          queryKey: draftStateOption().queryKey,
-        });
-        return;
-      }
-
-      const msg =
-        error instanceof Error ? error.message : "Failed to save draft.";
-      toast.error(msg);
     },
-  });
+    [queryClient]
+  );
+
   const enqueueProfileMetaSave = useCallback(
     (variables: { username: string; next: ProfileMetaSnapshot }) => {
       const runSave = async () => {
@@ -488,26 +502,25 @@ export default function ProfileBuilderContent() {
     [queryClient]
   );
 
-  const { mutate: saveProfileMeta } = useMutation({
-    mutationKey: ["profile", "metadata", "update"],
-    mutationFn: enqueueProfileMetaSave,
-    onError(error: unknown) {
-      const msg =
-        error instanceof Error
-          ? error.message
-          : "Failed to update profile details.";
-      toast.error(msg);
+  const saveProfileMetaQueued = useCallback(
+    async (variables: { username: string; next: ProfileMetaSnapshot }) => {
+      try {
+        await enqueueProfileMetaSave(variables);
+      } catch (error) {
+        const msg =
+          error instanceof Error
+            ? error.message
+            : "Failed to update profile details.";
+        toast.error(msg);
+        throw error;
+      }
     },
-  });
+    [enqueueProfileMetaSave]
+  );
 
-  const saveDraftRef = useRef(saveDraft);
+  const saveProfileMetaQueuedRef = useRef(saveProfileMetaQueued);
   useEffect(() => {
-    saveDraftRef.current = saveDraft;
-  });
-
-  const saveProfileMetaRef = useRef(saveProfileMeta);
-  useEffect(() => {
-    saveProfileMetaRef.current = saveProfileMeta;
+    saveProfileMetaQueuedRef.current = saveProfileMetaQueued;
   });
 
   const sectionsRef = useRef(sections);
@@ -521,6 +534,11 @@ export default function ProfileBuilderContent() {
   useEffect(() => {
     profileRef.current = profile;
   }, [profile]);
+
+  const persistDraftBeforeMetaRef = useRef(persistDraftBeforeMeta);
+  useEffect(() => {
+    persistDraftBeforeMetaRef.current = persistDraftBeforeMeta;
+  });
 
   const sectionAppearanceDeps = sections
     .map((s) => `${s.id}-${s.bgColor}-${s.textColor}-${s.iconColor}-${s.font}`)
@@ -612,85 +630,32 @@ export default function ProfileBuilderContent() {
     }
 
     saveTimerRef.current = setTimeout(() => {
-      const bioSection = sections.find((s) => s.type === "bio");
-      const updatedAt = draftUpdatedAtRef.current;
-      const currentProfile = profileRef.current;
-
-      const payload = {
-        bio: bioSection?.bio ?? null,
-        content: sectionsToContent(sections),
-        themeSettings: { template },
-      };
-
-      saveDraftRef.current({ data: payload, draftVersion: updatedAt });
-
-      const nextProfileMeta: ProfileMetaSnapshot = {
-        fullName: normalizeFullName(
-          bioSection?.fullName ?? currentProfile?.fullName ?? ""
-        ),
-        bio: bioSection?.bio ?? null,
-        photoUrl:
-          bioSection?.photoUrl !== undefined
-            ? bioSection.photoUrl
-            : (currentProfile?.photoUrl ?? null),
-      };
-
-      const previousProfileMeta = profileMetaSnapshotRef.current;
-
-      const hasProfileMetaChanges =
-        !previousProfileMeta ||
-        previousProfileMeta.fullName !== nextProfileMeta.fullName ||
-        previousProfileMeta.bio !== nextProfileMeta.bio ||
-        previousProfileMeta.photoUrl !== nextProfileMeta.photoUrl;
-
-      const fullNameValidationError = validateFullName(
-        nextProfileMeta.fullName
-      );
-
-      if (
-        currentProfile?.username &&
-        !fullNameValidationError &&
-        hasProfileMetaChanges
-      ) {
-        saveProfileMetaRef.current({
-          username: currentProfile.username,
-          next: nextProfileMeta,
-        });
-      }
-
-      saveTimerRef.current = null;
-    }, 1000);
-
-    return () => {
-      if (saveTimerRef.current) {
-        clearTimeout(saveTimerRef.current);
-      }
-    };
-  }, [sections, template]);
-
-  useEffect(() => {
-    return () => {
-      if (saveTimerRef.current) {
-        clearTimeout(saveTimerRef.current);
-        const bioSection = sectionsRef.current.find((s) => s.type === "bio");
+      void (async () => {
+        const bioSection = sections.find((s) => s.type === "bio");
         const updatedAt = draftUpdatedAtRef.current;
-        // Appearance settings are persisted through updateProfileAppearance to avoid duplicate writes.
+        const currentProfile = profileRef.current;
+
         const payload = {
-          bio: bioSection?.bio ?? null,
-          content: sectionsToContent(sectionsRef.current),
+          bio: getBioValueForProfileMeta(bioSection, currentProfile),
+          content: sectionsToContent(sections),
+          themeSettings: { template },
         };
 
-        upsertDraft(payload, updatedAt).catch((err) => {
-          console.error("[draft] Unmount direct save FAILED:", err);
-        });
+        const draftSaved = await persistDraftBeforeMetaRef.current(
+          payload,
+          updatedAt
+        );
 
-        const currentProfile = profileRef.current;
+        if (!draftSaved) {
+          saveTimerRef.current = null;
+          return;
+        }
 
         const nextProfileMeta: ProfileMetaSnapshot = {
           fullName: normalizeFullName(
             bioSection?.fullName ?? currentProfile?.fullName ?? ""
           ),
-          bio: bioSection?.bio ?? null,
+          bio: getBioValueForProfileMeta(bioSection, currentProfile),
           photoUrl:
             bioSection?.photoUrl !== undefined
               ? bioSection.photoUrl
@@ -714,32 +679,84 @@ export default function ProfileBuilderContent() {
           !fullNameValidationError &&
           hasProfileMetaChanges
         ) {
-          saveProfileMetaRef.current({
+          await saveProfileMetaQueuedRef.current({
             username: currentProfile.username,
             next: nextProfileMeta,
           });
         }
+
+        saveTimerRef.current = null;
+      })();
+    }, 1000);
+
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+      }
+    };
+  }, [sections, template]);
+
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+        const bioSection = sectionsRef.current.find((s) => s.type === "bio");
+        const updatedAt = draftUpdatedAtRef.current;
+
+        const payload = {
+          bio: getBioValueForProfileMeta(bioSection, profileRef.current),
+          content: sectionsToContent(sectionsRef.current),
+        };
+
+        void (async () => {
+          const draftSaved = await persistDraftBeforeMetaRef.current(
+            payload,
+            updatedAt
+          );
+
+          if (!draftSaved) {
+            return;
+          }
+
+          const currentProfile = profileRef.current;
+
+          const nextProfileMeta: ProfileMetaSnapshot = {
+            fullName: normalizeFullName(
+              bioSection?.fullName ?? currentProfile?.fullName ?? ""
+            ),
+            bio: getBioValueForProfileMeta(bioSection, currentProfile),
+            photoUrl:
+              bioSection?.photoUrl !== undefined
+                ? bioSection.photoUrl
+                : (currentProfile?.photoUrl ?? null),
+          };
+
+          const previousProfileMeta = profileMetaSnapshotRef.current;
+
+          const hasProfileMetaChanges =
+            !previousProfileMeta ||
+            previousProfileMeta.fullName !== nextProfileMeta.fullName ||
+            previousProfileMeta.bio !== nextProfileMeta.bio ||
+            previousProfileMeta.photoUrl !== nextProfileMeta.photoUrl;
+
+          const fullNameValidationError = validateFullName(
+            nextProfileMeta.fullName
+          );
+
+          if (
+            currentProfile?.username &&
+            !fullNameValidationError &&
+            hasProfileMetaChanges
+          ) {
+            await saveProfileMetaQueuedRef.current({
+              username: currentProfile.username,
+              next: nextProfileMeta,
+            });
+          }
+        })();
       }
     };
   }, []);
-
-  // const { mutate: doPublish, isPending: isPublishing } = useMutation({
-  //   mutationKey: ["profile", "publish"],
-  //   mutationFn: publishProfile,
-  //   onSuccess() {
-  //     draftUpdatedAtRef.current = null;
-  //     queryClient.invalidateQueries({ queryKey: ["profile", "content"] });
-  //     queryClient.invalidateQueries({ queryKey: ["profile", "draft-state"] });
-  //     toast.success("Profile published successfully.");
-  //   },
-  //   onError(error: unknown) {
-  //     const msg =
-  //       error instanceof Error ? error.message : "Failed to publish profile.";
-  //     toast.error(msg);
-  //   },
-  // });
-
-  // const handlePublish = () => doPublish(undefined as never);
 
   const resolvedSections = sections.map((section) =>
     section.id === "bio"
@@ -786,6 +803,26 @@ export default function ProfileBuilderContent() {
       });
     }
   }, [sectionParam]);
+
+  const handleSaveProfilePhoto = useCallback(async (photoUrl: string | null) => {
+    const currentProfile = profileRef.current;
+    const currentMeta = profileMetaSnapshotRef.current;
+
+    if (!currentProfile?.username) return;
+
+    const nextProfileMeta: ProfileMetaSnapshot = {
+      fullName: normalizeFullName(
+        currentMeta?.fullName ?? currentProfile.fullName ?? ""
+      ),
+      bio: currentMeta?.bio ?? currentProfile.bio ?? null,
+      photoUrl,
+    };
+
+    await saveProfileMetaQueuedRef.current({
+      username: currentProfile.username,
+      next: nextProfileMeta,
+    });
+  }, []);
 
   const handleSelectSection = (id: string) => {
     setSelectedSectionId(id);
@@ -850,7 +887,6 @@ export default function ProfileBuilderContent() {
         </div>
 
         <div className="hidden w-full flex-1 gap-4 bg-[#FAFAFA] p-4 lg:flex lg:p-6 lg:px-8">
-          {/* Left Sidebar Skeleton */}
           <div className="flex w-[320px] shrink-0 flex-col gap-6 rounded-2xl bg-white p-6">
             <Skeleton className="h-8 w-1/2" />
             <div className="mt-4 flex flex-col gap-3">
@@ -860,12 +896,10 @@ export default function ProfileBuilderContent() {
             </div>
           </div>
 
-          {/* Preview Canvas Skeleton */}
           <div className="flex flex-1 items-center justify-center rounded-2xl">
             <Skeleton className="h-[750px] w-[350px] rounded-[3rem]" />
           </div>
 
-          {/* Right Panel Skeleton */}
           <div className="flex w-[320px] shrink-0 flex-col gap-6 rounded-2xl bg-white p-6">
             <Skeleton className="h-8 w-1/2" />
             <div className="mt-4 flex flex-col gap-4">
@@ -897,8 +931,6 @@ export default function ProfileBuilderContent() {
       </div>
 
       <div className="bg-primary-bg hidden w-full flex-1 flex-col overflow-hidden lg:flex">
-        {/* <BuilderHeader onPublish={handlePublish} isPublishing={isPublishing} /> */}
-
         <div className="bg-secondary-bg flex flex-1 gap-4 overflow-hidden p-4 lg:p-4 xl:p-6 xl:px-8">
           <LeftSidebar
             sections={resolvedSections}
@@ -912,6 +944,7 @@ export default function ProfileBuilderContent() {
             onToggleSectionVisibility={handleToggleSectionVisibility}
             onReorderSections={setSections}
             onUpdateSection={handleUpdateSection}
+            onSaveProfilePhoto={handleSaveProfilePhoto}
             profile={previewProfile}
           />
 
