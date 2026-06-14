@@ -3,18 +3,17 @@
 import { ChevronLeft, Trash2, Upload } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getImageUrl } from "@/utils/profile";
 import { normalizeFullName, validateFullName } from "@/utils/nameValidation";
 import { uploadImage } from "@/api/uploads/uploads.service";
-import { updateProfile } from "@/api/profile/profile.service";
 import type { Section, ProfilePreview } from "./types";
 
 interface BioSidebarProps {
   returnTab: () => void;
   section: Section;
   onUpdateSection: (id: string, updates: Partial<Section>) => void;
+  onSaveProfilePhoto?: (photoUrl: string | null) => Promise<void>;
   profile?: ProfilePreview | null;
 }
 
@@ -22,9 +21,9 @@ export default function BioSidebar({
   returnTab,
   section,
   onUpdateSection,
+  onSaveProfilePhoto,
   profile,
 }: BioSidebarProps) {
-  const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -89,13 +88,10 @@ export default function BioSidebar({
       const { url } = await uploadImage(file, "profiles");
       setUploadedImage(url);
       onUpdateSection(section.id, { photoUrl: url } as never);
-      if (profile?.username) {
-        await updateProfile(profile.username, { photoUrl: url });
-        queryClient.invalidateQueries({ queryKey: ["profile", "dashboard"] });
-      }
+      await onSaveProfilePhoto?.(url);
     } catch {
-      // Rollback optimistic image on failure!
       setUploadedImage(prevUploadedImage);
+      onUpdateSection(section.id, { photoUrl: prevUploadedImage } as never);
       toast.error("Failed to upload profile photo.");
     } finally {
       setUploading(false);
@@ -135,7 +131,7 @@ export default function BioSidebar({
               onChange={(e) => handleFullNameChange(e.target.value)}
               placeholder="Enter full name"
               aria-invalid={!!fullNameError}
-              className={`bg-background w-full rounded-[10px] border px-4 py-3 text-sm text-[#050505] transition-colors outline-none ${
+              className={`bg-background text-primary-text w-full rounded-[10px] border px-4 py-3 text-sm transition-colors outline-none ${
                 fullNameError
                   ? "border-warning-b focus:border-warning-b"
                   : "border-tertiary-b focus:border-brand-b"
@@ -155,7 +151,7 @@ export default function BioSidebar({
               className="text-primary-text mb-2 block text-sm font-semibold"
               htmlFor="bio-text"
             >
-          <span className="text-danger-text">*</span> Bio
+              <span className="text-danger-text">*</span> Bio
             </label>
             <textarea
               id="bio-text"
@@ -166,15 +162,17 @@ export default function BioSidebar({
               rows={5}
               placeholder="Write a short bio..."
               className={`border-tertiary-b focus:border-brand-b bg-background w-full resize-none rounded-[10px] border px-4 py-3 text-sm transition-colors outline-none ${
-  bio.length > 300
-    ? "border-warning-b text-danger-text focus:border-warning-b"
-    : "text-primary-text"
-}`}
+                bio.length > 300
+                  ? "border-warning-b text-danger-text focus:border-warning-b"
+                  : "text-primary-text"
+              }`}
             />
             <p
               className={`mt-1 text-right text-xs ${
-  bio.length > 300 ? "text-danger-text font-medium" : "text-disabled-text"
-}`}
+                bio.length > 300
+                  ? "text-danger-text font-medium"
+                  : "text-disabled-text"
+              }`}
             >
               {bio.length <= 300
                 ? `${bio.length} / 300 characters`
@@ -221,25 +219,24 @@ export default function BioSidebar({
                 disabled={uploading}
                 onClick={async () => {
                   if (displayImage) {
-                    setUploadedImage(null);
-                    onUpdateSection(section.id, { photoUrl: null } as never);
-                    if (profile?.username) {
-                      try {
-                        await updateProfile(profile.username, {
-                          photoUrl: null,
-                        });
-                        queryClient.invalidateQueries({
-                          queryKey: ["profile", "dashboard"],
-                        });
-                      } catch {
-                        toast.error("Failed to remove profile photo.");
-                      }
+                    const prevUploadedImage = uploadedImage;
+
+                    try {
+                      setUploadedImage(null);
+                      onUpdateSection(section.id, { photoUrl: null } as never);
+                      await onSaveProfilePhoto?.(null);
+                    } catch {
+                      setUploadedImage(prevUploadedImage);
+                      onUpdateSection(section.id, {
+                        photoUrl: prevUploadedImage,
+                      } as never);
+                      toast.error("Failed to remove profile photo.");
                     }
                   } else {
                     fileInputRef.current?.click();
                   }
                 }}
-              className="text-muted-foreground border-tertiary-b hover:bg-primary-foreground-bg flex w-14 shrink-0 items-center justify-center border-l transition-colors disabled:opacity-50"
+                className="text-muted-foreground border-tertiary-b hover:bg-primary-foreground-bg flex w-14 shrink-0 items-center justify-center border-l transition-colors disabled:opacity-50"
                 aria-label={displayImage ? "Remove image" : "Upload image"}
                 title={
                   uploading
@@ -272,3 +269,4 @@ export default function BioSidebar({
     </aside>
   );
 }
+  
