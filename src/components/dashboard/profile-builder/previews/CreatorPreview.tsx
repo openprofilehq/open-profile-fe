@@ -47,17 +47,18 @@ export default function CreatorPreview({
     else if (selectedSection?.type === "bio") setActiveTab("about");
   }, [sections, selectedSectionId]);
 
-  const visibleSections = sections.filter(
-    (section) => section.type === "bio" || section.visible
-  );
+const visibleSections = sections.filter(
+  (section) => section.type === "bio" || section.visible
+);
 
-  const bioSection = visibleSections.find((s) => s.type === "bio");
-  const projectsSection = visibleSections.find((s) => s.type === "projects");
-  const linksSection = visibleSections.find((s) => s.type === "links");
-  const ctaSection = visibleSections.find(
-    (s) => s.type === "experience" || s.type === "cta"
-  );
-  const resolvedName = profile?.fullName || "Micaela Robinson";
+const bioSection = visibleSections.find((s) => s.type === "bio");
+const projectsSection = visibleSections.find((s) => s.type === "projects");
+const linksSection = visibleSections.find((s) => s.type === "links");
+const ctaSection = visibleSections.find(
+  (s) => s.type === "experience" || s.type === "cta"
+);
+const bioSectionId = bioSection?.id ?? "bio";
+const resolvedName = profile?.fullName ?? "";
 
   const availableTabIds = [
     projectsSection ? "projects" : null,
@@ -181,7 +182,7 @@ export default function CreatorPreview({
               />
             ) : (
               <div className="bg-brand-hover-bg text-inverse-text flex h-full w-full items-center justify-center text-[40px] font-bold">
-                {getInitials(resolvedName)}
+                {resolvedName ? getInitials(resolvedName) : "?"}
               </div>
             )}
           </div>

@@ -35,6 +35,7 @@ export interface Section {
   visible: boolean;
   fullName?: string;
   bio?: string;
+  photoUrl?: string | null;
   subtitle?: string;
   links?: SavedLink[];
   projects?: ProjectItem[];
