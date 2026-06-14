@@ -182,14 +182,21 @@ export default function RightPanel({
 }: RightPanelProps) {
   const selectedTemplate = template ? template.toLowerCase() : "creator";
   const [spacingMode, setSpacingMode] = useState<"basic" | "advanced">("basic");
+
   const [colorMode, setColorMode] = useState<"theme" | "custom">("custom");
   const [activeThemeName, setActiveThemeName] = useState<string | null>(null);
-  const [manualBgColor, setManualBgColor] = useState(bgColor);
-  const [manualBrandColor, setManualBrandColor] = useState(iconColor);
+  const [manualBgColor, setManualBgColor] = useState<string | null>(null);
+  const [manualBrandColor, setManualBrandColor] = useState<string | null>(null);
 
   const isThemeActive = colorMode === "theme" && Boolean(activeThemeName);
+  const displayManualBgColor =
+    colorMode === "custom" ? bgColor : (manualBgColor ?? bgColor);
+  const displayManualBrandColor =
+    colorMode === "custom" ? iconColor : (manualBrandColor ?? iconColor);
 
   const handleSelectTheme = (theme: (typeof THEME_SWATCHES)[number]) => {
+    setManualBgColor(bgColor);
+    setManualBrandColor(iconColor);
     setColorMode("theme");
     setActiveThemeName(theme.name);
     onChangeBgColor(theme.background);
@@ -197,10 +204,13 @@ export default function RightPanel({
   };
 
   const handleUseManualColors = () => {
+    const nextBgColor = manualBgColor ?? bgColor;
+    const nextBrandColor = manualBrandColor ?? iconColor;
+
     setColorMode("custom");
     setActiveThemeName(null);
-    onChangeBgColor(manualBgColor);
-    onChangeIconColor(manualBrandColor);
+    onChangeBgColor(nextBgColor);
+    onChangeIconColor(nextBrandColor);
   };
 
   const handleChangeBackgroundColor = (color: string) => {
@@ -355,7 +365,10 @@ export default function RightPanel({
                 </span>
                 <div className="grid grid-cols-6 gap-1.5">
                   {BACKGROUND_SWATCHES.map((color) => {
-                    const selected = isSelectedColor(manualBgColor, color);
+                    const selected = isSelectedColor(
+                      displayManualBgColor,
+                      color
+                    );
 
                     return (
                       <button
@@ -382,7 +395,10 @@ export default function RightPanel({
 
               <ColorPicker
                 label="Brand"
-                color={manualBrandColor || THEME_DEFAULTS.ACCENT_COLORS.DEFAULT}
+                color={
+                  displayManualBrandColor ||
+                  THEME_DEFAULTS.ACCENT_COLORS.DEFAULT
+                }
                 onChange={handleChangeBrandColor}
                 disabled={isThemeActive}
               />
