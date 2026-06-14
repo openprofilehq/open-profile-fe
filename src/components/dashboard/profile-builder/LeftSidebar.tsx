@@ -3,7 +3,15 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Reorder, useDragControls } from "motion/react";
-import { ChevronLeft, Search, Plus, GripVertical, Trash2 } from "lucide-react";
+import {
+  ChevronLeft,
+  Search,
+  Plus,
+  GripVertical,
+  Trash2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LinkSidebar from "./LinkSidebar";
 import BioSidebar from "./BioSidebar";
@@ -45,11 +53,13 @@ export default function LeftSidebar({
   initialEditingSectionId,
   onSelectSection,
   onDeselectSection,
-  onAddSection,
-  onReorderSections,
-  onUpdateSection,
-  onSaveProfilePhoto,
-  profile,
+onAddSection,
+onRemoveSection,
+onToggleSectionVisibility,
+onReorderSections,
+onUpdateSection,
+onSaveProfilePhoto,
+profile,
 }: LeftSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddingSection, setIsAddingSection] = useState(false);
@@ -573,15 +583,17 @@ export default function LeftSidebar({
           {filteredSections.map((section) => {
             const isSelected = selectedSectionId === section.id;
             return (
-              <SortableSectionItem
-                key={section.id}
-                section={section}
-                isSelected={isSelected}
-                handleOpenSectionForm={handleOpenSectionForm}
-                searchQuery={searchQuery}
-                profile={profile}
-                getSectionDescriptor={getSectionDescriptor}
-              />
+<SortableSectionItem
+  key={section.id}
+  section={section}
+  isSelected={isSelected}
+  handleOpenSectionForm={handleOpenSectionForm}
+  searchQuery={searchQuery}
+  profile={profile}
+  getSectionDescriptor={getSectionDescriptor}
+  onToggleSectionVisibility={onToggleSectionVisibility}
+  onRemoveSection={onRemoveSection}
+/>
             );
           })}
 
@@ -603,6 +615,8 @@ function SortableSectionItem({
   searchQuery,
   profile,
   getSectionDescriptor,
+  onToggleSectionVisibility,
+  onRemoveSection,
 }: {
   section: Section;
   isSelected: boolean;
@@ -610,6 +624,8 @@ function SortableSectionItem({
   searchQuery: string;
   profile?: ProfilePreview | null;
   getSectionDescriptor: (section: Section) => string;
+  onToggleSectionVisibility: (id: string) => void;
+  onRemoveSection: (id: string) => void;
 }) {
   const dragControls = useDragControls();
 
@@ -651,6 +667,37 @@ function SortableSectionItem({
             {getSectionDescriptor(section)}
           </p>
         </div>
+<div>
+  {section.type !== "bio" && (
+    <>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleSectionVisibility(section.id);
+        }}
+        className="hover:bg-hover-bg text-secondary-text shrink-0 rounded-lg p-1.5 opacity-40 transition-all group-hover:opacity-100 hover:opacity-100"
+        title={section.visible ? "Hide section" : "Show section"}
+        aria-label={`${section.visible ? "Hide" : "Show"} section ${section.title}`}
+      >
+        {section.visible ? <Eye size={15} /> : <EyeOff size={15} />}
+      </button>
+
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemoveSection(section.id);
+        }}
+        className="hover:bg-hover-bg hover:text-negative-text text-secondary-text shrink-0 rounded-lg p-1.5 opacity-40 transition-all group-hover:opacity-100 hover:opacity-100"
+        title="Delete Section"
+        aria-label={`Delete section ${section.title}`}
+      >
+        <Trash2 size={15} />
+      </button>
+    </>
+  )}
+</div>
       </div>
 
       <button

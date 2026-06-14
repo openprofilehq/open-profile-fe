@@ -57,7 +57,7 @@ const linksSection = visibleSections.find((s) => s.type === "links");
 const ctaSection = visibleSections.find(
   (s) => s.type === "experience" || s.type === "cta"
 );
-const bioSectionId = bioSection?.id ?? "bio";
+
 const resolvedName = profile?.fullName ?? "";
 
   const availableTabIds = [
@@ -91,11 +91,11 @@ const resolvedName = profile?.fullName ?? "";
     event: React.KeyboardEvent<HTMLElement>,
     section: Section
   ) => {
-    if (event.key !== "Enter" && event.key !== " ") return;
-    if (event.target !== event.currentTarget) return;
+if (event.key !== "Enter" && event.key !== " ") return;
+if (event.target !== event.currentTarget) return;
 
-    event.preventDefault();
-    onSelectSection(section.id);
+event.preventDefault();
+onSelectSection(section.id);
   };
 
   const renderControls = (
@@ -191,7 +191,7 @@ const resolvedName = profile?.fullName ?? "";
             <h1 className="text-primary-text flex items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
               {resolvedName}
             </h1>
-            <p className="text-secondary-text mt-1 text-[15px]">
+            <p className="text-brand-hover-bg mt-1 text-[15px]">
               openprofile.app/{profile?.username || "micaela"}
             </p>
           </div>
@@ -202,7 +202,7 @@ const resolvedName = profile?.fullName ?? "";
                 return (
                   <div
                     key={i}
-                    className="text-secondary-text transition-colors"
+                    className="text-brand-hover-bg transition-colors"
                   >
                     {getLinkIcon(
                       (link.url || "") + " " + (link.title || link.label || "")
@@ -225,7 +225,7 @@ const resolvedName = profile?.fullName ?? "";
                 onClick={(event) =>
                   handleSelectNestedSection(event, ctaSection)
                 }
-                className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
+className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
               >
                 {ctaSection.iconSrc ? (
                   <Image

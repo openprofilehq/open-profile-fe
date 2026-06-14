@@ -158,7 +158,7 @@ export default function ProfessionalPreview({
                     <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight break-all">
                       {profile?.fullName ?? ""}
                     </h1>
-                    <p className="text-secondary-text mt-1 text-[15px] break-all">
+                    <p className="text-brand-hover-bg mt-1 text-[15px] break-all">
                       {getDisplayProfileUrl(profile?.username || "micaela")}
                     </p>
                   </div>
@@ -482,7 +482,7 @@ export default function ProfessionalPreview({
                   href={sanitizeUrl(section.url || "#")}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
+                  className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
                 >
                   {section.buttonText || "Let's Connect"}
                 </a>
