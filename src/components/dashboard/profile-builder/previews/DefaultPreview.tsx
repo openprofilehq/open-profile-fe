@@ -5,8 +5,6 @@ import {
   ChevronRight,
   MessageSquare,
   ImageIcon,
-  EyeOff,
-  Trash2,
 } from "lucide-react";
 import {
   getImageUrl,
@@ -17,6 +15,7 @@ import {
 import type { Section, ProfilePreview, SavedLink, ProjectItem } from "../types";
 import { getFontClass } from "../../templates/TemplateAppearanceProvider";
 import HighlightPreviewCard from "./HighlightPreviewCard";
+import PreviewSectionControls from "./PreviewSectionControls";
 
 interface DefaultPreviewProps {
   sections: Section[];
@@ -69,45 +68,15 @@ export default function DefaultPreview({
     section?: Section,
     positionClass = "top-4 right-4",
     hoverTarget: "section" | "cta" = "section"
-  ) => {
-    if (!section || section.type === "bio") return null;
-
-    const visibilityClass =
-      hoverTarget === "cta"
-        ? "group-hover/cta:pointer-events-auto group-hover/cta:opacity-100 group-focus-within/cta:pointer-events-auto group-focus-within/cta:opacity-100"
-        : "group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100";
-
-    return (
-      <div
-        className={`pointer-events-none absolute z-50 flex items-center gap-2 opacity-0 transition-opacity ${visibilityClass} ${positionClass}`}
-      >
-        <button
-          type="button"
-          aria-label={`Hide ${section.title || "section"}`}
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            onToggleSectionVisibility(section.id);
-          }}
-          className="border-border/50 bg-background/90 text-tertiary-text hover:bg-hover-bg hover:text-primary-text flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] border shadow-sm backdrop-blur-sm transition-colors"
-        >
-          <EyeOff size={16} />
-        </button>
-        <button
-          type="button"
-          aria-label={`Delete ${section.title || "section"}`}
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            onRemoveSection(section.id);
-          }}
-          className="border-border/50 bg-background/90 text-negative-text hover:bg-negative-bg/20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-[8px] border shadow-sm backdrop-blur-sm transition-colors"
-        >
-          <Trash2 size={16} />
-        </button>
-      </div>
-    );
-  };
+  ) => (
+    <PreviewSectionControls
+      section={section}
+      positionClass={positionClass}
+      hoverTarget={hoverTarget}
+      onToggleSectionVisibility={onToggleSectionVisibility}
+      onRemoveSection={onRemoveSection}
+    />
+  );
 
   return (
     <div
