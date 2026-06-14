@@ -31,9 +31,8 @@ interface LeftSidebarProps {
   onToggleSectionVisibility: (id: string) => void;
   onReorderSections: (sections: Section[]) => void;
   onUpdateSection: (id: string, updates: Partial<Section>) => void;
-  profile?: {
-    fullName?: string;
-  } | null;
+  onSaveProfilePhoto?: (photoUrl: string | null) => Promise<void>;
+  profile?: ProfilePreview | null;
 }
 
 function getDisplayTitle(
@@ -59,6 +58,7 @@ export default function LeftSidebar({
   onToggleSectionVisibility,
   onReorderSections,
   onUpdateSection,
+  onSaveProfilePhoto,
   profile,
 }: LeftSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -98,6 +98,7 @@ export default function LeftSidebar({
     setEditingSectionId(null);
     onDeselectSection();
   }
+
   const [linkSidebarOpen, setLinkSidebarOpen] = useState(false);
 
   const activeSections = sections.filter(
@@ -272,6 +273,7 @@ export default function LeftSidebar({
           returnTab={handleReturnToList}
           section={editingSection}
           onUpdateSection={onUpdateSection}
+          onSaveProfilePhoto={onSaveProfilePhoto}
           profile={profile}
         />
       );
@@ -620,7 +622,7 @@ function SortableSectionItem({
   onRemoveSection: (id: string) => void;
   handleOpenSectionForm: (id: string) => void;
   searchQuery: string;
-  profile?: { fullName?: string } | null;
+  profile?: ProfilePreview | null;
   getSectionDescriptor: (section: Section) => string;
 }) {
   const dragControls = useDragControls();

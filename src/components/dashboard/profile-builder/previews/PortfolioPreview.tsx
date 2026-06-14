@@ -119,9 +119,7 @@ export default function PortfolioPreview({
                       />
                     ) : (
                       <div className="bg-brand-subtle-bg text-brand-hover-bg flex h-full w-full items-center justify-center text-[32px] font-bold">
-                        {(profile?.fullName || "John Smith")
-                          .charAt(0)
-                          .toUpperCase()}
+                        {(profile?.fullName ?? "").charAt(0).toUpperCase()}
                       </div>
                     )}
                   </div>
@@ -129,7 +127,7 @@ export default function PortfolioPreview({
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2">
                       <h1 className="text-primary-text text-[26px] leading-tight font-bold tracking-tight">
-                        {profile?.fullName || "John Smith"}
+                        {profile?.fullName ?? ""}
                       </h1>
                     </div>
                     <p className="text-brand-hover-bg mt-1 text-[14px]">
