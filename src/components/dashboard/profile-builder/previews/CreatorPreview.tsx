@@ -54,7 +54,7 @@ export default function CreatorPreview({
   const linksSection = sections.find((s) => s.type === "links");
   const ctaSection = sections.find((s) => s.type === "experience");
   const bioSectionId = bioSection?.id ?? "bio";
-  const resolvedName = profile?.fullName || "Micaela Robinson";
+  const resolvedName = profile?.fullName ?? "";
 
   const renderControls = (section?: Section, isBio: boolean = false) => {
     if (!section) return null;
@@ -139,7 +139,7 @@ export default function CreatorPreview({
               />
             ) : (
               <div className="bg-brand-hover-bg text-inverse-text flex h-full w-full items-center justify-center text-[40px] font-bold">
-                {getInitials(resolvedName)}
+                {resolvedName ? getInitials(resolvedName) : "?"}
               </div>
             )}
           </div>
