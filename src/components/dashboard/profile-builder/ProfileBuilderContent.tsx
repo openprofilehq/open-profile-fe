@@ -192,7 +192,6 @@ export default function ProfileBuilderContent() {
   const dashboardProfile = useQuery(dashboardProfileOption());
   const profileContent = useQuery(profileContentOption());
   const draftState = useQuery(draftStateOption());
-
   const profileAppearance = useQuery(profileAppearanceOption());
 
   const profile = dashboardProfile.data;
@@ -213,11 +212,9 @@ export default function ProfileBuilderContent() {
   const [borderRadius, setBorderRadius] = useState<
     "sharp" | "rounded" | "pill"
   >("rounded");
-
   const [appearanceTheme, setAppearanceTheme] = useState<"light" | "dark">(
     "light"
   );
-
   const [template, setTemplate] = useState<string>("creator");
   const [sections, setSections] = useState<Section[]>([]);
   const [sectionToDelete, setSectionToDelete] = useState<string | null>(null);
@@ -230,7 +227,6 @@ export default function ProfileBuilderContent() {
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const profileMetaSnapshotRef = useRef<ProfileMetaSnapshot | null>(null);
   const profileMetaSaveQueueRef = useRef<Promise<unknown>>(Promise.resolve());
-
   const appearanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -273,16 +269,25 @@ export default function ProfileBuilderContent() {
               iconColor?: string;
             }
           | undefined;
+
         if (compApp) {
-          if (compApp.backgroundColour)
+          if (compApp.backgroundColour) {
             section.bgColor = compApp.backgroundColour;
-          else if (compApp.bgColor) section.bgColor = compApp.bgColor;
+          } else if (compApp.bgColor) {
+            section.bgColor = compApp.bgColor;
+          }
 
-          if (compApp.textColour) section.textColor = compApp.textColour;
-          else if (compApp.textColor) section.textColor = compApp.textColor;
+          if (compApp.textColour) {
+            section.textColor = compApp.textColour;
+          } else if (compApp.textColor) {
+            section.textColor = compApp.textColor;
+          }
 
-          if (compApp.accentColour) section.iconColor = compApp.accentColour;
-          else if (compApp.iconColor) section.iconColor = compApp.iconColor;
+          if (compApp.accentColour) {
+            section.iconColor = compApp.accentColour;
+          } else if (compApp.iconColor) {
+            section.iconColor = compApp.iconColor;
+          }
         }
       });
     }
@@ -414,7 +419,7 @@ export default function ProfileBuilderContent() {
   });
 
   const persistDraftBeforeMeta = useCallback(
-  async (payload: UpsertDraftRequest, updatedAt: string | null) => {
+    async (payload: UpsertDraftRequest, updatedAt: string | null) => {
       try {
         const response = await upsertDraft(payload, updatedAt);
         const nextUpdatedAt = response?.data?.updatedAt;
@@ -526,13 +531,11 @@ export default function ProfileBuilderContent() {
   });
 
   const sectionsRef = useRef(sections);
-
   useEffect(() => {
     sectionsRef.current = sections;
   }, [sections]);
 
   const profileRef = useRef(profile);
-
   useEffect(() => {
     profileRef.current = profile;
   }, [profile]);
@@ -548,7 +551,6 @@ export default function ProfileBuilderContent() {
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
-
     if (appearanceHydratingRef.current) return;
 
     if (!appearanceEditedRef.current) {
@@ -575,6 +577,7 @@ export default function ProfileBuilderContent() {
       const buildComponentAppearance = (sectionType: string) => {
         const sec = sectionsRef.current.find((s) => s.type === sectionType);
         if (!sec) return globalAppearance;
+
         return {
           ...globalAppearance,
           ...(sec.bgColor && {
@@ -633,84 +636,17 @@ export default function ProfileBuilderContent() {
 
     saveTimerRef.current = setTimeout(() => {
       void (async () => {
-        const bioSection = sections.find((s) => s.type === "bio");
-        const updatedAt = draftUpdatedAtRef.current;
-        const currentProfile = profileRef.current;
+        try {
+          const bioSection = sections.find((s) => s.type === "bio");
+          const updatedAt = draftUpdatedAtRef.current;
+          const currentProfile = profileRef.current;
 
-        const payload = {
-          bio: getBioValueForProfileMeta(bioSection, currentProfile),
-          content: sectionsToContent(sections),
-          themeSettings: { template },
-        };
+          const payload = {
+            bio: getBioValueForProfileMeta(bioSection, currentProfile),
+            content: sectionsToContent(sections),
+            themeSettings: { template },
+          };
 
-        const draftSaved = await persistDraftBeforeMetaRef.current(
-          payload,
-          updatedAt
-        );
-
-        if (!draftSaved) {
-          saveTimerRef.current = null;
-          return;
-        }
-
-        const nextProfileMeta: ProfileMetaSnapshot = {
-          fullName: normalizeFullName(
-            bioSection?.fullName ?? currentProfile?.fullName ?? ""
-          ),
-          bio: getBioValueForProfileMeta(bioSection, currentProfile),
-          photoUrl:
-            bioSection?.photoUrl !== undefined
-              ? bioSection.photoUrl
-              : (currentProfile?.photoUrl ?? null),
-        };
-
-        const previousProfileMeta = profileMetaSnapshotRef.current;
-
-        const hasProfileMetaChanges =
-          !previousProfileMeta ||
-          previousProfileMeta.fullName !== nextProfileMeta.fullName ||
-          previousProfileMeta.bio !== nextProfileMeta.bio ||
-          previousProfileMeta.photoUrl !== nextProfileMeta.photoUrl;
-
-        const fullNameValidationError = validateFullName(
-          nextProfileMeta.fullName
-        );
-
-        if (
-          currentProfile?.username &&
-          !fullNameValidationError &&
-          hasProfileMetaChanges
-        ) {
-          await saveProfileMetaQueuedRef.current({
-            username: currentProfile.username,
-            next: nextProfileMeta,
-          });
-        }
-
-        saveTimerRef.current = null;
-      })();
-    }, 1000);
-
-    return () => {
-      if (saveTimerRef.current) {
-        clearTimeout(saveTimerRef.current);
-      }
-    };
-  }, [sections, template]);
-
-  useEffect(() => {
-    return () => {
-      if (saveTimerRef.current) {
-        clearTimeout(saveTimerRef.current);
-        const bioSection = sectionsRef.current.find((s) => s.type === "bio");
-        const updatedAt = draftUpdatedAtRef.current;
-
-        const payload = {
-          bio: getBioValueForProfileMeta(bioSection, profileRef.current),
-          content: sectionsToContent(sectionsRef.current),
-        };
-
-        void (async () => {
           const draftSaved = await persistDraftBeforeMetaRef.current(
             payload,
             updatedAt
@@ -719,8 +655,6 @@ export default function ProfileBuilderContent() {
           if (!draftSaved) {
             return;
           }
-
-          const currentProfile = profileRef.current;
 
           const nextProfileMeta: ProfileMetaSnapshot = {
             fullName: normalizeFullName(
@@ -754,6 +688,84 @@ export default function ProfileBuilderContent() {
               username: currentProfile.username,
               next: nextProfileMeta,
             });
+          }
+        } catch (error) {
+          console.error("[profile-meta] Save failed:", error);
+        } finally {
+          saveTimerRef.current = null;
+        }
+      })();
+    }, 1000);
+
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+      }
+    };
+  }, [sections, template]);
+
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+        const bioSection = sectionsRef.current.find((s) => s.type === "bio");
+        const updatedAt = draftUpdatedAtRef.current;
+
+        const payload = {
+          bio: getBioValueForProfileMeta(bioSection, profileRef.current),
+          content: sectionsToContent(sectionsRef.current),
+        };
+
+        void (async () => {
+          try {
+            const draftSaved = await persistDraftBeforeMetaRef.current(
+              payload,
+              updatedAt
+            );
+
+            if (!draftSaved) {
+              return;
+            }
+
+            const currentProfile = profileRef.current;
+
+            const nextProfileMeta: ProfileMetaSnapshot = {
+              fullName: normalizeFullName(
+                bioSection?.fullName ?? currentProfile?.fullName ?? ""
+              ),
+              bio: getBioValueForProfileMeta(bioSection, currentProfile),
+              photoUrl:
+                bioSection?.photoUrl !== undefined
+                  ? bioSection.photoUrl
+                  : (currentProfile?.photoUrl ?? null),
+            };
+
+            const previousProfileMeta = profileMetaSnapshotRef.current;
+
+            const hasProfileMetaChanges =
+              !previousProfileMeta ||
+              previousProfileMeta.fullName !== nextProfileMeta.fullName ||
+              previousProfileMeta.bio !== nextProfileMeta.bio ||
+              previousProfileMeta.photoUrl !== nextProfileMeta.photoUrl;
+
+            const fullNameValidationError = validateFullName(
+              nextProfileMeta.fullName
+            );
+
+            if (
+              currentProfile?.username &&
+              !fullNameValidationError &&
+              hasProfileMetaChanges
+            ) {
+              await saveProfileMetaQueuedRef.current({
+                username: currentProfile.username,
+                next: nextProfileMeta,
+              });
+            }
+          } catch (error) {
+            console.error("[profile-meta] Save on unmount failed:", error);
+          } finally {
+            saveTimerRef.current = null;
           }
         })();
       }
@@ -830,45 +842,45 @@ export default function ProfileBuilderContent() {
     setSelectedSectionId(id);
   };
 
-const handleAddSection = (title: string, type: string) => {
-  const newSection = createSection(type, title);
-  if (!newSection) return;
+  const handleAddSection = (title: string, type: string) => {
+    const newSection = createSection(type, title);
+    if (!newSection) return;
 
-  const existingSection = sections.find(
-    (section) =>
-      section.id === newSection.id || section.type === newSection.type
-  );
-
-  setSections((prev) => {
-    const existingInPrev = prev.find(
+    const existingSection = sections.find(
       (section) =>
         section.id === newSection.id || section.type === newSection.type
     );
 
-    if (existingInPrev) {
-      return prev.map((section) =>
-        section.id === existingInPrev.id
-          ? { ...section, visible: true }
-          : section
+    setSections((prev) => {
+      const existingInPrev = prev.find(
+        (section) =>
+          section.id === newSection.id || section.type === newSection.type
       );
-    }
 
-    const bioSection = prev.find((section) => section.type === "bio");
-    const nonBioSections = prev.filter((section) => section.type !== "bio");
+      if (existingInPrev) {
+        return prev.map((section) =>
+          section.id === existingInPrev.id
+            ? { ...section, visible: true }
+            : section
+        );
+      }
 
-    if (newSection.type === "bio") {
-      return [newSection, ...nonBioSections];
-    }
+      const bioSection = prev.find((section) => section.type === "bio");
+      const nonBioSections = prev.filter((section) => section.type !== "bio");
 
-    if (!bioSection) {
-      return [...nonBioSections, newSection];
-    }
+      if (newSection.type === "bio") {
+        return [newSection, ...nonBioSections];
+      }
 
-    return [bioSection, ...nonBioSections, newSection];
-  });
+      if (!bioSection) {
+        return [...nonBioSections, newSection];
+      }
 
-  setSelectedSectionId(existingSection?.id ?? newSection.id);
-};
+      return [bioSection, ...nonBioSections, newSection];
+    });
+
+    setSelectedSectionId(existingSection?.id ?? newSection.id);
+  };
 
   const handleRemoveSection = (id: string) => {
     setSectionToDelete(id);
@@ -898,37 +910,39 @@ const handleAddSection = (title: string, type: string) => {
     }
   };
 
- const handleToggleSectionVisibility = (id: string) => {
-  setSections((currentSections) => {
-    const targetSection = currentSections.find((section) => section.id === id);
-
-    if (!targetSection || targetSection.type === "bio") {
-      return currentSections;
-    }
-
-    const willHideSection = targetSection.visible;
-
-    const updatedSections = currentSections.map((section) =>
-      section.id === id ? { ...section, visible: !section.visible } : section
-    );
-
-    if (willHideSection) {
-      setSelectedSectionId((currentSelectedSectionId) =>
-        currentSelectedSectionId === id ? null : currentSelectedSectionId
+  const handleToggleSectionVisibility = (id: string) => {
+    setSections((currentSections) => {
+      const targetSection = currentSections.find(
+        (section) => section.id === id
       );
-    }
 
-    return updatedSections;
-  });
-};
+      if (!targetSection || targetSection.type === "bio") {
+        return currentSections;
+      }
 
-const handleUpdateSection = (id: string, updates: Partial<Section>) => {
-  setSections((currentSections) =>
-    currentSections.map((section) =>
-      section.id === id ? { ...section, ...updates } : section
-    )
-  );
-};
+      const willHideSection = targetSection.visible;
+
+      const updatedSections = currentSections.map((section) =>
+        section.id === id ? { ...section, visible: !section.visible } : section
+      );
+
+      if (willHideSection) {
+        setSelectedSectionId((currentSelectedSectionId) =>
+          currentSelectedSectionId === id ? null : currentSelectedSectionId
+        );
+      }
+
+      return updatedSections;
+    });
+  };
+
+  const handleUpdateSection = (id: string, updates: Partial<Section>) => {
+    setSections((currentSections) =>
+      currentSections.map((section) =>
+        section.id === id ? { ...section, ...updates } : section
+      )
+    );
+  };
 
   const selectedSection =
     resolvedSections.find((s) => s.id === selectedSectionId) || null;
