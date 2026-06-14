@@ -615,6 +615,8 @@ function SortableSectionItem({
   searchQuery,
   profile,
   getSectionDescriptor,
+  onToggleSectionVisibility,
+  onRemoveSection,
 }: {
   section: Section;
   isSelected: boolean;
@@ -622,6 +624,8 @@ function SortableSectionItem({
   searchQuery: string;
   profile?: ProfilePreview | null;
   getSectionDescriptor: (section: Section) => string;
+  onToggleSectionVisibility: (id: string) => void;
+  onRemoveSection: (id: string) => void;
 }) {
   const dragControls = useDragControls();
 
