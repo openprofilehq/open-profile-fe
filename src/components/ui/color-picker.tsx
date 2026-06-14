@@ -12,9 +12,15 @@ interface ColorPickerProps {
   color: string;
   onChange: (val: string) => void;
   label: string;
+  disabled?: boolean;
 }
 
-export function ColorPicker({ color, onChange, label }: ColorPickerProps) {
+export function ColorPicker({
+  color,
+  onChange,
+  label,
+  disabled = false,
+}: ColorPickerProps) {
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<"HEX" | "RGB" | "HSL">("HEX");
   const [popupStyle, setPopupStyle] = useState<React.CSSProperties>({});
@@ -36,6 +42,8 @@ export function ColorPicker({ color, onChange, label }: ColorPickerProps) {
         : `${hsl.h}°, ${hsl.s}%, ${hsl.l}%`;
 
   const handleOpen = () => {
+    if (disabled) return;
+
     if (!open && triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
       const popupHeight = 380;
@@ -61,7 +69,8 @@ export function ColorPicker({ color, onChange, label }: ColorPickerProps) {
         ref={triggerRef}
         type="button"
         onClick={handleOpen}
-        className={`border-tertiary-b relative flex max-w-[145px] flex-1 cursor-pointer items-center gap-2 rounded-[12px] border p-1.5 transition-colors ${open ? "bg-active-bg" : "bg-hover-bg hover:bg-active-bg"}`}
+        disabled={disabled}
+        className={`border-tertiary-b relative flex max-w-[145px] flex-1 items-center gap-2 rounded-[12px] border p-1.5 transition-colors disabled:cursor-not-allowed ${open ? "bg-active-bg" : "bg-hover-bg hover:bg-active-bg"}`}
       >
         <div
           style={{ backgroundColor: safeColor }}
@@ -72,7 +81,7 @@ export function ColorPicker({ color, onChange, label }: ColorPickerProps) {
         </div>
       </button>
 
-      {open && (
+      {open && !disabled && (
         <div
           className="animate-in fade-in zoom-in-95 overflow-hidden rounded-[16px] bg-white shadow-lg duration-200"
           style={popupStyle}
