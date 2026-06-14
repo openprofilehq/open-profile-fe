@@ -126,7 +126,7 @@ export default function BioSidebar({
               className="text-primary-text mb-2 block text-sm font-semibold"
               htmlFor="bio-fullname"
             >
-              <span className="text-[#D92D20]">*</span> Full name
+              <span className="text-danger-text">*</span> Full name
             </label>
             <input
               type="text"
@@ -137,13 +137,13 @@ export default function BioSidebar({
               aria-invalid={!!fullNameError}
               className={`bg-background w-full rounded-[10px] border px-4 py-3 text-sm text-[#050505] transition-colors outline-none ${
                 fullNameError
-                  ? "border-[#D92D20] focus:border-[#D92D20]"
+                  ? "border-warning-b focus:border-warning-b"
                   : "border-tertiary-b focus:border-brand-b"
               }`}
             />
 
             {fullNameError && (
-              <p className="mt-1 text-xs font-medium text-[#D92D20]">
+              <p className="text-danger-text mt-1 text-xs font-medium">
                 {fullNameError}
               </p>
             )}
@@ -155,7 +155,7 @@ export default function BioSidebar({
               className="text-primary-text mb-2 block text-sm font-semibold"
               htmlFor="bio-text"
             >
-              <span className="text-[#D92D20]">*</span> Bio
+          <span className="text-danger-text">*</span> Bio
             </label>
             <textarea
               id="bio-text"
@@ -165,10 +165,16 @@ export default function BioSidebar({
               }
               rows={5}
               placeholder="Write a short bio..."
-              className={`border-tertiary-b focus:border-brand-b bg-background w-full resize-none rounded-[10px] border px-4 py-3 text-sm transition-colors outline-none ${bio.length > 300 ? "border-[#D92D20] text-[#D92D20] focus:border-[#D92D20]" : "text-[#050505]"}`}
+              className={`border-tertiary-b focus:border-brand-b bg-background w-full resize-none rounded-[10px] border px-4 py-3 text-sm transition-colors outline-none ${
+  bio.length > 300
+    ? "border-warning-b text-danger-text focus:border-warning-b"
+    : "text-primary-text"
+}`}
             />
             <p
-              className={`mt-1 text-right text-xs ${bio.length > 300 ? "font-medium text-[#D92D20]" : "text-[#A2A2A2]"}`}
+              className={`mt-1 text-right text-xs ${
+  bio.length > 300 ? "text-danger-text font-medium" : "text-disabled-text"
+}`}
             >
               {bio.length <= 300
                 ? `${bio.length} / 300 characters`
@@ -186,7 +192,7 @@ export default function BioSidebar({
               <button
                 type="button"
                 onClick={() => !displayImage && fileInputRef.current?.click()}
-                className="flex min-w-0 flex-1 items-center gap-3 p-1 text-left transition-colors hover:bg-[#F8FAFC]"
+                className="hover:bg-primary-foreground-bg flex min-w-0 flex-1 items-center gap-3 p-1 text-left transition-colors"
               >
                 {displayImage ? (
                   <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
@@ -233,7 +239,7 @@ export default function BioSidebar({
                     fileInputRef.current?.click();
                   }
                 }}
-                className="text-muted-foreground border-tertiary-b flex w-14 shrink-0 items-center justify-center border-l transition-colors hover:bg-[#F8FAFC] disabled:opacity-50"
+              className="text-muted-foreground border-tertiary-b hover:bg-primary-foreground-bg flex w-14 shrink-0 items-center justify-center border-l transition-colors disabled:opacity-50"
                 aria-label={displayImage ? "Remove image" : "Upload image"}
                 title={
                   uploading
@@ -244,9 +250,9 @@ export default function BioSidebar({
                 }
               >
                 {uploading ? (
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#087583] border-t-transparent" />
+                  <span className="border-brand-hover-bg h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
                 ) : displayImage ? (
-                  <Trash2 size={16} className="text-[#9F2B2B]" />
+                  <Trash2 size={16} className="text-negative-bold-text" />
                 ) : (
                   <Upload size={16} />
                 )}
