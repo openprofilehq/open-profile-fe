@@ -301,7 +301,13 @@ export default function CreatorPreview({
                     <div className="relative w-full">
                       {remainingProjects.length > 0 ? (
                         <div
-                          className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2"
+                          className={`grid w-full gap-6 ${
+                            section.layout === "1"
+                              ? "grid-cols-1"
+                              : section.layout === "3" || section.layout === "4"
+                                ? "grid-cols-1 xl:grid-cols-2"
+                                : "grid-cols-1 sm:grid-cols-2"
+                          }`}
                           style={{
                             gap: section.gap ? `${section.gap}px` : undefined,
                           }}
@@ -309,6 +315,7 @@ export default function CreatorPreview({
                           {remainingProjects.map((project) => {
                             const hasUrl = Boolean(project.url);
                             const displayImg = getImageUrl(project.imageSrc);
+                            const layoutType = section.layout || "2";
 
                             const desc = project.description || "";
                             const newlineIndex = desc.indexOf("\n");
@@ -321,9 +328,23 @@ export default function CreatorPreview({
                               : desc;
 
                             const card = (
-                              <div className="group border-border bg-background hover:border-brand-hover-bg/30 flex h-full flex-col overflow-hidden rounded-3xl border shadow-sm transition-shadow hover:shadow-md">
+                              <div
+                                className={`group border-border bg-background hover:border-brand-hover-bg/30 flex h-full overflow-hidden rounded-3xl border shadow-sm transition-shadow hover:shadow-md ${
+                                  layoutType === "1" || layoutType === "2"
+                                    ? "flex-col"
+                                    : layoutType === "3"
+                                      ? "flex-col sm:flex-row sm:items-center"
+                                      : "flex-col sm:flex-row-reverse sm:items-center"
+                                }`}
+                              >
                                 {/* IMAGE */}
-                                <div className="border-border bg-secondary-bg relative aspect-video w-full shrink-0 overflow-hidden border-b">
+                                <div
+                                  className={`border-border bg-secondary-bg relative shrink-0 overflow-hidden border-b ${
+                                    layoutType === "1" || layoutType === "2"
+                                      ? "aspect-video w-full"
+                                      : "h-24 w-full sm:w-24 sm:border-b-0"
+                                  } ${layoutType === "3" ? "sm:border-r" : layoutType === "4" ? "sm:border-l" : ""}`}
+                                >
                                   {displayImg ? (
                                     <Image
                                       src={displayImg}
@@ -340,7 +361,13 @@ export default function CreatorPreview({
                                 </div>
 
                                 {/* CONTENT */}
-                                <div className="flex min-w-0 flex-1 flex-col items-start p-5">
+                                <div
+                                  className={`flex min-w-0 flex-1 flex-col items-start p-5 ${
+                                    layoutType === "3" || layoutType === "4"
+                                      ? "justify-center"
+                                      : ""
+                                  }`}
+                                >
                                   <h5 className="text-primary-text text-xl font-bold break-all">
                                     {project.title}
                                   </h5>

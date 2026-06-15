@@ -324,13 +324,11 @@ export default function ProfessionalDashboardView({
                   </h2>
                   <div
                     className={`grid gap-6 ${
-                      !section.layout || section.layout === "1"
+                      section.layout === "1"
                         ? "grid-cols-1"
-                        : section.layout === "3"
-                          ? "grid-cols-1 sm:grid-cols-2"
-                          : section.layout === "4"
-                            ? "grid-cols-1 sm:grid-cols-2"
-                            : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+                        : section.layout === "3" || section.layout === "4"
+                          ? "grid-cols-1 xl:grid-cols-2"
+                          : "grid-cols-1 sm:grid-cols-2 md:grid-cols-2"
                     }`}
                     style={{
                       gap: section.gap ? `${section.gap}px` : undefined,
@@ -344,68 +342,58 @@ export default function ProfessionalDashboardView({
 
                         const card = (
                           <div
-                            className={`group border-border bg-background hover:border-brand-hover-bg/30 flex rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md ${
-                              layoutType === "1"
-                                ? "flex-col justify-between sm:flex-row sm:items-center"
+                            className={`group border-border bg-background hover:border-brand-hover-bg/30 flex h-full rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md ${
+                              layoutType === "1" || layoutType === "2"
+                                ? "flex-col"
                                 : layoutType === "3"
-                                  ? "flex-col sm:flex-row sm:items-start"
-                                  : layoutType === "4"
-                                    ? "flex-col sm:flex-row-reverse sm:items-start"
-                                    : "flex-col" // Layout 2
+                                  ? "flex-col sm:flex-row sm:items-center"
+                                  : "flex-col sm:flex-row-reverse sm:items-center"
                             }`}
                           >
                             {/* IMAGE */}
-                            {layoutType !== "1" && (
-                              <div
-                                className={`border-border bg-secondary-bg relative mb-4 shrink-0 overflow-hidden rounded-lg border ${
-                                  layoutType === "2"
-                                    ? "aspect-video w-full"
-                                    : "h-[120px] w-full sm:mb-0 sm:w-[140px]"
-                                } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
-                              >
-                                {displayImg ? (
-                                  <Image
-                                    src={displayImg}
-                                    alt={project.title ?? "Project"}
-                                    className="object-cover"
-                                    fill
-                                    unoptimized
-                                  />
-                                ) : (
-                                  <div className="text-tertiary-text flex h-full w-full items-center justify-center text-xs">
-                                    No image
-                                  </div>
-                                )}
-                              </div>
-                            )}
+                            <div
+                              className={`border-border bg-secondary-bg relative mb-4 shrink-0 overflow-hidden rounded-lg border ${
+                                layoutType === "1" || layoutType === "2"
+                                  ? "aspect-video w-full"
+                                  : "h-24 w-full sm:mb-0 sm:h-24 sm:w-24"
+                              } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
+                            >
+                              {displayImg ? (
+                                <Image
+                                  src={displayImg}
+                                  alt={project.title ?? "Project"}
+                                  className="object-cover"
+                                  fill
+                                  unoptimized
+                                />
+                              ) : (
+                                <div className="text-tertiary-text flex h-full w-full items-center justify-center text-xs">
+                                  No image
+                                </div>
+                              )}
+                            </div>
 
                             {/* CONTENT */}
-                            <div className="flex min-w-0 flex-1 flex-col items-start">
+                            <div
+                              className={`flex min-w-0 flex-1 flex-col items-start ${
+                                layoutType === "3" || layoutType === "4"
+                                  ? "justify-center"
+                                  : ""
+                              }`}
+                            >
                               <h3 className="text-primary-text text-[16px] font-bold">
                                 {project.title}
                               </h3>
-                              <p
-                                className={`text-secondary-text mt-1 break-all ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"} text-[13px]`}
-                              >
+                              <p className="text-secondary-text mt-1 line-clamp-2 text-[13px] break-all">
                                 {project.description}
                               </p>
-                              {layoutType !== "1" && hasUrl && (
+                              {hasUrl && (
                                 <span className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
                                   {project.buttonText || "View Project"}
                                   <ArrowRight size={14} strokeWidth={2.5} />
                                 </span>
                               )}
                             </div>
-
-                            {/* BUTTON FOR LAYOUT 1 */}
-                            {layoutType === "1" && hasUrl && (
-                              <div className="mt-4 shrink-0 sm:mt-0 sm:ml-6">
-                                <span className="text-brand-hover-bg inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
-                                  {project.buttonText || "View Project"}
-                                  <ArrowRight size={14} strokeWidth={2.5} />
-                                </span>
-                              </div>
-                            )}
                           </div>
                         );
 

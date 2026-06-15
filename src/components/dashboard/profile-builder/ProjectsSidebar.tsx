@@ -387,25 +387,28 @@ export default function ProjectsSidebar({
                   Layout
                 </label>
                 <div className="grid grid-cols-2 gap-3">
-                  {["1", "2", "3", "4"].map((lay) => (
-                    <button
-                      key={lay}
-                      type="button"
-                      onClick={() => handleLayoutChange(lay)}
-                      className={`group relative aspect-video overflow-hidden rounded-[8px] border-2 transition-all duration-200 outline-none focus:outline-none ${
-                        layout === lay
-                          ? "border-brand-b bg-transparent"
-                          : "border-border bg-transparent hover:border-gray-300"
-                      }`}
-                    >
-                      <Image
-                        src={`/profilebuilder_projects/${lay}.png`}
-                        alt={`Layout ${lay}`}
-                        fill
-                        className="object-contain p-1.5"
-                      />
-                    </button>
-                  ))}
+                  {["1", "2", "3", "4"].map((lay) => {
+                    const iconNum = lay === "1" ? "2" : lay === "2" ? "1" : lay;
+                    return (
+                      <button
+                        key={lay}
+                        type="button"
+                        onClick={() => handleLayoutChange(lay)}
+                        className={`group relative aspect-video overflow-hidden rounded-[8px] border-2 transition-all duration-200 outline-none focus:outline-none ${
+                          layout === lay
+                            ? "border-brand-b bg-transparent"
+                            : "border-border bg-transparent hover:border-gray-300"
+                        }`}
+                      >
+                        <Image
+                          src={`/profilebuilder_projects/${iconNum}.png`}
+                          alt={`Layout ${lay}`}
+                          fill
+                          className="object-contain p-1.5"
+                        />
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>

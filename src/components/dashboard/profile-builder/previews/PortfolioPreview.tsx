@@ -265,9 +265,9 @@ export default function PortfolioPreview({
                     className={`grid gap-6 ${
                       section.layout === "1"
                         ? "grid-cols-1"
-                        : section.layout === "3"
-                          ? "grid-cols-1 sm:grid-cols-2"
-                          : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                        : section.layout === "3" || section.layout === "4"
+                          ? "grid-cols-1 xl:grid-cols-2"
+                          : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2"
                     }`}
                     style={{
                       gap: section.gap ? `${section.gap}px` : undefined,
@@ -276,21 +276,24 @@ export default function PortfolioPreview({
                     {remainingProjects.map(
                       (project: ProjectItem, idx: number) => {
                         const numberStr = String(idx + 1).padStart(2, "0");
+                        const layoutType = section.layout || "2";
                         return (
                           <div
                             key={project.id}
-                            className={`group/proj border-border bg-background flex overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md ${
-                              section.layout === "1"
-                                ? "flex-col sm:flex-row"
-                                : "flex-col"
+                            className={`group/proj border-border bg-background flex h-full overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md ${
+                              layoutType === "1" || layoutType === "2"
+                                ? "flex-col"
+                                : layoutType === "3"
+                                  ? "flex-col sm:flex-row sm:items-center"
+                                  : "flex-col sm:flex-row-reverse sm:items-center"
                             }`}
                           >
                             <div
                               className={`bg-secondary-bg border-border relative overflow-hidden ${
-                                section.layout === "1"
-                                  ? "w-full shrink-0 border-b sm:w-[320px] sm:border-r sm:border-b-0"
-                                  : "aspect-16/10 w-full border-b"
-                              }`}
+                                layoutType === "1" || layoutType === "2"
+                                  ? "aspect-16/10 w-full border-b"
+                                  : "w-full shrink-0 border-b sm:h-24 sm:w-24 sm:border-b-0"
+                              } ${layoutType === "3" ? "sm:border-r" : "sm:border-l"}`}
                             >
                               {getImageUrl(project.imageSrc) ? (
                                 <Image
@@ -305,7 +308,13 @@ export default function PortfolioPreview({
                               )}
                             </div>
 
-                            <div className="flex flex-1 flex-col p-6">
+                            <div
+                              className={`flex min-w-0 flex-1 flex-col p-6 ${
+                                layoutType === "3" || layoutType === "4"
+                                  ? "justify-center"
+                                  : ""
+                              }`}
+                            >
                               <div className="mb-1 flex items-start gap-2">
                                 <span className="text-primary-text text-[16px] font-bold">
                                   {numberStr}
