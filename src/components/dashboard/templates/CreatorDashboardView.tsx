@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { MessageSquare, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { CreatorLinkCard, getLinkIcon } from "../shared/TemplateLinkCard";
 import {
   DashboardProfileResponse,
@@ -224,7 +224,7 @@ export default function CreatorDashboardView({
                 rel="noopener noreferrer"
                 className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
               >
-                {ctaSection.iconSrc ? (
+                {ctaSection.iconSrc && (
                   <Image
                     src={getImageUrl(ctaSection.iconSrc) || ""}
                     alt="CTA Icon"
@@ -233,8 +233,6 @@ export default function CreatorDashboardView({
                     className="h-4 w-4 object-contain brightness-0 invert"
                     unoptimized
                   />
-                ) : (
-                  <MessageSquare size={16} />
                 )}
                 {ctaSection.buttonText || "Let's Collaborate"}
               </a>

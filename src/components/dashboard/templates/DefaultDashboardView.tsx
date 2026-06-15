@@ -1,11 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import {
-  ExternalLink,
-  ChevronRight,
-  MessageSquare,
-  ImageIcon,
-} from "lucide-react";
+import { ExternalLink, ChevronRight } from "lucide-react";
 
 import {
   DashboardProfileResponse,
@@ -20,6 +15,7 @@ import {
 } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
 import HighlightCard from "../HighlightCard";
+import { getLinkIcon } from "../shared/TemplateLinkCard";
 import { contentToSections } from "../profile-builder/builder.utils";
 import type { SavedLink } from "../profile-builder/types";
 import TemplateAppearanceProvider, {
@@ -184,17 +180,20 @@ export default function DefaultDashboardView({
                                     />
                                   ) : item.iconSrc ? (
                                     <Image
-                                      src={item.iconSrc}
+                                      src={getImageUrl(item.iconSrc)}
                                       alt={item.title ?? "Link"}
                                       width={24}
                                       height={24}
                                       unoptimized
                                     />
                                   ) : (
-                                    <ImageIcon
-                                      className="text-tertiary-text"
-                                      size={24}
-                                    />
+                                    <span className="text-brand-hover-bg">
+                                      {getLinkIcon(
+                                        (item.url || "") +
+                                          " " +
+                                          (item.title || "")
+                                      )}
+                                    </span>
                                   )}
                                 </span>
                                 <div className="min-w-0">
@@ -386,13 +385,13 @@ export default function DefaultDashboardView({
                     style={getSectionStyle(section)}
                   >
                     <div
-                      className="flex flex-col items-center gap-4"
+                      className={`flex flex-col gap-4 ${section.layout === "2" ? "items-start text-left" : section.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
                       style={{
                         gap: section.gap ? `${section.gap}px` : undefined,
                       }}
                     >
-                      <span className="inline-flex items-center gap-2 p-2 font-medium">
-                        {section.iconSrc ? (
+                      {section.iconSrc && (
+                        <span className="inline-flex items-center gap-2 p-2 font-medium">
                           <div
                             className="bg-brand-hover-bg h-8 w-8"
                             style={{
@@ -406,19 +405,16 @@ export default function DefaultDashboardView({
                               WebkitMaskPosition: "center",
                             }}
                           />
-                        ) : (
-                          <MessageSquare
-                            size={32}
-                            className="text-brand-hover-bg"
-                          />
-                        )}
-                      </span>
-                      <div className="flex flex-col items-center gap-2">
-                        <h4 className="text-center text-2xl font-bold break-all">
+                        </span>
+                      )}
+                      <div
+                        className={`flex flex-col gap-2 ${section.layout === "2" ? "items-start text-left" : section.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
+                      >
+                        <h4 className="text-2xl font-bold break-all">
                           {section.title || "Your CTA"}
                         </h4>
                         {section.subtitle && (
-                          <p className="text-secondary-text text-center text-[15px] break-all whitespace-pre-wrap">
+                          <p className="text-secondary-text text-[15px] break-all whitespace-pre-wrap">
                             {section.subtitle}
                           </p>
                         )}
