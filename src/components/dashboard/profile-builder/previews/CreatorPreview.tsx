@@ -428,7 +428,7 @@ export default function CreatorPreview({
                     {renderControls(section)}
                     {allLinks.length > 0 ? (
                       <div
-                        className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+                        className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2"
                         style={{
                           gap: section.gap ? `${section.gap}px` : undefined,
                         }}

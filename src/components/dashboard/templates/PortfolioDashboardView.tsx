@@ -150,16 +150,15 @@ export default function PortfolioDashboardView({
 
           if (section.type === "bio") {
             return (
-              <div
+              <section
                 key={section.id}
-                className={`group relative rounded-2xl transition-opacity duration-200 ${section.font ? getFontClass(section.font) : ""}`}
+                className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${section.font ? getFontClass(section.font) : ""}`}
                 style={getSectionStyle(section)}
               >
                 <header
-                  className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between rounded-2xl border border-transparent transition-colors sm:flex-row sm:items-start"
+                  className="relative flex w-full flex-col justify-between sm:flex-row sm:items-start"
                   style={{
                     gap: "var(--op-spacing, 24px)",
-                    padding: "var(--op-spacing, 24px)",
                   }}
                 >
                   <div
@@ -201,12 +200,12 @@ export default function PortfolioDashboardView({
                       rel="noopener noreferrer"
                       className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
                     >
-                      {ctaSection.iconSrc ? (
+                      {section.iconSrc ? (
                         <div
                           className="bg-brand-hover-bg h-4 w-4"
                           style={{
-                            maskImage: `url(${getImageUrl(ctaSection.iconSrc)})`,
-                            WebkitMaskImage: `url(${getImageUrl(ctaSection.iconSrc)})`,
+                            maskImage: `url(${getImageUrl(section.iconSrc)})`,
+                            WebkitMaskImage: `url(${getImageUrl(section.iconSrc)})`,
                             maskSize: "contain",
                             WebkitMaskSize: "contain",
                             maskRepeat: "no-repeat",
@@ -223,12 +222,12 @@ export default function PortfolioDashboardView({
                   )}
                 </header>
 
-                <section className="mt-8 px-6">
+                <div className="mt-8">
                   <p className="text-secondary-text max-w-3xl text-[15px] leading-relaxed whitespace-pre-wrap">
                     {section.bio || "Write a little bit about yourself here..."}
                   </p>
-                </section>
-              </div>
+                </div>
+              </section>
             );
           }
 
@@ -310,18 +309,9 @@ export default function PortfolioDashboardView({
                     return rest;
                   })()}
                 >
-                  <div className="mb-6 flex flex-col gap-1">
-                    {section.title && (
-                      <h2 className="text-primary-text text-[26px] font-bold">
-                        {section.title}
-                      </h2>
-                    )}
-                    {(section.subtitle || !section.title) && (
-                      <h3 className="text-tertiary-text text-[13px]">
-                        {section.subtitle || "Featured Projects"}
-                      </h3>
-                    )}
-                  </div>
+                  <h2 className="text-tertiary-text mb-4 text-[13px]">
+                    {section.title || "Featured Projects"}
+                  </h2>
                   {remainingProjects.length > 0 ? (
                     <div
                       className={`grid gap-6 ${
