@@ -9,7 +9,7 @@ import {
 } from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 import { getFontClass } from "../../templates/TemplateAppearanceProvider";
-import { TemplateLinkCard, getLinkIcon } from "../../shared/TemplateLinkCard";
+import { CreatorLinkCard, getLinkIcon } from "../../shared/TemplateLinkCard";
 import HighlightPreviewCard from "./HighlightPreviewCard";
 import PreviewSectionControls from "./PreviewSectionControls";
 import { getInitials } from "@/utils/avatar";
@@ -285,7 +285,11 @@ export default function CreatorPreview({
                     onKeyDown={(event) => handleSectionKeyDown(event, section)}
                     className={`group relative mx-auto flex w-full max-w-4xl cursor-pointer flex-col gap-6 ${section.font ? getFontClass(section.font) : ""}`}
                     style={(() => {
-                      const { gap: _gap, ...rest } = getSectionStyle(section);
+                      const {
+                        gap: _gap,
+                        backgroundColor: _bg,
+                        ...rest
+                      } = getSectionStyle(section);
                       return rest;
                     })()}
                   >
@@ -419,22 +423,26 @@ export default function CreatorPreview({
                     tabIndex={0}
                     onClick={(event) => handleSelectSection(event, section)}
                     onKeyDown={(event) => handleSectionKeyDown(event, section)}
-                    className={`group relative mx-auto flex w-full max-w-4xl cursor-pointer flex-col gap-4 rounded-3xl ${section.font ? getFontClass(section.font) : ""}`}
+                    className={`group relative mx-auto flex w-full max-w-2xl cursor-pointer flex-col gap-4 rounded-3xl ${section.font ? getFontClass(section.font) : ""}`}
                     style={(() => {
-                      const { gap: _gap, ...rest } = getSectionStyle(section);
+                      const {
+                        gap: _gap,
+                        backgroundColor: _bg,
+                        ...rest
+                      } = getSectionStyle(section);
                       return rest;
                     })()}
                   >
                     {renderControls(section)}
                     {allLinks.length > 0 ? (
                       <div
-                        className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2"
+                        className="flex w-full flex-col gap-3"
                         style={{
                           gap: section.gap ? `${section.gap}px` : undefined,
                         }}
                       >
                         {allLinks.map((link) => (
-                          <TemplateLinkCard
+                          <CreatorLinkCard
                             key={link.id}
                             id={link.id}
                             title={link.title || link.label || ""}

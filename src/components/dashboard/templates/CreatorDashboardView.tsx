@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { MessageSquare, ChevronRight } from "lucide-react";
-import { TemplateLinkCard, getLinkIcon } from "../shared/TemplateLinkCard";
+import { CreatorLinkCard, getLinkIcon } from "../shared/TemplateLinkCard";
 import {
   DashboardProfileResponse,
   ProfileContentResponse,
@@ -302,7 +302,11 @@ export default function CreatorDashboardView({
                 key={section.id}
                 className={`relative mx-auto flex w-full max-w-4xl flex-col gap-6 rounded-3xl ${section.font ? getFontClass(section.font) : ""}`}
                 style={(() => {
-                  const { gap: _gap, ...rest } = getSectionStyle(section);
+                  const {
+                    gap: _gap,
+                    backgroundColor: _bg,
+                    ...rest
+                  } = getSectionStyle(section);
                   return rest;
                 })()}
               >
@@ -436,25 +440,25 @@ export default function CreatorDashboardView({
             return (
               <div
                 key={section.id}
-                className={`relative mx-auto flex w-full max-w-4xl flex-col gap-4 rounded-3xl ${section.font ? getFontClass(section.font) : ""}`}
+                className={`relative mx-auto flex w-full max-w-2xl flex-col gap-4 rounded-3xl ${section.font ? getFontClass(section.font) : ""}`}
                 style={(() => {
-                  const { gap: _gap, ...rest } = getSectionStyle(section);
+                  const {
+                    gap: _gap,
+                    backgroundColor: _bg,
+                    ...rest
+                  } = getSectionStyle(section);
                   return rest;
                 })()}
               >
                 {allLinks.length > 0 ? (
                   <div
-                    className={`grid gap-4 ${
-                      allLinks.length === 1
-                        ? "grid-cols-[minmax(0,220px)] justify-center"
-                        : "w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-                    }`}
+                    className="flex w-full flex-col gap-3"
                     style={{
                       gap: section.gap ? `${section.gap}px` : undefined,
                     }}
                   >
                     {allLinks.map((link) => (
-                      <TemplateLinkCard
+                      <CreatorLinkCard
                         key={link.id}
                         id={link.id}
                         title={link.title || link.label || ""}
