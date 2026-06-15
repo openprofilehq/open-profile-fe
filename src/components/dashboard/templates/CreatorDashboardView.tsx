@@ -47,7 +47,7 @@ const DEFAULT_PROJECTS = [
     id: "proj-1",
     title: "Summer Campaign x [Pitaya]",
     description:
-      "A cross-platform content series reaching over 2M views, focusing on sustainable lifestyle.",
+      "Brand Partnership\nA cross-platform content series reaching over 2M views, focusing on sustainable lifestyle.",
     buttonText: "View Project",
     url: "#",
     imageSrc: "/profile-preview/feature1.jpg",
@@ -55,7 +55,8 @@ const DEFAULT_PROJECTS = [
   {
     id: "proj-2",
     title: "The 30-Day Creative Challenge",
-    description: "Launched a guided workshop series for 10,000+ creators.",
+    description:
+      "Digital Product / Community\nLaunched a guided workshop series for 10,000+ creators.",
     buttonText: "View Project",
     url: "#",
     imageSrc: "/profile-preview/feature2.jpg",
@@ -63,7 +64,8 @@ const DEFAULT_PROJECTS = [
   {
     id: "proj-3",
     title: "Documentary Series",
-    description: "A 3-part YouTube series exploring the creator economy.",
+    description:
+      "Video Production & Storytelling\nA 5-part YouTube series exploring the creator economy.",
     buttonText: "View Project",
     url: "#",
     imageSrc: "/profile-preview/feature3.jpg",
@@ -320,90 +322,66 @@ export default function CreatorDashboardView({
                 <div className="relative w-full">
                   {remainingProjects.length > 0 ? (
                     <div
-                      className={`grid gap-6 ${
-                        remainingProjects.length === 1
-                          ? "grid-cols-[minmax(0,420px)] justify-center"
-                          : section.layout === "1"
-                            ? "grid-cols-1"
-                            : section.layout === "3"
-                              ? "grid-cols-1 sm:grid-cols-2"
-                              : section.layout === "4"
-                                ? "grid-cols-1 sm:grid-cols-2"
-                                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
-                      }`}
+                      className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
                       style={{
                         gap: section.gap ? `${section.gap}px` : undefined,
                       }}
                     >
                       {remainingProjects.map((project) => {
-                        const layoutType = section.layout || "2";
                         const hasUrl = Boolean(project.url);
                         const displayImg = getImageUrl(project.imageSrc);
 
+                        const desc = project.description || "";
+                        const newlineIndex = desc.indexOf("\n");
+                        const hasCategory = newlineIndex !== -1;
+                        const categoryText = hasCategory
+                          ? desc.substring(0, newlineIndex)
+                          : "";
+                        const descriptionText = hasCategory
+                          ? desc.substring(newlineIndex + 1)
+                          : desc;
+
                         const card = (
-                          <div
-                            className={`group border-border bg-background hover:border-brand-hover-bg/30 flex h-full rounded-3xl border p-4 shadow-sm transition-shadow hover:shadow-md ${
-                              layoutType === "1"
-                                ? "flex-col justify-between sm:flex-row sm:items-center"
-                                : layoutType === "3"
-                                  ? "flex-col sm:flex-row sm:items-start"
-                                  : layoutType === "4"
-                                    ? "flex-col sm:flex-row-reverse sm:items-start"
-                                    : "flex-col" // Layout 2
-                            }`}
-                          >
+                          <div className="group border-border bg-background hover:border-brand-hover-bg/30 flex h-full flex-col overflow-hidden rounded-3xl border shadow-sm transition-shadow hover:shadow-md">
                             {/* IMAGE */}
-                            {layoutType !== "1" && (
-                              <div
-                                className={`border-border bg-secondary-bg relative mb-4 shrink-0 overflow-hidden rounded-lg border ${
-                                  layoutType === "2"
-                                    ? "aspect-video w-full"
-                                    : "h-[120px] w-full sm:mb-0 sm:w-[140px]"
-                                } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
-                              >
-                                {displayImg ? (
-                                  <Image
-                                    src={displayImg}
-                                    alt={project.title ?? "Project"}
-                                    className="object-cover"
-                                    fill
-                                    unoptimized
-                                  />
-                                ) : (
-                                  <div className="text-tertiary-text flex h-full w-full items-center justify-center text-xs">
-                                    No image
-                                  </div>
-                                )}
-                              </div>
-                            )}
+                            <div className="border-border bg-secondary-bg relative aspect-video w-full shrink-0 overflow-hidden border-b">
+                              {displayImg ? (
+                                <Image
+                                  src={displayImg}
+                                  alt={project.title ?? "Project"}
+                                  className="object-cover"
+                                  fill
+                                  unoptimized
+                                />
+                              ) : (
+                                <div className="text-tertiary-text flex h-full w-full items-center justify-center text-xs">
+                                  No image
+                                </div>
+                              )}
+                            </div>
 
                             {/* CONTENT */}
-                            <div className="flex min-w-0 flex-1 flex-col items-start">
+                            <div className="flex min-w-0 flex-1 flex-col items-start p-5">
                               <h5 className="text-primary-text text-xl font-bold break-all">
                                 {project.title}
                               </h5>
-                              <p
-                                className={`text-secondary-text mt-1 break-all ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"}`}
-                              >
-                                {project.description}
+
+                              {hasCategory && (
+                                <span className="text-tertiary-text mt-1 text-[13px] font-medium">
+                                  {categoryText}
+                                </span>
+                              )}
+
+                              <p className="text-secondary-text mt-2 line-clamp-3 text-[14px] leading-relaxed break-all">
+                                {descriptionText}
                               </p>
-                              {layoutType !== "1" && hasUrl && (
-                                <span className="text-brand-hover-bg mt-3 flex items-center gap-1 text-sm font-semibold hover:underline">
+                              {hasUrl && (
+                                <span className="text-brand-hover-bg mt-4 flex items-center gap-1 text-[14px] font-bold hover:underline">
                                   {project.buttonText || "View project"}
                                   <ChevronRight size={16} />
                                 </span>
                               )}
                             </div>
-
-                            {/* BUTTON FOR LAYOUT 1 */}
-                            {layoutType === "1" && hasUrl && (
-                              <div className="mt-4 shrink-0 sm:mt-0 sm:ml-6">
-                                <span className="text-brand-hover-bg flex items-center gap-1 text-sm font-bold hover:underline">
-                                  {project.buttonText || "View project"}
-                                  <ChevronRight size={16} />
-                                </span>
-                              </div>
-                            )}
                           </div>
                         );
 
