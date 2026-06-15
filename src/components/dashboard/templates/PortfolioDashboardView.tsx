@@ -301,7 +301,7 @@ export default function PortfolioDashboardView({
                                 layoutType === "1" || layoutType === "2"
                                   ? "aspect-16/10 w-full border-b"
                                   : "w-full shrink-0 border-b sm:h-24 sm:w-24 sm:border-b-0"
-                              } ${layoutType === "3" ? "sm:border-r" : "sm:border-l"}`}
+                              } ${layoutType === "3" ? "sm:border-r" : layoutType === "4" ? "sm:border-l" : ""}`}
                             >
                               {getImageUrl(project.imageSrc) ? (
                                 <Image
