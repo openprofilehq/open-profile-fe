@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { ArrowRight, Mail } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import {
   getImageUrl,
   sanitizeUrl,
@@ -35,24 +35,11 @@ export default function PortfolioPreview({
     (section) => section.type === "bio" || section.visible
   );
 
-  const ctaSection = visibleSections.find(
-    (s) => s.type === "experience" || s.type === "cta"
-  );
-
   const handleSelectSection = (
     event: React.MouseEvent<HTMLElement>,
     section: Section
   ) => {
     event.preventDefault();
-    onSelectSection(section.id);
-  };
-
-  const handleSelectNestedSection = (
-    event: React.MouseEvent<HTMLElement>,
-    section: Section
-  ) => {
-    event.preventDefault();
-    event.stopPropagation();
     onSelectSection(section.id);
   };
 
@@ -135,44 +122,6 @@ export default function PortfolioPreview({
                     </p>
                   </div>
                 </div>
-
-                {ctaSection?.visible && ctaSection?.url && (
-                  <div className="group/cta relative shrink-0">
-                    {renderControls(
-                      ctaSection,
-                      "top-1/2 left-full ml-3 -translate-y-1/2",
-                      "cta"
-                    )}
-                    <a
-                      href={sanitizeUrl(ctaSection.url)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(event) =>
-                        handleSelectNestedSection(event, ctaSection)
-                      }
-                      className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
-                    >
-                      {section.iconSrc ? (
-                        <div
-                          className="bg-brand-hover-bg h-4 w-4"
-                          style={{
-                            maskImage: `url(${section.iconSrc})`,
-                            WebkitMaskImage: `url(${section.iconSrc})`,
-                            maskSize: "contain",
-                            WebkitMaskSize: "contain",
-                            maskRepeat: "no-repeat",
-                            WebkitMaskRepeat: "no-repeat",
-                            maskPosition: "center",
-                            WebkitMaskPosition: "center",
-                          }}
-                        />
-                      ) : (
-                        <Mail size={16} />
-                      )}
-                      {ctaSection.buttonText || "Email"}
-                    </a>
-                  </div>
-                )}
               </header>
 
               <div className="mt-8">

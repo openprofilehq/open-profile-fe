@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { ArrowRight, Mail } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import {
   DashboardProfileResponse,
@@ -125,20 +125,6 @@ export default function PortfolioDashboardView({
     };
   });
 
-  const ctaSection = sections.find(
-    (s) => s.type === "experience" || s.type === "cta"
-  );
-
-  const ctaHref = !ctaSection?.url
-    ? null
-    : ctaSection.ctaType === "email"
-      ? `mailto:${ctaSection.url}`
-      : ctaSection.ctaType === "phone"
-        ? `tel:${ctaSection.url}`
-        : ctaSection.ctaType === "whatsapp"
-          ? `https://wa.me/${ctaSection.url.replace(/\D/g, "")}`
-          : sanitizeUrl(ctaSection.url);
-
   return (
     <div className="flex w-full flex-col px-4 sm:px-6">
       <div
@@ -192,34 +178,6 @@ export default function PortfolioDashboardView({
                       </p>
                     </div>
                   </div>
-
-                  {ctaSection?.visible && ctaHref && (
-                    <a
-                      href={ctaHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
-                    >
-                      {section.iconSrc ? (
-                        <div
-                          className="bg-brand-hover-bg h-4 w-4"
-                          style={{
-                            maskImage: `url(${getImageUrl(section.iconSrc)})`,
-                            WebkitMaskImage: `url(${getImageUrl(section.iconSrc)})`,
-                            maskSize: "contain",
-                            WebkitMaskSize: "contain",
-                            maskRepeat: "no-repeat",
-                            WebkitMaskRepeat: "no-repeat",
-                            maskPosition: "center",
-                            WebkitMaskPosition: "center",
-                          }}
-                        />
-                      ) : (
-                        <Mail size={16} />
-                      )}
-                      {ctaSection.buttonText || "Email"}
-                    </a>
-                  )}
                 </header>
 
                 <div className="mt-8">

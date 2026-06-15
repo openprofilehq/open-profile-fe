@@ -172,9 +172,9 @@ export default function DefaultPreview({
                                   className="object-cover"
                                   unoptimized
                                 />
-                              ) : item.iconSrc ? (
+                              ) : getImageUrl(item.iconSrc) ? (
                                 <Image
-                                  src={getImageUrl(item.iconSrc)}
+                                  src={getImageUrl(item.iconSrc) || ""}
                                   alt={item.title ?? "Link"}
                                   width={24}
                                   height={24}
