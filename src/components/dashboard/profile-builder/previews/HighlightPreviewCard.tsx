@@ -33,9 +33,14 @@ export default function HighlightPreviewCard({
       : getImageUrl(rawImageSrc)
     : null;
 
+  const containerClass =
+    variant === "default"
+      ? "border-border bg-background rounded-[12px] border p-4 shadow-sm sm:p-6"
+      : "group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors";
+
   return (
     <section
-      className={`${variant === "default" ? "border-border bg-background rounded-[12px] border p-4 shadow-sm sm:p-6" : ""} transition-opacity duration-200 ${!projectsSection?.visible ? "opacity-50 grayscale" : ""} ${projectsSection?.font ? getFontClass(projectsSection.font) : ""}`}
+      className={`${containerClass} transition-opacity duration-200 ${!projectsSection?.visible ? "opacity-50 grayscale" : ""} ${projectsSection?.font ? getFontClass(projectsSection.font) : ""}`}
       style={projectsSection ? getSectionStyle(projectsSection) : undefined}
     >
       <h2 className="text-xl font-bold">Highlight</h2>

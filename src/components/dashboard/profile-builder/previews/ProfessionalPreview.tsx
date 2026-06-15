@@ -88,20 +88,19 @@ export default function ProfessionalPreview({
       {visibleSections.map((section) => {
         if (section.type === "bio") {
           return (
-            <div
+            <section
               key={section.id}
               role="button"
               tabIndex={0}
               onClick={(event) => handleSelectSection(event, section)}
               onKeyDown={(event) => handleSectionKeyDown(event, section)}
-              className={`group relative cursor-pointer rounded-2xl transition-opacity duration-200 ${section.font ? getFontClass(section.font) : ""}`}
+              className={`group hover:border-border hover:bg-background/50 relative w-full cursor-pointer rounded-2xl border border-transparent p-6 transition-colors ${section.font ? getFontClass(section.font) : ""}`}
               style={getSectionStyle(section)}
             >
               <header
-                className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between rounded-2xl border border-transparent transition-colors sm:flex-row sm:items-start"
+                className="relative flex w-full flex-col justify-between sm:flex-row sm:items-start"
                 style={{
                   gap: "var(--op-spacing, 24px)",
-                  padding: "var(--op-spacing, 24px)",
                 }}
               >
                 <div
@@ -151,12 +150,12 @@ export default function ProfessionalPreview({
                       }
                       className="border-brand-hover-bg bg-brand-hover-bg/5 text-brand-hover-bg hover:bg-brand-hover-bg/10 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-sm font-semibold transition-colors"
                     >
-                      {ctaSection.iconSrc ? (
+                      {section.iconSrc ? (
                         <div
                           className="bg-brand-hover-bg h-4 w-4"
                           style={{
-                            maskImage: `url(${ctaSection.iconSrc})`,
-                            WebkitMaskImage: `url(${ctaSection.iconSrc})`,
+                            maskImage: `url(${section.iconSrc})`,
+                            WebkitMaskImage: `url(${section.iconSrc})`,
                             maskSize: "contain",
                             WebkitMaskSize: "contain",
                             maskRepeat: "no-repeat",
@@ -174,12 +173,12 @@ export default function ProfessionalPreview({
                 )}
               </header>
 
-              <section className="mt-6 px-6">
+              <div className="mt-6">
                 <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed break-all whitespace-pre-wrap">
                   {section.bio || "Write a little bit about yourself here..."}
                 </p>
-              </section>
-            </div>
+              </div>
+            </section>
           );
         }
 
