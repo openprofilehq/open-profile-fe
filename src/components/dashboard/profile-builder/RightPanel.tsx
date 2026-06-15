@@ -243,7 +243,7 @@ export default function RightPanel({
               value={selectedTemplate}
               onValueChange={(val) => onChangeTemplate?.(val)}
             >
-              <SelectTrigger className="border-tertiary-b bg-background h-11 rounded-[10px] border px-3 text-sm font-medium shadow-none">
+              <SelectTrigger className="border-tertiary-b bg-background h-11 w-full rounded-[10px] border px-3 text-sm font-medium shadow-none">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent position="popper">
