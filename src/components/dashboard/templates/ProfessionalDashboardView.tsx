@@ -319,18 +319,9 @@ export default function ProfessionalDashboardView({
                     return rest;
                   })()}
                 >
-                  <div className="mb-4 flex flex-col gap-1">
-                    {section.title && (
-                      <h2 className="text-primary-text text-xl font-bold tracking-tight">
-                        {section.title}
-                      </h2>
-                    )}
-                    {(section.subtitle || !section.title) && (
-                      <h3 className="text-tertiary-text text-[13px]">
-                        {section.subtitle || "Selected Work"}
-                      </h3>
-                    )}
-                  </div>
+                  <h2 className="text-tertiary-text mb-4 text-[13px]">
+                    {section.title || "Selected Work"}
+                  </h2>
                   <div
                     className={`grid gap-6 ${
                       !section.layout || section.layout === "1"
