@@ -388,7 +388,7 @@ export default function ProjectsSidebar({
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   {["1", "2", "3", "4"].map((lay) => {
-                    const iconNum = lay === "1" ? "2" : lay === "2" ? "1" : lay;
+                    const iconNum = lay;
                     return (
                       <button
                         key={lay}

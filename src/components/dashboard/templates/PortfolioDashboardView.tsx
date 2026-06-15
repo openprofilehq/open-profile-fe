@@ -283,91 +283,85 @@ export default function PortfolioDashboardView({
                         gap: section.gap ? `${section.gap}px` : undefined,
                       }}
                     >
-                      {remainingProjects.map(
-                        (project: ProjectItem, idx: number) => {
-                          const numberStr = String(idx + 1).padStart(2, "0");
-                          const layoutType = section.layout || "2";
+                      {remainingProjects.map((project: ProjectItem) => {
+                        const layoutType = section.layout || "2";
 
-                          const card = (
+                        const card = (
+                          <div
+                            className={`group/proj border-border bg-background flex h-full overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md ${
+                              layoutType === "1" || layoutType === "2"
+                                ? "flex-col"
+                                : layoutType === "3"
+                                  ? "flex-col sm:flex-row sm:items-center"
+                                  : "flex-col sm:flex-row-reverse sm:items-center"
+                            }`}
+                          >
                             <div
-                              className={`group/proj border-border bg-background flex h-full overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md ${
+                              className={`bg-secondary-bg border-border relative overflow-hidden ${
                                 layoutType === "1" || layoutType === "2"
-                                  ? "flex-col"
-                                  : layoutType === "3"
-                                    ? "flex-col sm:flex-row sm:items-center"
-                                    : "flex-col sm:flex-row-reverse sm:items-center"
-                              }`}
+                                  ? "aspect-16/10 w-full border-b"
+                                  : "w-full shrink-0 border-b sm:h-24 sm:w-24 sm:border-b-0"
+                              } ${layoutType === "3" ? "sm:border-r" : "sm:border-l"}`}
                             >
-                              <div
-                                className={`bg-secondary-bg border-border relative overflow-hidden ${
-                                  layoutType === "1" || layoutType === "2"
-                                    ? "aspect-16/10 w-full border-b"
-                                    : "w-full shrink-0 border-b sm:h-24 sm:w-24 sm:border-b-0"
-                                } ${layoutType === "3" ? "sm:border-r" : "sm:border-l"}`}
-                              >
-                                {getImageUrl(project.imageSrc) ? (
-                                  <Image
-                                    src={getImageUrl(project.imageSrc) || ""}
-                                    alt={project.title || "Project"}
-                                    fill
-                                    className="object-cover transition-transform duration-500 group-hover/proj:scale-[1.02]"
-                                    unoptimized
-                                  />
-                                ) : (
-                                  <div className="h-full w-full bg-neutral-200 transition-transform duration-500 group-hover/proj:scale-[1.02]" />
-                                )}
-                              </div>
-
-                              <div
-                                className={`flex min-w-0 flex-1 flex-col p-6 ${
-                                  layoutType === "3" || layoutType === "4"
-                                    ? "justify-center"
-                                    : ""
-                                }`}
-                              >
-                                <div className="mb-1 flex items-start gap-2">
-                                  <span className="text-primary-text text-[16px] font-bold">
-                                    {numberStr}
-                                  </span>
-                                  <h3 className="text-primary-text text-[16px] font-bold">
-                                    {project.title}
-                                  </h3>
-                                </div>
-
-                                {project.description && (
-                                  <p className="text-secondary-text mb-6 ml-6 line-clamp-2 text-[13px]">
-                                    {project.description}
-                                  </p>
-                                )}
-
-                                {project.url && (
-                                  <span className="text-brand-hover-bg mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
-                                    {project.buttonText || "View Project"}
-                                    <ArrowRight size={14} strokeWidth={2.5} />
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          );
-
-                          return (
-                            <div key={project.id} className="w-full">
-                              {project.url ? (
-                                <a
-                                  href={sanitizeUrl(project.url)}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="block h-full no-underline"
-                                >
-                                  {card}
-                                </a>
+                              {getImageUrl(project.imageSrc) ? (
+                                <Image
+                                  src={getImageUrl(project.imageSrc) || ""}
+                                  alt={project.title || "Project"}
+                                  fill
+                                  className="object-cover transition-transform duration-500 group-hover/proj:scale-[1.02]"
+                                  unoptimized
+                                />
                               ) : (
-                                <div className="h-full">{card}</div>
+                                <div className="h-full w-full bg-neutral-200 transition-transform duration-500 group-hover/proj:scale-[1.02]" />
                               )}
                             </div>
-                          );
-                        }
-                      )}
+
+                            <div
+                              className={`flex min-w-0 flex-1 flex-col p-6 ${
+                                layoutType === "3" || layoutType === "4"
+                                  ? "justify-center"
+                                  : ""
+                              }`}
+                            >
+                              <div className="mb-1 flex items-start gap-2">
+                                <h3 className="text-primary-text text-[16px] font-bold">
+                                  {project.title}
+                                </h3>
+                              </div>
+
+                              {project.description && (
+                                <p className="text-secondary-text mb-6 line-clamp-2 text-[13px]">
+                                  {project.description}
+                                </p>
+                              )}
+
+                              {project.url && (
+                                <span className="text-brand-hover-bg mt-auto inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
+                                  {project.buttonText || "View Project"}
+                                  <ArrowRight size={14} strokeWidth={2.5} />
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        );
+
+                        return (
+                          <div key={project.id} className="w-full">
+                            {project.url ? (
+                              <a
+                                href={sanitizeUrl(project.url)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block h-full no-underline"
+                              >
+                                {card}
+                              </a>
+                            ) : (
+                              <div className="h-full">{card}</div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   ) : (
                     <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
