@@ -398,13 +398,10 @@ export default function DefaultPreview({
                 style={getSectionStyle(section)}
               >
                 <div
-                  className={`flex flex-col gap-4 ${section.layout === "2" ? "items-start text-left" : section.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
-                  style={{
-                    gap: section.gap ? `${section.gap}px` : undefined,
-                  }}
+                  className={`flex flex-col ${section.layout === "2" ? "items-start text-left" : section.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
                 >
                   {section.iconSrc && (
-                    <div className="border-border bg-secondary-bg mb-4 flex h-14 w-14 shrink-0 items-center justify-center rounded-[12px] border">
+                    <div className="border-border bg-background mb-6 flex h-14 w-14 shrink-0 items-center justify-center rounded-[12px] border">
                       <div
                         className="bg-brand-hover-bg h-6 w-6"
                         style={{
@@ -421,13 +418,13 @@ export default function DefaultPreview({
                     </div>
                   )}
                   <div
-                    className={`flex flex-col gap-2 ${section.layout === "2" ? "items-start text-left" : section.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
+                    className={`flex flex-col ${section.layout === "2" ? "items-start text-left" : section.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
                   >
                     <h4 className="text-primary-text text-[28px] font-bold tracking-tight break-all">
                       {section.title || "Your CTA"}
                     </h4>
                     {section.subtitle && (
-                      <p className="text-secondary-text mt-3 mb-6 max-w-[600px] text-base leading-relaxed break-all whitespace-pre-wrap">
+                      <p className="text-secondary-text mt-3 max-w-[600px] text-base leading-relaxed break-all whitespace-pre-wrap">
                         {section.subtitle}
                       </p>
                     )}
@@ -440,12 +437,12 @@ export default function DefaultPreview({
                       onClick={(e) => {
                         if (!section.url) e.preventDefault();
                       }}
-                      className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center rounded-xl px-8 text-[15px] font-bold text-white transition-colors"
+                      className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg mt-8 inline-flex h-12 items-center rounded-xl px-8 text-[15px] font-bold text-white transition-colors"
                     >
                       {section.buttonText || "Visit"}
                     </a>
                   ) : (
-                    <span className="text-brand-hover-bg flex cursor-pointer items-center gap-1 text-sm font-semibold hover:underline">
+                    <span className="text-brand-hover-bg mt-8 flex cursor-pointer items-center gap-1 text-sm font-semibold hover:underline">
                       Add your CTA <ChevronRight size={14} />
                     </span>
                   )}
