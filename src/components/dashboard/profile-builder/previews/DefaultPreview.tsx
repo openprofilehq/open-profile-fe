@@ -295,7 +295,7 @@ export default function DefaultPreview({
                           <div
                             className={`border-border bg-background group/proj flex h-full overflow-hidden rounded-2xl border shadow-sm transition-shadow hover:shadow-md ${
                               isSideBySide
-                                ? `flex-col gap-6 p-6 ${
+                                ? `flex-col gap-4 p-4 2xl:gap-6 2xl:p-6 ${
                                     layoutType === "3"
                                       ? "xl:flex-row xl:items-center"
                                       : "xl:flex-row-reverse xl:items-center"
@@ -306,7 +306,7 @@ export default function DefaultPreview({
                             <div
                               className={`bg-secondary-bg border-border relative aspect-[16/10] overflow-hidden ${
                                 isSideBySide
-                                  ? "w-full shrink-0 rounded-xl border xl:w-[320px]"
+                                  ? "w-full shrink-0 rounded-xl border xl:w-[240px] 2xl:w-[320px]"
                                   : "w-full border-b"
                               }`}
                             >

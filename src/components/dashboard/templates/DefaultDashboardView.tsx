@@ -295,7 +295,7 @@ export default function DefaultDashboardView({
                             <div
                               className={`border-border bg-background group/proj flex h-full overflow-hidden rounded-2xl border shadow-sm transition-shadow hover:shadow-md ${
                                 isSideBySide
-                                  ? `flex-col gap-6 p-6 ${
+                                  ? `flex-col gap-4 p-4 lg:gap-6 lg:p-6 ${
                                       layoutType === "3"
                                         ? "md:flex-row md:items-center"
                                         : "md:flex-row-reverse md:items-center"
@@ -306,7 +306,7 @@ export default function DefaultDashboardView({
                               <div
                                 className={`bg-secondary-bg border-border relative aspect-[16/10] overflow-hidden ${
                                   isSideBySide
-                                    ? "w-full shrink-0 rounded-xl border md:w-[320px]"
+                                    ? "w-full shrink-0 rounded-xl border md:w-[240px] lg:w-[320px]"
                                     : "w-full border-b"
                                 }`}
                               >

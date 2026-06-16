@@ -48,8 +48,8 @@ export default function HighlightPreviewCard({
           Highlight
         </h2>
       )}
-      <div className="flex flex-col gap-6 xl:flex-row xl:items-center">
-        <div className="bg-secondary-bg border-border relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-xl border xl:w-[320px]">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-center 2xl:gap-6">
+        <div className="bg-secondary-bg border-border relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-xl border xl:w-[240px] 2xl:w-[320px]">
           {displayImg ? (
             <Image
               src={displayImg}

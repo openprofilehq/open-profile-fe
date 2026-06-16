@@ -321,11 +321,9 @@ export default function CreatorDashboardView({
                   {remainingProjects.length > 0 ? (
                     <div
                       className={`grid w-full gap-6 ${
-                        section.layout === "1"
-                          ? "grid-cols-1"
-                          : section.layout === "3" || section.layout === "4"
-                            ? "grid-cols-1 xl:grid-cols-2"
-                            : "grid-cols-1 sm:grid-cols-2"
+                        section.layout === "2"
+                          ? "grid-cols-1 sm:grid-cols-2"
+                          : "grid-cols-1"
                       }`}
                       style={{
                         gap: section.gap ? `${section.gap}px` : undefined,
@@ -346,23 +344,28 @@ export default function CreatorDashboardView({
                           ? desc.substring(newlineIndex + 1)
                           : desc;
 
+                        const isSideBySide =
+                          layoutType === "3" || layoutType === "4";
+
                         const card = (
                           <div
                             className={`group border-border bg-background hover:border-brand-hover-bg/30 flex h-full overflow-hidden rounded-3xl border shadow-sm transition-shadow hover:shadow-md ${
-                              layoutType === "1" || layoutType === "2"
-                                ? "flex-col"
-                                : layoutType === "3"
-                                  ? "flex-col sm:flex-row sm:items-center"
-                                  : "flex-col sm:flex-row-reverse sm:items-center"
+                              isSideBySide
+                                ? `flex-col gap-4 p-4 lg:gap-6 lg:p-6 ${
+                                    layoutType === "3"
+                                      ? "md:flex-row md:items-center"
+                                      : "md:flex-row-reverse md:items-center"
+                                  }`
+                                : "flex-col"
                             }`}
                           >
                             {/* IMAGE */}
                             <div
-                              className={`border-border bg-secondary-bg relative shrink-0 overflow-hidden border-b ${
-                                layoutType === "1" || layoutType === "2"
-                                  ? "aspect-video w-full"
-                                  : "h-24 w-full sm:w-24 sm:border-b-0"
-                              } ${layoutType === "3" ? "sm:border-r" : layoutType === "4" ? "sm:border-l" : ""}`}
+                              className={`bg-secondary-bg border-border relative shrink-0 overflow-hidden ${
+                                isSideBySide
+                                  ? "aspect-[16/10] w-full rounded-xl border md:w-[240px] lg:w-[320px]"
+                                  : "aspect-video w-full border-b"
+                              }`}
                             >
                               {displayImg ? (
                                 <Image
@@ -381,10 +384,8 @@ export default function CreatorDashboardView({
 
                             {/* CONTENT */}
                             <div
-                              className={`flex min-w-0 flex-1 flex-col items-start p-5 ${
-                                layoutType === "3" || layoutType === "4"
-                                  ? "justify-center"
-                                  : ""
+                              className={`flex min-w-0 flex-1 flex-col items-start ${
+                                isSideBySide ? "justify-center" : "p-5"
                               }`}
                             >
                               <h5 className="text-primary-text text-xl font-bold break-all">

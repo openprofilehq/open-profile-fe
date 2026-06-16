@@ -47,8 +47,8 @@ export default function HighlightCard({
           Highlight
         </h2>
       )}
-      <div className="flex flex-col gap-6 md:flex-row md:items-center">
-        <div className="bg-secondary-bg border-border relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-xl border md:w-[320px]">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center lg:gap-6">
+        <div className="bg-secondary-bg border-border relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-xl border md:w-[240px] lg:w-[320px]">
           {displayImg ? (
             <Image
               src={displayImg}

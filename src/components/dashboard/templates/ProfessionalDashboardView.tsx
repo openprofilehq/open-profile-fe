@@ -296,11 +296,9 @@ export default function ProfessionalDashboardView({
                   </div>
                   <div
                     className={`grid gap-6 ${
-                      section.layout === "1"
-                        ? "grid-cols-1"
-                        : section.layout === "3" || section.layout === "4"
-                          ? "grid-cols-1 xl:grid-cols-2"
-                          : "grid-cols-1 sm:grid-cols-2 md:grid-cols-2"
+                      section.layout === "2"
+                        ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-2"
+                        : "grid-cols-1"
                     }`}
                     style={{
                       gap: section.gap ? `${section.gap}px` : undefined,
@@ -309,26 +307,30 @@ export default function ProfessionalDashboardView({
                     {remainingProjects.length > 0 ? (
                       remainingProjects.map((project: ProjectItem) => {
                         const layoutType = section.layout || "2";
+                        const isSideBySide =
+                          layoutType === "3" || layoutType === "4";
                         const hasUrl = Boolean(project.url);
                         const displayImg = getImageUrl(project.imageSrc);
 
                         const card = (
                           <div
-                            className={`group border-border bg-background hover:border-brand-hover-bg/30 flex h-full rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md ${
-                              layoutType === "1" || layoutType === "2"
-                                ? "flex-col"
-                                : layoutType === "3"
-                                  ? "flex-col sm:flex-row sm:items-center"
-                                  : "flex-col sm:flex-row-reverse sm:items-center"
+                            className={`group border-border bg-background hover:border-brand-hover-bg/30 flex h-full rounded-[12px] border shadow-sm transition-shadow hover:shadow-md ${
+                              isSideBySide
+                                ? `flex-col gap-4 p-4 lg:gap-6 lg:p-6 ${
+                                    layoutType === "3"
+                                      ? "md:flex-row md:items-center"
+                                      : "md:flex-row-reverse md:items-center"
+                                  }`
+                                : "flex-col p-4"
                             }`}
                           >
                             {/* IMAGE */}
                             <div
-                              className={`border-border bg-secondary-bg relative mb-4 shrink-0 overflow-hidden rounded-lg border ${
-                                layoutType === "1" || layoutType === "2"
-                                  ? "aspect-video w-full"
-                                  : "h-24 w-full sm:mb-0 sm:h-24 sm:w-24"
-                              } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
+                              className={`bg-secondary-bg border-border relative shrink-0 overflow-hidden ${
+                                isSideBySide
+                                  ? "aspect-[16/10] w-full rounded-xl border md:w-[240px] lg:w-[320px]"
+                                  : "mb-4 aspect-video w-full rounded-lg border"
+                              }`}
                             >
                               {displayImg ? (
                                 <Image
@@ -348,9 +350,7 @@ export default function ProfessionalDashboardView({
                             {/* CONTENT */}
                             <div
                               className={`flex min-w-0 flex-1 flex-col items-start ${
-                                layoutType === "3" || layoutType === "4"
-                                  ? "justify-center"
-                                  : ""
+                                isSideBySide ? "justify-center" : ""
                               }`}
                             >
                               <h3 className="text-primary-text text-[16px] font-bold">
