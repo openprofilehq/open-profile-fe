@@ -269,9 +269,9 @@ export default function DefaultDashboardView({
                     {remainingProjects.length > 0 ? (
                       <div
                         className={`grid gap-6 ${
-                          section.layout === "1"
-                            ? "grid-cols-1"
-                            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2"
+                          section.layout === "2"
+                            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2"
+                            : "grid-cols-1"
                         }`}
                         style={{
                           gap: section.gap ? `${section.gap}px` : undefined,
@@ -287,9 +287,29 @@ export default function DefaultDashboardView({
                               : getImageUrl(rawImageSrc)
                             : null;
 
+                          const layoutType = section.layout || "2";
+                          const isSideBySide =
+                            layoutType === "3" || layoutType === "4";
+
                           const card = (
-                            <div className="border-border bg-background group/proj flex h-full flex-col overflow-hidden rounded-2xl border shadow-sm transition-shadow hover:shadow-md">
-                              <div className="bg-secondary-bg border-border relative aspect-[16/10] w-full overflow-hidden border-b">
+                            <div
+                              className={`border-border bg-background group/proj flex h-full overflow-hidden rounded-2xl border shadow-sm transition-shadow hover:shadow-md ${
+                                isSideBySide
+                                  ? `flex-col gap-6 p-6 ${
+                                      layoutType === "3"
+                                        ? "md:flex-row md:items-center"
+                                        : "md:flex-row-reverse md:items-center"
+                                    }`
+                                  : "flex-col"
+                              }`}
+                            >
+                              <div
+                                className={`bg-secondary-bg border-border relative aspect-[16/10] overflow-hidden ${
+                                  isSideBySide
+                                    ? "w-full shrink-0 rounded-xl border md:w-[320px]"
+                                    : "w-full border-b"
+                                }`}
+                              >
                                 {displayImg ? (
                                   <Image
                                     src={displayImg}
@@ -304,7 +324,13 @@ export default function DefaultDashboardView({
                                   </div>
                                 )}
                               </div>
-                              <div className="flex min-w-0 flex-1 flex-col p-6">
+                              <div
+                                className={`flex min-w-0 flex-1 flex-col ${
+                                  isSideBySide
+                                    ? "items-start justify-center"
+                                    : "p-6"
+                                }`}
+                              >
                                 <h3 className="text-primary-text text-[18px] font-bold break-all">
                                   {project.title}
                                 </h3>
