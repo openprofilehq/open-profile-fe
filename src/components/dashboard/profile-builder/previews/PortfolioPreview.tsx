@@ -206,9 +206,16 @@ export default function PortfolioPreview({
                   return rest;
                 })()}
               >
-                <h2 className="text-tertiary-text mb-4 text-[13px]">
-                  {section.title || "Featured Projects"}
-                </h2>
+                <div className="mb-4 flex flex-col gap-1">
+                  <h2 className="text-tertiary-text text-[13px]">
+                    {section.title || "Featured Projects"}
+                  </h2>
+                  {section.subtitle && (
+                    <p className="text-secondary-text text-xs">
+                      {section.subtitle}
+                    </p>
+                  )}
+                </div>
                 {remainingProjects.length > 0 ? (
                   <div
                     className={`grid gap-6 ${
@@ -224,6 +231,15 @@ export default function PortfolioPreview({
                       const layoutType = section.layout || "2";
                       const isSideBySide =
                         layoutType === "3" || layoutType === "4";
+                      const desc = project.description || "";
+                      const newlineIndex = desc.indexOf("\n");
+                      const hasCategory = newlineIndex !== -1;
+                      const categoryText = hasCategory
+                        ? desc.substring(0, newlineIndex)
+                        : "";
+                      const descriptionText = hasCategory
+                        ? desc.substring(newlineIndex + 1)
+                        : desc;
                       return (
                         <div
                           key={project.id}
@@ -268,9 +284,15 @@ export default function PortfolioPreview({
                               </h3>
                             </div>
 
-                            {project.description && (
+                            {hasCategory && (
+                              <span className="text-brand-hover-bg text-[12px] font-semibold">
+                                {categoryText}
+                              </span>
+                            )}
+
+                            {descriptionText && (
                               <p className="text-secondary-text mb-6 line-clamp-2 text-[13px]">
-                                {project.description}
+                                {descriptionText}
                               </p>
                             )}
 

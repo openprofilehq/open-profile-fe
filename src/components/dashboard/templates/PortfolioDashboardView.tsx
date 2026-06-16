@@ -299,6 +299,15 @@ export default function PortfolioDashboardView({
                         const layoutType = section.layout || "2";
                         const isSideBySide =
                           layoutType === "3" || layoutType === "4";
+                        const desc = project.description || "";
+                        const newlineIndex = desc.indexOf("\n");
+                        const hasCategory = newlineIndex !== -1;
+                        const categoryText = hasCategory
+                          ? desc.substring(0, newlineIndex)
+                          : "";
+                        const descriptionText = hasCategory
+                          ? desc.substring(newlineIndex + 1)
+                          : desc;
 
                         const card = (
                           <div
@@ -343,9 +352,15 @@ export default function PortfolioDashboardView({
                                 </h3>
                               </div>
 
-                              {project.description && (
+                              {hasCategory && (
+                                <span className="text-brand-hover-bg text-[12px] font-semibold">
+                                  {categoryText}
+                                </span>
+                              )}
+
+                              {descriptionText && (
                                 <p className="text-secondary-text mb-6 line-clamp-2 text-[13px]">
-                                  {project.description}
+                                  {descriptionText}
                                 </p>
                               )}
 

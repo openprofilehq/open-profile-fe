@@ -59,7 +59,11 @@ export default function HighlightPreviewCard({
               unoptimized
             />
           ) : (
-            <div className="text-tertiary-text flex h-full w-full items-center justify-center bg-neutral-200 text-sm">
+            <div
+              className={`${
+                variant === "default" ? "bg-background" : "bg-neutral-200"
+              } text-tertiary-text flex h-full w-full items-center justify-center text-sm`}
+            >
               No image
             </div>
           )}
@@ -78,7 +82,7 @@ export default function HighlightPreviewCard({
               rel="noopener noreferrer"
               className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-xl px-5 text-[14px] font-bold text-white shadow-sm transition-all"
             >
-              {highlightedProject.buttonText || "Watch Video"}
+              {highlightedProject.buttonText || "View project"}
               <ExternalLink size={16} />
             </a>
           )}

@@ -16,10 +16,12 @@ export function deserializeTitleAndSubtitle(
     return { title: defaultTitle, subtitle: "" };
   }
   if (rawTitle.includes("///")) {
-    const parts = rawTitle.split("///");
+    const delimiterIndex = rawTitle.indexOf("///");
+    const titlePart = rawTitle.slice(0, delimiterIndex);
+    const subtitlePart = rawTitle.slice(delimiterIndex + 3);
     return {
-      title: parts[0] || defaultTitle,
-      subtitle: parts[1] || "",
+      title: titlePart || defaultTitle,
+      subtitle: subtitlePart || "",
     };
   }
   const isDefaultTitle = [

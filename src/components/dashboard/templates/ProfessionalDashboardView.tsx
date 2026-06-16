@@ -311,6 +311,15 @@ export default function ProfessionalDashboardView({
                           layoutType === "3" || layoutType === "4";
                         const hasUrl = Boolean(project.url);
                         const displayImg = getImageUrl(project.imageSrc);
+                        const desc = project.description || "";
+                        const newlineIndex = desc.indexOf("\n");
+                        const hasCategory = newlineIndex !== -1;
+                        const categoryText = hasCategory
+                          ? desc.substring(0, newlineIndex)
+                          : "";
+                        const descriptionText = hasCategory
+                          ? desc.substring(newlineIndex + 1)
+                          : desc;
 
                         const card = (
                           <div
@@ -356,9 +365,16 @@ export default function ProfessionalDashboardView({
                               <h3 className="text-primary-text text-[16px] font-bold">
                                 {project.title}
                               </h3>
-                              <p className="text-secondary-text mt-1 line-clamp-2 text-[13px] break-all">
-                                {project.description}
-                              </p>
+                              {hasCategory && (
+                                <span className="text-brand-hover-bg mt-1 text-[12px] font-semibold">
+                                  {categoryText}
+                                </span>
+                              )}
+                              {descriptionText && (
+                                <p className="text-secondary-text mt-1 line-clamp-2 text-[13px] break-all">
+                                  {descriptionText}
+                                </p>
+                              )}
                               {hasUrl && (
                                 <span className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
                                   {project.buttonText || "View Project"}

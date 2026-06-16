@@ -230,9 +230,16 @@ export default function ProfessionalPreview({
                   return rest;
                 })()}
               >
-                <h2 className="text-tertiary-text mb-4 text-[13px]">
-                  {section.title || "Selected Work"}
-                </h2>
+                <div className="mb-4 flex flex-col gap-1">
+                  <h2 className="text-tertiary-text text-[13px]">
+                    {section.title || "Selected Work"}
+                  </h2>
+                  {section.subtitle && (
+                    <p className="text-secondary-text text-xs">
+                      {section.subtitle}
+                    </p>
+                  )}
+                </div>
                 <div
                   className={`grid gap-6 ${
                     section.layout === "2"
@@ -250,6 +257,15 @@ export default function ProfessionalPreview({
                         layoutType === "3" || layoutType === "4";
                       const hasUrl = Boolean(project.url);
                       const displayImg = getImageUrl(project.imageSrc);
+                      const desc = project.description || "";
+                      const newlineIndex = desc.indexOf("\n");
+                      const hasCategory = newlineIndex !== -1;
+                      const categoryText = hasCategory
+                        ? desc.substring(0, newlineIndex)
+                        : "";
+                      const descriptionText = hasCategory
+                        ? desc.substring(newlineIndex + 1)
+                        : desc;
 
                       const card = (
                         <div
@@ -295,9 +311,16 @@ export default function ProfessionalPreview({
                             <h3 className="text-primary-text text-[16px] font-bold">
                               {project.title}
                             </h3>
-                            <p className="text-secondary-text mt-1 line-clamp-2 text-[13px] break-all">
-                              {project.description}
-                            </p>
+                            {hasCategory && (
+                              <span className="text-brand-hover-bg mt-1 text-[12px] font-semibold">
+                                {categoryText}
+                              </span>
+                            )}
+                            {descriptionText && (
+                              <p className="text-secondary-text mt-1 line-clamp-2 text-[13px] break-all">
+                                {descriptionText}
+                              </p>
+                            )}
                             {hasUrl && (
                               <span className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
                                 {project.buttonText || "View Project"}

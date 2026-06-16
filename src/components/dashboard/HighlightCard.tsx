@@ -67,7 +67,7 @@ export default function HighlightCard({
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col items-start">
-          <h3 className="text-primary-text text-[20px] font-bold break-all">
+          <h3 className="text-primary-text text-[20px] font-bold wrap-break-word">
             {highlightedProject.title}
           </h3>
           <p className="text-secondary-text mt-3 text-[14px] leading-relaxed wrap-break-word">
@@ -80,7 +80,7 @@ export default function HighlightCard({
               rel="noopener noreferrer"
               className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-xl px-5 text-[14px] font-bold text-white shadow-sm transition-all"
             >
-              {highlightedProject.buttonText || "Watch Video"}
+              {highlightedProject.buttonText || "View project"}
               <ExternalLink size={16} />
             </a>
           )}
