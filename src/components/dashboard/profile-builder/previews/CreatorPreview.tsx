@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { MessageSquare, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import {
   getImageUrl,
   sanitizeUrl,
@@ -9,7 +9,7 @@ import {
 } from "@/utils/profile";
 import type { Section, ProfilePreview } from "../types";
 import { getFontClass } from "../../templates/TemplateAppearanceProvider";
-import { TemplateLinkCard, getLinkIcon } from "../../shared/TemplateLinkCard";
+import { CreatorLinkCard, getLinkIcon } from "../../shared/TemplateLinkCard";
 import HighlightPreviewCard from "./HighlightPreviewCard";
 import PreviewSectionControls from "./PreviewSectionControls";
 import { getInitials } from "@/utils/avatar";
@@ -198,7 +198,7 @@ export default function CreatorPreview({
                 }
                 className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
               >
-                {ctaSection.iconSrc ? (
+                {ctaSection.iconSrc && (
                   <Image
                     src={getImageUrl(ctaSection.iconSrc) || ""}
                     alt="CTA Icon"
@@ -207,8 +207,6 @@ export default function CreatorPreview({
                     className="h-4 w-4 object-contain brightness-0 invert"
                     unoptimized
                   />
-                ) : (
-                  <MessageSquare size={16} />
                 )}
                 {ctaSection.buttonText || "Let's Collaborate"}
               </a>
@@ -285,7 +283,11 @@ export default function CreatorPreview({
                     onKeyDown={(event) => handleSectionKeyDown(event, section)}
                     className={`group relative mx-auto flex w-full max-w-4xl cursor-pointer flex-col gap-6 ${section.font ? getFontClass(section.font) : ""}`}
                     style={(() => {
-                      const { gap: _gap, ...rest } = getSectionStyle(section);
+                      const {
+                        gap: _gap,
+                        backgroundColor: _bg,
+                        ...rest
+                      } = getSectionStyle(section);
                       return rest;
                     })()}
                   >
@@ -297,88 +299,94 @@ export default function CreatorPreview({
                     <div className="relative w-full">
                       {remainingProjects.length > 0 ? (
                         <div
-                          className={`grid gap-6 ${
-                            section.layout === "1"
-                              ? "grid-cols-1"
-                              : section.layout === "3"
-                                ? "grid-cols-1 sm:grid-cols-2"
-                                : section.layout === "4"
-                                  ? "grid-cols-1 sm:grid-cols-2"
-                                  : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+                          className={`grid w-full gap-6 ${
+                            section.layout === "2"
+                              ? "grid-cols-1 sm:grid-cols-2"
+                              : "grid-cols-1"
                           }`}
                           style={{
                             gap: section.gap ? `${section.gap}px` : undefined,
                           }}
                         >
                           {remainingProjects.map((project) => {
-                            const layoutType = section.layout || "2";
                             const hasUrl = Boolean(project.url);
                             const displayImg = getImageUrl(project.imageSrc);
+                            const layoutType = section.layout || "2";
+
+                            const desc = project.description || "";
+                            const newlineIndex = desc.indexOf("\n");
+                            const hasCategory = newlineIndex !== -1;
+                            const categoryText = hasCategory
+                              ? desc.substring(0, newlineIndex)
+                              : "";
+                            const descriptionText = hasCategory
+                              ? desc.substring(newlineIndex + 1)
+                              : desc;
+
+                            const isSideBySide =
+                              layoutType === "3" || layoutType === "4";
 
                             const card = (
                               <div
-                                className={`group border-border bg-background hover:border-brand-hover-bg/30 flex h-full rounded-3xl border p-4 shadow-sm transition-shadow hover:shadow-md ${
-                                  layoutType === "1"
-                                    ? "flex-col justify-between sm:flex-row sm:items-center"
-                                    : layoutType === "3"
-                                      ? "flex-col sm:flex-row sm:items-start"
-                                      : layoutType === "4"
-                                        ? "flex-col sm:flex-row-reverse sm:items-start"
-                                        : "flex-col" // Layout 2
+                                className={`group border-border bg-background hover:border-brand-hover-bg/30 flex h-full overflow-hidden rounded-3xl border shadow-sm transition-shadow hover:shadow-md ${
+                                  isSideBySide
+                                    ? `flex-col gap-4 p-4 2xl:gap-6 2xl:p-6 ${
+                                        layoutType === "3"
+                                          ? "xl:flex-row xl:items-center"
+                                          : "xl:flex-row-reverse xl:items-center"
+                                      }`
+                                    : "flex-col"
                                 }`}
                               >
                                 {/* IMAGE */}
-                                {layoutType !== "1" && (
-                                  <div
-                                    className={`border-border bg-secondary-bg relative mb-4 shrink-0 overflow-hidden rounded-lg border ${
-                                      layoutType === "2"
-                                        ? "aspect-video w-full"
-                                        : "h-[120px] w-full sm:mb-0 sm:w-[140px]"
-                                    } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
-                                  >
-                                    {displayImg ? (
-                                      <Image
-                                        src={displayImg}
-                                        alt={project.title ?? "Project"}
-                                        className="object-cover"
-                                        fill
-                                        unoptimized
-                                      />
-                                    ) : (
-                                      <div className="text-tertiary-text flex h-full w-full items-center justify-center text-xs">
-                                        No image
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
+                                <div
+                                  className={`bg-secondary-bg border-border relative shrink-0 overflow-hidden ${
+                                    isSideBySide
+                                      ? "aspect-[16/10] w-full rounded-xl border xl:w-[240px] 2xl:w-[320px]"
+                                      : "aspect-video w-full border-b"
+                                  }`}
+                                >
+                                  {displayImg ? (
+                                    <Image
+                                      src={displayImg}
+                                      alt={project.title ?? "Project"}
+                                      className="object-cover"
+                                      fill
+                                      unoptimized
+                                    />
+                                  ) : (
+                                    <div className="text-tertiary-text flex h-full w-full items-center justify-center text-xs">
+                                      No image
+                                    </div>
+                                  )}
+                                </div>
 
                                 {/* CONTENT */}
-                                <div className="flex min-w-0 flex-1 flex-col items-start">
+                                <div
+                                  className={`flex min-w-0 flex-1 flex-col items-start ${
+                                    isSideBySide ? "justify-center" : "p-5"
+                                  }`}
+                                >
                                   <h5 className="text-primary-text text-xl font-bold break-all">
                                     {project.title}
                                   </h5>
-                                  <p
-                                    className={`text-secondary-text mt-1 break-all ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"}`}
-                                  >
-                                    {project.description}
+
+                                  {hasCategory && (
+                                    <span className="text-tertiary-text mt-1 text-[13px] font-medium">
+                                      {categoryText}
+                                    </span>
+                                  )}
+
+                                  <p className="text-secondary-text mt-2 line-clamp-3 text-[14px] leading-relaxed break-all">
+                                    {descriptionText}
                                   </p>
-                                  {layoutType !== "1" && (
-                                    <span className="text-brand-hover-bg mt-3 flex items-center gap-1 text-sm font-semibold hover:underline">
-                                      {hasUrl ? "View project" : "Edit project"}
+                                  {hasUrl && (
+                                    <span className="text-brand-hover-bg mt-4 flex items-center gap-1 text-[14px] font-bold hover:underline">
+                                      {project.buttonText || "View project"}
                                       <ChevronRight size={16} />
                                     </span>
                                   )}
                                 </div>
-
-                                {/* BUTTON FOR LAYOUT 1 */}
-                                {layoutType === "1" && (
-                                  <div className="mt-4 shrink-0 sm:mt-0 sm:ml-6">
-                                    <span className="text-brand-hover-bg flex items-center gap-1 text-sm font-bold hover:underline">
-                                      {hasUrl ? "View project" : "Edit project"}
-                                      <ChevronRight size={16} />
-                                    </span>
-                                  </div>
-                                )}
                               </div>
                             );
 
@@ -419,22 +427,26 @@ export default function CreatorPreview({
                     tabIndex={0}
                     onClick={(event) => handleSelectSection(event, section)}
                     onKeyDown={(event) => handleSectionKeyDown(event, section)}
-                    className={`group relative mx-auto flex w-full max-w-4xl cursor-pointer flex-col gap-4 rounded-3xl ${section.font ? getFontClass(section.font) : ""}`}
+                    className={`group relative mx-auto flex w-full max-w-2xl cursor-pointer flex-col gap-4 rounded-3xl ${section.font ? getFontClass(section.font) : ""}`}
                     style={(() => {
-                      const { gap: _gap, ...rest } = getSectionStyle(section);
+                      const {
+                        gap: _gap,
+                        backgroundColor: _bg,
+                        ...rest
+                      } = getSectionStyle(section);
                       return rest;
                     })()}
                   >
                     {renderControls(section)}
                     {allLinks.length > 0 ? (
                       <div
-                        className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+                        className="flex w-full flex-col gap-3"
                         style={{
                           gap: section.gap ? `${section.gap}px` : undefined,
                         }}
                       >
                         {allLinks.map((link) => (
-                          <TemplateLinkCard
+                          <CreatorLinkCard
                             key={link.id}
                             id={link.id}
                             title={link.title || link.label || ""}

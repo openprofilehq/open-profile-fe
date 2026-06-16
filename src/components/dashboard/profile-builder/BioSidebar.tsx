@@ -101,7 +101,7 @@ export default function BioSidebar({
   const displayImage = uploadedImage || profilePhotoUrl;
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in bg-background hidden h-full w-72.5 shrink-0 flex-col rounded-2xl border p-6 shadow-sm duration-200 select-none lg:flex">
+    <aside className="border-tertiary-b animate-in fade-in bg-background hidden h-full w-72.5 shrink-0 flex-col border-r p-6 duration-200 select-none lg:flex">
       {/* Back Button */}
       <div className="pb-4">
         <button
@@ -269,4 +269,3 @@ export default function BioSidebar({
     </aside>
   );
 }
-  

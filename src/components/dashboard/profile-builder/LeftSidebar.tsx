@@ -138,7 +138,7 @@ export default function LeftSidebar({
 
   if (isAddingSection) {
     return (
-      <aside className="border-tertiary-b animate-in fade-in bg-background hidden h-full w-[260px] shrink-0 flex-col rounded-2xl border p-6 shadow-sm duration-200 select-none lg:flex xl:w-[290px]">
+      <aside className="border-tertiary-b animate-in fade-in bg-background hidden h-full w-[260px] shrink-0 flex-col border-r p-6 duration-200 select-none lg:flex xl:w-[290px]">
         {/* Back Button */}
         <div className="mb-6">
           <button
@@ -302,7 +302,7 @@ export default function LeftSidebar({
     }
 
     return (
-      <aside className="border-tertiary-b animate-in fade-in bg-background flex h-full w-[260px] shrink-0 flex-col rounded-2xl border p-6 shadow-sm duration-200 select-none xl:w-[290px]">
+      <aside className="border-tertiary-b animate-in fade-in bg-background flex h-full w-[260px] shrink-0 flex-col border-r p-6 duration-200 select-none xl:w-[290px]">
         <div className="mb-6">
           <button
             type="button"
@@ -521,7 +521,7 @@ export default function LeftSidebar({
   }
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in bg-background hidden h-full w-[260px] shrink-0 flex-col rounded-2xl border p-6 shadow-sm duration-200 select-none lg:flex xl:w-[290px]">
+    <aside className="border-tertiary-b animate-in fade-in bg-background hidden h-full w-[260px] shrink-0 flex-col border-r p-6 duration-200 select-none lg:flex xl:w-[290px]">
       {/* Search Input */}
       <div className="relative mb-6">
         <span className="text-tertiary-text absolute inset-y-0 left-3 flex items-center">

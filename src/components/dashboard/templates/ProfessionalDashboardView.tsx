@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { ArrowRight, ExternalLink, Mail } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
 
 import {
   DashboardProfileResponse,
@@ -111,20 +111,6 @@ export default function ProfessionalDashboardView({
     };
   });
 
-  const ctaSection = sections.find(
-    (s) => s.type === "experience" || s.type === "cta"
-  );
-
-  const ctaHref = !ctaSection?.url
-    ? null
-    : ctaSection.ctaType === "email"
-      ? `mailto:${ctaSection.url}`
-      : ctaSection.ctaType === "phone"
-        ? `tel:${ctaSection.url}`
-        : ctaSection.ctaType === "whatsapp"
-          ? `https://wa.me/${ctaSection.url.replace(/\D/g, "")}`
-          : sanitizeUrl(ctaSection.url);
-
   return (
     <div className="flex w-full flex-col px-4 sm:px-6">
       <div
@@ -136,16 +122,15 @@ export default function ProfessionalDashboardView({
 
           if (section.type === "bio") {
             return (
-              <div
+              <section
                 key={section.id}
-                className={`group relative rounded-2xl transition-opacity duration-200 ${section.font ? getFontClass(section.font) : ""}`}
+                className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${section.font ? getFontClass(section.font) : ""}`}
                 style={getSectionStyle(section)}
               >
                 <header
-                  className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between rounded-2xl border border-transparent transition-colors sm:flex-row sm:items-start"
+                  className="relative flex w-full flex-col justify-between sm:flex-row sm:items-start"
                   style={{
                     gap: "var(--op-spacing, 24px)",
-                    padding: "var(--op-spacing, 24px)",
                   }}
                 >
                   <div
@@ -177,42 +162,14 @@ export default function ProfessionalDashboardView({
                       </p>
                     </div>
                   </div>
-
-                  {ctaSection?.visible && ctaHref && (
-                    <a
-                      href={ctaHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="border-brand-hover-bg bg-brand-hover-bg/5 text-brand-hover-bg hover:bg-brand-hover-bg/10 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-sm font-semibold transition-colors"
-                    >
-                      {ctaSection.iconSrc ? (
-                        <div
-                          className="bg-brand-hover-bg h-4 w-4"
-                          style={{
-                            maskImage: `url(${getImageUrl(ctaSection.iconSrc)})`,
-                            WebkitMaskImage: `url(${getImageUrl(ctaSection.iconSrc)})`,
-                            maskSize: "contain",
-                            WebkitMaskSize: "contain",
-                            maskRepeat: "no-repeat",
-                            WebkitMaskRepeat: "no-repeat",
-                            maskPosition: "center",
-                            WebkitMaskPosition: "center",
-                          }}
-                        />
-                      ) : (
-                        <Mail size={16} />
-                      )}
-                      {ctaSection.buttonText || "Email"}
-                    </a>
-                  )}
                 </header>
 
-                <section className="mt-6 px-6">
+                <div className="mt-6">
                   <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed break-all whitespace-pre-wrap">
                     {section.bio || "Write a little bit about yourself here..."}
                   </p>
-                </section>
-              </div>
+                </div>
+              </section>
             );
           }
 
@@ -233,9 +190,16 @@ export default function ProfessionalDashboardView({
                   return rest;
                 })()}
               >
-                <h2 className="text-tertiary-text mb-4 text-[13px]">
-                  {section.subtitle || "Links"}
-                </h2>
+                <div className="mb-4 flex flex-col gap-1">
+                  <h2 className="text-tertiary-text text-[13px]">
+                    {section.title || "Links"}
+                  </h2>
+                  {section.subtitle && (
+                    <p className="text-secondary-text text-xs">
+                      {section.subtitle}
+                    </p>
+                  )}
+                </div>
                 <div
                   className="border-border flex flex-col border-t"
                   style={{
@@ -321,26 +285,20 @@ export default function ProfessionalDashboardView({
                   })()}
                 >
                   <div className="mb-4 flex flex-col gap-1">
-                    {section.title && (
-                      <h2 className="text-primary-text text-xl font-bold tracking-tight">
-                        {section.title}
-                      </h2>
-                    )}
-                    {(section.subtitle || !section.title) && (
-                      <h3 className="text-tertiary-text text-[13px]">
-                        {section.subtitle || "Selected Work"}
-                      </h3>
+                    <h2 className="text-tertiary-text text-[13px]">
+                      {section.title || "Selected Work"}
+                    </h2>
+                    {section.subtitle && (
+                      <p className="text-secondary-text text-xs">
+                        {section.subtitle}
+                      </p>
                     )}
                   </div>
                   <div
                     className={`grid gap-6 ${
-                      !section.layout || section.layout === "1"
-                        ? "grid-cols-1"
-                        : section.layout === "3"
-                          ? "grid-cols-1 sm:grid-cols-2"
-                          : section.layout === "4"
-                            ? "grid-cols-1 sm:grid-cols-2"
-                            : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+                      section.layout === "2"
+                        ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-2"
+                        : "grid-cols-1"
                     }`}
                     style={{
                       gap: section.gap ? `${section.gap}px` : undefined,
@@ -349,73 +307,81 @@ export default function ProfessionalDashboardView({
                     {remainingProjects.length > 0 ? (
                       remainingProjects.map((project: ProjectItem) => {
                         const layoutType = section.layout || "2";
+                        const isSideBySide =
+                          layoutType === "3" || layoutType === "4";
                         const hasUrl = Boolean(project.url);
                         const displayImg = getImageUrl(project.imageSrc);
+                        const desc = project.description || "";
+                        const newlineIndex = desc.indexOf("\n");
+                        const hasCategory = newlineIndex !== -1;
+                        const categoryText = hasCategory
+                          ? desc.substring(0, newlineIndex)
+                          : "";
+                        const descriptionText = hasCategory
+                          ? desc.substring(newlineIndex + 1)
+                          : desc;
 
                         const card = (
                           <div
-                            className={`group border-border bg-background hover:border-brand-hover-bg/30 flex rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md ${
-                              layoutType === "1"
-                                ? "flex-col justify-between sm:flex-row sm:items-center"
-                                : layoutType === "3"
-                                  ? "flex-col sm:flex-row sm:items-start"
-                                  : layoutType === "4"
-                                    ? "flex-col sm:flex-row-reverse sm:items-start"
-                                    : "flex-col" // Layout 2
+                            className={`group border-border bg-background hover:border-brand-hover-bg/30 flex h-full rounded-[12px] border shadow-sm transition-shadow hover:shadow-md ${
+                              isSideBySide
+                                ? `flex-col gap-4 p-4 lg:gap-6 lg:p-6 ${
+                                    layoutType === "3"
+                                      ? "md:flex-row md:items-center"
+                                      : "md:flex-row-reverse md:items-center"
+                                  }`
+                                : "flex-col p-4"
                             }`}
                           >
                             {/* IMAGE */}
-                            {layoutType !== "1" && (
-                              <div
-                                className={`border-border bg-secondary-bg relative mb-4 shrink-0 overflow-hidden rounded-lg border ${
-                                  layoutType === "2"
-                                    ? "aspect-video w-full"
-                                    : "h-[120px] w-full sm:mb-0 sm:w-[140px]"
-                                } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
-                              >
-                                {displayImg ? (
-                                  <Image
-                                    src={displayImg}
-                                    alt={project.title ?? "Project"}
-                                    className="object-cover"
-                                    fill
-                                    unoptimized
-                                  />
-                                ) : (
-                                  <div className="text-tertiary-text flex h-full w-full items-center justify-center text-xs">
-                                    No image
-                                  </div>
-                                )}
-                              </div>
-                            )}
+                            <div
+                              className={`bg-secondary-bg border-border relative shrink-0 overflow-hidden ${
+                                isSideBySide
+                                  ? "aspect-[16/10] w-full rounded-xl border md:w-[240px] lg:w-[320px]"
+                                  : "mb-4 aspect-video w-full rounded-lg border"
+                              }`}
+                            >
+                              {displayImg ? (
+                                <Image
+                                  src={displayImg}
+                                  alt={project.title ?? "Project"}
+                                  className="object-cover"
+                                  fill
+                                  unoptimized
+                                />
+                              ) : (
+                                <div className="text-tertiary-text flex h-full w-full items-center justify-center text-xs">
+                                  No image
+                                </div>
+                              )}
+                            </div>
 
                             {/* CONTENT */}
-                            <div className="flex min-w-0 flex-1 flex-col items-start">
+                            <div
+                              className={`flex min-w-0 flex-1 flex-col items-start ${
+                                isSideBySide ? "justify-center" : ""
+                              }`}
+                            >
                               <h3 className="text-primary-text text-[16px] font-bold">
                                 {project.title}
                               </h3>
-                              <p
-                                className={`text-secondary-text mt-1 break-all ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"} text-[13px]`}
-                              >
-                                {project.description}
-                              </p>
-                              {layoutType !== "1" && hasUrl && (
+                              {hasCategory && (
+                                <span className="text-brand-hover-bg mt-1 text-[12px] font-semibold">
+                                  {categoryText}
+                                </span>
+                              )}
+                              {descriptionText && (
+                                <p className="text-secondary-text mt-1 line-clamp-2 text-[13px] break-all">
+                                  {descriptionText}
+                                </p>
+                              )}
+                              {hasUrl && (
                                 <span className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
                                   {project.buttonText || "View Project"}
                                   <ArrowRight size={14} strokeWidth={2.5} />
                                 </span>
                               )}
                             </div>
-
-                            {/* BUTTON FOR LAYOUT 1 */}
-                            {layoutType === "1" && hasUrl && (
-                              <div className="mt-4 shrink-0 sm:mt-0 sm:ml-6">
-                                <span className="text-brand-hover-bg inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
-                                  {project.buttonText || "View Project"}
-                                  <ArrowRight size={14} strokeWidth={2.5} />
-                                </span>
-                              </div>
-                            )}
                           </div>
                         );
 

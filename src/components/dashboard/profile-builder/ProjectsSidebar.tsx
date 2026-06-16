@@ -248,7 +248,7 @@ export default function ProjectsSidebar({
   }, [projects]);
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in bg-background flex h-full w-72.5 shrink-0 flex-col rounded-2xl border p-6 shadow-sm duration-200 select-none">
+    <aside className="border-tertiary-b animate-in fade-in bg-background flex h-full w-72.5 shrink-0 flex-col border-r p-6 duration-200 select-none">
       {/* Back Button */}
       <div className="border-tertiary-b border-b pb-4">
         {selectedTab === "content" ? (
@@ -387,25 +387,28 @@ export default function ProjectsSidebar({
                   Layout
                 </label>
                 <div className="grid grid-cols-2 gap-3">
-                  {["1", "2", "3", "4"].map((lay) => (
-                    <button
-                      key={lay}
-                      type="button"
-                      onClick={() => handleLayoutChange(lay)}
-                      className={`group relative aspect-video overflow-hidden rounded-[8px] border-2 transition-all duration-200 outline-none focus:outline-none ${
-                        layout === lay
-                          ? "border-brand-b bg-transparent"
-                          : "border-border bg-transparent hover:border-gray-300"
-                      }`}
-                    >
-                      <Image
-                        src={`/profilebuilder_projects/${lay}.png`}
-                        alt={`Layout ${lay}`}
-                        fill
-                        className="object-contain p-1.5"
-                      />
-                    </button>
-                  ))}
+                  {["1", "2", "3", "4"].map((lay) => {
+                    const iconNum = lay;
+                    return (
+                      <button
+                        key={lay}
+                        type="button"
+                        onClick={() => handleLayoutChange(lay)}
+                        className={`group relative aspect-video overflow-hidden rounded-[8px] border-2 transition-all duration-200 outline-none focus:outline-none ${
+                          layout === lay
+                            ? "border-brand-b bg-transparent"
+                            : "border-border bg-transparent hover:border-gray-300"
+                        }`}
+                      >
+                        <Image
+                          src={`/profilebuilder_projects/${iconNum}.png`}
+                          alt={`Layout ${lay}`}
+                          fill
+                          className="object-contain p-1.5"
+                        />
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
