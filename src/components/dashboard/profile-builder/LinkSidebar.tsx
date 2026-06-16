@@ -128,7 +128,7 @@ const LinkSidebar = ({
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto py-6 pr-1">
+      <div className="profile-builder-scrollbar flex-1 overflow-y-auto py-6 pr-1">
         {selectedTab === "content" ? (
           <ContentOption
             title={sectionTitle}
