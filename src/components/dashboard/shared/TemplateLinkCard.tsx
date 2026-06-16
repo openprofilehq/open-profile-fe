@@ -63,7 +63,7 @@ export function CreatorLinkCard({ id, title, url }: TemplateLinkCardProps) {
         !host.includes("mailto")
       ) {
         const parts = path.split("/");
-        const handle = parts[parts.length - 1];
+        const handle = (parts[parts.length - 1] || "").replace(/^@+/, "");
         if (handle && handle.length > 0) {
           return `@${handle}`;
         }
