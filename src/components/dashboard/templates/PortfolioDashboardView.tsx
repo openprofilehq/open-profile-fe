@@ -206,9 +206,16 @@ export default function PortfolioDashboardView({
                   return rest;
                 })()}
               >
-                <h2 className="text-tertiary-text mb-4 text-[13px]">
-                  {section.subtitle || "Links"}
-                </h2>
+                <div className="mb-4 flex flex-col gap-1">
+                  <h2 className="text-tertiary-text text-[13px]">
+                    {section.title || "Links"}
+                  </h2>
+                  {section.subtitle && (
+                    <p className="text-secondary-text text-xs">
+                      {section.subtitle}
+                    </p>
+                  )}
+                </div>
                 {links.length > 0 ? (
                   <div
                     className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
@@ -267,9 +274,16 @@ export default function PortfolioDashboardView({
                     return rest;
                   })()}
                 >
-                  <h2 className="text-tertiary-text mb-4 text-[13px]">
-                    {section.title || "Featured Projects"}
-                  </h2>
+                  <div className="mb-4 flex flex-col gap-1">
+                    <h2 className="text-tertiary-text text-[13px]">
+                      {section.title || "Featured Projects"}
+                    </h2>
+                    {section.subtitle && (
+                      <p className="text-secondary-text text-xs">
+                        {section.subtitle}
+                      </p>
+                    )}
+                  </div>
                   {remainingProjects.length > 0 ? (
                     <div
                       className={`grid gap-6 ${

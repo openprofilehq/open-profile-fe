@@ -127,7 +127,7 @@ export default function DefaultDashboardView({
                       <p className="text-brand-hover-bg mt-1 text-[14px] font-semibold">
                         @{profile?.username ?? "micaela"}
                       </p>
-                      <p className="text-secondary-text mt-4 text-[15px] leading-relaxed break-all whitespace-pre-wrap">
+                      <p className="text-secondary-text mt-2 text-[15px] leading-relaxed break-all whitespace-pre-wrap">
                         {section.bio || profile?.bio || "No bio added yet."}
                       </p>
                     </div>
@@ -149,9 +149,16 @@ export default function DefaultDashboardView({
                       return rest;
                     })()}
                   >
-                    <h2 className="text-primary-text mb-6 text-[20px] font-bold tracking-tight">
-                      {section.subtitle || "Featured Links"}
-                    </h2>
+                    <div className="mb-6 flex flex-col gap-1">
+                      <h2 className="text-primary-text text-[20px] font-bold tracking-tight">
+                        {section.title || "Featured Links"}
+                      </h2>
+                      {section.subtitle && (
+                        <p className="text-secondary-text text-sm font-medium">
+                          {section.subtitle}
+                        </p>
+                      )}
+                    </div>
 
                     {section.links && section.links.length > 0 ? (
                       <div
@@ -243,10 +250,19 @@ export default function DefaultDashboardView({
                       return rest;
                     })()}
                   >
-                    {section.title && (
-                      <h2 className="text-primary-text mb-6 text-[20px] font-bold tracking-tight">
-                        {section.title}
-                      </h2>
+                    {(section.title || section.subtitle) && (
+                      <div className="mb-6 flex flex-col gap-1">
+                        {section.title && (
+                          <h2 className="text-primary-text text-[20px] font-bold tracking-tight">
+                            {section.title}
+                          </h2>
+                        )}
+                        {section.subtitle && (
+                          <p className="text-secondary-text text-sm font-medium">
+                            {section.subtitle}
+                          </p>
+                        )}
+                      </div>
                     )}
                     {remainingProjects.length > 0 ? (
                       <div
