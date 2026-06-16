@@ -21,6 +21,7 @@ export function WaitlistBanner() {
   return (
     <Link
       href="/waitlist"
+      aria-label="Join our waitlist"
       className="bg-primary-bg hover:bg-primary-bg/90 relative block w-full overflow-hidden py-2.5 transition-colors duration-200 select-none"
     >
       {/* Side Fade Gradients */}
@@ -28,7 +29,10 @@ export function WaitlistBanner() {
       <div className="from-primary-bg pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-20 bg-gradient-to-l to-transparent" />
 
       {/* Marquee Track */}
-      <div className="animate-marquee-left flex w-max items-center gap-6 whitespace-nowrap">
+      <div
+        aria-hidden="true"
+        className="animate-marquee-left flex w-max items-center gap-6 whitespace-nowrap"
+      >
         {items.map((item, idx) => (
           <div
             key={idx}
