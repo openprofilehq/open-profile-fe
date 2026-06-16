@@ -240,6 +240,12 @@ function createPublishSnapshot({
       buttonText: section.buttonText ?? undefined,
       url: section.url ?? undefined,
       iconId: section.iconId ?? undefined,
+      iconSrc: section.iconSrc ?? undefined,
+      iconLabel: section.iconLabel ?? undefined,
+      bgColor: section.bgColor ?? undefined,
+      textColor: section.textColor ?? undefined,
+      iconColor: section.iconColor ?? undefined,
+      font: section.font ?? undefined,
     })
   );
 
@@ -258,8 +264,11 @@ function createPublishSnapshot({
 
 export default function ProfileBuilderContent() {
   const queryClient = useQueryClient();
-  const { publishedVersion, setHasUnpublishedChanges } =
-    useProfileBuilderPublishState();
+  const {
+    publishedVersion,
+    setHasUnpublishedChanges,
+    setBeforePublishHandler,
+  } = useProfileBuilderPublishState();
 
   const searchParams = useSearchParams();
   const sectionParam = searchParams.get("section");
@@ -479,25 +488,26 @@ export default function ProfileBuilderContent() {
     sectionParam,
   ]);
 
-  const { mutate: saveAppearance } = useMutation({
-    mutationKey: updateProfileAppearanceOption.mutationKey,
-    mutationFn: updateProfileAppearanceOption.mutationFn,
-    onSuccess() {
-      queryClient.invalidateQueries({
-        queryKey: dashboardProfileOption().queryKey,
-      });
-      queryClient.invalidateQueries({
-        queryKey: profileAppearanceOption().queryKey,
-      });
-    },
-    onError(error: unknown) {
-      const msg =
-        error instanceof Error
-          ? error.message
-          : "Failed to save appearance settings.";
-      toast.error(msg);
-    },
-  });
+  const { mutate: saveAppearance, mutateAsync: saveAppearanceAsync } =
+    useMutation({
+      mutationKey: updateProfileAppearanceOption.mutationKey,
+      mutationFn: updateProfileAppearanceOption.mutationFn,
+      onSuccess() {
+        queryClient.invalidateQueries({
+          queryKey: dashboardProfileOption().queryKey,
+        });
+        queryClient.invalidateQueries({
+          queryKey: profileAppearanceOption().queryKey,
+        });
+      },
+      onError(error: unknown) {
+        const msg =
+          error instanceof Error
+            ? error.message
+            : "Failed to save appearance settings.";
+        toast.error(msg);
+      },
+    });
 
   const persistDraftBeforeMeta = useCallback(
     async (payload: UpsertDraftRequest, updatedAt: string | null) => {
@@ -630,6 +640,145 @@ export default function ProfileBuilderContent() {
     .map((s) => `${s.id}-${s.bgColor}-${s.textColor}-${s.iconColor}-${s.font}`)
     .join("|");
 
+  const buildAppearancePayload = useCallback(() => {
+    const globalAppearance = {
+      template: template,
+      accentColour: normalizeColorForApi(iconColor),
+      backgroundColour: normalizeColorForApi(bgColor),
+      textColour: normalizeColorForApi(textColor),
+      font: mapFontToApi(font),
+      cornerStyle: mapCornerStyleToApi(borderRadius),
+      spacing: clampSpacingForApi(spacing),
+      theme: appearanceTheme,
+    };
+
+    const buildComponentAppearance = (sectionType: string) => {
+      const sec = sectionsRef.current.find((s) => s.type === sectionType);
+      if (!sec) return globalAppearance;
+
+      return {
+        ...globalAppearance,
+        ...(sec.bgColor && {
+          backgroundColour: normalizeColorForApi(sec.bgColor),
+        }),
+        ...(sec.textColor && {
+          textColour: normalizeColorForApi(sec.textColor),
+        }),
+        ...(sec.iconColor && {
+          accentColour: normalizeColorForApi(sec.iconColor),
+        }),
+        ...(sec.font && { font: mapFontToApi(sec.font) }),
+      };
+    };
+
+    return {
+      global: globalAppearance,
+      components: {
+        bio: buildComponentAppearance("bio"),
+        links: buildComponentAppearance("links"),
+        projects: buildComponentAppearance("projects"),
+        cta: buildComponentAppearance("experience"),
+      },
+    };
+  }, [
+    template,
+    iconColor,
+    bgColor,
+    textColor,
+    font,
+    borderRadius,
+    spacing,
+    appearanceTheme,
+  ]);
+
+  const flushDraftAndProfileMetaSave = useCallback(async () => {
+    const bioSection = sectionsRef.current.find((s) => s.type === "bio");
+    const updatedAt = draftUpdatedAtRef.current;
+    const currentProfile = profileRef.current;
+
+    const payload = {
+      bio: getBioValueForProfileMeta(bioSection, currentProfile),
+      content: sectionsToContent(sectionsRef.current),
+      themeSettings: { template },
+    };
+
+    const draftSaved = await persistDraftBeforeMetaRef.current(
+      payload,
+      updatedAt
+    );
+
+    if (!draftSaved) {
+      return;
+    }
+
+    const nextProfileMeta: ProfileMetaSnapshot = {
+      fullName: normalizeFullName(
+        bioSection?.fullName ?? currentProfile?.fullName ?? ""
+      ),
+      bio: getBioValueForProfileMeta(bioSection, currentProfile),
+      photoUrl:
+        bioSection?.photoUrl !== undefined
+          ? bioSection.photoUrl
+          : (currentProfile?.photoUrl ?? null),
+    };
+
+    const previousProfileMeta = profileMetaSnapshotRef.current;
+
+    const hasProfileMetaChanges =
+      !previousProfileMeta ||
+      previousProfileMeta.fullName !== nextProfileMeta.fullName ||
+      previousProfileMeta.bio !== nextProfileMeta.bio ||
+      previousProfileMeta.photoUrl !== nextProfileMeta.photoUrl;
+
+    const fullNameValidationError = validateFullName(nextProfileMeta.fullName);
+
+    if (
+      currentProfile?.username &&
+      !fullNameValidationError &&
+      hasProfileMetaChanges
+    ) {
+      await saveProfileMetaQueuedRef.current({
+        username: currentProfile.username,
+        next: nextProfileMeta,
+      });
+    }
+  }, [template]);
+
+  const flushPendingBuilderSaves = useCallback(async () => {
+    const shouldFlushAppearance = Boolean(appearanceTimerRef.current);
+    const shouldFlushDraft = Boolean(saveTimerRef.current);
+
+    if (appearanceTimerRef.current) {
+      clearTimeout(appearanceTimerRef.current);
+      appearanceTimerRef.current = null;
+    }
+
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+
+    if (shouldFlushAppearance) {
+      await saveAppearanceAsync(buildAppearancePayload());
+    }
+
+    if (shouldFlushDraft) {
+      await flushDraftAndProfileMetaSave();
+    }
+
+    await profileMetaSaveQueueRef.current;
+  }, [
+    buildAppearancePayload,
+    flushDraftAndProfileMetaSave,
+    saveAppearanceAsync,
+  ]);
+
+  useEffect(() => {
+    setBeforePublishHandler(flushPendingBuilderSaves);
+
+    return () => setBeforePublishHandler(null);
+  }, [flushPendingBuilderSaves, setBeforePublishHandler]);
+
   useEffect(() => {
     if (!contentLoadedRef.current) return;
     if (appearanceHydratingRef.current) return;
@@ -644,45 +793,7 @@ export default function ProfileBuilderContent() {
     }
 
     appearanceTimerRef.current = setTimeout(() => {
-      const globalAppearance = {
-        template: template,
-        accentColour: normalizeColorForApi(iconColor),
-        backgroundColour: normalizeColorForApi(bgColor),
-        textColour: normalizeColorForApi(textColor),
-        font: mapFontToApi(font),
-        cornerStyle: mapCornerStyleToApi(borderRadius),
-        spacing: clampSpacingForApi(spacing),
-        theme: appearanceTheme,
-      };
-
-      const buildComponentAppearance = (sectionType: string) => {
-        const sec = sectionsRef.current.find((s) => s.type === sectionType);
-        if (!sec) return globalAppearance;
-
-        return {
-          ...globalAppearance,
-          ...(sec.bgColor && {
-            backgroundColour: normalizeColorForApi(sec.bgColor),
-          }),
-          ...(sec.textColor && {
-            textColour: normalizeColorForApi(sec.textColor),
-          }),
-          ...(sec.iconColor && {
-            accentColour: normalizeColorForApi(sec.iconColor),
-          }),
-          ...(sec.font && { font: mapFontToApi(sec.font) }),
-        };
-      };
-
-      saveAppearance({
-        global: globalAppearance,
-        components: {
-          bio: buildComponentAppearance("bio"),
-          links: buildComponentAppearance("links"),
-          projects: buildComponentAppearance("projects"),
-          cta: buildComponentAppearance("experience"),
-        },
-      });
+      saveAppearance(buildAppearancePayload());
       appearanceTimerRef.current = null;
     }, 1000);
 
@@ -691,18 +802,7 @@ export default function ProfileBuilderContent() {
         clearTimeout(appearanceTimerRef.current);
       }
     };
-  }, [
-    template,
-    font,
-    bgColor,
-    textColor,
-    iconColor,
-    spacing,
-    borderRadius,
-    appearanceTheme,
-    saveAppearance,
-    sectionAppearanceDeps,
-  ]);
+  }, [buildAppearancePayload, saveAppearance, sectionAppearanceDeps]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
@@ -718,58 +818,7 @@ export default function ProfileBuilderContent() {
     saveTimerRef.current = setTimeout(() => {
       void (async () => {
         try {
-          const bioSection = sections.find((s) => s.type === "bio");
-          const updatedAt = draftUpdatedAtRef.current;
-          const currentProfile = profileRef.current;
-
-          const payload = {
-            bio: getBioValueForProfileMeta(bioSection, currentProfile),
-            content: sectionsToContent(sections),
-            themeSettings: { template },
-          };
-
-          const draftSaved = await persistDraftBeforeMetaRef.current(
-            payload,
-            updatedAt
-          );
-
-          if (!draftSaved) {
-            return;
-          }
-
-          const nextProfileMeta: ProfileMetaSnapshot = {
-            fullName: normalizeFullName(
-              bioSection?.fullName ?? currentProfile?.fullName ?? ""
-            ),
-            bio: getBioValueForProfileMeta(bioSection, currentProfile),
-            photoUrl:
-              bioSection?.photoUrl !== undefined
-                ? bioSection.photoUrl
-                : (currentProfile?.photoUrl ?? null),
-          };
-
-          const previousProfileMeta = profileMetaSnapshotRef.current;
-
-          const hasProfileMetaChanges =
-            !previousProfileMeta ||
-            previousProfileMeta.fullName !== nextProfileMeta.fullName ||
-            previousProfileMeta.bio !== nextProfileMeta.bio ||
-            previousProfileMeta.photoUrl !== nextProfileMeta.photoUrl;
-
-          const fullNameValidationError = validateFullName(
-            nextProfileMeta.fullName
-          );
-
-          if (
-            currentProfile?.username &&
-            !fullNameValidationError &&
-            hasProfileMetaChanges
-          ) {
-            await saveProfileMetaQueuedRef.current({
-              username: currentProfile.username,
-              next: nextProfileMeta,
-            });
-          }
+          await flushDraftAndProfileMetaSave();
         } catch (error) {
           console.error("[profile-meta] Save failed:", error);
         } finally {
@@ -783,7 +832,7 @@ export default function ProfileBuilderContent() {
         clearTimeout(saveTimerRef.current);
       }
     };
-  }, [sections, template]);
+  }, [sections, template, flushDraftAndProfileMetaSave]);
 
   useEffect(() => {
     return () => {

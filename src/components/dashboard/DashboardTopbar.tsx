@@ -36,6 +36,7 @@ export default function DashboardTopbar() {
     publishStatus,
     setPublishStatus,
     markProfilePublished,
+    runBeforePublish,
   } = useProfileBuilderPublishState();
 
   const draftUpdatedAtRef = useRef<string | null>(null);
@@ -61,7 +62,10 @@ export default function DashboardTopbar() {
     void
   >({
     mutationKey: ["profile", "publish"],
-    mutationFn: publishProfile,
+    mutationFn: async () => {
+      await runBeforePublish();
+      return publishProfile();
+    },
     onMutate() {
       setPublishStatus("publishing");
     },

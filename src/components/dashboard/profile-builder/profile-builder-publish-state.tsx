@@ -12,6 +12,7 @@ import {
 } from "react";
 
 type PublishStatus = "idle" | "publishing" | "published";
+type BeforePublishHandler = () => Promise<void> | void;
 
 type ProfileBuilderPublishStateContextValue = {
   hasUnpublishedChanges: boolean;
@@ -20,6 +21,8 @@ type ProfileBuilderPublishStateContextValue = {
   setHasUnpublishedChanges: (hasChanges: boolean) => void;
   setPublishStatus: (status: PublishStatus) => void;
   markProfilePublished: () => void;
+  setBeforePublishHandler: (handler: BeforePublishHandler | null) => void;
+  runBeforePublish: () => Promise<void>;
 };
 
 const ProfileBuilderPublishStateContext =
@@ -38,6 +41,7 @@ export function ProfileBuilderPublishStateProvider({
   const publishedResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
+  const beforePublishHandlerRef = useRef<BeforePublishHandler | null>(null);
 
   const clearPublishedResetTimer = useCallback(() => {
     if (publishedResetTimerRef.current) {
@@ -66,6 +70,17 @@ export function ProfileBuilderPublishStateProvider({
     [clearPublishedResetTimer]
   );
 
+  const setBeforePublishHandler = useCallback(
+    (handler: BeforePublishHandler | null) => {
+      beforePublishHandlerRef.current = handler;
+    },
+    []
+  );
+
+  const runBeforePublish = useCallback(async () => {
+    await beforePublishHandlerRef.current?.();
+  }, []);
+
   const markProfilePublished = useCallback(() => {
     clearPublishedResetTimer();
     setHasUnpublishedChangesState(false);
@@ -88,6 +103,8 @@ export function ProfileBuilderPublishStateProvider({
       setHasUnpublishedChanges,
       setPublishStatus,
       markProfilePublished,
+      setBeforePublishHandler,
+      runBeforePublish,
     }),
     [
       hasUnpublishedChanges,
@@ -96,6 +113,8 @@ export function ProfileBuilderPublishStateProvider({
       setHasUnpublishedChanges,
       setPublishStatus,
       markProfilePublished,
+      setBeforePublishHandler,
+      runBeforePublish,
     ]
   );
 
