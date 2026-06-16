@@ -1,11 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import {
-  ExternalLink,
-  ChevronRight,
-  MessageSquare,
-  ImageIcon,
-} from "lucide-react";
+import { ExternalLink, ChevronRight } from "lucide-react";
 
 import {
   DashboardProfileResponse,
@@ -20,6 +15,7 @@ import {
 } from "@/utils/profile";
 import { TemplateFooter } from "./TemplateFooter";
 import HighlightCard from "../HighlightCard";
+import { getLinkIcon } from "../shared/TemplateLinkCard";
 import { contentToSections } from "../profile-builder/builder.utils";
 import type { SavedLink } from "../profile-builder/types";
 import TemplateAppearanceProvider, {
@@ -182,19 +178,22 @@ export default function DefaultDashboardView({
                                       className="object-cover"
                                       unoptimized
                                     />
-                                  ) : item.iconSrc ? (
+                                  ) : getImageUrl(item.iconSrc) ? (
                                     <Image
-                                      src={item.iconSrc}
+                                      src={getImageUrl(item.iconSrc) || ""}
                                       alt={item.title ?? "Link"}
                                       width={24}
                                       height={24}
                                       unoptimized
                                     />
                                   ) : (
-                                    <ImageIcon
-                                      className="text-tertiary-text"
-                                      size={24}
-                                    />
+                                    <span className="text-brand-hover-bg">
+                                      {getLinkIcon(
+                                        (item.url || "") +
+                                          " " +
+                                          (item.title || "")
+                                      )}
+                                    </span>
                                   )}
                                 </span>
                                 <div className="min-w-0">
@@ -265,15 +264,17 @@ export default function DefaultDashboardView({
                             className={`grid gap-6 p-6 ${
                               section.layout === "1"
                                 ? "grid-cols-1"
-                                : section.layout === "3"
-                                  ? "grid-cols-1 sm:grid-cols-2"
-                                  : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+                                : section.layout === "3" ||
+                                    section.layout === "4"
+                                  ? "grid-cols-1 xl:grid-cols-2"
+                                  : "grid-cols-1 sm:grid-cols-2 md:grid-cols-2"
                             }`}
                             style={{
                               gap: section.gap ? `${section.gap}px` : undefined,
                             }}
                           >
                             {remainingProjects.map((project, index: number) => {
+                              const layoutType = section.layout || "2";
                               const hasUrl = Boolean(project.url);
                               const rawImageSrc = (
                                 project as { imageSrc?: string }
@@ -286,13 +287,19 @@ export default function DefaultDashboardView({
 
                               const card = (
                                 <div
-                                  className={`group flex ${section.layout === "1" ? "flex-col sm:flex-row sm:items-center" : "flex-col"} gap-4`}
+                                  className={`group flex h-full rounded-[12px] p-4 ${
+                                    layoutType === "1" || layoutType === "2"
+                                      ? "flex-col"
+                                      : layoutType === "3"
+                                        ? "flex-col sm:flex-row sm:items-center"
+                                        : "flex-col sm:flex-row-reverse sm:items-center"
+                                  } gap-4`}
                                 >
                                   <div
                                     className={`border-border bg-secondary-bg relative shrink-0 overflow-hidden rounded-[8px] border shadow-sm ${
-                                      section.layout === "1"
-                                        ? "aspect-video w-full sm:w-[280px]"
-                                        : "aspect-video w-full"
+                                      layoutType === "1" || layoutType === "2"
+                                        ? "aspect-video w-full"
+                                        : "h-24 w-full sm:h-24 sm:w-24"
                                     }`}
                                   >
                                     {displayImg ? (
@@ -309,7 +316,13 @@ export default function DefaultDashboardView({
                                       </div>
                                     )}
                                   </div>
-                                  <div className="flex min-w-0 flex-1 flex-col gap-1">
+                                  <div
+                                    className={`flex min-w-0 flex-1 flex-col items-start gap-1 ${
+                                      layoutType === "3" || layoutType === "4"
+                                        ? "justify-center"
+                                        : ""
+                                    }`}
+                                  >
                                     <h3 className="text-primary-text font-bold break-all">
                                       {project.title}
                                     </h3>
@@ -318,25 +331,14 @@ export default function DefaultDashboardView({
                                         {project.description}
                                       </p>
                                     )}
-                                    {hasUrl && section.layout !== "1" && (
-                                      <span className="text-brand-hover-bg mt-1 flex items-center gap-1 text-sm font-semibold group-hover:underline">
+                                    {hasUrl && (
+                                      <span className="text-brand-hover-bg mt-2 flex items-center gap-1 text-sm font-semibold group-hover:underline">
                                         {(project as { buttonText?: string })
                                           .buttonText || "View project"}{" "}
                                         <ExternalLink size={14} />
                                       </span>
                                     )}
                                   </div>
-
-                                  {/* BUTTON FOR LAYOUT 1 */}
-                                  {section.layout === "1" && (
-                                    <div className="mt-4 shrink-0 sm:mt-0 sm:ml-6">
-                                      <span className="text-brand-hover-bg flex items-center gap-1 text-sm font-bold hover:underline">
-                                        {(project as { buttonText?: string })
-                                          .buttonText || "View project"}
-                                        <ChevronRight size={16} />
-                                      </span>
-                                    </div>
-                                  )}
                                 </div>
                               );
 
@@ -346,14 +348,14 @@ export default function DefaultDashboardView({
                                   href={sanitizeUrl(project.url || "")}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="block no-underline"
+                                  className="block h-full no-underline"
                                 >
                                   {card}
                                 </a>
                               ) : (
                                 <div
                                   key={project.id || index}
-                                  className="block no-underline"
+                                  className="block h-full no-underline"
                                 >
                                   {card}
                                 </div>
@@ -383,13 +385,13 @@ export default function DefaultDashboardView({
                     style={getSectionStyle(section)}
                   >
                     <div
-                      className="flex flex-col items-center gap-4"
+                      className={`flex flex-col gap-4 ${section.layout === "2" ? "items-start text-left" : section.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
                       style={{
                         gap: section.gap ? `${section.gap}px` : undefined,
                       }}
                     >
-                      <span className="inline-flex items-center gap-2 p-2 font-medium">
-                        {section.iconSrc ? (
+                      {section.iconSrc && (
+                        <span className="inline-flex items-center gap-2 p-2 font-medium">
                           <div
                             className="bg-brand-hover-bg h-8 w-8"
                             style={{
@@ -403,19 +405,16 @@ export default function DefaultDashboardView({
                               WebkitMaskPosition: "center",
                             }}
                           />
-                        ) : (
-                          <MessageSquare
-                            size={32}
-                            className="text-brand-hover-bg"
-                          />
-                        )}
-                      </span>
-                      <div className="flex flex-col items-center gap-2">
-                        <h4 className="text-center text-2xl font-bold break-all">
+                        </span>
+                      )}
+                      <div
+                        className={`flex flex-col gap-2 ${section.layout === "2" ? "items-start text-left" : section.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
+                      >
+                        <h4 className="text-2xl font-bold break-all">
                           {section.title || "Your CTA"}
                         </h4>
                         {section.subtitle && (
-                          <p className="text-secondary-text text-center text-[15px] break-all whitespace-pre-wrap">
+                          <p className="text-secondary-text text-[15px] break-all whitespace-pre-wrap">
                             {section.subtitle}
                           </p>
                         )}

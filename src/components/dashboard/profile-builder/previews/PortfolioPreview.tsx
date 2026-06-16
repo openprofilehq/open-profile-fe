@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { ArrowRight, Mail } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import {
   getImageUrl,
   sanitizeUrl,
@@ -35,24 +35,11 @@ export default function PortfolioPreview({
     (section) => section.type === "bio" || section.visible
   );
 
-  const ctaSection = visibleSections.find(
-    (s) => s.type === "experience" || s.type === "cta"
-  );
-
   const handleSelectSection = (
     event: React.MouseEvent<HTMLElement>,
     section: Section
   ) => {
     event.preventDefault();
-    onSelectSection(section.id);
-  };
-
-  const handleSelectNestedSection = (
-    event: React.MouseEvent<HTMLElement>,
-    section: Section
-  ) => {
-    event.preventDefault();
-    event.stopPropagation();
     onSelectSection(section.id);
   };
 
@@ -89,20 +76,19 @@ export default function PortfolioPreview({
       {visibleSections.map((section) => {
         if (section.type === "bio") {
           return (
-            <div
+            <section
               key={section.id}
               role="button"
               tabIndex={0}
               onClick={(event) => handleSelectSection(event, section)}
               onKeyDown={(event) => handleSectionKeyDown(event, section)}
-              className={`group relative cursor-pointer rounded-2xl transition-opacity duration-200 ${section.font ? getFontClass(section.font) : ""}`}
+              className={`group hover:border-border hover:bg-background/50 relative w-full cursor-pointer rounded-2xl border border-transparent p-6 transition-colors ${section.font ? getFontClass(section.font) : ""}`}
               style={getSectionStyle(section)}
             >
               <header
-                className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between rounded-2xl border border-transparent transition-colors sm:flex-row sm:items-start"
+                className="relative flex w-full flex-col justify-between sm:flex-row sm:items-start"
                 style={{
                   gap: "var(--op-spacing, 24px)",
-                  padding: "var(--op-spacing, 24px)",
                 }}
               >
                 <div
@@ -136,52 +122,14 @@ export default function PortfolioPreview({
                     </p>
                   </div>
                 </div>
-
-                {ctaSection?.visible && ctaSection?.url && (
-                  <div className="group/cta relative shrink-0">
-                    {renderControls(
-                      ctaSection,
-                      "top-1/2 left-full ml-3 -translate-y-1/2",
-                      "cta"
-                    )}
-                    <a
-                      href={sanitizeUrl(ctaSection.url)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(event) =>
-                        handleSelectNestedSection(event, ctaSection)
-                      }
-                      className="border-brand-hover-bg bg-background text-brand-hover-bg hover:bg-brand-hover-bg/5 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-[13px] font-semibold transition-colors"
-                    >
-                      {ctaSection.iconSrc ? (
-                        <div
-                          className="bg-brand-hover-bg h-4 w-4"
-                          style={{
-                            maskImage: `url(${ctaSection.iconSrc})`,
-                            WebkitMaskImage: `url(${ctaSection.iconSrc})`,
-                            maskSize: "contain",
-                            WebkitMaskSize: "contain",
-                            maskRepeat: "no-repeat",
-                            WebkitMaskRepeat: "no-repeat",
-                            maskPosition: "center",
-                            WebkitMaskPosition: "center",
-                          }}
-                        />
-                      ) : (
-                        <Mail size={16} />
-                      )}
-                      {ctaSection.buttonText || "Email"}
-                    </a>
-                  </div>
-                )}
               </header>
 
-              <section className="mt-8 px-6">
+              <div className="mt-8">
                 <p className="text-secondary-text max-w-3xl text-[15px] leading-relaxed whitespace-pre-wrap">
                   {section.bio || "Write a little bit about yourself here..."}
                 </p>
-              </section>
-            </div>
+              </div>
+            </section>
           );
         }
 
@@ -206,7 +154,7 @@ export default function PortfolioPreview({
               </h2>
               {section.links && section.links.length > 0 ? (
                 <div
-                  className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+                  className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2"
                   style={{
                     gap: section.gap ? `${section.gap}px` : undefined,
                   }}
@@ -258,95 +206,89 @@ export default function PortfolioPreview({
                   return rest;
                 })()}
               >
-                <div className="mb-6 flex flex-col gap-1">
-                  {section.title && (
-                    <h2 className="text-primary-text text-[26px] font-bold">
-                      {section.title}
-                    </h2>
-                  )}
-                  {(section.subtitle || !section.title) && (
-                    <h3 className="text-tertiary-text text-[13px]">
-                      {section.subtitle || "Featured Projects"}
-                    </h3>
-                  )}
-                </div>
+                <h2 className="text-tertiary-text mb-4 text-[13px]">
+                  {section.title || "Featured Projects"}
+                </h2>
                 {remainingProjects.length > 0 ? (
                   <div
                     className={`grid gap-6 ${
                       section.layout === "1"
                         ? "grid-cols-1"
-                        : section.layout === "3"
-                          ? "grid-cols-1 sm:grid-cols-2"
-                          : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                        : section.layout === "3" || section.layout === "4"
+                          ? "grid-cols-1 xl:grid-cols-2"
+                          : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2"
                     }`}
                     style={{
                       gap: section.gap ? `${section.gap}px` : undefined,
                     }}
                   >
-                    {remainingProjects.map(
-                      (project: ProjectItem, idx: number) => {
-                        const numberStr = String(idx + 1).padStart(2, "0");
-                        return (
+                    {remainingProjects.map((project: ProjectItem) => {
+                      const layoutType = section.layout || "2";
+                      return (
+                        <div
+                          key={project.id}
+                          className={`group/proj border-border bg-background flex h-full overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md ${
+                            layoutType === "1" || layoutType === "2"
+                              ? "flex-col"
+                              : layoutType === "3"
+                                ? "flex-col sm:flex-row sm:items-center"
+                                : "flex-col sm:flex-row-reverse sm:items-center"
+                          }`}
+                        >
                           <div
-                            key={project.id}
-                            className={`group/proj border-border bg-background flex overflow-hidden rounded-[12px] border shadow-sm transition-shadow hover:shadow-md ${
-                              section.layout === "1"
-                                ? "flex-col sm:flex-row"
-                                : "flex-col"
+                            className={`bg-secondary-bg border-border relative overflow-hidden ${
+                              layoutType === "1" || layoutType === "2"
+                                ? "aspect-16/10 w-full border-b"
+                                : "w-full shrink-0 border-b sm:h-24 sm:w-24 sm:border-b-0"
+                            } ${layoutType === "3" ? "sm:border-r" : layoutType === "4" ? "sm:border-l" : ""}`}
+                          >
+                            {getImageUrl(project.imageSrc) ? (
+                              <Image
+                                src={getImageUrl(project.imageSrc) || ""}
+                                alt={project.title || "Project"}
+                                fill
+                                className="object-cover transition-transform duration-500 group-hover/proj:scale-[1.02]"
+                                unoptimized
+                              />
+                            ) : (
+                              <div className="h-full w-full bg-neutral-200 transition-transform duration-500 group-hover/proj:scale-[1.02]" />
+                            )}
+                          </div>
+
+                          <div
+                            className={`flex min-w-0 flex-1 flex-col p-6 ${
+                              layoutType === "3" || layoutType === "4"
+                                ? "justify-center"
+                                : ""
                             }`}
                           >
-                            <div
-                              className={`bg-secondary-bg border-border relative overflow-hidden ${
-                                section.layout === "1"
-                                  ? "w-full shrink-0 border-b sm:w-[320px] sm:border-r sm:border-b-0"
-                                  : "aspect-16/10 w-full border-b"
-                              }`}
-                            >
-                              {getImageUrl(project.imageSrc) ? (
-                                <Image
-                                  src={getImageUrl(project.imageSrc) || ""}
-                                  alt={project.title || "Project"}
-                                  fill
-                                  className="object-cover transition-transform duration-500 group-hover/proj:scale-[1.02]"
-                                  unoptimized
-                                />
-                              ) : (
-                                <div className="h-full w-full bg-neutral-200 transition-transform duration-500 group-hover/proj:scale-[1.02]" />
-                              )}
+                            <div className="mb-1 flex items-start gap-2">
+                              <h3 className="text-primary-text text-[16px] font-bold">
+                                {project.title}
+                              </h3>
                             </div>
 
-                            <div className="flex flex-1 flex-col p-6">
-                              <div className="mb-1 flex items-start gap-2">
-                                <span className="text-primary-text text-[16px] font-bold">
-                                  {numberStr}
-                                </span>
-                                <h3 className="text-primary-text text-[16px] font-bold">
-                                  {project.title}
-                                </h3>
-                              </div>
+                            {project.description && (
+                              <p className="text-secondary-text mb-6 line-clamp-2 text-[13px]">
+                                {project.description}
+                              </p>
+                            )}
 
-                              {project.description && (
-                                <p className="text-secondary-text mb-6 ml-6 line-clamp-2 text-[13px]">
-                                  {project.description}
-                                </p>
-                              )}
-
-                              {project.url && (
-                                <a
-                                  href={sanitizeUrl(project.url)}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-brand-hover-bg mt-auto ml-6 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
-                                >
-                                  {project.buttonText || "View Project"}
-                                  <ArrowRight size={14} strokeWidth={2.5} />
-                                </a>
-                              )}
-                            </div>
+                            {project.url && (
+                              <a
+                                href={sanitizeUrl(project.url)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-brand-hover-bg mt-auto inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline"
+                              >
+                                {project.buttonText || "View Project"}
+                                <ArrowRight size={14} strokeWidth={2.5} />
+                              </a>
+                            )}
                           </div>
-                        );
-                      }
-                    )}
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">

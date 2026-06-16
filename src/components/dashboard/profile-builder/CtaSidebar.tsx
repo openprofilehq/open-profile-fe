@@ -167,7 +167,7 @@ export default function CtaSidebar({
   const currentIcon = PRESET_ICONS.find((i) => i.id === selectedIconId);
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in bg-background flex h-full w-72.5 shrink-0 flex-col rounded-2xl border p-6 shadow-sm duration-200 select-none">
+    <aside className="border-tertiary-b animate-in fade-in bg-background flex h-full w-72.5 shrink-0 flex-col border-r p-6 duration-200 select-none">
       {/* Back Button */}
       <div className="border-tertiary-b border-b pb-4">
         <button

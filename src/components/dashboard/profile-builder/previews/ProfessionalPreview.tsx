@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { ArrowRight, ExternalLink, Mail } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
 import {
   getImageUrl,
   sanitizeUrl,
@@ -34,24 +34,11 @@ export default function ProfessionalPreview({
     (section) => section.type === "bio" || section.visible
   );
 
-  const ctaSection = visibleSections.find(
-    (s) => s.type === "experience" || s.type === "cta"
-  );
-
   const handleSelectSection = (
     event: React.MouseEvent<HTMLElement>,
     section: Section
   ) => {
     event.preventDefault();
-    onSelectSection(section.id);
-  };
-
-  const handleSelectNestedSection = (
-    event: React.MouseEvent<HTMLElement>,
-    section: Section
-  ) => {
-    event.preventDefault();
-    event.stopPropagation();
     onSelectSection(section.id);
   };
 
@@ -88,20 +75,19 @@ export default function ProfessionalPreview({
       {visibleSections.map((section) => {
         if (section.type === "bio") {
           return (
-            <div
+            <section
               key={section.id}
               role="button"
               tabIndex={0}
               onClick={(event) => handleSelectSection(event, section)}
               onKeyDown={(event) => handleSectionKeyDown(event, section)}
-              className={`group relative cursor-pointer rounded-2xl transition-opacity duration-200 ${section.font ? getFontClass(section.font) : ""}`}
+              className={`group hover:border-border hover:bg-background/50 relative w-full cursor-pointer rounded-2xl border border-transparent p-6 transition-colors ${section.font ? getFontClass(section.font) : ""}`}
               style={getSectionStyle(section)}
             >
               <header
-                className="hover:border-border hover:bg-background/50 relative flex w-full flex-col justify-between rounded-2xl border border-transparent transition-colors sm:flex-row sm:items-start"
+                className="relative flex w-full flex-col justify-between sm:flex-row sm:items-start"
                 style={{
                   gap: "var(--op-spacing, 24px)",
-                  padding: "var(--op-spacing, 24px)",
                 }}
               >
                 <div
@@ -134,52 +120,14 @@ export default function ProfessionalPreview({
                     </p>
                   </div>
                 </div>
-
-                {ctaSection?.visible && ctaSection?.url && (
-                  <div className="group/cta relative shrink-0">
-                    {renderControls(
-                      ctaSection,
-                      "top-1/2 left-full ml-3 -translate-y-1/2",
-                      "cta"
-                    )}
-                    <a
-                      href={sanitizeUrl(ctaSection.url)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(event) =>
-                        handleSelectNestedSection(event, ctaSection)
-                      }
-                      className="border-brand-hover-bg bg-brand-hover-bg/5 text-brand-hover-bg hover:bg-brand-hover-bg/10 inline-flex h-9 items-center justify-center gap-2 rounded-md border px-4 text-sm font-semibold transition-colors"
-                    >
-                      {ctaSection.iconSrc ? (
-                        <div
-                          className="bg-brand-hover-bg h-4 w-4"
-                          style={{
-                            maskImage: `url(${ctaSection.iconSrc})`,
-                            WebkitMaskImage: `url(${ctaSection.iconSrc})`,
-                            maskSize: "contain",
-                            WebkitMaskSize: "contain",
-                            maskRepeat: "no-repeat",
-                            WebkitMaskRepeat: "no-repeat",
-                            maskPosition: "center",
-                            WebkitMaskPosition: "center",
-                          }}
-                        />
-                      ) : (
-                        <Mail size={16} />
-                      )}
-                      {ctaSection.buttonText || "Email"}
-                    </a>
-                  </div>
-                )}
               </header>
 
-              <section className="mt-6 px-6">
+              <div className="mt-6">
                 <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed break-all whitespace-pre-wrap">
                   {section.bio || "Write a little bit about yourself here..."}
                 </p>
-              </section>
-            </div>
+              </div>
+            </section>
           );
         }
 
@@ -282,27 +230,16 @@ export default function ProfessionalPreview({
                   return rest;
                 })()}
               >
-                <div className="mb-4 flex flex-col gap-1">
-                  {section.title && (
-                    <h2 className="text-primary-text text-xl font-bold tracking-tight">
-                      {section.title}
-                    </h2>
-                  )}
-                  {(section.subtitle || !section.title) && (
-                    <h3 className="text-tertiary-text text-[13px]">
-                      {section.subtitle || "Selected Work"}
-                    </h3>
-                  )}
-                </div>
+                <h2 className="text-tertiary-text mb-4 text-[13px]">
+                  {section.title || "Selected Work"}
+                </h2>
                 <div
                   className={`grid gap-6 ${
-                    !section.layout || section.layout === "1"
+                    section.layout === "1"
                       ? "grid-cols-1"
-                      : section.layout === "3"
-                        ? "grid-cols-1 sm:grid-cols-2"
-                        : section.layout === "4"
-                          ? "grid-cols-1 sm:grid-cols-2"
-                          : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+                      : section.layout === "3" || section.layout === "4"
+                        ? "grid-cols-1 xl:grid-cols-2"
+                        : "grid-cols-1 sm:grid-cols-2 md:grid-cols-2"
                   }`}
                   style={{
                     gap: section.gap ? `${section.gap}px` : undefined,
@@ -316,68 +253,58 @@ export default function ProfessionalPreview({
 
                       const card = (
                         <div
-                          className={`group border-border bg-background hover:border-brand-hover-bg/30 flex rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md ${
-                            layoutType === "1"
-                              ? "flex-col justify-between sm:flex-row sm:items-center"
+                          className={`group border-border bg-background hover:border-brand-hover-bg/30 flex h-full rounded-[12px] border p-4 shadow-sm transition-shadow hover:shadow-md ${
+                            layoutType === "1" || layoutType === "2"
+                              ? "flex-col"
                               : layoutType === "3"
-                                ? "flex-col sm:flex-row sm:items-start"
-                                : layoutType === "4"
-                                  ? "flex-col sm:flex-row-reverse sm:items-start"
-                                  : "flex-col" // Layout 2
+                                ? "flex-col sm:flex-row sm:items-center"
+                                : "flex-col sm:flex-row-reverse sm:items-center"
                           }`}
                         >
                           {/* IMAGE */}
-                          {layoutType !== "1" && (
-                            <div
-                              className={`border-border bg-secondary-bg relative mb-4 shrink-0 overflow-hidden rounded-lg border ${
-                                layoutType === "2"
-                                  ? "aspect-video w-full"
-                                  : "h-[120px] w-full sm:mb-0 sm:w-[140px]"
-                              } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
-                            >
-                              {displayImg ? (
-                                <Image
-                                  src={displayImg}
-                                  alt={project.title ?? "Project"}
-                                  className="object-cover"
-                                  fill
-                                  unoptimized
-                                />
-                              ) : (
-                                <div className="text-tertiary-text flex h-full w-full items-center justify-center text-xs">
-                                  No image
-                                </div>
-                              )}
-                            </div>
-                          )}
+                          <div
+                            className={`border-border bg-secondary-bg relative mb-4 shrink-0 overflow-hidden rounded-lg border ${
+                              layoutType === "1" || layoutType === "2"
+                                ? "aspect-video w-full"
+                                : "h-24 w-full sm:mb-0 sm:h-24 sm:w-24"
+                            } ${layoutType === "3" ? "sm:mr-5" : ""} ${layoutType === "4" ? "sm:ml-5" : ""}`}
+                          >
+                            {displayImg ? (
+                              <Image
+                                src={displayImg}
+                                alt={project.title ?? "Project"}
+                                className="object-cover"
+                                fill
+                                unoptimized
+                              />
+                            ) : (
+                              <div className="text-tertiary-text flex h-full w-full items-center justify-center text-xs">
+                                No image
+                              </div>
+                            )}
+                          </div>
 
                           {/* CONTENT */}
-                          <div className="flex min-w-0 flex-1 flex-col items-start">
+                          <div
+                            className={`flex min-w-0 flex-1 flex-col items-start ${
+                              layoutType === "3" || layoutType === "4"
+                                ? "justify-center"
+                                : ""
+                            }`}
+                          >
                             <h3 className="text-primary-text text-[16px] font-bold">
                               {project.title}
                             </h3>
-                            <p
-                              className={`text-secondary-text mt-1 break-all ${layoutType === "1" ? "line-clamp-1" : "line-clamp-2"} text-[13px]`}
-                            >
+                            <p className="text-secondary-text mt-1 line-clamp-2 text-[13px] break-all">
                               {project.description}
                             </p>
-                            {layoutType !== "1" && hasUrl && (
+                            {hasUrl && (
                               <span className="text-brand-hover-bg mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
                                 {project.buttonText || "View Project"}
                                 <ArrowRight size={14} strokeWidth={2.5} />
                               </span>
                             )}
                           </div>
-
-                          {/* BUTTON FOR LAYOUT 1 */}
-                          {layoutType === "1" && hasUrl && (
-                            <div className="mt-4 shrink-0 sm:mt-0 sm:ml-6">
-                              <span className="text-brand-hover-bg inline-flex items-center gap-1.5 text-[13px] font-bold hover:underline">
-                                {project.buttonText || "View Project"}
-                                <ArrowRight size={14} strokeWidth={2.5} />
-                              </span>
-                            </div>
-                          )}
                         </div>
                       );
 
