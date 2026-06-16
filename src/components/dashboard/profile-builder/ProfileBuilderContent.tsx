@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -28,6 +28,7 @@ import { isApiError } from "@/api/base";
 import { normalizeFullName, validateFullName } from "@/utils/nameValidation";
 import { ROUTES } from "@/constants/routes";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useProfileBuilderPublishState } from "./profile-builder-publish-state";
 import {
   Dialog,
   DialogContent,
@@ -160,6 +161,29 @@ type ProfileMetaSnapshot = {
   photoUrl: string | null;
 };
 
+type PublishSnapshotSection = {
+  id: string;
+  title: string;
+  type: Section["type"];
+  visible: boolean;
+  subtitle?: string;
+  bio?: string;
+  fullName?: string;
+  photoUrl?: string | null;
+  links?: Section["links"];
+  projects?: Section["projects"];
+  layout?: Section["layout"];
+  buttonText?: string;
+  url?: string;
+  iconId?: string;
+  iconSrc?: string;
+  iconLabel?: string;
+  bgColor?: string;
+  textColor?: string;
+  iconColor?: string;
+  font?: string;
+};
+
 function isDraftConflictError(error: unknown) {
   const errObj = error as Record<string, unknown>;
 
@@ -179,8 +203,63 @@ function getBioValueForProfileMeta(
     : (currentProfile?.bio ?? null);
 }
 
+function createPublishSnapshot({
+  sections,
+  template,
+  font,
+  textColor,
+  bgColor,
+  iconColor,
+  spacing,
+  borderRadius,
+  appearanceTheme,
+}: {
+  sections: Section[];
+  template: string;
+  font: string;
+  textColor: string;
+  bgColor: string;
+  iconColor: string;
+  spacing: number;
+  borderRadius: "sharp" | "rounded" | "pill";
+  appearanceTheme: "light" | "dark";
+}) {
+  const snapshotSections: PublishSnapshotSection[] = sections.map(
+    (section) => ({
+      id: section.id,
+      title: section.title,
+      type: section.type,
+      visible: section.visible,
+      subtitle: section.subtitle ?? undefined,
+      bio: section.bio ?? undefined,
+      fullName: section.fullName ?? undefined,
+      photoUrl: section.photoUrl ?? undefined,
+      links: section.links,
+      projects: section.projects,
+      layout: section.layout ?? undefined,
+      buttonText: section.buttonText ?? undefined,
+      url: section.url ?? undefined,
+      iconId: section.iconId ?? undefined,
+    })
+  );
+
+  return JSON.stringify({
+    sections: snapshotSections,
+    template: template.toLowerCase(),
+    font,
+    textColor,
+    bgColor,
+    iconColor,
+    spacing,
+    borderRadius,
+    appearanceTheme,
+  });
+}
+
 export default function ProfileBuilderContent() {
   const queryClient = useQueryClient();
+  const { publishedVersion, setHasUnpublishedChanges } =
+    useProfileBuilderPublishState();
 
   const searchParams = useSearchParams();
   const sectionParam = searchParams.get("section");
@@ -228,6 +307,8 @@ export default function ProfileBuilderContent() {
   const profileMetaSnapshotRef = useRef<ProfileMetaSnapshot | null>(null);
   const profileMetaSaveQueueRef = useRef<Promise<unknown>>(Promise.resolve());
   const appearanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastPublishedSnapshotRef = useRef<string | null>(null);
+  const publishedVersionRef = useRef(publishedVersion);
 
   useEffect(() => {
     const isAppearanceReady =
@@ -800,6 +881,56 @@ export default function ProfileBuilderContent() {
       }
     : profile;
 
+  const currentPublishSnapshot = useMemo(
+    () =>
+      createPublishSnapshot({
+        sections: resolvedSections,
+        template,
+        font,
+        textColor,
+        bgColor,
+        iconColor,
+        spacing,
+        borderRadius,
+        appearanceTheme,
+      }),
+    [
+      resolvedSections,
+      template,
+      font,
+      textColor,
+      bgColor,
+      iconColor,
+      spacing,
+      borderRadius,
+      appearanceTheme,
+    ]
+  );
+
+  useEffect(() => {
+    if (!contentLoadedRef.current) return;
+    if (appearanceHydratingRef.current) return;
+
+    if (lastPublishedSnapshotRef.current === null) {
+      lastPublishedSnapshotRef.current = currentPublishSnapshot;
+      queueMicrotask(() => setHasUnpublishedChanges(false));
+      return;
+    }
+
+    const hasChanges =
+      lastPublishedSnapshotRef.current !== currentPublishSnapshot;
+
+    queueMicrotask(() => setHasUnpublishedChanges(hasChanges));
+  }, [currentPublishSnapshot, setHasUnpublishedChanges]);
+
+  useEffect(() => {
+    if (publishedVersionRef.current === publishedVersion) return;
+
+    publishedVersionRef.current = publishedVersion;
+    lastPublishedSnapshotRef.current = currentPublishSnapshot;
+    queueMicrotask(() => setHasUnpublishedChanges(false));
+  }, [currentPublishSnapshot, publishedVersion, setHasUnpublishedChanges]);
+
   useEffect(() => {
     if (sectionParam) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -818,25 +949,28 @@ export default function ProfileBuilderContent() {
     }
   }, [sectionParam]);
 
-  const handleSaveProfilePhoto = useCallback(async (photoUrl: string | null) => {
-    const currentProfile = profileRef.current;
-    const currentMeta = profileMetaSnapshotRef.current;
+  const handleSaveProfilePhoto = useCallback(
+    async (photoUrl: string | null) => {
+      const currentProfile = profileRef.current;
+      const currentMeta = profileMetaSnapshotRef.current;
 
-    if (!currentProfile?.username) return;
+      if (!currentProfile?.username) return;
 
-    const nextProfileMeta: ProfileMetaSnapshot = {
-      fullName: normalizeFullName(
-        currentMeta?.fullName ?? currentProfile.fullName ?? ""
-      ),
-      bio: currentMeta?.bio ?? currentProfile.bio ?? null,
-      photoUrl,
-    };
+      const nextProfileMeta: ProfileMetaSnapshot = {
+        fullName: normalizeFullName(
+          currentMeta?.fullName ?? currentProfile.fullName ?? ""
+        ),
+        bio: currentMeta?.bio ?? currentProfile.bio ?? null,
+        photoUrl,
+      };
 
-    await saveProfileMetaQueuedRef.current({
-      username: currentProfile.username,
-      next: nextProfileMeta,
-    });
-  }, []);
+      await saveProfileMetaQueuedRef.current({
+        username: currentProfile.username,
+        next: nextProfileMeta,
+      });
+    },
+    []
+  );
 
   const handleSelectSection = (id: string) => {
     setSelectedSectionId(id);
