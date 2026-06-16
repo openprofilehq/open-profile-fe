@@ -178,7 +178,7 @@ export default function DefaultDashboardView({
                               className="border-border bg-background hover:border-brand-hover-bg/30 flex items-center justify-between rounded-2xl border p-4 no-underline shadow-sm transition-all hover:shadow-md"
                             >
                               <div className="flex items-center gap-5">
-                                <span className="border-border bg-secondary-bg flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[12px] border">
+                                <span className="border-border bg-background flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[12px] border">
                                   {displayImg ? (
                                     <Image
                                       src={displayImg}
@@ -212,10 +212,12 @@ export default function DefaultDashboardView({
                                   </h3>
                                 </div>
                               </div>
-                              <ExternalLink
-                                className="text-brand-hover-bg shrink-0 transition-colors"
-                                size={18}
-                              />
+                              <span className="border-border bg-background group-hover:border-brand-hover-bg/30 flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border transition-colors">
+                                <ExternalLink
+                                  className="text-brand-hover-bg shrink-0"
+                                  size={18}
+                                />
+                              </span>
                             </a>
                           );
                         })}
