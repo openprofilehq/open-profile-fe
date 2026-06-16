@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/layout/Navbar";
+import { WaitlistBanner } from "@/components/home/WaitlistBanner";
 import { Hero } from "@/components/home/Hero";
 import { Proof } from "@/components/home/Proof";
 import { FAQ } from "@/components/home/FAQ";
@@ -16,6 +17,7 @@ export default function Home() {
       <Navbar />
 
       <div className="pt-19">
+        <WaitlistBanner />
         <div className="w-full bg-[#FAFAFA]">
           <main className="relative mx-auto w-full">
             <Hero />
