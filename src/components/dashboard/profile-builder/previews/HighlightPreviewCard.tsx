@@ -35,7 +35,7 @@ export default function HighlightPreviewCard({
 
   const containerClass =
     variant === "default"
-      ? "border-border bg-background rounded-2xl border p-6 shadow-sm"
+      ? "border-border bg-background w-full rounded-2xl border p-6 shadow-sm"
       : "group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors";
 
   return (

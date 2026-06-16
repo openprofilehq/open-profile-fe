@@ -102,7 +102,7 @@ export default function DefaultDashboardView({
                   className={`group relative transition-opacity duration-200 ${section.font ? getFontClass(section.font) : ""}`}
                 >
                   <section
-                    className="border-border bg-background flex flex-row items-start gap-6 rounded-2xl border p-6 shadow-sm"
+                    className="border-border bg-background flex w-full flex-row items-start gap-6 rounded-2xl border p-6 shadow-sm"
                     style={getSectionStyle(section)}
                   >
                     {profileImageUrl ? (
@@ -143,7 +143,7 @@ export default function DefaultDashboardView({
                   className={`group relative transition-opacity duration-200 ${section.font ? getFontClass(section.font) : ""}`}
                 >
                   <section
-                    className="border-border bg-background rounded-2xl border p-6 shadow-sm"
+                    className="border-border bg-background w-full rounded-2xl border p-6 shadow-sm"
                     style={(() => {
                       const { gap: _gap, ...rest } = getSectionStyle(section);
                       return rest;
@@ -246,7 +246,7 @@ export default function DefaultDashboardView({
                   <HighlightCard projectsSection={section} />
 
                   <section
-                    className={`border-border bg-background rounded-2xl border p-6 shadow-sm ${section.font ? getFontClass(section.font) : ""}`}
+                    className={`border-border bg-background w-full rounded-2xl border p-6 shadow-sm ${section.font ? getFontClass(section.font) : ""}`}
                     style={(() => {
                       const { gap: _gap, ...rest } = getSectionStyle(section);
                       return rest;

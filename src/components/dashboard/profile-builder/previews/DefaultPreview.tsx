@@ -88,10 +88,10 @@ export default function DefaultPreview({
               tabIndex={0}
               onClick={(event) => handleSelectSection(event, section)}
               onKeyDown={(event) => handleSectionKeyDown(event, section)}
-              className={`group relative cursor-pointer transition-opacity duration-200 ${section.font ? getFontClass(section.font) : ""}`}
+              className={`group relative w-full cursor-pointer transition-opacity duration-200 ${section.font ? getFontClass(section.font) : ""}`}
             >
               <section
-                className="border-border bg-background flex flex-row items-start gap-6 rounded-2xl border p-6 shadow-sm"
+                className="border-border bg-background flex w-full flex-row items-start gap-6 rounded-2xl border p-6 shadow-sm"
                 style={getSectionStyle(section)}
               >
                 {profileImageUrl ? (
@@ -133,11 +133,11 @@ export default function DefaultPreview({
               tabIndex={0}
               onClick={(event) => handleSelectSection(event, section)}
               onKeyDown={(event) => handleSectionKeyDown(event, section)}
-              className={`group relative cursor-pointer transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
+              className={`group relative w-full cursor-pointer transition-opacity duration-200 ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
             >
               {renderControls(section)}
               <section
-                className="border-border bg-background rounded-2xl border p-6 pr-14 shadow-sm"
+                className="border-border bg-background w-full rounded-2xl border p-6 shadow-sm"
                 style={(() => {
                   const { gap: _gap, ...rest } = getSectionStyle(section);
                   return rest;
@@ -239,13 +239,13 @@ export default function DefaultPreview({
               tabIndex={0}
               onClick={(event) => handleSelectSection(event, section)}
               onKeyDown={(event) => handleSectionKeyDown(event, section)}
-              className="group relative flex cursor-pointer flex-col gap-6"
+              className="group relative flex w-full cursor-pointer flex-col gap-6"
             >
               {renderControls(section)}
               <HighlightPreviewCard projectsSection={section} />
 
               <section
-                className={`border-border bg-background rounded-2xl border p-6 shadow-sm ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
+                className={`border-border bg-background w-full rounded-2xl border p-6 shadow-sm ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
                 style={(() => {
                   const { gap: _gap, ...rest } = getSectionStyle(section);
                   return rest;
