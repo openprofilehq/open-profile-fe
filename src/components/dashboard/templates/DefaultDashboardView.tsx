@@ -314,7 +314,7 @@ export default function DefaultDashboardView({
                                   </p>
                                 )}
                                 {hasUrl && (
-                                  <span className="text-brand-hover-bg mt-6 inline-flex items-center gap-1.5 text-[14px] font-bold hover:underline">
+                                  <span className="text-primary-text mt-6 inline-flex items-center gap-1.5 text-[14px] font-bold hover:underline">
                                     {project.buttonText || "View project"}
                                     <span className="text-lg leading-none">
                                       ›
