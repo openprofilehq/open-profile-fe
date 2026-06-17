@@ -159,7 +159,7 @@ export default function LeftSidebar({
         </div>
 
         {/* Grid outline of Cards */}
-        <div className="grid auto-rows-max grid-cols-2 gap-4 overflow-y-auto pr-1">
+        <div className="profile-builder-scrollbar grid auto-rows-max grid-cols-2 gap-4 overflow-y-auto pr-1">
           {/* Card 1: Bio */}
           <button
             type="button"
@@ -395,7 +395,7 @@ export default function LeftSidebar({
               </h4>
 
               {/* Existing Experience Items */}
-              <div className="flex max-h-48 flex-col gap-2 overflow-y-auto">
+              <div className="profile-builder-scrollbar flex max-h-48 flex-col gap-2 overflow-y-auto">
                 {editingSection.experience &&
                 editingSection.experience.length > 0 ? (
                   editingSection.experience.map((exp) => (
@@ -548,7 +548,7 @@ export default function LeftSidebar({
       </div>
 
       {/* Sections List */}
-      <div className="flex-1 overflow-y-auto pr-1">
+      <div className="profile-builder-scrollbar flex-1 overflow-y-auto pr-1">
         <Reorder.Group
           axis="y"
           values={searchQuery ? filteredSections : orderedActiveSections}

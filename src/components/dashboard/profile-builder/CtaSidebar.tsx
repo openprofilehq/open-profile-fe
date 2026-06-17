@@ -180,7 +180,7 @@ export default function CtaSidebar({
       </div>
 
       {/* Sidebar Content */}
-      <div className="flex-1 overflow-y-auto py-6 pr-1">
+      <div className="profile-builder-scrollbar flex-1 overflow-y-auto py-6 pr-1">
         <div className="flex flex-col gap-6">
           {/* Title Section */}
           <div className="flex flex-col gap-2">
@@ -212,7 +212,7 @@ export default function CtaSidebar({
               maxLength={200}
               placeholder="I'm currently accepting new projects and consulting opportunities..."
               rows={4}
-              className={`text-primary-text w-full resize-none rounded-[10px] border px-4 py-3 text-sm transition-colors outline-none ${
+              className={`profile-builder-scrollbar text-primary-text w-full resize-none rounded-[10px] border px-4 py-3 text-sm transition-colors outline-none ${
                 subtitleError
                   ? "border-red-500 focus:border-red-500"
                   : "border-border focus:border-brand-b"
@@ -310,7 +310,7 @@ export default function CtaSidebar({
 
             {/* Presets Grid Dropdown */}
             {isIconSelectorOpen && (
-              <div className="border-tertiary-b animate-in fade-in slide-in-from-bottom-2 bg-background absolute bottom-[55px] left-0 z-30 max-h-56 w-full overflow-y-auto rounded-xl border p-3.5 shadow-lg duration-150">
+              <div className="border-tertiary-b profile-builder-scrollbar animate-in fade-in slide-in-from-bottom-2 bg-background absolute bottom-[55px] left-0 z-30 max-h-56 w-full overflow-y-auto rounded-xl border p-3.5 shadow-lg duration-150">
                 <p className="text-secondary-text mb-2.5 text-left text-xs font-bold tracking-wider uppercase">
                   Select Presets
                 </p>

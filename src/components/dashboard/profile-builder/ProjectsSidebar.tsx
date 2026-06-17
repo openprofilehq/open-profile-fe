@@ -274,7 +274,7 @@ export default function ProjectsSidebar({
       </div>
 
       {/* Sidebar Content */}
-      <div className="flex-1 overflow-y-auto py-6 pr-1">
+      <div className="profile-builder-scrollbar flex-1 overflow-y-auto py-6 pr-1">
         {selectedTab === "content" ? (
           projects.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
@@ -316,7 +316,7 @@ export default function ProjectsSidebar({
                   maxLength={200}
                   placeholder="Add Text here"
                   rows={3}
-                  className="focus:border-brand-b border-border w-full resize-none rounded-[10px] border px-4 py-3 text-sm text-[#050505] transition-colors outline-none"
+                  className="profile-builder-scrollbar focus:border-brand-b border-border w-full resize-none rounded-[10px] border px-4 py-3 text-sm text-[#050505] transition-colors outline-none"
                 />
                 <p className="text-right text-[11px] text-[#A2A2A2]">
                   {sectionSubtitle.length}/200

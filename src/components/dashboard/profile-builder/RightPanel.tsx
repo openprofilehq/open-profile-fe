@@ -233,7 +233,7 @@ export default function RightPanel({
         <h2 className="text-primary-text text-sm font-bold">Customization</h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-5">
+      <div className="profile-builder-scrollbar flex-1 overflow-y-auto px-4 py-5">
         <div className="flex flex-col gap-5">
           <div>
             <label className="text-primary-text mb-2 block text-xs font-bold">
