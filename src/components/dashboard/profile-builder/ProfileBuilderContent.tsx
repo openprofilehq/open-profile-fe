@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -28,6 +28,7 @@ import { isApiError } from "@/api/base";
 import { normalizeFullName, validateFullName } from "@/utils/nameValidation";
 import { ROUTES } from "@/constants/routes";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useProfileBuilderPublishState } from "./profile-builder-publish-state";
 import {
   Dialog,
   DialogContent,
@@ -160,6 +161,29 @@ type ProfileMetaSnapshot = {
   photoUrl: string | null;
 };
 
+type PublishSnapshotSection = {
+  id: string;
+  title: string;
+  type: Section["type"];
+  visible: boolean;
+  subtitle?: string;
+  bio?: string;
+  fullName?: string;
+  photoUrl?: string | null;
+  links?: Section["links"];
+  projects?: Section["projects"];
+  layout?: Section["layout"];
+  buttonText?: string;
+  url?: string;
+  iconId?: string;
+  iconSrc?: string;
+  iconLabel?: string;
+  bgColor?: string;
+  textColor?: string;
+  iconColor?: string;
+  font?: string;
+};
+
 function isDraftConflictError(error: unknown) {
   const errObj = error as Record<string, unknown>;
 
@@ -179,8 +203,72 @@ function getBioValueForProfileMeta(
     : (currentProfile?.bio ?? null);
 }
 
+function createPublishSnapshot({
+  sections,
+  template,
+  font,
+  textColor,
+  bgColor,
+  iconColor,
+  spacing,
+  borderRadius,
+  appearanceTheme,
+}: {
+  sections: Section[];
+  template: string;
+  font: string;
+  textColor: string;
+  bgColor: string;
+  iconColor: string;
+  spacing: number;
+  borderRadius: "sharp" | "rounded" | "pill";
+  appearanceTheme: "light" | "dark";
+}) {
+  const snapshotSections: PublishSnapshotSection[] = sections.map(
+    (section) => ({
+      id: section.id,
+      title: section.title,
+      type: section.type,
+      visible: section.visible,
+      subtitle: section.subtitle ?? undefined,
+      bio: section.bio ?? undefined,
+      fullName: section.fullName ?? undefined,
+      photoUrl: section.photoUrl ?? undefined,
+      links: section.links,
+      projects: section.projects,
+      layout: section.layout ?? undefined,
+      buttonText: section.buttonText ?? undefined,
+      url: section.url ?? undefined,
+      iconId: section.iconId ?? undefined,
+      iconSrc: section.iconSrc ?? undefined,
+      iconLabel: section.iconLabel ?? undefined,
+      bgColor: section.bgColor ?? undefined,
+      textColor: section.textColor ?? undefined,
+      iconColor: section.iconColor ?? undefined,
+      font: section.font ?? undefined,
+    })
+  );
+
+  return JSON.stringify({
+    sections: snapshotSections,
+    template: template.toLowerCase(),
+    font,
+    textColor,
+    bgColor,
+    iconColor,
+    spacing,
+    borderRadius,
+    appearanceTheme,
+  });
+}
+
 export default function ProfileBuilderContent() {
   const queryClient = useQueryClient();
+  const {
+    publishedVersion,
+    setHasUnpublishedChanges,
+    setBeforePublishHandler,
+  } = useProfileBuilderPublishState();
 
   const searchParams = useSearchParams();
   const sectionParam = searchParams.get("section");
@@ -228,6 +316,8 @@ export default function ProfileBuilderContent() {
   const profileMetaSnapshotRef = useRef<ProfileMetaSnapshot | null>(null);
   const profileMetaSaveQueueRef = useRef<Promise<unknown>>(Promise.resolve());
   const appearanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastPublishedSnapshotRef = useRef<string | null>(null);
+  const publishedVersionRef = useRef(publishedVersion);
 
   useEffect(() => {
     const isAppearanceReady =
@@ -398,25 +488,26 @@ export default function ProfileBuilderContent() {
     sectionParam,
   ]);
 
-  const { mutate: saveAppearance } = useMutation({
-    mutationKey: updateProfileAppearanceOption.mutationKey,
-    mutationFn: updateProfileAppearanceOption.mutationFn,
-    onSuccess() {
-      queryClient.invalidateQueries({
-        queryKey: dashboardProfileOption().queryKey,
-      });
-      queryClient.invalidateQueries({
-        queryKey: profileAppearanceOption().queryKey,
-      });
-    },
-    onError(error: unknown) {
-      const msg =
-        error instanceof Error
-          ? error.message
-          : "Failed to save appearance settings.";
-      toast.error(msg);
-    },
-  });
+  const { mutate: saveAppearance, mutateAsync: saveAppearanceAsync } =
+    useMutation({
+      mutationKey: updateProfileAppearanceOption.mutationKey,
+      mutationFn: updateProfileAppearanceOption.mutationFn,
+      onSuccess() {
+        queryClient.invalidateQueries({
+          queryKey: dashboardProfileOption().queryKey,
+        });
+        queryClient.invalidateQueries({
+          queryKey: profileAppearanceOption().queryKey,
+        });
+      },
+      onError(error: unknown) {
+        const msg =
+          error instanceof Error
+            ? error.message
+            : "Failed to save appearance settings.";
+        toast.error(msg);
+      },
+    });
 
   const persistDraftBeforeMeta = useCallback(
     async (payload: UpsertDraftRequest, updatedAt: string | null) => {
@@ -549,6 +640,145 @@ export default function ProfileBuilderContent() {
     .map((s) => `${s.id}-${s.bgColor}-${s.textColor}-${s.iconColor}-${s.font}`)
     .join("|");
 
+  const buildAppearancePayload = useCallback(() => {
+    const globalAppearance = {
+      template: template,
+      accentColour: normalizeColorForApi(iconColor),
+      backgroundColour: normalizeColorForApi(bgColor),
+      textColour: normalizeColorForApi(textColor),
+      font: mapFontToApi(font),
+      cornerStyle: mapCornerStyleToApi(borderRadius),
+      spacing: clampSpacingForApi(spacing),
+      theme: appearanceTheme,
+    };
+
+    const buildComponentAppearance = (sectionType: string) => {
+      const sec = sectionsRef.current.find((s) => s.type === sectionType);
+      if (!sec) return globalAppearance;
+
+      return {
+        ...globalAppearance,
+        ...(sec.bgColor && {
+          backgroundColour: normalizeColorForApi(sec.bgColor),
+        }),
+        ...(sec.textColor && {
+          textColour: normalizeColorForApi(sec.textColor),
+        }),
+        ...(sec.iconColor && {
+          accentColour: normalizeColorForApi(sec.iconColor),
+        }),
+        ...(sec.font && { font: mapFontToApi(sec.font) }),
+      };
+    };
+
+    return {
+      global: globalAppearance,
+      components: {
+        bio: buildComponentAppearance("bio"),
+        links: buildComponentAppearance("links"),
+        projects: buildComponentAppearance("projects"),
+        cta: buildComponentAppearance("experience"),
+      },
+    };
+  }, [
+    template,
+    iconColor,
+    bgColor,
+    textColor,
+    font,
+    borderRadius,
+    spacing,
+    appearanceTheme,
+  ]);
+
+  const flushDraftAndProfileMetaSave = useCallback(async () => {
+    const bioSection = sectionsRef.current.find((s) => s.type === "bio");
+    const updatedAt = draftUpdatedAtRef.current;
+    const currentProfile = profileRef.current;
+
+    const payload = {
+      bio: getBioValueForProfileMeta(bioSection, currentProfile),
+      content: sectionsToContent(sectionsRef.current),
+      themeSettings: { template },
+    };
+
+    const draftSaved = await persistDraftBeforeMetaRef.current(
+      payload,
+      updatedAt
+    );
+
+    if (!draftSaved) {
+      return;
+    }
+
+    const nextProfileMeta: ProfileMetaSnapshot = {
+      fullName: normalizeFullName(
+        bioSection?.fullName ?? currentProfile?.fullName ?? ""
+      ),
+      bio: getBioValueForProfileMeta(bioSection, currentProfile),
+      photoUrl:
+        bioSection?.photoUrl !== undefined
+          ? bioSection.photoUrl
+          : (currentProfile?.photoUrl ?? null),
+    };
+
+    const previousProfileMeta = profileMetaSnapshotRef.current;
+
+    const hasProfileMetaChanges =
+      !previousProfileMeta ||
+      previousProfileMeta.fullName !== nextProfileMeta.fullName ||
+      previousProfileMeta.bio !== nextProfileMeta.bio ||
+      previousProfileMeta.photoUrl !== nextProfileMeta.photoUrl;
+
+    const fullNameValidationError = validateFullName(nextProfileMeta.fullName);
+
+    if (
+      currentProfile?.username &&
+      !fullNameValidationError &&
+      hasProfileMetaChanges
+    ) {
+      await saveProfileMetaQueuedRef.current({
+        username: currentProfile.username,
+        next: nextProfileMeta,
+      });
+    }
+  }, [template]);
+
+  const flushPendingBuilderSaves = useCallback(async () => {
+    const shouldFlushAppearance = Boolean(appearanceTimerRef.current);
+    const shouldFlushDraft = Boolean(saveTimerRef.current);
+
+    if (appearanceTimerRef.current) {
+      clearTimeout(appearanceTimerRef.current);
+      appearanceTimerRef.current = null;
+    }
+
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+
+    if (shouldFlushAppearance) {
+      await saveAppearanceAsync(buildAppearancePayload());
+    }
+
+    if (shouldFlushDraft) {
+      await flushDraftAndProfileMetaSave();
+    }
+
+    await profileMetaSaveQueueRef.current;
+  }, [
+    buildAppearancePayload,
+    flushDraftAndProfileMetaSave,
+    saveAppearanceAsync,
+  ]);
+
+  useEffect(() => {
+    setBeforePublishHandler(flushPendingBuilderSaves);
+
+    return () => setBeforePublishHandler(null);
+  }, [flushPendingBuilderSaves, setBeforePublishHandler]);
+
   useEffect(() => {
     if (!contentLoadedRef.current) return;
     if (appearanceHydratingRef.current) return;
@@ -563,45 +793,7 @@ export default function ProfileBuilderContent() {
     }
 
     appearanceTimerRef.current = setTimeout(() => {
-      const globalAppearance = {
-        template: template,
-        accentColour: normalizeColorForApi(iconColor),
-        backgroundColour: normalizeColorForApi(bgColor),
-        textColour: normalizeColorForApi(textColor),
-        font: mapFontToApi(font),
-        cornerStyle: mapCornerStyleToApi(borderRadius),
-        spacing: clampSpacingForApi(spacing),
-        theme: appearanceTheme,
-      };
-
-      const buildComponentAppearance = (sectionType: string) => {
-        const sec = sectionsRef.current.find((s) => s.type === sectionType);
-        if (!sec) return globalAppearance;
-
-        return {
-          ...globalAppearance,
-          ...(sec.bgColor && {
-            backgroundColour: normalizeColorForApi(sec.bgColor),
-          }),
-          ...(sec.textColor && {
-            textColour: normalizeColorForApi(sec.textColor),
-          }),
-          ...(sec.iconColor && {
-            accentColour: normalizeColorForApi(sec.iconColor),
-          }),
-          ...(sec.font && { font: mapFontToApi(sec.font) }),
-        };
-      };
-
-      saveAppearance({
-        global: globalAppearance,
-        components: {
-          bio: buildComponentAppearance("bio"),
-          links: buildComponentAppearance("links"),
-          projects: buildComponentAppearance("projects"),
-          cta: buildComponentAppearance("experience"),
-        },
-      });
+      saveAppearance(buildAppearancePayload());
       appearanceTimerRef.current = null;
     }, 1000);
 
@@ -610,18 +802,7 @@ export default function ProfileBuilderContent() {
         clearTimeout(appearanceTimerRef.current);
       }
     };
-  }, [
-    template,
-    font,
-    bgColor,
-    textColor,
-    iconColor,
-    spacing,
-    borderRadius,
-    appearanceTheme,
-    saveAppearance,
-    sectionAppearanceDeps,
-  ]);
+  }, [buildAppearancePayload, saveAppearance, sectionAppearanceDeps]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
@@ -637,58 +818,7 @@ export default function ProfileBuilderContent() {
     saveTimerRef.current = setTimeout(() => {
       void (async () => {
         try {
-          const bioSection = sections.find((s) => s.type === "bio");
-          const updatedAt = draftUpdatedAtRef.current;
-          const currentProfile = profileRef.current;
-
-          const payload = {
-            bio: getBioValueForProfileMeta(bioSection, currentProfile),
-            content: sectionsToContent(sections),
-            themeSettings: { template },
-          };
-
-          const draftSaved = await persistDraftBeforeMetaRef.current(
-            payload,
-            updatedAt
-          );
-
-          if (!draftSaved) {
-            return;
-          }
-
-          const nextProfileMeta: ProfileMetaSnapshot = {
-            fullName: normalizeFullName(
-              bioSection?.fullName ?? currentProfile?.fullName ?? ""
-            ),
-            bio: getBioValueForProfileMeta(bioSection, currentProfile),
-            photoUrl:
-              bioSection?.photoUrl !== undefined
-                ? bioSection.photoUrl
-                : (currentProfile?.photoUrl ?? null),
-          };
-
-          const previousProfileMeta = profileMetaSnapshotRef.current;
-
-          const hasProfileMetaChanges =
-            !previousProfileMeta ||
-            previousProfileMeta.fullName !== nextProfileMeta.fullName ||
-            previousProfileMeta.bio !== nextProfileMeta.bio ||
-            previousProfileMeta.photoUrl !== nextProfileMeta.photoUrl;
-
-          const fullNameValidationError = validateFullName(
-            nextProfileMeta.fullName
-          );
-
-          if (
-            currentProfile?.username &&
-            !fullNameValidationError &&
-            hasProfileMetaChanges
-          ) {
-            await saveProfileMetaQueuedRef.current({
-              username: currentProfile.username,
-              next: nextProfileMeta,
-            });
-          }
+          await flushDraftAndProfileMetaSave();
         } catch (error) {
           console.error("[profile-meta] Save failed:", error);
         } finally {
@@ -702,7 +832,7 @@ export default function ProfileBuilderContent() {
         clearTimeout(saveTimerRef.current);
       }
     };
-  }, [sections, template]);
+  }, [sections, template, flushDraftAndProfileMetaSave]);
 
   useEffect(() => {
     return () => {
@@ -800,6 +930,56 @@ export default function ProfileBuilderContent() {
       }
     : profile;
 
+  const currentPublishSnapshot = useMemo(
+    () =>
+      createPublishSnapshot({
+        sections: resolvedSections,
+        template,
+        font,
+        textColor,
+        bgColor,
+        iconColor,
+        spacing,
+        borderRadius,
+        appearanceTheme,
+      }),
+    [
+      resolvedSections,
+      template,
+      font,
+      textColor,
+      bgColor,
+      iconColor,
+      spacing,
+      borderRadius,
+      appearanceTheme,
+    ]
+  );
+
+  useEffect(() => {
+    if (!contentLoadedRef.current) return;
+    if (appearanceHydratingRef.current) return;
+
+    if (lastPublishedSnapshotRef.current === null) {
+      lastPublishedSnapshotRef.current = currentPublishSnapshot;
+      queueMicrotask(() => setHasUnpublishedChanges(false));
+      return;
+    }
+
+    const hasChanges =
+      lastPublishedSnapshotRef.current !== currentPublishSnapshot;
+
+    queueMicrotask(() => setHasUnpublishedChanges(hasChanges));
+  }, [currentPublishSnapshot, setHasUnpublishedChanges]);
+
+  useEffect(() => {
+    if (publishedVersionRef.current === publishedVersion) return;
+
+    publishedVersionRef.current = publishedVersion;
+    lastPublishedSnapshotRef.current = currentPublishSnapshot;
+    queueMicrotask(() => setHasUnpublishedChanges(false));
+  }, [currentPublishSnapshot, publishedVersion, setHasUnpublishedChanges]);
+
   useEffect(() => {
     if (sectionParam) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -818,25 +998,28 @@ export default function ProfileBuilderContent() {
     }
   }, [sectionParam]);
 
-  const handleSaveProfilePhoto = useCallback(async (photoUrl: string | null) => {
-    const currentProfile = profileRef.current;
-    const currentMeta = profileMetaSnapshotRef.current;
+  const handleSaveProfilePhoto = useCallback(
+    async (photoUrl: string | null) => {
+      const currentProfile = profileRef.current;
+      const currentMeta = profileMetaSnapshotRef.current;
 
-    if (!currentProfile?.username) return;
+      if (!currentProfile?.username) return;
 
-    const nextProfileMeta: ProfileMetaSnapshot = {
-      fullName: normalizeFullName(
-        currentMeta?.fullName ?? currentProfile.fullName ?? ""
-      ),
-      bio: currentMeta?.bio ?? currentProfile.bio ?? null,
-      photoUrl,
-    };
+      const nextProfileMeta: ProfileMetaSnapshot = {
+        fullName: normalizeFullName(
+          currentMeta?.fullName ?? currentProfile.fullName ?? ""
+        ),
+        bio: currentMeta?.bio ?? currentProfile.bio ?? null,
+        photoUrl,
+      };
 
-    await saveProfileMetaQueuedRef.current({
-      username: currentProfile.username,
-      next: nextProfileMeta,
-    });
-  }, []);
+      await saveProfileMetaQueuedRef.current({
+        username: currentProfile.username,
+        next: nextProfileMeta,
+      });
+    },
+    []
+  );
 
   const handleSelectSection = (id: string) => {
     setSelectedSectionId(id);
