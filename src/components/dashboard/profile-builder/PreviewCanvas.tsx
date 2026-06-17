@@ -68,7 +68,7 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
       className="flex h-full w-full min-w-0 flex-1 flex-col"
     >
       <div
-        className={`animate-in fade-in flex h-full min-h-0 flex-1 justify-center overflow-y-auto bg-transparent px-4 transition-colors duration-200 lg:px-4 xl:px-12 ${selectedFontClass}`}
+        className={`profile-builder-scrollbar animate-in fade-in flex h-full min-h-0 flex-1 justify-center overflow-y-auto bg-transparent px-4 transition-colors duration-200 lg:px-4 xl:px-12 ${selectedFontClass}`}
       >
         <div className="flex w-full max-w-5xl flex-col gap-6 pb-32">
           {templateKey === "creator" && <CreatorPreview {...previewProps} />}
@@ -84,4 +84,3 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
     </TemplateAppearanceProvider>
   );
 }
-

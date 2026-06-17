@@ -114,7 +114,7 @@ export default function BioSidebar({
       </div>
 
       {/* Tab Content */}
-      <div className="flex-1 overflow-y-auto py-6 pr-1">
+      <div className="profile-builder-scrollbar flex-1 overflow-y-auto py-6 pr-1">
         <div className="flex flex-col gap-6">
           {/* Full name */}
           <div>
@@ -161,7 +161,7 @@ export default function BioSidebar({
               }
               rows={5}
               placeholder="Write a short bio..."
-              className={`border-tertiary-b focus:border-brand-b bg-background w-full resize-none rounded-[10px] border px-4 py-3 text-sm transition-colors outline-none ${
+              className={`profile-builder-scrollbar border-tertiary-b focus:border-brand-b bg-background w-full resize-none rounded-[10px] border px-4 py-3 text-sm transition-colors outline-none ${
                 bio.length > 300
                   ? "border-warning-b text-danger-text focus:border-warning-b"
                   : "text-primary-text"
