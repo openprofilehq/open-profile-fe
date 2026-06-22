@@ -48,9 +48,7 @@ export default function CreatorPreview({
     else if (selectedSection?.type === "bio") setActiveTab("about");
   }, [sections, selectedSectionId]);
 
-  const visibleSections = sections.filter(
-    (section) => section.type === "bio" || section.visible
-  );
+  const visibleSections = sections;
 
   const bioSection = visibleSections.find((s) => s.type === "bio");
   const projectsSection = visibleSections.find((s) => s.type === "projects");
@@ -184,8 +182,10 @@ export default function CreatorPreview({
             </div>
           )}
 
-          {ctaSection && ctaSection.visible && (
-            <div className="group/cta relative mt-4">
+          {ctaSection && (
+            <div
+              className={`group/cta relative mt-4 ${!ctaSection.visible ? "opacity-50 grayscale" : ""}`}
+            >
               {renderControls(
                 ctaSection,
                 "top-1/2 left-full ml-3 -translate-y-1/2",
@@ -281,7 +281,7 @@ export default function CreatorPreview({
                     tabIndex={0}
                     onClick={(event) => handleSelectSection(event, section)}
                     onKeyDown={(event) => handleSectionKeyDown(event, section)}
-                    className={`group relative mx-auto flex w-full max-w-4xl cursor-pointer flex-col gap-6 ${section.font ? getFontClass(section.font) : ""}`}
+                    className={`group relative mx-auto flex w-full max-w-4xl cursor-pointer flex-col gap-6 ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
                     style={(() => {
                       const {
                         gap: _gap,
@@ -427,7 +427,7 @@ export default function CreatorPreview({
                     tabIndex={0}
                     onClick={(event) => handleSelectSection(event, section)}
                     onKeyDown={(event) => handleSectionKeyDown(event, section)}
-                    className={`group relative mx-auto flex w-full max-w-2xl cursor-pointer flex-col gap-4 rounded-3xl ${section.font ? getFontClass(section.font) : ""}`}
+                    className={`group relative mx-auto flex w-full max-w-2xl cursor-pointer flex-col gap-4 rounded-3xl ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
                     style={(() => {
                       const {
                         gap: _gap,

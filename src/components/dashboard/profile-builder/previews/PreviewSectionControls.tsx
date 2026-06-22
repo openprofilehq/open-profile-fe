@@ -1,4 +1,4 @@
-import { EyeOff, Trash2 } from "lucide-react";
+import { Eye, EyeOff, Trash2 } from "lucide-react";
 import type { Section } from "../types";
 
 interface PreviewSectionControlsProps {
@@ -23,13 +23,16 @@ export default function PreviewSectionControls({
       ? "group-hover/cta:pointer-events-auto group-hover/cta:opacity-100 group-focus-within/cta:pointer-events-auto group-focus-within/cta:opacity-100"
       : "group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100";
 
+  const visibilityLabel = section.visible ? "Hide" : "Show";
+  const VisibilityIcon = section.visible ? EyeOff : Eye;
+
   return (
     <div
       className={`border-border/70 bg-background pointer-events-none absolute z-50 flex overflow-hidden rounded-[14px] border opacity-0 shadow-sm transition-opacity ${visibilityClass} ${positionClass}`}
     >
       <button
         type="button"
-        aria-label={`Hide ${section.title || "section"}`}
+        aria-label={`${visibilityLabel} ${section.title || "section"}`}
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();
@@ -37,7 +40,7 @@ export default function PreviewSectionControls({
         }}
         className="text-secondary-text hover:bg-hover-bg hover:text-primary-text bg-background flex h-9 w-9 cursor-pointer items-center justify-center transition-colors"
       >
-        <EyeOff size={16} />
+        <VisibilityIcon size={16} />
       </button>
       <button
         type="button"

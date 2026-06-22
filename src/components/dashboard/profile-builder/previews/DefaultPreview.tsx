@@ -37,9 +37,7 @@ export default function DefaultPreview({
       : getImageUrl(rawPhotoUrl)
     : null;
 
-  const visibleSections = sections.filter(
-    (section) => section.type === "bio" || section.visible
-  );
+  const visibleSections = sections;
 
   const handleSelectSection = (
     event: React.MouseEvent<HTMLElement>,
@@ -239,13 +237,13 @@ export default function DefaultPreview({
               tabIndex={0}
               onClick={(event) => handleSelectSection(event, section)}
               onKeyDown={(event) => handleSectionKeyDown(event, section)}
-              className="group relative flex w-full cursor-pointer flex-col gap-6"
+              className={`group relative flex w-full cursor-pointer flex-col gap-6 ${!section.visible ? "opacity-50 grayscale" : ""}`}
             >
               {renderControls(section)}
               <HighlightPreviewCard projectsSection={section} />
 
               <section
-                className={`border-border bg-background w-full rounded-2xl border p-6 shadow-sm ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
+                className={`border-border bg-background w-full rounded-2xl border p-6 shadow-sm ${section.font ? getFontClass(section.font) : ""}`}
                 style={(() => {
                   const { gap: _gap, ...rest } = getSectionStyle(section);
                   return rest;
