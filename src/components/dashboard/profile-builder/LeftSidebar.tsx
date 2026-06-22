@@ -108,17 +108,13 @@ export default function LeftSidebar({
     setIsAddingSection(false);
   };
 
-  const isLinksDisabled = sections.some(
-    (section) => section.type === "links" && section.visible
-  );
+  const isLinksDisabled = sections.some((section) => section.type === "links");
   const isBioDisabled = sections.some((section) => section.type === "bio");
   const isProjectsDisabled = sections.some(
-    (section) => section.type === "projects" && section.visible
+    (section) => section.type === "projects"
   );
   const isCtaDisabled = sections.some(
-    (section) =>
-      (section.type === "experience" || section.type === "cta") &&
-      section.visible
+    (section) => section.type === "experience" || section.type === "cta"
   );
   const isDisabled = isLinksDisabled;
 
