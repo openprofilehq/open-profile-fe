@@ -93,20 +93,12 @@ export default function LeftSidebar({
 
   const [linkSidebarOpen, setLinkSidebarOpen] = useState(false);
 
-  const activeSections = sections.filter(
-    (section) => section.type === "bio" || section.visible
-  );
-
-  const hiddenSections = sections.filter(
-    (section) => section.type !== "bio" && !section.visible
-  );
-
-  const orderedActiveSections = [
-    ...activeSections.filter((section) => section.type === "bio"),
-    ...activeSections.filter((section) => section.type !== "bio"),
+  const orderedSections = [
+    ...sections.filter((section) => section.type === "bio"),
+    ...sections.filter((section) => section.type !== "bio"),
   ];
 
-  const filteredSections = orderedActiveSections.filter((section) => {
+  const filteredSections = orderedSections.filter((section) => {
     const displayTitle = getDisplayTitle(section, profile);
     return displayTitle.toLowerCase().includes(searchQuery.toLowerCase());
   });
@@ -551,7 +543,7 @@ export default function LeftSidebar({
       <div className="profile-builder-scrollbar flex-1 overflow-y-auto pr-1">
         <Reorder.Group
           axis="y"
-          values={searchQuery ? filteredSections : orderedActiveSections}
+          values={searchQuery ? filteredSections : orderedSections}
           onReorder={(newOrder) => {
             if (!searchQuery) {
               const bioSection = sections.find(
@@ -564,7 +556,6 @@ export default function LeftSidebar({
               onReorderSections([
                 ...(bioSection ? [bioSection] : []),
                 ...reorderedNonBioSections,
-                ...hiddenSections,
               ]);
             }
           }}
@@ -627,7 +618,7 @@ function SortableSectionItem({
       }}
       role="button"
       tabIndex={0}
-      className={`group flex cursor-pointer items-center justify-between overflow-hidden rounded-xl border transition-colors duration-200 focus:outline-none ${
+      className={`group flex cursor-pointer items-center justify-between overflow-hidden rounded-xl border transition-colors duration-200 focus:outline-none ${!section.visible ? "opacity-50 grayscale" : ""} ${
         isSelected
           ? "border-brand-b bg-brand-light-subtle-bg shadow-sm"
           : "border-tertiary-b hover:border-brand-b hover:bg-primary-bg bg-background"

@@ -31,9 +31,7 @@ export default function PortfolioPreview({
   onRemoveSection,
   onSelectSection,
 }: PortfolioPreviewProps) {
-  const visibleSections = sections.filter(
-    (section) => section.type === "bio" || section.visible
-  );
+  const visibleSections = sections;
 
   const handleSelectSection = (
     event: React.MouseEvent<HTMLElement>,

@@ -30,9 +30,7 @@ export default function ProfessionalPreview({
   onRemoveSection,
   onSelectSection,
 }: ProfessionalPreviewProps) {
-  const visibleSections = sections.filter(
-    (section) => section.type === "bio" || section.visible
-  );
+  const visibleSections = sections;
 
   const handleSelectSection = (
     event: React.MouseEvent<HTMLElement>,
