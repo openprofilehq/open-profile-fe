@@ -190,7 +190,7 @@ export default function PortfolioPreview({
               tabIndex={0}
               onClick={(event) => handleSelectSection(event, section)}
               onKeyDown={(event) => handleSectionKeyDown(event, section)}
-              className="group relative flex cursor-pointer flex-col gap-6"
+              className={`group relative flex cursor-pointer flex-col gap-6 ${!section.visible ? "opacity-50 grayscale" : ""}`}
             >
               {renderControls(section)}
               <HighlightPreviewCard
@@ -198,7 +198,7 @@ export default function PortfolioPreview({
                 variant="transparent"
               />
               <section
-                className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""} ${section.font ? getFontClass(section.font) : ""}`}
+                className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${section.font ? getFontClass(section.font) : ""}`}
                 style={(() => {
                   const { gap: _gap, ...rest } = getSectionStyle(section);
                   return rest;
