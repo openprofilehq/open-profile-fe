@@ -41,13 +41,9 @@ export default function PreviewCanvas(props: PreviewCanvasProps) {
 
   const selectedFontClass = fontStyles[font] || "font-afacad";
 
-  const previewSections = props.sections.filter(
-    (section) => section.type === "bio" || section.visible
-  );
-
   const previewProps = {
     ...props,
-    sections: previewSections,
+    sections: props.sections,
   };
 
   return (
