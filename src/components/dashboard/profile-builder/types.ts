@@ -1,4 +1,12 @@
-export type SectionType = "bio" | "links" | "projects" | "experience";
+export const SECTION_TYPE = {
+  BIO: "bio",
+  LINKS: "links",
+  PROJECTS: "projects",
+  EXPERIENCE: "experience",
+  CTA: "cta",
+} as const;
+
+export type SectionType = (typeof SECTION_TYPE)[keyof typeof SECTION_TYPE];
 
 export interface SavedLink {
   id: string;

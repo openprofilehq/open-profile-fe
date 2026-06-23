@@ -9,7 +9,7 @@ import LinkSidebar from "./LinkSidebar";
 import BioSidebar from "./BioSidebar";
 import ProjectsSidebar from "./ProjectsSidebar";
 import CtaSidebar from "./CtaSidebar";
-import type { Section, ProfilePreview } from "./types";
+import { SECTION_TYPE, type Section, type ProfilePreview } from "./types";
 
 interface LeftSidebarProps {
   sections: Section[];
@@ -33,7 +33,7 @@ function getDisplayTitle(
 ) {
   const isBioTitle =
     section.title === "Bio - John Smith" || section.title === "Bio";
-  return section.type === "bio" && isBioTitle && profile?.fullName
+  return section.type === SECTION_TYPE.BIO && isBioTitle && profile?.fullName
     ? `Bio - ${profile.fullName}`
     : section.title;
 }
@@ -72,11 +72,11 @@ export default function LeftSidebar({
     sections.find((section) => section.id === editingSectionId) ?? null;
 
   function getSectionDescriptor(section: Section) {
-    if (section.type === "bio") return "Add name";
-    if (section.type === "links") return "Add links";
-    if (section.type === "projects") return "Add projects";
-    if (section.type === "experience") return "Add CTA";
-    if (section.type === "cta") return "Add CTA";
+    if (section.type === SECTION_TYPE.BIO) return "Add name";
+    if (section.type === SECTION_TYPE.LINKS) return "Add links";
+    if (section.type === SECTION_TYPE.PROJECTS) return "Add projects";
+    if (section.type === SECTION_TYPE.EXPERIENCE) return "Add Experience";
+    if (section.type === SECTION_TYPE.CTA) return "Add CTA";
 
     return "Customize section";
   }
@@ -94,8 +94,8 @@ export default function LeftSidebar({
   const [linkSidebarOpen, setLinkSidebarOpen] = useState(false);
 
   const orderedSections = [
-    ...sections.filter((section) => section.type === "bio"),
-    ...sections.filter((section) => section.type !== "bio"),
+    ...sections.filter((section) => section.type === SECTION_TYPE.BIO),
+    ...sections.filter((section) => section.type !== SECTION_TYPE.BIO),
   ];
 
   const filteredSections = orderedSections.filter((section) => {
@@ -108,18 +108,24 @@ export default function LeftSidebar({
     setIsAddingSection(false);
   };
 
-  const isLinksDisabled = sections.some((section) => section.type === "links");
-  const isBioDisabled = sections.some((section) => section.type === "bio");
+  const isLinksDisabled = sections.some(
+    (section) => section.type === SECTION_TYPE.LINKS
+  );
+  const isBioDisabled = sections.some(
+    (section) => section.type === SECTION_TYPE.BIO
+  );
   const isProjectsDisabled = sections.some(
-    (section) => section.type === "projects"
+    (section) => section.type === SECTION_TYPE.PROJECTS
   );
   const isCtaDisabled = sections.some(
-    (section) => section.type === "experience" || section.type === "cta"
+    (section) =>
+      section.type === SECTION_TYPE.EXPERIENCE ||
+      section.type === SECTION_TYPE.CTA
   );
   const isDisabled = isLinksDisabled;
 
   const handleSwitchToAddLinkSection = () => {
-    handleSelectCard("Links", "links");
+    handleSelectCard("Links", SECTION_TYPE.LINKS);
     setIsAddingSection(false);
     setLinkSidebarOpen(true);
   };
@@ -151,7 +157,7 @@ export default function LeftSidebar({
           {/* Card 1: Bio */}
           <button
             type="button"
-            onClick={() => handleSelectCard("Bio", "bio")}
+            onClick={() => handleSelectCard("Bio", SECTION_TYPE.BIO)}
             disabled={isBioDisabled}
             className={`group border-tertiary-b bg-background flex h-35 w-full flex-col overflow-hidden rounded-[16px] border text-left transition-all duration-200 ${isBioDisabled ? "bg-secondary-bg cursor-not-allowed opacity-70" : "hover:border-brand-b cursor-pointer hover:shadow-sm"}`}
           >
@@ -203,7 +209,7 @@ export default function LeftSidebar({
           {/* Card 3: Portfolio */}
           <button
             type="button"
-            onClick={() => handleSelectCard("Portfolio", "projects")}
+            onClick={() => handleSelectCard("Portfolio", SECTION_TYPE.PROJECTS)}
             disabled={isProjectsDisabled}
             className={`group border-tertiary-b bg-background flex h-35 w-full flex-col overflow-hidden rounded-[16px] border text-left transition-all duration-200 ${isProjectsDisabled ? "bg-secondary-bg cursor-not-allowed opacity-70" : "hover:border-brand-b cursor-pointer hover:shadow-sm"}`}
           >
@@ -224,7 +230,7 @@ export default function LeftSidebar({
           {/* Card 4: CTA */}
           <button
             type="button"
-            onClick={() => handleSelectCard("CTA", "experience")}
+            onClick={() => handleSelectCard("CTA", SECTION_TYPE.EXPERIENCE)}
             disabled={isCtaDisabled}
             className={`group border-tertiary-b bg-background flex h-35 w-full flex-col overflow-hidden rounded-[16px] border text-left transition-all duration-200 ${isCtaDisabled ? "bg-secondary-bg cursor-not-allowed opacity-70" : "hover:border-brand-b cursor-pointer hover:shadow-sm"}`}
           >
@@ -247,7 +253,7 @@ export default function LeftSidebar({
   }
 
   if (editingSection) {
-    if (editingSection.type === "bio") {
+    if (editingSection.type === SECTION_TYPE.BIO) {
       return (
         <BioSidebar
           returnTab={handleReturnToList}
@@ -259,7 +265,7 @@ export default function LeftSidebar({
       );
     }
 
-    if (editingSection.type === "links") {
+    if (editingSection.type === SECTION_TYPE.LINKS) {
       return (
         <LinkSidebar
           returnTab={handleReturnToList}
@@ -269,7 +275,7 @@ export default function LeftSidebar({
       );
     }
 
-    if (editingSection.type === "projects") {
+    if (editingSection.type === SECTION_TYPE.PROJECTS) {
       return (
         <ProjectsSidebar
           returnTab={handleReturnToList}
@@ -279,7 +285,10 @@ export default function LeftSidebar({
       );
     }
 
-    if (editingSection.type === "experience" || editingSection.type === "cta") {
+    if (
+      editingSection.type === SECTION_TYPE.EXPERIENCE ||
+      editingSection.type === SECTION_TYPE.CTA
+    ) {
       return (
         <CtaSidebar
           returnTab={handleReturnToList}
@@ -299,7 +308,9 @@ export default function LeftSidebar({
           >
             <ChevronLeft size={20} />
             <span>
-              {editingSection.type === "bio" ? "Bio" : editingSection.title}
+              {editingSection.type === SECTION_TYPE.BIO
+                ? "Bio"
+                : editingSection.title}
             </span>
           </button>
         </div>
@@ -330,14 +341,16 @@ export default function LeftSidebar({
               }
               className="border-border bg-background text-primary-text focus:border-brand-hover-bg w-full rounded-[10px] border px-4 py-3 text-sm font-semibold outline-none"
             >
-              <option value="bio">Bio / Header</option>
-              <option value="links">Links</option>
-              <option value="projects">Projects / Portfolio</option>
-              <option value="experience">CTA / Experience</option>
+              <option value={SECTION_TYPE.BIO}>Bio / Header</option>
+              <option value={SECTION_TYPE.LINKS}>Links</option>
+              <option value={SECTION_TYPE.PROJECTS}>
+                Projects / Portfolio
+              </option>
+              <option value={SECTION_TYPE.EXPERIENCE}>CTA / Experience</option>
             </select>
           </div>
 
-          {editingSection.type === "bio" && (
+          {editingSection.type === SECTION_TYPE.BIO && (
             <div className="border-secondary-b rounded-[12px] border border-dashed p-4">
               <label className="text-primary-text mb-2 block text-sm font-bold">
                 Full name
@@ -376,7 +389,7 @@ export default function LeftSidebar({
             </div>
           )}
 
-          {editingSection.type === "experience" && (
+          {editingSection.type === SECTION_TYPE.EXPERIENCE && (
             <div className="border-secondary-b flex flex-col gap-4 rounded-[12px] border border-dashed p-4">
               <h4 className="text-primary-text text-sm font-bold">
                 Experience / CTA List
@@ -455,7 +468,7 @@ export default function LeftSidebar({
                     if (!newExpRole || !newExpCompany || !newExpDuration)
                       return;
                     const newItem = {
-                      id: Math.random().toString(36).substr(2, 9),
+                      id: crypto.randomUUID(),
                       role: newExpRole,
                       company: newExpCompany,
                       duration: newExpDuration,
@@ -478,10 +491,10 @@ export default function LeftSidebar({
             </div>
           )}
 
-          {editingSection.type !== "bio" &&
-            editingSection.type !== "links" &&
-            editingSection.type !== "projects" &&
-            editingSection.type !== "experience" && (
+          {editingSection.type !== SECTION_TYPE.BIO &&
+            editingSection.type !== SECTION_TYPE.LINKS &&
+            editingSection.type !== SECTION_TYPE.PROJECTS &&
+            editingSection.type !== SECTION_TYPE.EXPERIENCE && (
               <div className="border-secondary-b rounded-[12px] border border-dashed p-6 text-center">
                 <p className="text-secondary-text text-xs font-semibold">
                   Additional dynamic items editor will display here based on
@@ -495,7 +508,8 @@ export default function LeftSidebar({
   }
 
   if (linkSidebarOpen) {
-    const linksSection = sections.find((s) => s.type === "links") ?? null;
+    const linksSection =
+      sections.find((s) => s.type === SECTION_TYPE.LINKS) ?? null;
     return (
       <LinkSidebar
         returnTab={() => {
@@ -543,10 +557,10 @@ export default function LeftSidebar({
           onReorder={(newOrder) => {
             if (!searchQuery) {
               const bioSection = sections.find(
-                (section) => section.type === "bio"
+                (section) => section.type === SECTION_TYPE.BIO
               );
               const reorderedNonBioSections = newOrder.filter(
-                (section) => section.type !== "bio"
+                (section) => section.type !== SECTION_TYPE.BIO
               );
 
               onReorderSections([
