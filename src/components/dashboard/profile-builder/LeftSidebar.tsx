@@ -9,7 +9,12 @@ import LinkSidebar from "./LinkSidebar";
 import BioSidebar from "./BioSidebar";
 import ProjectsSidebar from "./ProjectsSidebar";
 import CtaSidebar from "./CtaSidebar";
-import { SECTION_TYPE, type Section, type ProfilePreview } from "./types";
+import {
+  SECTION_TYPE,
+  type Section,
+  type ProfilePreview,
+  type SectionType,
+} from "./types";
 
 interface LeftSidebarProps {
   sections: Section[];
@@ -18,7 +23,7 @@ interface LeftSidebarProps {
   initialEditingSectionId?: string | null;
   onSelectSection: (id: string) => void;
   onDeselectSection: () => void;
-  onAddSection: (title: string, type: string) => void;
+  onAddSection: (title: string, type: SectionType) => void;
   onRemoveSection: (id: string) => void;
   onToggleSectionVisibility: (id: string) => void;
   onReorderSections: (sections: Section[]) => void;
@@ -103,7 +108,7 @@ export default function LeftSidebar({
     return displayTitle.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
-  const handleSelectCard = (title: string, type: string) => {
+  const handleSelectCard = (title: string, type: SectionType) => {
     onAddSection(title, type);
     setIsAddingSection(false);
   };
