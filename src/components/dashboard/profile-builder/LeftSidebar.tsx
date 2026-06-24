@@ -32,15 +32,19 @@ interface LeftSidebarProps {
   profile?: ProfilePreview | null;
 }
 
+const SECTION_STATIC_LABELS: Record<string, string> = {
+  [SECTION_TYPE.BIO]: "Bio",
+  [SECTION_TYPE.LINKS]: "Links",
+  [SECTION_TYPE.PROJECTS]: "Projects",
+  [SECTION_TYPE.EXPERIENCE]: "CTA",
+  [SECTION_TYPE.CTA]: "CTA",
+};
+
 function getDisplayTitle(
   section: Section,
-  profile: ProfilePreview | null | undefined
+  _profile: ProfilePreview | null | undefined
 ) {
-  const isBioTitle =
-    section.title === "Bio - John Smith" || section.title === "Bio";
-  return section.type === SECTION_TYPE.BIO && isBioTitle && profile?.fullName
-    ? `Bio - ${profile.fullName}`
-    : section.title;
+  return SECTION_STATIC_LABELS[section.type] ?? section.title;
 }
 
 export default function LeftSidebar({
@@ -80,7 +84,7 @@ export default function LeftSidebar({
     if (section.type === SECTION_TYPE.BIO) return "Add name";
     if (section.type === SECTION_TYPE.LINKS) return "Add links";
     if (section.type === SECTION_TYPE.PROJECTS) return "Add projects";
-    if (section.type === SECTION_TYPE.EXPERIENCE) return "Add Experience";
+    if (section.type === SECTION_TYPE.EXPERIENCE) return "Add CTA";
     if (section.type === SECTION_TYPE.CTA) return "Add CTA";
 
     return "Customize section";

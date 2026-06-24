@@ -93,18 +93,28 @@ export default function CreatorDashboardView({
   }
 
   const rawSections = contentToSections(
-    content || ({ content: {} } as any),
-    profile || ({} as any)
+    content || ({ content: {} } as ProfileContentResponse),
+    profile || ({} as DashboardProfileResponse)
   );
 
+  type ComponentsAppearance = Record<
+    string,
+    Record<string, string | undefined>
+  >;
   const componentsAppearance =
-    (appearance as any)?.components ||
-    (profile as any)?.appearance?.components ||
-    {};
+    ((appearance as Record<string, unknown>)
+      ?.components as ComponentsAppearance) ||
+    ((
+      (profile as unknown as Record<string, unknown>)?.appearance as Record<
+        string,
+        unknown
+      >
+    )?.components as ComponentsAppearance) ||
+    ({} as ComponentsAppearance);
 
   const sections = rawSections.map((section) => {
     const appearanceKey = section.type === "experience" ? "cta" : section.type;
-    const secAppearance = componentsAppearance[appearanceKey] || {};
+    const secAppearance = componentsAppearance[appearanceKey] ?? {};
     return {
       ...section,
       bgColor:
@@ -119,7 +129,7 @@ export default function CreatorDashboardView({
         secAppearance.accentColour ||
         secAppearance.iconColor ||
         section.iconColor,
-      font: (secAppearance as any).font || section.font,
+      font: secAppearance.font || section.font,
     };
   });
 

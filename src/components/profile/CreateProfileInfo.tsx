@@ -228,7 +228,7 @@ export default function CreateProfileInfo({
             </p>
           )}
 
-          {displayPhoto && (
+          {/* {displayPhoto && (
             <button
               type="button"
               onClick={handleRemovePhoto}
@@ -236,7 +236,7 @@ export default function CreateProfileInfo({
             >
               Remove photo
             </button>
-          )}
+          )} */}
         </div>
 
         <div className="mt-8 flex w-full flex-col gap-1.5 sm:mt-12">
