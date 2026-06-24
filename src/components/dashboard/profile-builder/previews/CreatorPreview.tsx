@@ -367,7 +367,7 @@ export default function CreatorPreview({
                                     isSideBySide ? "justify-center" : "p-5"
                                   }`}
                                 >
-                                  <h5 className="text-primary-text text-xl font-bold break-all">
+                                  <h5 className="text-primary-text text-xl font-bold break-words">
                                     {project.title}
                                   </h5>
 
@@ -377,7 +377,7 @@ export default function CreatorPreview({
                                     </span>
                                   )}
 
-                                  <p className="text-secondary-text mt-2 line-clamp-3 text-[14px] leading-relaxed break-all">
+                                  <p className="text-secondary-text mt-2 line-clamp-3 text-[14px] leading-relaxed break-words">
                                     {descriptionText}
                                   </p>
                                   {hasUrl && (
@@ -475,7 +475,7 @@ export default function CreatorPreview({
                     className={`border-border group mx-auto max-w-4xl cursor-pointer rounded-3xl border p-8 sm:p-10 ${section.font ? getFontClass(section.font) : ""}`}
                     style={getSectionStyle(section)}
                   >
-                    <p className="text-secondary-text text-center text-[15px] leading-relaxed break-all whitespace-pre-wrap">
+                    <p className="text-secondary-text text-center text-[15px] leading-relaxed break-words whitespace-pre-wrap">
                       {section.bio ||
                         "Write a little bit about yourself here..."}
                     </p>
