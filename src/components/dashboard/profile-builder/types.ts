@@ -2,7 +2,6 @@ export const SECTION_TYPE = {
   BIO: "bio",
   LINKS: "links",
   PROJECTS: "projects",
-  EXPERIENCE: "experience",
   CTA: "cta",
 } as const;
 
@@ -29,13 +28,6 @@ export interface ProjectItem {
   highlighted?: boolean;
 }
 
-export interface ExperienceItem {
-  id: string;
-  role: string;
-  company: string;
-  duration: string;
-}
-
 export interface Section {
   id: string;
   title: string;
@@ -47,7 +39,6 @@ export interface Section {
   subtitle?: string;
   links?: SavedLink[];
   projects?: ProjectItem[];
-  experience?: ExperienceItem[];
   font?: string;
   textColor?: string;
   bgColor?: string;

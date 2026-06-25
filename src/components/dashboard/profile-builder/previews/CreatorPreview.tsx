@@ -53,9 +53,7 @@ export default function CreatorPreview({
   const bioSection = visibleSections.find((s) => s.type === "bio");
   const projectsSection = visibleSections.find((s) => s.type === "projects");
   const linksSection = visibleSections.find((s) => s.type === "links");
-  const ctaSection = visibleSections.find(
-    (s) => s.type === "experience" || s.type === "cta"
-  );
+  const ctaSection = visibleSections.find((s) => s.type === "cta");
 
   const resolvedName = profile?.fullName ?? "";
 

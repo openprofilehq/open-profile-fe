@@ -357,7 +357,7 @@ export default function ProfessionalPreview({
           );
         }
 
-        if (section.type === "experience") {
+        if (section.type === "cta") {
           return (
             <section
               key={section.id}

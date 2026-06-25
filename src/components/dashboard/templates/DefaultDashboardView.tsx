@@ -68,7 +68,7 @@ export default function DefaultDashboardView({
     ({} as ComponentsAppearance);
 
   const sections = rawSections.map((section) => {
-    const appearanceKey = section.type === "experience" ? "cta" : section.type;
+    const appearanceKey = section.type;
     const secAppearance = componentsAppearance[appearanceKey] ?? {};
     return {
       ...section,
@@ -391,7 +391,7 @@ export default function DefaultDashboardView({
               );
             }
 
-            if (section.type === "experience") {
+            if (section.type === "cta") {
               return (
                 <div
                   key={section.id}

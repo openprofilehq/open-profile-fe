@@ -113,7 +113,7 @@ export default function CreatorDashboardView({
     ({} as ComponentsAppearance);
 
   const sections = rawSections.map((section) => {
-    const appearanceKey = section.type === "experience" ? "cta" : section.type;
+    const appearanceKey = section.type;
     const secAppearance = componentsAppearance[appearanceKey] ?? {};
     return {
       ...section,
@@ -137,7 +137,7 @@ export default function CreatorDashboardView({
 
   const bioSection = sections.find((s) => s.type === "bio");
   const linksSection = sections.find((s) => s.type === "links");
-  const ctaSection = sections.find((s) => s.type === "experience");
+  const ctaSection = sections.find((s) => s.type === "cta");
   const resolvedName = profile?.fullName || "Micaela Robinson";
 
   const allLinks = (

@@ -114,8 +114,7 @@ export default function PortfolioDashboardView({
     ({} as ComponentsAppearance);
 
   const sections = rawSections.map((section) => {
-    // Map 'experience' section type back to 'cta' for appearance lookups
-    const appearanceKey = section.type === "experience" ? "cta" : section.type;
+    const appearanceKey = section.type;
     const secAppearance = componentsAppearance[appearanceKey] ?? {};
     return {
       ...section,
@@ -412,7 +411,7 @@ export default function PortfolioDashboardView({
             );
           }
 
-          if (section.type === "experience") {
+          if (section.type === "cta") {
             return (
               <section
                 key={section.id}
