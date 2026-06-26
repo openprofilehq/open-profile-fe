@@ -42,8 +42,7 @@ const createSection = (type: string, customTitle?: string): Section | null => {
     bio: "bio",
     links: "links",
     projects: "projects",
-    experience: "experience",
-    cta: "experience",
+    cta: "cta",
   };
 
   const resolvedType = allowedTypes[type];
@@ -53,7 +52,6 @@ const createSection = (type: string, customTitle?: string): Section | null => {
     bio: "bio",
     links: "links",
     projects: "projects",
-    experience: "cta",
     cta: "cta",
   };
 
@@ -73,23 +71,18 @@ const createSection = (type: string, customTitle?: string): Section | null => {
     type: resolvedType,
     visible: true,
     subtitle:
-      resolvedType === "links"
-        ? ""
-        : resolvedType === "experience"
-          ? ""
-          : undefined,
+      resolvedType === "links" ? "" : resolvedType === "cta" ? "" : undefined,
     links: resolvedType === "links" ? [] : undefined,
     projects: resolvedType === "projects" ? [] : undefined,
-    layout: resolvedType === "experience" ? "1" : undefined,
-    buttonText:
-      resolvedType === "experience" ? "Start a Conversation" : undefined,
-    url: resolvedType === "experience" ? "" : undefined,
-    iconId: resolvedType === "experience" ? "chat" : undefined,
+    layout: resolvedType === "cta" ? "1" : undefined,
+    buttonText: resolvedType === "cta" ? "Start a Conversation" : undefined,
+    url: resolvedType === "cta" ? "" : undefined,
+    iconId: resolvedType === "cta" ? "chat" : undefined,
     iconSrc:
-      resolvedType === "experience"
+      resolvedType === "cta"
         ? "/profilebuilder_home/icons/chat.svg"
         : undefined,
-    iconLabel: resolvedType === "experience" ? "Chat" : undefined,
+    iconLabel: resolvedType === "cta" ? "Chat" : undefined,
   };
 };
 
@@ -677,7 +670,7 @@ export default function ProfileBuilderContent() {
         bio: buildComponentAppearance("bio"),
         links: buildComponentAppearance("links"),
         projects: buildComponentAppearance("projects"),
-        cta: buildComponentAppearance("experience"),
+        cta: buildComponentAppearance("cta"),
       },
     };
   }, [

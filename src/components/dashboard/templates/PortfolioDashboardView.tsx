@@ -92,21 +92,30 @@ export default function PortfolioDashboardView({
   }
 
   const rawSections = contentToSections(
-    content || ({ content: {} } as any),
-    profile || ({} as any)
+    content || ({ content: {} } as ProfileContentResponse),
+    profile || ({} as DashboardProfileResponse)
   );
 
   // Patch sections with overrides from profile appearance components
 
+  type ComponentsAppearance = Record<
+    string,
+    Record<string, string | undefined>
+  >;
   const componentsAppearance =
-    (appearance as any)?.components ||
-    (profile as any)?.appearance?.components ||
-    {};
+    ((appearance as Record<string, unknown>)
+      ?.components as ComponentsAppearance) ||
+    ((
+      (profile as unknown as Record<string, unknown>)?.appearance as Record<
+        string,
+        unknown
+      >
+    )?.components as ComponentsAppearance) ||
+    ({} as ComponentsAppearance);
 
   const sections = rawSections.map((section) => {
-    // Map 'experience' section type back to 'cta' for appearance lookups
-    const appearanceKey = section.type === "experience" ? "cta" : section.type;
-    const secAppearance = componentsAppearance[appearanceKey] || {};
+    const appearanceKey = section.type;
+    const secAppearance = componentsAppearance[appearanceKey] ?? {};
     return {
       ...section,
       bgColor:
@@ -121,7 +130,7 @@ export default function PortfolioDashboardView({
         secAppearance.accentColour ||
         secAppearance.iconColor ||
         section.iconColor,
-      font: (secAppearance as any).font || section.font,
+      font: secAppearance.font || section.font,
     };
   });
 
@@ -402,7 +411,7 @@ export default function PortfolioDashboardView({
             );
           }
 
-          if (section.type === "experience") {
+          if (section.type === "cta") {
             return (
               <section
                 key={section.id}

@@ -191,7 +191,7 @@ export function contentToSections(
     return {
       id: "cta",
       title: content?.cta?.title || "Let's build something",
-      type: "experience" as const,
+      type: "cta" as const,
       visible: content?.cta?.visible ?? true,
       subtitle: content?.cta?.subtitle ?? "",
       layout: content?.cta?.layout ?? "1",
@@ -283,14 +283,12 @@ export const isValidUrl = (urlString: string, iconId?: string | null) => {
 export function sectionsToContent(
   sections: Section[]
 ): NonNullable<UpsertDraftRequest["content"]> {
-  const sectionOrder = sections.map((s) =>
-    s.type === "experience" ? "cta" : s.id
-  );
+  const sectionOrder = sections.map((s) => s.id);
 
   const bioSection = sections.find((s) => s.type === "bio");
   const linksSection = sections.find((s) => s.type === "links");
   const projectsSection = sections.find((s) => s.type === "projects");
-  const ctaSection = sections.find((s) => s.type === "experience");
+  const ctaSection = sections.find((s) => s.type === "cta");
 
   const sectionStyleFields = (s: Section) => ({
     ...(s.textColor && { textColor: s.textColor }),

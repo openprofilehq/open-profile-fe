@@ -380,7 +380,7 @@ export default function DefaultPreview({
           );
         }
 
-        if (section.type === "experience") {
+        if (section.type === "cta") {
           return (
             <div
               key={section.id}

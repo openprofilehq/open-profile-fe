@@ -320,7 +320,7 @@ export default function PortfolioPreview({
           );
         }
 
-        if (section.type === "experience") {
+        if (section.type === "cta") {
           return (
             <section
               key={section.id}
