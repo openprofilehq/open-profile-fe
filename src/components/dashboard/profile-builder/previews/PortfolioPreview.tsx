@@ -123,7 +123,7 @@ export default function PortfolioPreview({
               </header>
 
               <div className="mt-8">
-                <p className="text-secondary-text max-w-3xl text-[15px] leading-relaxed whitespace-pre-wrap">
+                <p className="text-secondary-text max-w-3xl text-[15px] leading-relaxed break-words whitespace-pre-wrap">
                   {section.bio || "Write a little bit about yourself here..."}
                 </p>
               </div>
@@ -320,7 +320,7 @@ export default function PortfolioPreview({
           );
         }
 
-        if (section.type === "experience") {
+        if (section.type === "cta") {
           return (
             <section
               key={section.id}

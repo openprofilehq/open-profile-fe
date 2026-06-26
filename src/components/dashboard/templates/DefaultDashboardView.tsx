@@ -48,18 +48,28 @@ export default function DefaultDashboardView({
   }
 
   const rawSections = contentToSections(
-    content || ({ content: {} } as any),
-    profile || ({} as any)
+    content || ({ content: {} } as ProfileContentResponse),
+    profile || ({} as DashboardProfileResponse)
   );
 
+  type ComponentsAppearance = Record<
+    string,
+    Record<string, string | undefined>
+  >;
   const componentsAppearance =
-    (appearance as any)?.components ||
-    (profile as any)?.appearance?.components ||
-    {};
+    ((appearance as Record<string, unknown>)
+      ?.components as ComponentsAppearance) ||
+    ((
+      (profile as unknown as Record<string, unknown>)?.appearance as Record<
+        string,
+        unknown
+      >
+    )?.components as ComponentsAppearance) ||
+    ({} as ComponentsAppearance);
 
   const sections = rawSections.map((section) => {
-    const appearanceKey = section.type === "experience" ? "cta" : section.type;
-    const secAppearance = componentsAppearance[appearanceKey] || {};
+    const appearanceKey = section.type;
+    const secAppearance = componentsAppearance[appearanceKey] ?? {};
     return {
       ...section,
       bgColor:
@@ -74,7 +84,7 @@ export default function DefaultDashboardView({
         secAppearance.accentColour ||
         secAppearance.iconColor ||
         section.iconColor,
-      font: (secAppearance as any).font || section.font,
+      font: secAppearance.font || section.font,
     };
   });
 
@@ -121,13 +131,13 @@ export default function DefaultDashboardView({
                     )}
 
                     <div className="min-w-0 flex-1">
-                      <h2 className="text-primary-text text-[26px] leading-tight font-bold tracking-tight break-all">
+                      <h2 className="text-primary-text text-[26px] leading-tight font-bold tracking-tight break-words">
                         {profile?.fullName ?? "No Name"}
                       </h2>
                       <p className="text-brand-hover-bg mt-1 text-[14px] font-semibold">
                         @{profile?.username ?? "micaela"}
                       </p>
-                      <p className="text-secondary-text mt-2 text-[15px] leading-relaxed break-all whitespace-pre-wrap">
+                      <p className="text-secondary-text mt-2 text-[15px] leading-relaxed break-words whitespace-pre-wrap">
                         {section.bio || profile?.bio || "No bio added yet."}
                       </p>
                     </div>
@@ -207,7 +217,7 @@ export default function DefaultDashboardView({
                                   )}
                                 </span>
                                 <div className="min-w-0">
-                                  <h3 className="text-primary-text text-[15px] font-bold break-all">
+                                  <h3 className="text-primary-text text-[15px] font-bold break-words">
                                     {item.title}
                                   </h3>
                                 </div>
@@ -331,7 +341,7 @@ export default function DefaultDashboardView({
                                     : "p-6"
                                 }`}
                               >
-                                <h3 className="text-primary-text text-[18px] font-bold break-all">
+                                <h3 className="text-primary-text text-[18px] font-bold break-words">
                                   {project.title}
                                 </h3>
                                 {project.description && (
@@ -381,7 +391,7 @@ export default function DefaultDashboardView({
               );
             }
 
-            if (section.type === "experience") {
+            if (section.type === "cta") {
               return (
                 <div
                   key={section.id}
@@ -414,11 +424,11 @@ export default function DefaultDashboardView({
                       <div
                         className={`flex flex-col ${section.layout === "2" ? "items-start text-left" : section.layout === "3" ? "items-end text-right" : "items-center text-center"}`}
                       >
-                        <h4 className="text-primary-text text-[28px] font-bold tracking-tight break-all">
+                        <h4 className="text-primary-text text-[28px] font-bold tracking-tight break-words">
                           {section.title || "Your CTA"}
                         </h4>
                         {section.subtitle && (
-                          <p className="text-secondary-text mt-3 max-w-[600px] text-base leading-relaxed break-all whitespace-pre-wrap">
+                          <p className="text-secondary-text mt-3 max-w-[600px] text-base leading-relaxed break-words whitespace-pre-wrap">
                             {section.subtitle}
                           </p>
                         )}

@@ -110,10 +110,10 @@ export default function ProfessionalPreview({
                   </div>
 
                   <div className="flex flex-col">
-                    <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight break-all">
+                    <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight break-words">
                       {profile?.fullName ?? ""}
                     </h1>
-                    <p className="text-brand-hover-bg mt-1 text-[15px] break-all">
+                    <p className="text-brand-hover-bg mt-1 text-[15px] break-words">
                       {getDisplayProfileUrl(profile?.username || "micaela")}
                     </p>
                   </div>
@@ -121,7 +121,7 @@ export default function ProfessionalPreview({
               </header>
 
               <div className="mt-6">
-                <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed break-all whitespace-pre-wrap">
+                <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed break-words whitespace-pre-wrap">
                   {section.bio || "Write a little bit about yourself here..."}
                 </p>
               </div>
@@ -315,7 +315,7 @@ export default function ProfessionalPreview({
                               </span>
                             )}
                             {descriptionText && (
-                              <p className="text-secondary-text mt-1 line-clamp-2 text-[13px] break-all">
+                              <p className="text-secondary-text mt-1 line-clamp-2 text-[13px] break-words">
                                 {descriptionText}
                               </p>
                             )}
@@ -357,7 +357,7 @@ export default function ProfessionalPreview({
           );
         }
 
-        if (section.type === "experience") {
+        if (section.type === "cta") {
           return (
             <section
               key={section.id}

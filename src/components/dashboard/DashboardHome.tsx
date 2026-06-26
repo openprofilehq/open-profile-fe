@@ -39,10 +39,11 @@ export default function DashboardHome() {
     | undefined;
 
   const appearanceSettingsData =
-    (profileAppearance.data as any)?.appearance ||
-    (profileAppearance.data as any)?.data ||
+    (profileAppearance.data as Record<string, unknown>)?.appearance ||
+    (profileAppearance.data as Record<string, unknown>)?.data ||
     profileAppearance.data;
-  const components = (appearanceSettingsData as any)?.components;
+  const components = (appearanceSettingsData as Record<string, unknown>)
+    ?.components;
 
   const appearance =
     apiAppearance || themeSettings || components

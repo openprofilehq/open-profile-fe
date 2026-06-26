@@ -529,11 +529,11 @@ export default function RightPanel({
               </button>
               <button
                 type="button"
-                onClick={() => onChangeAppearanceTheme?.("dark")}
-                className={`flex items-center justify-center rounded-[8px] py-2.5 transition-all ${
+                disabled
+                className={`flex cursor-not-allowed items-center justify-center rounded-[8px] py-2.5 opacity-50 transition-all ${
                   appearanceTheme === "dark"
                     ? "bg-hover-bg text-primary-text shadow-sm"
-                    : "text-secondary-text hover:bg-hover-bg"
+                    : "text-secondary-text"
                 }`}
                 aria-label="Use dark theme"
               >

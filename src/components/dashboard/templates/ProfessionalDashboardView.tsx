@@ -81,18 +81,28 @@ export default function ProfessionalDashboardView({
   }
 
   const rawSections = contentToSections(
-    content || ({ content: {} } as any),
-    profile || ({} as any)
+    content || ({ content: {} } as ProfileContentResponse),
+    profile || ({} as DashboardProfileResponse)
   );
 
+  type ComponentsAppearance = Record<
+    string,
+    Record<string, string | undefined>
+  >;
   const componentsAppearance =
-    (appearance as any)?.components ||
-    (profile as any)?.appearance?.components ||
-    {};
+    ((appearance as Record<string, unknown>)
+      ?.components as ComponentsAppearance) ||
+    ((
+      (profile as unknown as Record<string, unknown>)?.appearance as Record<
+        string,
+        unknown
+      >
+    )?.components as ComponentsAppearance) ||
+    ({} as ComponentsAppearance);
 
   const sections = rawSections.map((section) => {
-    const appearanceKey = section.type === "experience" ? "cta" : section.type;
-    const secAppearance = componentsAppearance[appearanceKey] || {};
+    const appearanceKey = section.type;
+    const secAppearance = componentsAppearance[appearanceKey] ?? {};
     return {
       ...section,
       bgColor:
@@ -107,7 +117,7 @@ export default function ProfessionalDashboardView({
         secAppearance.accentColour ||
         secAppearance.iconColor ||
         section.iconColor,
-      font: (secAppearance as any).font || section.font,
+      font: secAppearance.font || section.font,
     };
   });
 
@@ -154,10 +164,10 @@ export default function ProfessionalDashboardView({
                     </div>
 
                     <div className="flex flex-col">
-                      <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight break-all">
+                      <h1 className="text-primary-text text-[28px] leading-tight font-bold tracking-tight break-words">
                         {profile?.fullName || "Micaela Robinson"}
                       </h1>
-                      <p className="text-secondary-text mt-1 text-[15px] break-all">
+                      <p className="text-secondary-text mt-1 text-[15px] break-words">
                         {getDisplayProfileUrl(profile?.username || "micaela")}
                       </p>
                     </div>
@@ -165,7 +175,7 @@ export default function ProfessionalDashboardView({
                 </header>
 
                 <div className="mt-6">
-                  <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed break-all whitespace-pre-wrap">
+                  <p className="text-secondary-text max-w-2xl text-[16px] leading-relaxed break-words whitespace-pre-wrap">
                     {section.bio || "Write a little bit about yourself here..."}
                   </p>
                 </div>
@@ -371,7 +381,7 @@ export default function ProfessionalDashboardView({
                                 </span>
                               )}
                               {descriptionText && (
-                                <p className="text-secondary-text mt-1 line-clamp-2 text-[13px] break-all">
+                                <p className="text-secondary-text mt-1 line-clamp-2 text-[13px] break-words">
                                   {descriptionText}
                                 </p>
                               )}
@@ -413,7 +423,7 @@ export default function ProfessionalDashboardView({
             );
           }
 
-          if (section.type === "experience") {
+          if (section.type === "cta") {
             return (
               <section
                 key={section.id}

@@ -93,18 +93,28 @@ export default function CreatorDashboardView({
   }
 
   const rawSections = contentToSections(
-    content || ({ content: {} } as any),
-    profile || ({} as any)
+    content || ({ content: {} } as ProfileContentResponse),
+    profile || ({} as DashboardProfileResponse)
   );
 
+  type ComponentsAppearance = Record<
+    string,
+    Record<string, string | undefined>
+  >;
   const componentsAppearance =
-    (appearance as any)?.components ||
-    (profile as any)?.appearance?.components ||
-    {};
+    ((appearance as Record<string, unknown>)
+      ?.components as ComponentsAppearance) ||
+    ((
+      (profile as unknown as Record<string, unknown>)?.appearance as Record<
+        string,
+        unknown
+      >
+    )?.components as ComponentsAppearance) ||
+    ({} as ComponentsAppearance);
 
   const sections = rawSections.map((section) => {
-    const appearanceKey = section.type === "experience" ? "cta" : section.type;
-    const secAppearance = componentsAppearance[appearanceKey] || {};
+    const appearanceKey = section.type;
+    const secAppearance = componentsAppearance[appearanceKey] ?? {};
     return {
       ...section,
       bgColor:
@@ -119,7 +129,7 @@ export default function CreatorDashboardView({
         secAppearance.accentColour ||
         secAppearance.iconColor ||
         section.iconColor,
-      font: (secAppearance as any).font || section.font,
+      font: secAppearance.font || section.font,
     };
   });
 
@@ -127,7 +137,7 @@ export default function CreatorDashboardView({
 
   const bioSection = sections.find((s) => s.type === "bio");
   const linksSection = sections.find((s) => s.type === "links");
-  const ctaSection = sections.find((s) => s.type === "experience");
+  const ctaSection = sections.find((s) => s.type === "cta");
   const resolvedName = profile?.fullName || "Micaela Robinson";
 
   const allLinks = (
@@ -388,7 +398,7 @@ export default function CreatorDashboardView({
                                 isSideBySide ? "justify-center" : "p-5"
                               }`}
                             >
-                              <h5 className="text-primary-text text-xl font-bold break-all">
+                              <h5 className="text-primary-text text-xl font-bold break-words">
                                 {project.title}
                               </h5>
 
@@ -398,7 +408,7 @@ export default function CreatorDashboardView({
                                 </span>
                               )}
 
-                              <p className="text-secondary-text mt-2 line-clamp-3 text-[14px] leading-relaxed break-all">
+                              <p className="text-secondary-text mt-2 line-clamp-3 text-[14px] leading-relaxed break-words">
                                 {descriptionText}
                               </p>
                               {hasUrl && (
@@ -487,7 +497,7 @@ export default function CreatorDashboardView({
                 className={`border-border mx-auto max-w-4xl rounded-3xl border p-8 sm:p-10 ${section.font ? getFontClass(section.font) : ""}`}
                 style={getSectionStyle(section)}
               >
-                <p className="text-secondary-text text-center text-[15px] leading-relaxed break-all whitespace-pre-wrap">
+                <p className="text-secondary-text text-center text-[15px] leading-relaxed break-words whitespace-pre-wrap">
                   {section.bio || "Write a little bit about yourself here..."}
                 </p>
               </div>
