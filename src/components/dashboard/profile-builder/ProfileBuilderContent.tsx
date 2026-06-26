@@ -340,7 +340,8 @@ export default function ProfileBuilderContent() {
     const components = appearanceSettingsData?.components;
     if (components) {
       loadedSections.forEach((section) => {
-        const componentKey = section.type;
+        const componentKey =
+          section.type === "experience" ? "cta" : section.type;
         const compApp = components[componentKey] as
           | {
               backgroundColour?: string;

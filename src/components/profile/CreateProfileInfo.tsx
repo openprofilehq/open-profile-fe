@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { Camera, X } from "lucide-react";
+import { Camera, X as _X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
@@ -95,7 +95,7 @@ export default function CreateProfileInfo({
     }
   }
 
-  function handleRemovePhoto() {
+  function _handleRemovePhoto() {
     if (currentBlobRef.current) {
       URL.revokeObjectURL(currentBlobRef.current);
       currentBlobRef.current = null;
@@ -183,7 +183,7 @@ export default function CreateProfileInfo({
               )}
             </button>
 
-            {displayPhoto && (
+            {/* {displayPhoto && (
               <button
                 type="button"
                 onClick={handleRemovePhoto}
@@ -192,7 +192,7 @@ export default function CreateProfileInfo({
               >
                 <X size={15} />
               </button>
-            )}
+            )} */}
           </div>
 
           <input
