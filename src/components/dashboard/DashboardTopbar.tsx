@@ -169,7 +169,7 @@ export default function DashboardTopbar() {
                 href === ROUTES.dashboard.home
                   ? pathname === ROUTES.dashboard.home
                   : href
-                    ? pathname.startsWith(href)
+                    ? pathname === href || pathname.startsWith(`${href}/`)
                     : false;
 
               const itemClassName = `flex min-w-16 flex-col items-center justify-center gap-0.5 rounded-[8px] px-2 py-1.5 text-xs font-medium transition-colors ${
