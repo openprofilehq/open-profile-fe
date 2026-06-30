@@ -3,7 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, X, Search } from "lucide-react";
+import {
+  Bell,
+  ChartNoAxesCombined,
+  House,
+  LogOut,
+  PanelsTopLeft,
+  Search,
+  Settings,
+  X,
+} from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -21,9 +30,28 @@ import type { PublishProfileResponse } from "@/api/profile/profile.type";
 import { useProfileBuilderPublishState } from "./profile-builder/profile-builder-publish-state";
 
 const navLinks = [
-  { label: "Home", href: ROUTES.dashboard.home },
-  { label: "Profile Builder", href: ROUTES.dashboard.profileBuilder },
-  // { label: "Settings", href: ROUTES.dashboard.settings.home },
+  {
+    label: "Home",
+    href: ROUTES.dashboard.home,
+    icon: House,
+  },
+  {
+    label: "Profile Builder",
+    href: ROUTES.dashboard.profileBuilder,
+    icon: PanelsTopLeft,
+  },
+  {
+    label: "Insights",
+    icon: ChartNoAxesCombined,
+  },
+  {
+    label: "Notifications",
+    icon: Bell,
+  },
+  {
+    label: "Settings",
+    icon: Settings,
+  },
 ];
 
 export default function DashboardTopbar() {
@@ -132,23 +160,49 @@ export default function DashboardTopbar() {
           </Link>
 
           {/* Center Nav */}
-          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-6 lg:flex">
-            {navLinks.map(({ label, href }) => {
+          <nav
+            aria-label="Dashboard navigation"
+            className="absolute left-1/2 hidden -translate-x-1/2 items-stretch gap-2 lg:flex xl:gap-3"
+          >
+            {navLinks.map(({ label, href, icon: Icon }) => {
               const isActive =
                 href === ROUTES.dashboard.home
                   ? pathname === ROUTES.dashboard.home
-                  : pathname.startsWith(href);
+                  : href
+                    ? pathname === href || pathname.startsWith(`${href}/`)
+                    : false;
+
+              const itemClassName = `flex min-w-16 flex-col items-center justify-center gap-0.5 rounded-[8px] px-2 py-1.5 text-xs font-medium transition-colors ${
+                isActive
+                  ? "text-link-hover-text"
+                  : href
+                    ? "text-primary-text hover:bg-hover-bg hover:text-link-hover-text"
+                    : "text-tertiary-text"
+              }`;
+
+              if (!href) {
+                return (
+                  <span
+                    key={label}
+                    aria-disabled="true"
+                    title="Coming soon"
+                    className={`${itemClassName} cursor-default`}
+                  >
+                    <Icon aria-hidden="true" size={20} strokeWidth={2} />
+                    <span>{label}</span>
+                  </span>
+                );
+              }
+
               return (
                 <Link
-                  key={href}
+                  key={label}
                   href={href}
-                  className={`py-1 text-sm font-semibold transition-colors ${
-                    isActive
-                      ? "text-link-hover-text"
-                      : "text-primary-text hover:text-link-hover-text"
-                  }`}
+                  aria-current={isActive ? "page" : undefined}
+                  className={itemClassName}
                 >
-                  {label}
+                  <Icon aria-hidden="true" size={20} strokeWidth={2} />
+                  <span>{label}</span>
                 </Link>
               );
             })}
