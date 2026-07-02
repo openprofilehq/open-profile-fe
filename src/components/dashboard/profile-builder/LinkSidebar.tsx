@@ -18,10 +18,12 @@ const LinkSidebar = ({
   returnTab,
   section,
   onUpdateSection,
+  mobile = false,
 }: {
   returnTab: () => void;
   section: LinkSection | null;
   onUpdateSection: (id: string, updates: Partial<LinkSection>) => void;
+  mobile?: boolean;
 }) => {
   const [selectedTab, setSelectedTab] = useState<"content" | "section">(
     "content"
@@ -103,9 +105,13 @@ const LinkSidebar = ({
   };
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in bg-background flex h-full w-72.5 shrink-0 flex-col border-r p-6 duration-200 select-none">
-      {/* Back Button */}
-      <div className="border-tertiary-b border-b pb-4">
+    <aside
+      className={`border-tertiary-b animate-in fade-in bg-background ${mobile ? "flex w-full border-r-0 p-4" : "flex p-6"} h-full w-72.5 shrink-0 flex-col border-r duration-200 select-none`}
+    >
+      {/* Back Button — desktop only */}
+      <div
+        className={`border-tertiary-b border-b pb-4 ${mobile ? "hidden" : ""}`}
+      >
         {selectedTab === "content" ? (
           <button
             onClick={returnTab}
@@ -128,7 +134,9 @@ const LinkSidebar = ({
         )}
       </div>
 
-      <div className="profile-builder-scrollbar flex-1 overflow-y-auto py-6 pr-1">
+      <div
+        className={`profile-builder-scrollbar flex-1 overflow-y-auto pr-1 ${mobile ? "py-2" : "py-6"}`}
+      >
         {selectedTab === "content" ? (
           <ContentOption
             title={sectionTitle}

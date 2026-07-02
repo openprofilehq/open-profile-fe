@@ -132,12 +132,12 @@ export default function ProfileOverviewCard({
           {isLoading ? (
             <Skeleton className="h-10" />
           ) : (
-            <h1 className="text-primary-text text-3xl font-extrabold tracking-tight md:text-4xl">
+            <h1 className="text-primary-text text-2xl font-extrabold tracking-tight sm:text-3xl md:text-4xl">
               Welcome, {displayName}
             </h1>
           )}
 
-          <p className="text-secondary-text mt-3 max-w-[430px] text-base leading-7 font-medium">
+          <p className="text-secondary-text mt-3 max-w-[430px] text-sm leading-6 font-medium sm:text-base sm:leading-7">
             Your profile is live and ready to share. Manage your public page,
             update key sections, and keep things current from one place.
           </p>

@@ -12,12 +12,14 @@ interface ProjectsSidebarProps {
   returnTab: () => void;
   section: Section | null;
   onUpdateSection: (id: string, updates: Partial<Section>) => void;
+  mobile?: boolean;
 }
 
 export default function ProjectsSidebar({
   returnTab,
   section,
   onUpdateSection,
+  mobile = false,
 }: ProjectsSidebarProps) {
   const [selectedTab, setSelectedTab] = useState<"content" | "section">(
     "content"
@@ -248,9 +250,13 @@ export default function ProjectsSidebar({
   }, [projects]);
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in bg-background flex h-full w-72.5 shrink-0 flex-col border-r p-6 duration-200 select-none">
-      {/* Back Button */}
-      <div className="border-tertiary-b border-b pb-4">
+    <aside
+      className={`border-tertiary-b animate-in fade-in bg-background ${mobile ? "flex w-full border-r-0 p-4" : "flex p-6"} h-full w-72.5 shrink-0 flex-col border-r duration-200 select-none`}
+    >
+      {/* Back Button — desktop only */}
+      <div
+        className={`border-tertiary-b border-b pb-4 ${mobile ? "hidden" : ""}`}
+      >
         {selectedTab === "content" ? (
           <button
             onClick={returnTab}
@@ -274,7 +280,9 @@ export default function ProjectsSidebar({
       </div>
 
       {/* Sidebar Content */}
-      <div className="profile-builder-scrollbar flex-1 overflow-y-auto py-6 pr-1">
+      <div
+        className={`profile-builder-scrollbar flex-1 overflow-y-auto pr-1 ${mobile ? "py-2" : "py-6"}`}
+      >
         {selectedTab === "content" ? (
           projects.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
@@ -291,6 +299,36 @@ export default function ProjectsSidebar({
             </div>
           ) : (
             <div className="flex flex-col gap-6">
+              {/* Layout Section — first on mobile */}
+              {mobile && (
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold text-[#050505]">
+                    Layout
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {["1", "2", "3", "4"].map((lay) => (
+                      <button
+                        key={lay}
+                        type="button"
+                        onClick={() => handleLayoutChange(lay)}
+                        className={`group relative aspect-video overflow-hidden rounded-[8px] border-2 transition-all duration-200 outline-none focus:outline-none ${
+                          layout === lay
+                            ? "border-brand-b bg-transparent"
+                            : "border-border bg-transparent hover:border-gray-300"
+                        }`}
+                      >
+                        <Image
+                          src={`/profilebuilder_projects/${lay}.png`}
+                          alt={`Layout ${lay}`}
+                          fill
+                          className="object-contain p-1.5"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Title Section */}
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold text-[#050505]">
@@ -381,15 +419,14 @@ export default function ProjectsSidebar({
                 </div>
               </div>
 
-              {/* Layout Section */}
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-[#050505]">
-                  Layout
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  {["1", "2", "3", "4"].map((lay) => {
-                    const iconNum = lay;
-                    return (
+              {/* Layout Section — bottom on desktop */}
+              {!mobile && (
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold text-[#050505]">
+                    Layout
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {["1", "2", "3", "4"].map((lay) => (
                       <button
                         key={lay}
                         type="button"
@@ -401,16 +438,16 @@ export default function ProjectsSidebar({
                         }`}
                       >
                         <Image
-                          src={`/profilebuilder_projects/${iconNum}.png`}
+                          src={`/profilebuilder_projects/${lay}.png`}
                           alt={`Layout ${lay}`}
                           fill
                           className="object-contain p-1.5"
                         />
                       </button>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )
         ) : (

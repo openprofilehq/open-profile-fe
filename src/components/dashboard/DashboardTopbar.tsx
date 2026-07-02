@@ -50,6 +50,7 @@ const navLinks = [
   },
   {
     label: "Settings",
+    href: ROUTES.dashboard.settings.home,
     icon: Settings,
   },
 ];

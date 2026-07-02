@@ -30,6 +30,9 @@ interface LeftSidebarProps {
   onUpdateSection: (id: string, updates: Partial<Section>) => void;
   onSaveProfilePhoto?: (photoUrl: string | null) => Promise<void>;
   profile?: ProfilePreview | null;
+  mobile?: boolean;
+  /** Called when drilling into a sub-view (add section / editing a section). Passes the title, or null when returning to the list. */
+  onDrillDown?: (title: string | null) => void;
 }
 
 const SECTION_STATIC_LABELS: Record<string, string> = {
@@ -58,6 +61,8 @@ export default function LeftSidebar({
   onUpdateSection,
   onSaveProfilePhoto,
   profile,
+  mobile = false,
+  onDrillDown,
 }: LeftSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddingSection, setIsAddingSection] = useState(false);
@@ -89,11 +94,14 @@ export default function LeftSidebar({
   function handleOpenSectionForm(sectionId: string) {
     setEditingSectionId(sectionId);
     onSelectSection(sectionId);
+    const sec = sections.find((s) => s.id === sectionId);
+    onDrillDown?.(sec ? getDisplayTitle(sec, profile) : sectionId);
   }
 
   function handleReturnToList() {
     setEditingSectionId(null);
     onDeselectSection();
+    onDrillDown?.(null);
   }
 
   const orderedSections = [
@@ -109,6 +117,7 @@ export default function LeftSidebar({
   const handleSelectCard = (title: string, type: SectionType) => {
     onAddSection(title, type);
     setIsAddingSection(false);
+    onDrillDown?.(null);
   };
 
   const isLinksDisabled = sections.some(
@@ -133,11 +142,16 @@ export default function LeftSidebar({
 
   if (isAddingSection) {
     return (
-      <aside className="border-tertiary-b animate-in fade-in bg-background hidden h-full w-[260px] shrink-0 flex-col border-r p-6 duration-200 select-none lg:flex xl:w-[290px]">
-        {/* Back Button */}
-        <div className="mb-6">
+      <aside
+        className={`border-tertiary-b animate-in fade-in bg-background ${mobile ? "flex w-full border-r-0" : "hidden lg:flex"} h-full w-[260px] shrink-0 flex-col border-r p-6 duration-200 select-none xl:w-[290px]`}
+      >
+        {/* Back Button — desktop only; mobile uses the top bar back button */}
+        <div className={`mb-6 ${mobile ? "hidden" : ""}`}>
           <button
-            onClick={() => setIsAddingSection(false)}
+            onClick={() => {
+              setIsAddingSection(false);
+              onDrillDown?.(null);
+            }}
             className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
           >
             <ChevronLeft size={20} />
@@ -262,6 +276,7 @@ export default function LeftSidebar({
           onUpdateSection={onUpdateSection}
           onSaveProfilePhoto={onSaveProfilePhoto}
           profile={profile}
+          mobile={mobile}
         />
       );
     }
@@ -272,6 +287,7 @@ export default function LeftSidebar({
           returnTab={handleReturnToList}
           section={editingSection}
           onUpdateSection={onUpdateSection}
+          mobile={mobile}
         />
       );
     }
@@ -282,6 +298,7 @@ export default function LeftSidebar({
           returnTab={handleReturnToList}
           section={editingSection}
           onUpdateSection={onUpdateSection}
+          mobile={mobile}
         />
       );
     }
@@ -292,6 +309,7 @@ export default function LeftSidebar({
           returnTab={handleReturnToList}
           section={editingSection}
           onUpdateSection={onUpdateSection}
+          mobile={mobile}
         />
       );
     }
@@ -411,15 +429,19 @@ export default function LeftSidebar({
         returnTab={() => {
           setLinkSidebarOpen(false);
           onDeselectSection();
+          onDrillDown?.(null);
         }}
         section={linksSection}
         onUpdateSection={onUpdateSection}
+        mobile={mobile}
       />
     );
   }
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in bg-background hidden h-full w-[260px] shrink-0 flex-col border-r p-6 duration-200 select-none lg:flex xl:w-[290px]">
+    <aside
+      className={`border-tertiary-b animate-in fade-in bg-background ${mobile ? "flex w-full border-r-0" : "hidden lg:flex"} h-full w-[260px] shrink-0 flex-col border-r p-6 duration-200 select-none xl:w-[290px]`}
+    >
       {/* Search Input */}
       <div className="relative mb-6">
         <span className="text-tertiary-text absolute inset-y-0 left-3 flex items-center">
@@ -437,7 +459,10 @@ export default function LeftSidebar({
       {/* Add Section Button */}
       <div className="mb-6">
         <Button
-          onClick={() => setIsAddingSection(true)}
+          onClick={() => {
+            setIsAddingSection(true);
+            onDrillDown?.("Add Section");
+          }}
           className="bg-brand-hover-bg hover:bg-brand flex h-12 w-full items-center justify-start gap-3 rounded-[10px] px-5 text-sm font-semibold text-white transition-all active:scale-95"
         >
           <Plus size={18} />
@@ -447,6 +472,11 @@ export default function LeftSidebar({
 
       {/* Sections List */}
       <div className="profile-builder-scrollbar flex-1 overflow-y-auto pr-1">
+        {filteredSections.length > 0 && (
+          <p className="text-secondary-text mb-2 text-xs font-semibold">
+            Active Sections
+          </p>
+        )}
         <Reorder.Group
           axis="y"
           values={searchQuery ? filteredSections : orderedSections}
@@ -478,6 +508,7 @@ export default function LeftSidebar({
                 searchQuery={searchQuery}
                 profile={profile}
                 getSectionDescriptor={getSectionDescriptor}
+                mobile={mobile}
               />
             );
           })}
@@ -500,6 +531,7 @@ function SortableSectionItem({
   searchQuery,
   profile,
   getSectionDescriptor,
+  mobile = false,
 }: {
   section: Section;
   isSelected: boolean;
@@ -507,6 +539,7 @@ function SortableSectionItem({
   searchQuery: string;
   profile?: ProfilePreview | null;
   getSectionDescriptor: (section: Section) => string;
+  mobile?: boolean;
 }) {
   const dragControls = useDragControls();
 
@@ -524,7 +557,7 @@ function SortableSectionItem({
       }}
       role="button"
       tabIndex={0}
-      className={`group flex cursor-pointer items-center justify-between overflow-hidden rounded-xl border transition-colors duration-200 focus:outline-none ${!section.visible ? "opacity-50 grayscale" : ""} ${
+      className={`group flex cursor-pointer items-center justify-between overflow-hidden rounded-[10px] border transition-colors duration-200 focus:outline-none ${!section.visible ? "opacity-50 grayscale" : ""} ${
         isSelected
           ? "border-brand-b bg-brand-light-subtle-bg shadow-sm"
           : "border-tertiary-b hover:border-brand-b hover:bg-primary-bg bg-background"
@@ -532,21 +565,44 @@ function SortableSectionItem({
     >
       <div className="flex min-w-0 flex-1 items-center justify-between px-4 py-3">
         <div className="min-w-0 flex-1 pr-3">
-          <p
-            className={`truncate text-sm font-semibold transition-colors ${
-              !section.visible
-                ? "text-tertiary-text opacity-50"
-                : isSelected
-                  ? "text-link-hover-text"
-                  : "text-primary-text"
-            }`}
-          >
-            {getDisplayTitle(section, profile)}
-          </p>
-
-          <p className="text-secondary-text mt-0.5 truncate text-xs">
-            {getSectionDescriptor(section)}
-          </p>
+          {mobile ? (
+            <p
+              className={`truncate transition-colors ${isSelected ? "text-sm font-semibold" : "text-xs font-medium"}`}
+            >
+              <span
+                className={`transition-colors ${
+                  !section.visible
+                    ? "text-tertiary-text opacity-50"
+                    : isSelected
+                      ? "text-link-hover-text"
+                      : "text-secondary-text group-hover:text-primary-text"
+                }`}
+              >
+                {getDisplayTitle(section, profile)}
+              </span>
+              <span className="text-tertiary-text font-normal">
+                {" "}
+                - {getSectionDescriptor(section)}
+              </span>
+            </p>
+          ) : (
+            <>
+              <p
+                className={`truncate text-sm font-semibold transition-colors ${
+                  !section.visible
+                    ? "text-tertiary-text opacity-50"
+                    : isSelected
+                      ? "text-link-hover-text"
+                      : "text-primary-text"
+                }`}
+              >
+                {getDisplayTitle(section, profile)}
+              </p>
+              <p className="text-secondary-text mt-0.5 truncate text-xs">
+                {getSectionDescriptor(section)}
+              </p>
+            </>
+          )}
         </div>
       </div>
 

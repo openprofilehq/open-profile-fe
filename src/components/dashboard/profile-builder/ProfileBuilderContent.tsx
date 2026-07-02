@@ -11,7 +11,11 @@ import {
   updateProfileAppearanceOption,
   profileAppearanceOption,
 } from "@/api/profile/profile.options";
-import { updateProfile, upsertDraft } from "@/api/profile/profile.service";
+import {
+  updateProfile,
+  upsertDraft,
+  publishProfile,
+} from "@/api/profile/profile.service";
 import LeftSidebar from "./LeftSidebar";
 import PreviewCanvas from "./PreviewCanvas";
 import RightPanel from "./RightPanel";
@@ -22,6 +26,7 @@ import type {
   ProfileAppearanceCornerStyle,
   ProfileAppearanceFont,
   UpsertDraftRequest,
+  PublishProfileResponse,
 } from "@/api/profile/profile.type";
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { isApiError } from "@/api/base";
@@ -29,6 +34,7 @@ import { normalizeFullName, validateFullName } from "@/utils/nameValidation";
 import { ROUTES } from "@/constants/routes";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProfileBuilderPublishState } from "./profile-builder-publish-state";
+import { ChevronLeft, Eye } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -261,6 +267,11 @@ export default function ProfileBuilderContent() {
     publishedVersion,
     setHasUnpublishedChanges,
     setBeforePublishHandler,
+    hasUnpublishedChanges,
+    publishStatus,
+    setPublishStatus,
+    markProfilePublished,
+    runBeforePublish,
   } = useProfileBuilderPublishState();
 
   const searchParams = useSearchParams();
@@ -269,6 +280,10 @@ export default function ProfileBuilderContent() {
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
     sectionParam ?? null
   );
+  const [mobileTab, setMobileTab] = useState<"sections" | "design" | "preview">(
+    "sections"
+  );
+  const [mobileDrillTitle, setMobileDrillTitle] = useState<string | null>(null);
 
   const dashboardProfile = useQuery(dashboardProfileOption());
   const profileContent = useQuery(profileContentOption());
@@ -276,6 +291,49 @@ export default function ProfileBuilderContent() {
   const profileAppearance = useQuery(profileAppearanceOption());
 
   const profile = dashboardProfile.data;
+
+  // ── Mobile publish mutation ──
+  const { mutate: doPublish, isPending: isPublishing } = useMutation<
+    PublishProfileResponse,
+    unknown,
+    void
+  >({
+    mutationKey: ["profile", "publish"],
+    mutationFn: async () => {
+      await runBeforePublish();
+      return publishProfile();
+    },
+    onMutate() {
+      setPublishStatus("publishing");
+    },
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: ["profile", "content"] });
+      queryClient.invalidateQueries({ queryKey: ["profile", "draft-state"] });
+      queryClient.invalidateQueries({ queryKey: ["profile", "dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["profile", "appearance"] });
+      markProfilePublished();
+      toast.success("Profile published successfully.");
+    },
+    onError(error: unknown) {
+      setPublishStatus("idle");
+      toast.error(
+        isApiError(error)
+          ? error.message
+          : error instanceof Error
+            ? error.message
+            : "Failed to publish profile."
+      );
+    },
+  });
+
+  const publishButtonLabel =
+    isPublishing || publishStatus === "publishing"
+      ? "Publishing…"
+      : publishStatus === "published"
+        ? "Published"
+        : hasUnpublishedChanges
+          ? "Publish"
+          : "Publish";
 
   const isLoading =
     dashboardProfile.isPending ||
@@ -1162,19 +1220,175 @@ export default function ProfileBuilderContent() {
 
   return (
     <>
-      <div className="bg-secondary-bg flex min-h-screen flex-col items-center justify-center px-4 text-center lg:hidden">
-        <h1 className="text-primary-text text-2xl font-bold">
-          Profile editor works best on desktop
-        </h1>
-        <p className="text-secondary-text mt-3 max-w-[420px]">
-          Please use a desktop or large tablet to edit your profile layout.
-        </p>
-        <Link
-          href={ROUTES.dashboard.home}
-          className="bg-brand-hover-bg mt-6 rounded-[8px] px-5 py-3 font-semibold text-white"
-        >
-          Back to dashboard
-        </Link>
+      {/* ── Mobile layout ── */}
+      <div className="flex flex-1 flex-col overflow-hidden lg:hidden">
+        {/* Mobile top bar */}
+        <header className="bg-card flex h-14 shrink-0 items-center justify-between px-4">
+          {mobileDrillTitle ? (
+            /* Drilled into a section — back arrow left, title centered */
+            <div className="relative flex w-full items-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedSectionId(null);
+                  setMobileDrillTitle(null);
+                }}
+                className="text-primary-text hover:text-link-hover-text flex items-center transition-colors"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <span className="text-primary-text absolute left-1/2 -translate-x-1/2 text-sm font-semibold">
+                {mobileDrillTitle}
+              </span>
+            </div>
+          ) : (
+            /* Top-level — back arrow + tab title + eye + publish */
+            <>
+              <Link
+                href={ROUTES.dashboard.home}
+                className="text-primary-text hover:text-link-hover-text flex items-center gap-1.5 text-sm font-semibold transition-colors"
+              >
+                <ChevronLeft size={18} />
+                <span>
+                  {mobileTab === "sections"
+                    ? "Profile Builder"
+                    : mobileTab === "design"
+                      ? "Customization"
+                      : "Preview"}
+                </span>
+              </Link>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  aria-label={
+                    mobileTab === "preview"
+                      ? "Back to editor"
+                      : "Preview profile"
+                  }
+                  onClick={() => {
+                    if (mobileTab === "preview") {
+                      setMobileTab("sections");
+                    } else {
+                      setMobileTab("preview");
+                      setMobileDrillTitle(null);
+                    }
+                  }}
+                  className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${mobileTab === "preview" ? "bg-hover-bg text-primary-text" : "text-primary-text hover:bg-hover-bg"}`}
+                >
+                  <Eye size={18} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => doPublish()}
+                  disabled={isPublishing}
+                  className="bg-brand-hover-bg hover:bg-brand-active-bg h-9 rounded-[8px] px-4 text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-60"
+                >
+                  {publishButtonLabel}
+                </button>
+              </div>
+            </>
+          )}
+        </header>
+
+        {/* Tab content */}
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          {mobileTab === "preview" ? (
+            <PreviewCanvas
+              font={font}
+              textColor={textColor}
+              bgColor={bgColor}
+              iconColor={iconColor}
+              spacing={spacing}
+              borderRadius={borderRadius}
+              appearanceTheme={appearanceTheme}
+              template={template}
+              sections={resolvedSections}
+              profile={previewProfile}
+              selectedSectionId={selectedSectionId}
+              onSelectSection={handleSelectSection}
+              onToggleSectionVisibility={handleToggleSectionVisibility}
+              onRemoveSection={handleRemoveSection}
+            />
+          ) : mobileTab === "sections" ? (
+            <LeftSidebar
+              mobile
+              sections={resolvedSections}
+              selectedSectionId={selectedSectionId}
+              selectedSection={selectedSection}
+              initialEditingSectionId={sectionParam}
+              onSelectSection={handleSelectSection}
+              onDeselectSection={() => setSelectedSectionId(null)}
+              onAddSection={handleAddSection}
+              onRemoveSection={handleRemoveSection}
+              onToggleSectionVisibility={handleToggleSectionVisibility}
+              onReorderSections={setSections}
+              onUpdateSection={handleUpdateSection}
+              onSaveProfilePhoto={handleSaveProfilePhoto}
+              profile={previewProfile}
+              onDrillDown={setMobileDrillTitle}
+            />
+          ) : (
+            <RightPanel
+              mobile
+              font={font}
+              onChangeFont={setFont}
+              textColor={textColor}
+              onChangeTextColor={setTextColor}
+              bgColor={bgColor}
+              onChangeBgColor={setBgColor}
+              iconColor={iconColor}
+              onChangeIconColor={setIconColor}
+              spacing={spacing}
+              onChangeSpacing={setSpacing}
+              borderRadius={borderRadius}
+              onChangeBorderRadius={setBorderRadius}
+              appearanceTheme={appearanceTheme}
+              onChangeAppearanceTheme={setAppearanceTheme}
+              onBackToGlobal={() => setSelectedSectionId(null)}
+              selectedSection={selectedSection}
+              onUpdateSection={handleUpdateSection}
+              template={template}
+              onChangeTemplate={(val) =>
+                setTemplate((val || "professional").toLowerCase())
+              }
+            />
+          )}
+        </div>
+
+        {/* Mobile bottom tab bar — hidden in preview */}
+        {mobileTab !== "preview" && (
+          <nav className="bg-card border-tertiary-b flex h-14 shrink-0 items-center gap-2 border-t px-3">
+            <button
+              type="button"
+              onClick={() => {
+                setMobileTab("sections");
+                setMobileDrillTitle(null);
+              }}
+              className={`flex flex-1 items-center justify-center rounded-xl py-2 text-sm font-semibold transition-colors ${
+                mobileTab === "sections"
+                  ? "bg-[#1C1C1C] text-white"
+                  : "text-secondary-text hover:bg-brand-hover-bg hover:text-white"
+              }`}
+            >
+              Sections
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMobileTab("design");
+                setMobileDrillTitle(null);
+              }}
+              className={`flex flex-1 items-center justify-center rounded-xl py-2 text-sm font-semibold transition-colors ${
+                mobileTab === "design"
+                  ? "bg-[#1C1C1C] text-white"
+                  : "text-secondary-text hover:bg-brand-hover-bg hover:text-white"
+              }`}
+            >
+              Design
+            </button>
+          </nav>
+        )}
       </div>
 
       <div className="bg-primary-bg hidden w-full flex-1 flex-col overflow-hidden lg:flex">
