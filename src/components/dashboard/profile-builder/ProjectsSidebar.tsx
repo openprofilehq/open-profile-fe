@@ -301,32 +301,10 @@ export default function ProjectsSidebar({
             <div className="flex flex-col gap-6">
               {/* Layout Section — first on mobile */}
               {mobile && (
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs font-bold text-[#050505]">
-                    Layout
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {["1", "2", "3", "4"].map((lay) => (
-                      <button
-                        key={lay}
-                        type="button"
-                        onClick={() => handleLayoutChange(lay)}
-                        className={`group relative aspect-video overflow-hidden rounded-[8px] border-2 transition-all duration-200 outline-none focus:outline-none ${
-                          layout === lay
-                            ? "border-brand-b bg-transparent"
-                            : "border-border bg-transparent hover:border-gray-300"
-                        }`}
-                      >
-                        <Image
-                          src={`/profilebuilder_projects/${lay}.png`}
-                          alt={`Layout ${lay}`}
-                          fill
-                          className="object-contain p-1.5"
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                <ProjectLayoutPicker
+                  layout={layout}
+                  onChange={handleLayoutChange}
+                />
               )}
 
               {/* Title Section */}
@@ -421,32 +399,10 @@ export default function ProjectsSidebar({
 
               {/* Layout Section — bottom on desktop */}
               {!mobile && (
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs font-bold text-[#050505]">
-                    Layout
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {["1", "2", "3", "4"].map((lay) => (
-                      <button
-                        key={lay}
-                        type="button"
-                        onClick={() => handleLayoutChange(lay)}
-                        className={`group relative aspect-video overflow-hidden rounded-[8px] border-2 transition-all duration-200 outline-none focus:outline-none ${
-                          layout === lay
-                            ? "border-brand-b bg-transparent"
-                            : "border-border bg-transparent hover:border-gray-300"
-                        }`}
-                      >
-                        <Image
-                          src={`/profilebuilder_projects/${lay}.png`}
-                          alt={`Layout ${lay}`}
-                          fill
-                          className="object-contain p-1.5"
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                <ProjectLayoutPicker
+                  layout={layout}
+                  onChange={handleLayoutChange}
+                />
               )}
             </div>
           )
@@ -672,5 +628,40 @@ export default function ProjectsSidebar({
         )}
       </div>
     </aside>
+  );
+}
+
+function ProjectLayoutPicker({
+  layout,
+  onChange,
+}: {
+  layout: string;
+  onChange: (lay: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <label className="text-xs font-bold text-[#050505]">Layout</label>
+      <div className="grid grid-cols-2 gap-3">
+        {["1", "2", "3", "4"].map((lay) => (
+          <button
+            key={lay}
+            type="button"
+            onClick={() => onChange(lay)}
+            className={`group relative aspect-video overflow-hidden rounded-[8px] border-2 transition-all duration-200 outline-none focus:outline-none ${
+              layout === lay
+                ? "border-brand-b bg-transparent"
+                : "border-border bg-transparent hover:border-gray-300"
+            }`}
+          >
+            <Image
+              src={`/profilebuilder_projects/${lay}.png`}
+              alt={`Layout ${lay}`}
+              fill
+              className="object-contain p-1.5"
+            />
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }

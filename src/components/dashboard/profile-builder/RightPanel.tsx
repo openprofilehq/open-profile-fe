@@ -231,7 +231,7 @@ export default function RightPanel({
 
   return (
     <aside
-      className={`border-tertiary-b bg-background ${mobile ? "flex w-full border-l-0" : "hidden lg:flex"} h-full w-[260px] shrink-0 flex-col border-l select-none xl:w-[290px]`}
+      className={`border-tertiary-b bg-background h-full shrink-0 flex-col select-none ${mobile ? "flex w-full border-l-0" : "hidden w-[260px] border-l lg:flex xl:w-[290px]"}`}
     >
       <div
         className={`border-tertiary-b border-b px-4 py-4 ${mobile ? "hidden" : ""}`}

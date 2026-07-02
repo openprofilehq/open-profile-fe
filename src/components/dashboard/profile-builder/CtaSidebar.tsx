@@ -192,32 +192,7 @@ export default function CtaSidebar({
         <div className="flex flex-col gap-6">
           {/* Layout Section — first on mobile */}
           {mobile && (
-            <div className="flex flex-col gap-2">
-              <label className="text-primary-text text-xs font-bold">
-                Layout
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {["1", "2", "3"].map((lay) => (
-                  <button
-                    key={lay}
-                    type="button"
-                    onClick={() => handleLayoutChange(lay)}
-                    className={`group relative aspect-square overflow-hidden rounded-xl border transition-all duration-200 outline-none focus:outline-none ${
-                      layout === lay
-                        ? "border-[#E4E4E7] bg-[#F4F4F5]"
-                        : "border-border bg-background hover:border-gray-300"
-                    }`}
-                  >
-                    <Image
-                      src={`/profilebuilder_cta/${lay}.svg`}
-                      alt={`Layout ${lay}`}
-                      fill
-                      className="object-contain p-2"
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
+            <CtaLayoutPicker layout={layout} onChange={handleLayoutChange} />
           )}
           {/* Title Section */}
           <div className="flex flex-col gap-2">
@@ -382,35 +357,45 @@ export default function CtaSidebar({
 
           {/* Layout Section — bottom on desktop */}
           {!mobile && (
-            <div className="flex flex-col gap-2">
-              <label className="text-primary-text text-xs font-bold">
-                Layout
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {["1", "2", "3"].map((lay) => (
-                  <button
-                    key={lay}
-                    type="button"
-                    onClick={() => handleLayoutChange(lay)}
-                    className={`group relative aspect-square overflow-hidden rounded-xl border transition-all duration-200 outline-none focus:outline-none ${
-                      layout === lay
-                        ? "border-[#E4E4E7] bg-[#F4F4F5]"
-                        : "border-border bg-background hover:border-gray-300"
-                    }`}
-                  >
-                    <Image
-                      src={`/profilebuilder_cta/${lay}.svg`}
-                      alt={`Layout ${lay}`}
-                      fill
-                      className="object-contain p-2"
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
+            <CtaLayoutPicker layout={layout} onChange={handleLayoutChange} />
           )}
         </div>
       </div>
     </aside>
+  );
+}
+
+function CtaLayoutPicker({
+  layout,
+  onChange,
+}: {
+  layout: string;
+  onChange: (lay: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <label className="text-primary-text text-xs font-bold">Layout</label>
+      <div className="grid grid-cols-3 gap-2">
+        {["1", "2", "3"].map((lay) => (
+          <button
+            key={lay}
+            type="button"
+            onClick={() => onChange(lay)}
+            className={`group relative aspect-square overflow-hidden rounded-xl border transition-all duration-200 outline-none focus:outline-none ${
+              layout === lay
+                ? "border-[#E4E4E7] bg-[#F4F4F5]"
+                : "border-border bg-background hover:border-gray-300"
+            }`}
+          >
+            <Image
+              src={`/profilebuilder_cta/${lay}.svg`}
+              alt={`Layout ${lay}`}
+              fill
+              className="object-contain p-2"
+            />
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }

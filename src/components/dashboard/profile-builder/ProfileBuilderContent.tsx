@@ -267,7 +267,7 @@ export default function ProfileBuilderContent() {
     publishedVersion,
     setHasUnpublishedChanges,
     setBeforePublishHandler,
-    hasUnpublishedChanges,
+    hasUnpublishedChanges: _hasUnpublishedChanges,
     publishStatus,
     setPublishStatus,
     markProfilePublished,
@@ -331,9 +331,7 @@ export default function ProfileBuilderContent() {
       ? "Publishing…"
       : publishStatus === "published"
         ? "Published"
-        : hasUnpublishedChanges
-          ? "Publish"
-          : "Publish";
+        : "Publish";
 
   const isLoading =
     dashboardProfile.isPending ||
