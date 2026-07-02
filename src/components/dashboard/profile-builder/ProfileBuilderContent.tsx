@@ -1356,39 +1356,37 @@ export default function ProfileBuilderContent() {
           )}
         </div>
 
-        {/* Mobile bottom tab bar — hidden in preview */}
-        {mobileTab !== "preview" && (
-          <nav className="bg-card border-tertiary-b flex h-14 shrink-0 items-center gap-2 border-t px-3">
-            <button
-              type="button"
-              onClick={() => {
-                setMobileTab("sections");
-                setMobileDrillTitle(null);
-              }}
-              className={`flex flex-1 items-center justify-center rounded-xl py-2 text-sm font-semibold transition-colors ${
-                mobileTab === "sections"
-                  ? "bg-[#1C1C1C] text-white"
-                  : "text-secondary-text hover:bg-brand-hover-bg hover:text-white"
-              }`}
-            >
-              Sections
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMobileTab("design");
-                setMobileDrillTitle(null);
-              }}
-              className={`flex flex-1 items-center justify-center rounded-xl py-2 text-sm font-semibold transition-colors ${
-                mobileTab === "design"
-                  ? "bg-[#1C1C1C] text-white"
-                  : "text-secondary-text hover:bg-brand-hover-bg hover:text-white"
-              }`}
-            >
-              Design
-            </button>
-          </nav>
-        )}
+        {/* Mobile bottom tab bar */}
+        <nav className="bg-card border-tertiary-b flex h-14 shrink-0 items-center gap-2 border-t px-3">
+          <button
+            type="button"
+            onClick={() => {
+              setMobileTab("sections");
+              setMobileDrillTitle(null);
+            }}
+            className={`flex flex-1 items-center justify-center rounded-xl py-2 text-sm font-semibold transition-colors ${
+              mobileTab === "sections"
+                ? "bg-[#1C1C1C] text-white"
+                : "text-secondary-text hover:bg-brand-hover-bg hover:text-white"
+            }`}
+          >
+            Sections
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setMobileTab("design");
+              setMobileDrillTitle(null);
+            }}
+            className={`flex flex-1 items-center justify-center rounded-xl py-2 text-sm font-semibold transition-colors ${
+              mobileTab === "design"
+                ? "bg-[#1C1C1C] text-white"
+                : "text-secondary-text hover:bg-brand-hover-bg hover:text-white"
+            }`}
+          >
+            Design
+          </button>
+        </nav>
       </div>
 
       <div className="bg-primary-bg hidden w-full flex-1 flex-col overflow-hidden lg:flex">
