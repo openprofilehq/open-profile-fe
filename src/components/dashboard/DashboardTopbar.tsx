@@ -214,12 +214,11 @@ export default function DashboardTopbar() {
             <Button
               asChild
               variant="outline"
-              className="border-tertiary-b text-primary-text hover:bg-hover-bg h-10 rounded-[10px] px-4 text-sm font-semibold transition-all active:scale-95"
-              title="Find user"
+              className="border-tertiary-b text-primary-text hover:bg-hover-bg h-10 w-10 rounded-[10px] p-0 transition-all active:scale-95"
+              title="Search"
             >
-              <Link href="/search" className="flex items-center gap-2">
+              <Link href="/search">
                 <Search size={16} />
-                Search
               </Link>
             </Button>
 

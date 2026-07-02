@@ -7,7 +7,9 @@ export default function ProfileBuilderPage() {
   return (
     <ProfileBuilderPublishStateProvider>
       <div className="flex h-screen w-full flex-col overflow-hidden bg-[#FAFAFA]">
-        <DashboardTopbar />
+        <div className="hidden lg:block">
+          <DashboardTopbar />
+        </div>
         <Suspense fallback={<div>Loading...</div>}>
           <ProfileBuilderContent />
         </Suspense>
