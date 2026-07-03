@@ -15,6 +15,7 @@ interface BioSidebarProps {
   onUpdateSection: (id: string, updates: Partial<Section>) => void;
   onSaveProfilePhoto?: (photoUrl: string | null) => Promise<void>;
   profile?: ProfilePreview | null;
+  mobile?: boolean;
 }
 
 export default function BioSidebar({
@@ -23,6 +24,7 @@ export default function BioSidebar({
   onUpdateSection,
   onSaveProfilePhoto,
   profile,
+  mobile = false,
 }: BioSidebarProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -101,9 +103,11 @@ export default function BioSidebar({
   const displayImage = uploadedImage || profilePhotoUrl;
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in bg-background hidden h-full w-72.5 shrink-0 flex-col border-r p-6 duration-200 select-none lg:flex">
-      {/* Back Button */}
-      <div className="pb-4">
+    <aside
+      className={`border-tertiary-b animate-in fade-in bg-background ${mobile ? "flex w-full border-r-0 p-4" : "hidden p-6 lg:flex"} h-full w-72.5 shrink-0 flex-col border-r duration-200 select-none`}
+    >
+      {/* Back Button — desktop only */}
+      <div className={`pb-4 ${mobile ? "hidden" : ""}`}>
         <button
           onClick={returnTab}
           className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
@@ -114,7 +118,9 @@ export default function BioSidebar({
       </div>
 
       {/* Tab Content */}
-      <div className="profile-builder-scrollbar flex-1 overflow-y-auto py-6 pr-1">
+      <div
+        className={`profile-builder-scrollbar flex-1 overflow-y-auto pr-1 ${mobile ? "py-2" : "py-6"}`}
+      >
         <div className="flex flex-col gap-6">
           {/* Full name */}
           <div>

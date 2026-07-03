@@ -10,6 +10,7 @@ interface CtaSidebarProps {
   returnTab: () => void;
   section: Section | null;
   onUpdateSection: (id: string, updates: Partial<Section>) => void;
+  mobile?: boolean;
 }
 
 const PRESET_ICONS = [
@@ -62,6 +63,7 @@ export default function CtaSidebar({
   returnTab,
   section,
   onUpdateSection,
+  mobile = false,
 }: CtaSidebarProps) {
   const [sectionTitle, setSectionTitle] = useState(
     section?.title || "Let's build something"
@@ -167,9 +169,13 @@ export default function CtaSidebar({
   const currentIcon = PRESET_ICONS.find((i) => i.id === selectedIconId);
 
   return (
-    <aside className="border-tertiary-b animate-in fade-in bg-background flex h-full w-72.5 shrink-0 flex-col border-r p-6 duration-200 select-none">
-      {/* Back Button */}
-      <div className="border-tertiary-b border-b pb-4">
+    <aside
+      className={`border-tertiary-b animate-in fade-in bg-background ${mobile ? "flex w-full border-r-0 p-4" : "flex p-6"} h-full w-72.5 shrink-0 flex-col border-r duration-200 select-none`}
+    >
+      {/* Back Button — desktop only */}
+      <div
+        className={`border-tertiary-b border-b pb-4 ${mobile ? "hidden" : ""}`}
+      >
         <button
           onClick={returnTab}
           className="text-primary-text hover:text-link-hover-text inline-flex items-center gap-2 text-base font-semibold transition-all"
@@ -180,8 +186,14 @@ export default function CtaSidebar({
       </div>
 
       {/* Sidebar Content */}
-      <div className="profile-builder-scrollbar flex-1 overflow-y-auto py-6 pr-1">
+      <div
+        className={`profile-builder-scrollbar flex-1 overflow-y-auto pr-1 ${mobile ? "py-2" : "py-6"}`}
+      >
         <div className="flex flex-col gap-6">
+          {/* Layout Section — first on mobile */}
+          {mobile && (
+            <CtaLayoutPicker layout={layout} onChange={handleLayoutChange} />
+          )}
           {/* Title Section */}
           <div className="flex flex-col gap-2">
             <label className="text-primary-text text-xs font-bold">
@@ -343,35 +355,47 @@ export default function CtaSidebar({
             )}
           </div>
 
-          {/* Layout Section */}
-          <div className="flex flex-col gap-2">
-            <label className="text-primary-text text-xs font-bold">
-              Layout
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              {["1", "2", "3"].map((lay) => (
-                <button
-                  key={lay}
-                  type="button"
-                  onClick={() => handleLayoutChange(lay)}
-                  className={`group relative aspect-square overflow-hidden rounded-xl border transition-all duration-200 outline-none focus:outline-none ${
-                    layout === lay
-                      ? "border-[#E4E4E7] bg-[#F4F4F5]"
-                      : "border-border bg-background hover:border-gray-300"
-                  }`}
-                >
-                  <Image
-                    src={`/profilebuilder_cta/${lay}.svg`}
-                    alt={`Layout ${lay}`}
-                    fill
-                    className="object-contain p-2"
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
+          {/* Layout Section — bottom on desktop */}
+          {!mobile && (
+            <CtaLayoutPicker layout={layout} onChange={handleLayoutChange} />
+          )}
         </div>
       </div>
     </aside>
+  );
+}
+
+function CtaLayoutPicker({
+  layout,
+  onChange,
+}: {
+  layout: string;
+  onChange: (lay: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <label className="text-primary-text text-xs font-bold">Layout</label>
+      <div className="grid grid-cols-3 gap-2">
+        {["1", "2", "3"].map((lay) => (
+          <button
+            key={lay}
+            type="button"
+            onClick={() => onChange(lay)}
+            className={`group relative aspect-square overflow-hidden rounded-xl border transition-all duration-200 outline-none focus:outline-none ${
+              layout === lay
+                ? "border-[#E4E4E7] bg-[#F4F4F5]"
+                : "border-border bg-background hover:border-gray-300"
+            }`}
+          >
+            <Image
+              src={`/profilebuilder_cta/${lay}.svg`}
+              alt={`Layout ${lay}`}
+              fill
+              className="object-contain p-2"
+            />
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }

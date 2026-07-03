@@ -33,6 +33,7 @@ interface RightPanelProps {
   onUpdateSection: (id: string, updates: Partial<Section>) => void;
   template: string;
   onChangeTemplate?: (template: string | null) => void;
+  mobile?: boolean;
 }
 
 const BLEND_THEME_VALUE = "#7C3AED__blend";
@@ -179,6 +180,7 @@ export default function RightPanel({
   onChangeAppearanceTheme,
   template,
   onChangeTemplate,
+  mobile = false,
 }: RightPanelProps) {
   const selectedTemplate = template ? template.toLowerCase() : "creator";
   const [spacingMode, setSpacingMode] = useState<"basic" | "advanced">("basic");
@@ -228,8 +230,12 @@ export default function RightPanel({
   };
 
   return (
-    <aside className="border-tertiary-b bg-background hidden h-full w-[260px] shrink-0 flex-col border-l select-none lg:flex xl:w-[290px]">
-      <div className="border-tertiary-b border-b px-4 py-4">
+    <aside
+      className={`border-tertiary-b bg-background h-full shrink-0 flex-col select-none ${mobile ? "flex w-full border-l-0" : "hidden w-[260px] border-l lg:flex xl:w-[290px]"}`}
+    >
+      <div
+        className={`border-tertiary-b border-b px-4 py-4 ${mobile ? "hidden" : ""}`}
+      >
         <h2 className="text-primary-text text-sm font-bold">Customization</h2>
       </div>
 
