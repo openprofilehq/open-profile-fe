@@ -152,6 +152,60 @@ const mapCornerStyleFromApi = (cornerStyle: string) => {
   return cornerStyleMap[cornerStyle] ?? "rounded";
 };
 
+type BuilderColorMode = "theme" | "custom";
+
+const BUILDER_BLEND_THEME_VALUE = "#7C3AED__blend";
+
+const BUILDER_THEME_SWATCHES = [
+  {
+    name: "Teal",
+    brand: THEME_DEFAULTS.ACCENT_COLORS.DEFAULT,
+    background: "#F3FBF8",
+  },
+  {
+    name: "Blend",
+    brand: BUILDER_BLEND_THEME_VALUE,
+    background: "#FDF2F8",
+  },
+  { name: "Clay", brand: "#9A604B", background: "#F8F4F1" },
+  { name: "Red", brand: "#D92D20", background: "#FFF5F5" },
+  { name: "Violet", brand: "#6D3FD1", background: "#F3F0FF" },
+  { name: "Magenta", brand: "#D63384", background: "#FDF2F8" },
+  { name: "Green", brand: "#4D7C0F", background: "#F3FBF8" },
+];
+
+const normalizeAppearanceColorForCompare = (color: string) => {
+  return color.trim().split("__")[0].split("_")[0].toUpperCase();
+};
+
+const isSameAppearanceColor = (current: string, candidate: string) => {
+  return (
+    normalizeAppearanceColorForCompare(current) ===
+    normalizeAppearanceColorForCompare(candidate)
+  );
+};
+
+const findMatchingBuilderTheme = (bgColor: string, iconColor: string) => {
+  return BUILDER_THEME_SWATCHES.find(
+    (theme) =>
+      isSameAppearanceColor(theme.background, bgColor) &&
+      isSameAppearanceColor(theme.brand, iconColor)
+  );
+};
+
+const getAppearanceString = (
+  appearanceSettings: Record<string, unknown>,
+  keys: string[]
+) => {
+  const value = keys
+    .map((key) => appearanceSettings[key])
+    .find(
+      (item): item is string => typeof item === "string" && item.length > 0
+    );
+
+  return value;
+};
+
 type ProfileMetaSnapshot = {
   fullName: string;
   bio: string | null;
@@ -210,6 +264,10 @@ function createPublishSnapshot({
   spacing,
   borderRadius,
   appearanceTheme,
+  colorMode,
+  activeThemeName,
+  customBgColor,
+  customBrandColor,
 }: {
   sections: Section[];
   template: string;
@@ -220,6 +278,10 @@ function createPublishSnapshot({
   spacing: number;
   borderRadius: "sharp" | "rounded" | "pill";
   appearanceTheme: "light" | "dark";
+  colorMode: BuilderColorMode;
+  activeThemeName: string | null;
+  customBgColor: string;
+  customBrandColor: string;
 }) {
   const snapshotSections: PublishSnapshotSection[] = sections.map(
     (section) => ({
@@ -256,6 +318,10 @@ function createPublishSnapshot({
     spacing,
     borderRadius,
     appearanceTheme,
+    colorMode,
+    activeThemeName,
+    customBgColor,
+    customBrandColor,
   });
 }
 
@@ -344,6 +410,16 @@ export default function ProfileBuilderContent() {
   const [textColor, setTextColor] = useState<string>(THEME_DEFAULTS.TEXT_COLOR);
   const [bgColor, setBgColor] = useState<string>(THEME_DEFAULTS.BG_COLOR);
   const [iconColor, setIconColor] = useState<string>(
+    THEME_DEFAULTS.ACCENT_COLORS.DEFAULT
+  );
+  const [colorMode, setColorMode] = useState<BuilderColorMode>("theme");
+  const [activeThemeName, setActiveThemeName] = useState<string | null>(
+    BUILDER_THEME_SWATCHES[0].name
+  );
+  const [customBgColor, setCustomBgColor] = useState<string>(
+    THEME_DEFAULTS.BG_COLOR
+  );
+  const [customBrandColor, setCustomBrandColor] = useState<string>(
     THEME_DEFAULTS.ACCENT_COLORS.DEFAULT
   );
   const [spacing, setSpacing] = useState(20);
@@ -439,6 +515,67 @@ export default function ProfileBuilderContent() {
       appearanceHydratingRef.current = true;
 
       queueMicrotask(() => {
+        const appearanceSettingsRecord = appearanceSettings as Record<
+          string,
+          unknown
+        >;
+
+        const loadedBackgroundColour =
+          getAppearanceString(appearanceSettingsRecord, [
+            "backgroundColour",
+            "bgColor",
+          ]) ?? THEME_DEFAULTS.BG_COLOR;
+
+        const loadedAccentColour =
+          getAppearanceString(appearanceSettingsRecord, [
+            "accentColour",
+            "iconColor",
+          ]) ?? THEME_DEFAULTS.ACCENT_COLORS.DEFAULT;
+
+        const loadedMatchingTheme = findMatchingBuilderTheme(
+          loadedBackgroundColour,
+          loadedAccentColour
+        );
+
+        const loadedActiveThemeName =
+          getAppearanceString(appearanceSettingsRecord, ["activeThemeName"]) ??
+          loadedMatchingTheme?.name ??
+          BUILDER_THEME_SWATCHES[0].name;
+
+        const savedColorMode = appearanceSettingsRecord.colorMode;
+
+        const loadedColorMode: BuilderColorMode =
+          savedColorMode === "custom" || savedColorMode === "theme"
+            ? savedColorMode
+            : loadedMatchingTheme
+              ? "theme"
+              : "custom";
+
+        const loadedCustomBgColor =
+          getAppearanceString(appearanceSettingsRecord, [
+            "customBackgroundColour",
+            "customBackgroundColor",
+            "customBgColor",
+          ]) ??
+          (loadedColorMode === "custom"
+            ? loadedBackgroundColour
+            : THEME_DEFAULTS.BG_COLOR);
+
+        const loadedCustomBrandColor =
+          getAppearanceString(appearanceSettingsRecord, [
+            "customAccentColour",
+            "customAccentColor",
+            "customBrandColor",
+          ]) ??
+          (loadedColorMode === "custom"
+            ? loadedAccentColour
+            : THEME_DEFAULTS.ACCENT_COLORS.DEFAULT);
+
+        setColorMode(loadedColorMode);
+        setActiveThemeName(loadedActiveThemeName);
+        setCustomBgColor(loadedCustomBgColor);
+        setCustomBrandColor(loadedCustomBrandColor);
+
         if (typeof appearanceSettings.font === "string") {
           setFont(mapFontFromApi(appearanceSettings.font));
         }
@@ -992,6 +1129,10 @@ export default function ProfileBuilderContent() {
         spacing,
         borderRadius,
         appearanceTheme,
+        colorMode,
+        activeThemeName,
+        customBgColor,
+        customBrandColor,
       }),
     [
       resolvedSections,
@@ -1003,6 +1144,10 @@ export default function ProfileBuilderContent() {
       spacing,
       borderRadius,
       appearanceTheme,
+      colorMode,
+      activeThemeName,
+      customBgColor,
+      customBrandColor,
     ]
   );
 
@@ -1251,7 +1396,7 @@ export default function ProfileBuilderContent() {
                 <ChevronLeft size={18} />
                 <span>
                   {mobileTab === "sections"
-                    ? "Profile Builder"
+                    ? "Builder"
                     : mobileTab === "design"
                       ? "Customization"
                       : "Preview"}
@@ -1339,6 +1484,14 @@ export default function ProfileBuilderContent() {
               onChangeBgColor={setBgColor}
               iconColor={iconColor}
               onChangeIconColor={setIconColor}
+              colorMode={colorMode}
+              onChangeColorMode={setColorMode}
+              activeThemeName={activeThemeName}
+              onChangeActiveThemeName={setActiveThemeName}
+              customBgColor={customBgColor}
+              onChangeCustomBgColor={setCustomBgColor}
+              customBrandColor={customBrandColor}
+              onChangeCustomBrandColor={setCustomBrandColor}
               spacing={spacing}
               onChangeSpacing={setSpacing}
               borderRadius={borderRadius}
@@ -1433,6 +1586,14 @@ export default function ProfileBuilderContent() {
             onChangeBgColor={setBgColor}
             iconColor={iconColor}
             onChangeIconColor={setIconColor}
+            colorMode={colorMode}
+            onChangeColorMode={setColorMode}
+            activeThemeName={activeThemeName}
+            onChangeActiveThemeName={setActiveThemeName}
+            customBgColor={customBgColor}
+            onChangeCustomBgColor={setCustomBgColor}
+            customBrandColor={customBrandColor}
+            onChangeCustomBrandColor={setCustomBrandColor}
             spacing={spacing}
             onChangeSpacing={setSpacing}
             borderRadius={borderRadius}
