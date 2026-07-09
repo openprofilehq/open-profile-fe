@@ -37,6 +37,39 @@ export function deserializeTitleAndSubtitle(
   return { title: defaultTitle, subtitle: rawTitle };
 }
 
+const createStableContentItemId = (
+  rawId: unknown,
+  prefix: "link" | "project",
+  index: number,
+  parts: unknown[],
+  seenIds: Set<string>
+) => {
+  const existingId =
+    typeof rawId === "string" || typeof rawId === "number"
+      ? String(rawId).trim()
+      : "";
+  const source = parts
+    .map((part) =>
+      typeof part === "string" || typeof part === "number" ? String(part) : ""
+    )
+    .filter(Boolean)
+    .join("-")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+
+  let nextId = existingId || `${prefix}-${index}-${source || "item"}`;
+
+  if (seenIds.has(nextId)) {
+    nextId = `${nextId}-${index}`;
+  }
+
+  seenIds.add(nextId);
+
+  return nextId;
+};
+
 export function contentToSections(
   rawContent: ProfileContentResponse,
   profile: DashboardProfileResponse
@@ -101,13 +134,24 @@ export function contentToSections(
         type: "links" as const,
         visible: content?.links?.visible ?? true,
         subtitle,
-        links: (content?.links?.items ?? []).map(
-          (l: Record<string, unknown>) => ({
-            ...l,
-            title: l.label || l.title || "",
-            url: decodeUrlForFrontend(l.url as string),
-          })
-        ) as unknown as SavedLink[],
+        links: (() => {
+          const seenLinkIds = new Set<string>();
+
+          return (content?.links?.items ?? []).map(
+            (l: Record<string, unknown>, index) => ({
+              ...l,
+              id: createStableContentItemId(
+                l.id,
+                "link",
+                index,
+                [l.label, l.title, l.url],
+                seenLinkIds
+              ),
+              title: l.label || l.title || "",
+              url: decodeUrlForFrontend(l.url as string),
+            })
+          ) as unknown as SavedLink[];
+        })(),
         textColor: (content?.links as Record<string, unknown>)?.textColor as
           | string
           | undefined,
@@ -146,19 +190,35 @@ export function contentToSections(
         type: "projects" as const,
         visible: content?.projects?.visible ?? true,
         subtitle,
-        projects: (content?.projects?.items ?? []).map(
-          (p: Record<string, unknown>) => {
-            const isHl = String(p.id).startsWith("hl_");
-            return {
-              ...p,
-              id: isHl ? String(p.id).slice(3) : p.id,
-              highlighted: isHl,
-              url: decodeUrlForFrontend(
-                (p.repoUrl as string) || (p.url as string)
-              ),
-            };
-          }
-        ) as unknown as ProjectItem[],
+        projects: (() => {
+          const seenProjectIds = new Set<string>();
+
+          return (content?.projects?.items ?? []).map(
+            (p: Record<string, unknown>, index) => {
+              const rawId =
+                typeof p.id === "string" || typeof p.id === "number"
+                  ? String(p.id)
+                  : "";
+              const isHl = rawId.startsWith("hl_");
+              const baseId = isHl ? rawId.slice(3) : rawId;
+
+              return {
+                ...p,
+                id: createStableContentItemId(
+                  baseId,
+                  "project",
+                  index,
+                  [p.title, p.description, p.repoUrl, p.url],
+                  seenProjectIds
+                ),
+                highlighted: isHl,
+                url: decodeUrlForFrontend(
+                  (p.repoUrl as string) || (p.url as string)
+                ),
+              };
+            }
+          ) as unknown as ProjectItem[];
+        })(),
         layout: (content?.projects as Record<string, unknown>)?.layout as
           | string
           | undefined,

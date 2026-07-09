@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { GripVertical, Trash2 } from "lucide-react";
+import { Reorder, useDragControls } from "motion/react";
 import type { SavedLink } from "./LinkSidebar";
 
 export default function ContentOption({
@@ -8,6 +9,7 @@ export default function ContentOption({
   onTitleChange,
   onSubtitleChange,
   links,
+  onReorderLinks,
   onDeleteLink,
   onEditLink,
   switchTab,
@@ -18,6 +20,7 @@ export default function ContentOption({
   onTitleChange: (value: string) => void;
   onSubtitleChange: (value: string) => void;
   links: SavedLink[];
+  onReorderLinks: (links: SavedLink[]) => void;
   onDeleteLink: (id: string) => void;
   onEditLink: (link: SavedLink) => void;
   switchTab: () => void;
@@ -66,42 +69,22 @@ export default function ContentOption({
                 No links saved yet. Create one in the Section tab.
               </div>
             ) : (
-              links.map((link) => (
-                <div
-                  key={link.id}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Edit link ${link.title}`}
-                  onClick={() => onEditLink(link)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      onEditLink(link);
-                    }
-                  }}
-                  className="group border-tertiary-b relative flex cursor-pointer items-center justify-between overflow-hidden rounded-md border p-3 transition-all duration-200 focus:ring-2 focus:outline-none"
-                >
-                  <div className="flex flex-1 items-center justify-between gap-3 px-4">
-                    <p className="truncate text-sm text-black">{link.title}</p>
-
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDeleteLink(link.id);
-                      }}
-                      className="hover:text-negative-text text-secondary-text mr-10 flex shrink-0 justify-end p-1.5 opacity-0 transition-all group-hover:opacity-100"
-                      title="Delete link"
-                      aria-label={`Delete link ${link.title}`}
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-
-                  <div className="border-tertiary-b bg-active-bg text-tertiary-text hover:bg-hover-bg absolute top-0 right-0 flex h-13 cursor-grab items-center justify-center self-stretch border-l px-3.5 transition-colors active:cursor-grabbing">
-                    <GripVertical size={16} />
-                  </div>
-                </div>
-              ))
+              <Reorder.Group
+                axis="y"
+                values={links}
+                onReorder={onReorderLinks}
+                layoutScroll
+                className="flex flex-col gap-3"
+              >
+                {links.map((link) => (
+                  <SortableLinkItem
+                    key={link.id}
+                    link={link}
+                    onEditLink={onEditLink}
+                    onDeleteLink={onDeleteLink}
+                  />
+                ))}
+              </Reorder.Group>
             )}
           </div>
         </span>
@@ -117,5 +100,68 @@ export default function ContentOption({
         </Button>
       </div>
     </div>
+  );
+}
+
+function SortableLinkItem({
+  link,
+  onEditLink,
+  onDeleteLink,
+}: {
+  link: SavedLink;
+  onEditLink: (link: SavedLink) => void;
+  onDeleteLink: (id: string) => void;
+}) {
+  const dragControls = useDragControls();
+
+  return (
+    <Reorder.Item
+      value={link}
+      dragListener={false}
+      dragControls={dragControls}
+      whileDrag={{ zIndex: 20 }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Edit link ${link.title}`}
+      onClick={() => onEditLink(link)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onEditLink(link);
+        }
+      }}
+      className="group border-tertiary-b relative flex cursor-pointer items-center justify-between overflow-hidden rounded-md border p-3 transition-all duration-200 focus:ring-2 focus:outline-none"
+    >
+      <div className="flex flex-1 items-center justify-between gap-3 px-4">
+        <p className="truncate text-sm text-black">{link.title}</p>
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDeleteLink(link.id);
+          }}
+          className="hover:text-negative-text text-secondary-text mr-10 flex shrink-0 justify-end p-1.5 opacity-0 transition-all group-hover:opacity-100"
+          title="Delete link"
+          aria-label={`Delete link ${link.title}`}
+        >
+          <Trash2 size={15} />
+        </button>
+      </div>
+
+      <button
+        type="button"
+        onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => {
+          e.stopPropagation();
+          dragControls.start(e);
+        }}
+        className="border-tertiary-b bg-active-bg text-tertiary-text hover:bg-hover-bg absolute top-0 right-0 flex h-full cursor-grab items-center justify-center self-stretch border-l px-3.5 transition-colors active:cursor-grabbing"
+        title="Drag to reorder links"
+        aria-label={`Drag to reorder ${link.title}`}
+      >
+        <GripVertical size={16} />
+      </button>
+    </Reorder.Item>
   );
 }

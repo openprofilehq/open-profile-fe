@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Image from "next/image";
 import { Reorder, useDragControls } from "motion/react";
 import { ChevronLeft, GripVertical, Trash2, Plus, Upload } from "lucide-react";
@@ -16,6 +16,33 @@ interface ProjectsSidebarProps {
   mobile?: boolean;
 }
 
+const createFallbackProjectId = (project: ProjectItem, index: number) => {
+  const source = `${project.title || "project"}-${project.url || index}`
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+
+  return `project-${index}-${source || "item"}`;
+};
+
+const ensureProjectIds = (projectItems: ProjectItem[]) => {
+  const seenIds = new Set<string>();
+
+  return projectItems.map((project, index) => {
+    const existingId = typeof project.id === "string" ? project.id.trim() : "";
+    let nextId = existingId || createFallbackProjectId(project, index);
+
+    if (seenIds.has(nextId)) {
+      nextId = `${nextId}-${index}`;
+    }
+
+    seenIds.add(nextId);
+
+    return { ...project, id: nextId };
+  });
+};
+
 export default function ProjectsSidebar({
   returnTab,
   section,
@@ -27,8 +54,8 @@ export default function ProjectsSidebar({
   );
 
   // Local state mirrored from section
-  const [projects, setProjects] = useState<ProjectItem[]>(
-    section?.projects ?? []
+  const [projects, setProjects] = useState<ProjectItem[]>(() =>
+    ensureProjectIds(section?.projects ?? [])
   );
   const [sectionTitle, setSectionTitle] = useState(
     section?.title || "Portfolio"
@@ -62,6 +89,29 @@ export default function ProjectsSidebar({
   const [imageError, setImageError] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    queueMicrotask(() => {
+      if (cancelled) return;
+
+      setProjects(ensureProjectIds(section?.projects ?? []));
+      setSectionTitle(section?.title || "Portfolio");
+      setSectionSubtitle(section?.subtitle || "");
+      setLayout(section?.layout || "1");
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    section?.id,
+    section?.layout,
+    section?.projects,
+    section?.subtitle,
+    section?.title,
+  ]);
 
   const syncSection = (updates: Partial<Section>) => {
     if (!section) return;
@@ -353,6 +403,7 @@ export default function ProjectsSidebar({
                   axis="y"
                   values={projects}
                   onReorder={handleProjectsChange}
+                  layoutScroll
                   className="flex flex-col gap-2.5"
                 >
                   {projects.map((proj) => (
@@ -626,6 +677,7 @@ function SortableProjectItem({
       value={project}
       dragListener={false}
       dragControls={dragControls}
+      whileDrag={{ zIndex: 20 }}
       onClick={() => onEditProject(project)}
       role="button"
       tabIndex={0}
