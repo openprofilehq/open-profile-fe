@@ -22,6 +22,14 @@ interface RightPanelProps {
   onChangeBgColor: (color: string) => void;
   iconColor: string;
   onChangeIconColor: (color: string) => void;
+  colorMode: "theme" | "custom";
+  onChangeColorMode: (mode: "theme" | "custom") => void;
+  activeThemeName: string | null;
+  onChangeActiveThemeName: (themeName: string | null) => void;
+  customBgColor: string;
+  onChangeCustomBgColor: (color: string) => void;
+  customBrandColor: string;
+  onChangeCustomBrandColor: (color: string) => void;
   spacing: number;
   onChangeSpacing: (spacing: number) => void;
   borderRadius: "sharp" | "rounded" | "pill";
@@ -110,7 +118,7 @@ const RADIUS_OPTIONS: {
 ];
 
 function normalizeThemeValue(color: string) {
-  return color.trim().toUpperCase();
+  return color.trim().split("__")[0].split("_")[0].toUpperCase();
 }
 
 function normalizeFontValue(value: string) {
@@ -180,6 +188,14 @@ export default function RightPanel({
   onChangeBgColor,
   iconColor,
   onChangeIconColor,
+  colorMode,
+  onChangeColorMode,
+  activeThemeName,
+  onChangeActiveThemeName,
+  customBgColor,
+  onChangeCustomBgColor,
+  customBrandColor,
+  onChangeCustomBrandColor,
   spacing,
   onChangeSpacing,
   borderRadius,
@@ -193,34 +209,18 @@ export default function RightPanel({
   const selectedTemplate = template ? template.toLowerCase() : "creator";
   const [spacingMode, setSpacingMode] = useState<"basic" | "advanced">("basic");
 
-  const [colorMode, setColorMode] = useState<"theme" | "custom" | null>(null);
-  const [activeThemeName, setActiveThemeName] = useState<string | null>(null);
-  const [manualBgColor, setManualBgColor] = useState<string | null>(null);
-  const [manualBrandColor, setManualBrandColor] = useState<string | null>(null);
-
   const matchedTheme = findMatchingTheme(bgColor, iconColor);
-  const customColorsActive =
-    colorMode === "custom" || (colorMode === null && !matchedTheme);
+  const customColorsActive = colorMode === "custom";
 
   const resolvedActiveThemeName =
     activeThemeName ?? matchedTheme?.name ?? THEME_SWATCHES[0].name;
 
-  const loadedCustomBgColor = matchedTheme ? THEME_DEFAULTS.BG_COLOR : bgColor;
-  const loadedCustomBrandColor = matchedTheme
-    ? THEME_DEFAULTS.ACCENT_COLORS.DEFAULT
-    : iconColor;
-
-  const displayManualBgColor = manualBgColor ?? loadedCustomBgColor;
-  const displayManualBrandColor = manualBrandColor ?? loadedCustomBrandColor;
+  const displayManualBgColor = customBgColor;
+  const displayManualBrandColor = customBrandColor;
 
   const handleSelectTheme = (theme: (typeof THEME_SWATCHES)[number]) => {
-    if (customColorsActive) {
-      setManualBgColor(bgColor);
-      setManualBrandColor(iconColor);
-    }
-
-    setColorMode("theme");
-    setActiveThemeName(theme.name);
+    onChangeColorMode("theme");
+    onChangeActiveThemeName(theme.name);
     onChangeBgColor(theme.background);
     onChangeIconColor(theme.brand);
   };
@@ -232,36 +232,33 @@ export default function RightPanel({
           (theme) => theme.name === resolvedActiveThemeName
         ) ?? THEME_SWATCHES[0];
 
-      if (colorMode === "custom") {
-        setManualBgColor(bgColor);
-        setManualBrandColor(iconColor);
-      }
-
-      setColorMode("theme");
-      setActiveThemeName(nextTheme.name);
+      onChangeCustomBgColor(bgColor);
+      onChangeCustomBrandColor(iconColor);
+      onChangeColorMode("theme");
+      onChangeActiveThemeName(nextTheme.name);
       onChangeBgColor(nextTheme.background);
       onChangeIconColor(nextTheme.brand);
       return;
     }
 
-    const nextBgColor = manualBgColor ?? loadedCustomBgColor;
-    const nextBrandColor = manualBrandColor ?? loadedCustomBrandColor;
+    if (!activeThemeName && matchedTheme) {
+      onChangeActiveThemeName(matchedTheme.name);
+    }
 
-    setColorMode("custom");
-    setActiveThemeName(resolvedActiveThemeName);
-    onChangeBgColor(nextBgColor);
-    onChangeIconColor(nextBrandColor);
+    onChangeColorMode("custom");
+    onChangeBgColor(customBgColor);
+    onChangeIconColor(customBrandColor);
   };
 
   const handleChangeBackgroundColor = (color: string) => {
-    setColorMode("custom");
-    setManualBgColor(color);
+    onChangeColorMode("custom");
+    onChangeCustomBgColor(color);
     onChangeBgColor(color);
   };
 
   const handleChangeBrandColor = (color: string) => {
-    setColorMode("custom");
-    setManualBrandColor(color);
+    onChangeColorMode("custom");
+    onChangeCustomBrandColor(color);
     onChangeIconColor(color);
   };
 
