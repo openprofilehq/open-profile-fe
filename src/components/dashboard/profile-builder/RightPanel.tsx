@@ -199,8 +199,11 @@ export default function RightPanel({
     : (manualBrandColor ?? THEME_DEFAULTS.ACCENT_COLORS.DEFAULT);
 
   const handleSelectTheme = (theme: (typeof THEME_SWATCHES)[number]) => {
-    setManualBgColor(bgColor);
-    setManualBrandColor(iconColor);
+    if (customColorsActive) {
+      setManualBgColor(bgColor);
+      setManualBrandColor(iconColor);
+    }
+
     setColorMode("theme");
     setActiveThemeName(theme.name);
     onChangeBgColor(theme.background);
