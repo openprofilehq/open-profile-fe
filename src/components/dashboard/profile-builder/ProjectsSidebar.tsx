@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Image from "next/image";
+import { Reorder, useDragControls } from "motion/react";
 import { ChevronLeft, GripVertical, Trash2, Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ProjectItem, Section } from "./types";
@@ -15,6 +16,33 @@ interface ProjectsSidebarProps {
   mobile?: boolean;
 }
 
+const createFallbackProjectId = (project: ProjectItem, index: number) => {
+  const source = `${project.title || "project"}-${project.url || index}`
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+
+  return `project-${index}-${source || "item"}`;
+};
+
+const ensureProjectIds = (projectItems: ProjectItem[]) => {
+  const seenIds = new Set<string>();
+
+  return projectItems.map((project, index) => {
+    const existingId = typeof project.id === "string" ? project.id.trim() : "";
+    let nextId = existingId || createFallbackProjectId(project, index);
+
+    if (seenIds.has(nextId)) {
+      nextId = `${nextId}-${index}`;
+    }
+
+    seenIds.add(nextId);
+
+    return { ...project, id: nextId };
+  });
+};
+
 export default function ProjectsSidebar({
   returnTab,
   section,
@@ -26,8 +54,8 @@ export default function ProjectsSidebar({
   );
 
   // Local state mirrored from section
-  const [projects, setProjects] = useState<ProjectItem[]>(
-    section?.projects ?? []
+  const [projects, setProjects] = useState<ProjectItem[]>(() =>
+    ensureProjectIds(section?.projects ?? [])
   );
   const [sectionTitle, setSectionTitle] = useState(
     section?.title || "Portfolio"
@@ -61,6 +89,29 @@ export default function ProjectsSidebar({
   const [imageError, setImageError] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    queueMicrotask(() => {
+      if (cancelled) return;
+
+      setProjects(ensureProjectIds(section?.projects ?? []));
+      setSectionTitle(section?.title || "Portfolio");
+      setSectionSubtitle(section?.subtitle || "");
+      setLayout(section?.layout || "1");
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    section?.id,
+    section?.layout,
+    section?.projects,
+    section?.subtitle,
+    section?.title,
+  ]);
 
   const syncSection = (updates: Partial<Section>) => {
     if (!section) return;
@@ -348,53 +399,32 @@ export default function ProjectsSidebar({
                   </span>
                 </div>
 
-                <div className="flex flex-col gap-2.5">
+                <Reorder.Group
+                  axis="y"
+                  values={projects}
+                  onReorder={handleProjectsChange}
+                  layoutScroll
+                  className="flex flex-col gap-2.5"
+                >
                   {projects.map((proj) => (
-                    <div
+                    <SortableProjectItem
                       key={proj.id}
-                      onClick={() => handleEditProjectClick(proj)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          handleEditProjectClick(proj);
-                        }
-                      }}
-                      className="group hover:border-brand-b/40 border-border bg-background flex h-[50px] cursor-pointer items-center justify-between overflow-hidden rounded-[8px] border pl-4 transition-all"
-                    >
-                      <span className="flex-1 truncate text-sm font-semibold text-[#050505]">
-                        {proj.title}
-                      </span>
-                      <div className="flex h-full items-center">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteProject(proj.id);
-                          }}
-                          className="flex h-full items-center px-3 text-gray-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-600"
-                          title="Delete project"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                        <div className="border-border flex h-full w-[50px] shrink-0 items-center justify-center border-l bg-[#F4F4F5] text-gray-400">
-                          <GripVertical size={16} />
-                        </div>
-                      </div>
-                    </div>
+                      project={proj}
+                      onEditProject={handleEditProjectClick}
+                      onDeleteProject={handleDeleteProject}
+                    />
                   ))}
+                </Reorder.Group>
 
-                  {/* Add Project trigger button */}
-                  <Button
-                    type="button"
-                    size="lg"
-                    variant="waitlist"
-                    onClick={handleAddNewProjectClick}
-                  >
-                    Add New Project
-                  </Button>
-                </div>
+                {/* Add Project trigger button */}
+                <Button
+                  type="button"
+                  size="lg"
+                  variant="waitlist"
+                  onClick={handleAddNewProjectClick}
+                >
+                  Add New Project
+                </Button>
               </div>
 
               {/* Layout Section — bottom on desktop */}
@@ -628,6 +658,67 @@ export default function ProjectsSidebar({
         )}
       </div>
     </aside>
+  );
+}
+
+function SortableProjectItem({
+  project,
+  onEditProject,
+  onDeleteProject,
+}: {
+  project: ProjectItem;
+  onEditProject: (project: ProjectItem) => void;
+  onDeleteProject: (projectId: string) => void;
+}) {
+  const dragControls = useDragControls();
+
+  return (
+    <Reorder.Item
+      value={project}
+      dragListener={false}
+      dragControls={dragControls}
+      whileDrag={{ zIndex: 20 }}
+      onClick={() => onEditProject(project)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onEditProject(project);
+        }
+      }}
+      className="group hover:border-brand-b/40 border-border bg-background flex h-[50px] cursor-pointer items-center justify-between overflow-hidden rounded-[8px] border pl-4 transition-all"
+    >
+      <span className="flex-1 truncate text-sm font-semibold text-[#050505]">
+        {project.title}
+      </span>
+      <div className="flex h-full items-center">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDeleteProject(project.id);
+          }}
+          className="flex h-full items-center px-3 text-gray-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-600"
+          title="Delete project"
+        >
+          <Trash2 size={16} />
+        </button>
+        <button
+          type="button"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            dragControls.start(e);
+          }}
+          className="border-border flex h-full w-[50px] shrink-0 cursor-grab items-center justify-center border-l bg-[#F4F4F5] text-gray-400 transition-colors hover:bg-gray-100 active:cursor-grabbing"
+          title="Drag to reorder projects"
+          aria-label={`Drag to reorder ${project.title}`}
+        >
+          <GripVertical size={16} />
+        </button>
+      </div>
+    </Reorder.Item>
   );
 }
 

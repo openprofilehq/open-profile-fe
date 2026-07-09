@@ -1,5 +1,5 @@
 import { ChevronLeft } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ContentOption from "./ContentOption";
 import SectionOption from "./SectionOption";
 
@@ -12,6 +12,33 @@ type LinkSection = {
   type: string;
   subtitle?: string;
   links?: SavedLink[];
+};
+
+const createFallbackLinkId = (link: SavedLink, index: number) => {
+  const source = `${link.title || "link"}-${link.url || index}`
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+
+  return `link-${index}-${source || "item"}`;
+};
+
+const ensureLinkIds = (savedLinks: SavedLink[]) => {
+  const seenIds = new Set<string>();
+
+  return savedLinks.map((link, index) => {
+    const existingId = typeof link.id === "string" ? link.id.trim() : "";
+    let nextId = existingId || createFallbackLinkId(link, index);
+
+    if (seenIds.has(nextId)) {
+      nextId = `${nextId}-${index}`;
+    }
+
+    seenIds.add(nextId);
+
+    return { ...link, id: nextId };
+  });
 };
 
 const LinkSidebar = ({
@@ -28,12 +55,30 @@ const LinkSidebar = ({
   const [selectedTab, setSelectedTab] = useState<"content" | "section">(
     "content"
   );
-  const [links, setLinks] = useState<SavedLink[]>(section?.links ?? []);
+  const [links, setLinks] = useState<SavedLink[]>(() =>
+    ensureLinkIds(section?.links ?? [])
+  );
   const [editingLink, setEditingLink] = useState<SavedLink | null>(null);
   const [sectionTitle, setSectionTitle] = useState(section?.title || "Links");
   const [sectionSubtitle, setSectionSubtitle] = useState(
     section?.subtitle || ""
   );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    queueMicrotask(() => {
+      if (cancelled) return;
+
+      setLinks(ensureLinkIds(section?.links ?? []));
+      setSectionTitle(section?.title || "Links");
+      setSectionSubtitle(section?.subtitle || "");
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [section?.id, section?.links, section?.subtitle, section?.title]);
 
   const syncSection = (updates: Partial<LinkSection>) => {
     if (!section) return;
@@ -55,6 +100,11 @@ const LinkSidebar = ({
     updateFn: (currentLinks: SavedLink[]) => SavedLink[]
   ) => {
     const nextLinks = updateFn(links);
+    setLinks(nextLinks);
+    syncSection({ links: nextLinks });
+  };
+
+  const handleReorderLinks = (nextLinks: SavedLink[]) => {
     setLinks(nextLinks);
     syncSection({ links: nextLinks });
   };
@@ -144,6 +194,7 @@ const LinkSidebar = ({
             onTitleChange={handleTitleChange}
             onSubtitleChange={handleSubtitleChange}
             links={links}
+            onReorderLinks={handleReorderLinks}
             onDeleteLink={handleDeleteLink}
             onEditLink={handleEditLink}
             switchTab={() => {
