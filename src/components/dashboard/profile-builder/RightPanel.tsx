@@ -126,6 +126,14 @@ function isSelectedColor(current: string, candidate: string) {
   return normalizeThemeValue(current) === normalizeThemeValue(candidate);
 }
 
+function findMatchingTheme(bgColor: string, iconColor: string) {
+  return THEME_SWATCHES.find(
+    (theme) =>
+      isSelectedColor(theme.background, bgColor) &&
+      isSelectedColor(theme.brand, iconColor)
+  );
+}
+
 function RadiusIcon({ type }: { type: "sharp" | "soft" | "rounded" }) {
   if (type === "sharp") {
     return (
@@ -185,18 +193,25 @@ export default function RightPanel({
   const selectedTemplate = template ? template.toLowerCase() : "creator";
   const [spacingMode, setSpacingMode] = useState<"basic" | "advanced">("basic");
 
-  const [colorMode, setColorMode] = useState<"theme" | "custom">("custom");
+  const [colorMode, setColorMode] = useState<"theme" | "custom" | null>(null);
   const [activeThemeName, setActiveThemeName] = useState<string | null>(null);
   const [manualBgColor, setManualBgColor] = useState<string | null>(null);
   const [manualBrandColor, setManualBrandColor] = useState<string | null>(null);
 
-  const customColorsActive = colorMode === "custom";
-  const displayManualBgColor = customColorsActive
-    ? bgColor
-    : (manualBgColor ?? THEME_DEFAULTS.BG_COLOR);
-  const displayManualBrandColor = customColorsActive
-    ? iconColor
-    : (manualBrandColor ?? THEME_DEFAULTS.ACCENT_COLORS.DEFAULT);
+  const matchedTheme = findMatchingTheme(bgColor, iconColor);
+  const customColorsActive =
+    colorMode === "custom" || (colorMode === null && !matchedTheme);
+
+  const resolvedActiveThemeName =
+    activeThemeName ?? matchedTheme?.name ?? THEME_SWATCHES[0].name;
+
+  const loadedCustomBgColor = matchedTheme ? THEME_DEFAULTS.BG_COLOR : bgColor;
+  const loadedCustomBrandColor = matchedTheme
+    ? THEME_DEFAULTS.ACCENT_COLORS.DEFAULT
+    : iconColor;
+
+  const displayManualBgColor = manualBgColor ?? loadedCustomBgColor;
+  const displayManualBrandColor = manualBrandColor ?? loadedCustomBrandColor;
 
   const handleSelectTheme = (theme: (typeof THEME_SWATCHES)[number]) => {
     if (customColorsActive) {
@@ -213,11 +228,15 @@ export default function RightPanel({
   const handleToggleCustomColors = () => {
     if (customColorsActive) {
       const nextTheme =
-        THEME_SWATCHES.find((theme) => theme.name === activeThemeName) ??
-        THEME_SWATCHES[0];
+        THEME_SWATCHES.find(
+          (theme) => theme.name === resolvedActiveThemeName
+        ) ?? THEME_SWATCHES[0];
 
-      setManualBgColor(bgColor);
-      setManualBrandColor(iconColor);
+      if (colorMode === "custom") {
+        setManualBgColor(bgColor);
+        setManualBrandColor(iconColor);
+      }
+
       setColorMode("theme");
       setActiveThemeName(nextTheme.name);
       onChangeBgColor(nextTheme.background);
@@ -225,25 +244,23 @@ export default function RightPanel({
       return;
     }
 
-    const nextBgColor = manualBgColor ?? bgColor;
-    const nextBrandColor = manualBrandColor ?? iconColor;
+    const nextBgColor = manualBgColor ?? loadedCustomBgColor;
+    const nextBrandColor = manualBrandColor ?? loadedCustomBrandColor;
 
     setColorMode("custom");
-    setActiveThemeName(null);
+    setActiveThemeName(resolvedActiveThemeName);
     onChangeBgColor(nextBgColor);
     onChangeIconColor(nextBrandColor);
   };
 
   const handleChangeBackgroundColor = (color: string) => {
     setColorMode("custom");
-    setActiveThemeName(null);
     setManualBgColor(color);
     onChangeBgColor(color);
   };
 
   const handleChangeBrandColor = (color: string) => {
     setColorMode("custom");
-    setActiveThemeName(null);
     setManualBrandColor(color);
     onChangeIconColor(color);
   };
@@ -324,7 +341,7 @@ export default function RightPanel({
             <div className="border-tertiary-b bg-background flex w-full flex-nowrap items-center justify-between gap-1 rounded-[12px] border px-2 py-2">
               {THEME_SWATCHES.map((theme) => {
                 const selected =
-                  colorMode === "theme" && activeThemeName === theme.name;
+                  !customColorsActive && resolvedActiveThemeName === theme.name;
                 const isBlend = theme.name === "Blend";
 
                 return (
