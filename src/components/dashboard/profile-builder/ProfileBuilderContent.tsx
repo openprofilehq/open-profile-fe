@@ -206,6 +206,87 @@ const getAppearanceString = (
   return value;
 };
 
+const BUILDER_COLOR_STATE_STORAGE_KEY = "profile-builder-color-state";
+
+type StoredBuilderColorState = {
+  colorMode?: BuilderColorMode;
+  activeThemeName?: string | null;
+  customBgColor?: string;
+  customBrandColor?: string;
+};
+
+const getBuilderColorStateStorageKey = (username?: string | null) => {
+  return username
+    ? `${BUILDER_COLOR_STATE_STORAGE_KEY}:${username}`
+    : BUILDER_COLOR_STATE_STORAGE_KEY;
+};
+
+const isBuilderColorMode = (value: unknown): value is BuilderColorMode => {
+  return value === "theme" || value === "custom";
+};
+
+const isBuilderThemeName = (value: unknown): value is string => {
+  return (
+    typeof value === "string" &&
+    BUILDER_THEME_SWATCHES.some((theme) => theme.name === value)
+  );
+};
+
+const readStoredBuilderColorState = (
+  storageKey: string
+): StoredBuilderColorState | null => {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const rawValue = window.localStorage.getItem(storageKey);
+    if (!rawValue) return null;
+
+    const parsedValue = JSON.parse(rawValue) as Record<string, unknown>;
+
+    return {
+      colorMode: isBuilderColorMode(parsedValue.colorMode)
+        ? parsedValue.colorMode
+        : undefined,
+      activeThemeName:
+        isBuilderThemeName(parsedValue.activeThemeName) ||
+        parsedValue.activeThemeName === null
+          ? parsedValue.activeThemeName
+          : undefined,
+      customBgColor:
+        typeof parsedValue.customBgColor === "string" &&
+        parsedValue.customBgColor.length > 0
+          ? parsedValue.customBgColor
+          : undefined,
+      customBrandColor:
+        typeof parsedValue.customBrandColor === "string" &&
+        parsedValue.customBrandColor.length > 0
+          ? parsedValue.customBrandColor
+          : undefined,
+    };
+  } catch {
+    return null;
+  }
+};
+
+const writeStoredBuilderColorState = (
+  storageKey: string,
+  state: {
+    colorMode: BuilderColorMode;
+    activeThemeName: string | null;
+    customBgColor: string;
+    customBrandColor: string;
+  }
+) => {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.localStorage.setItem(storageKey, JSON.stringify(state));
+  } catch {
+    // Ignore storage failures. The backend still remains the source of truth
+    // for the active appearance colors.
+  }
+};
+
 type ProfileMetaSnapshot = {
   fullName: string;
   bio: string | null;
@@ -433,6 +514,11 @@ export default function ProfileBuilderContent() {
   const [sections, setSections] = useState<Section[]>([]);
   const [sectionToDelete, setSectionToDelete] = useState<string | null>(null);
 
+  const colorStateStorageKey = useMemo(
+    () => getBuilderColorStateStorageKey(profile?.username),
+    [profile?.username]
+  );
+
   const contentLoadedRef = useRef(false);
   const userEditedRef = useRef(false);
   const appearanceHydratingRef = useRef(false);
@@ -519,6 +605,9 @@ export default function ProfileBuilderContent() {
           string,
           unknown
         >;
+        const storedColorState = readStoredBuilderColorState(
+          getBuilderColorStateStorageKey(dashboardProfile.data?.username)
+        );
 
         const loadedBackgroundColour =
           getAppearanceString(appearanceSettingsRecord, [
@@ -537,36 +626,40 @@ export default function ProfileBuilderContent() {
           loadedAccentColour
         );
 
-        const loadedActiveThemeName =
-          getAppearanceString(appearanceSettingsRecord, ["activeThemeName"]) ??
-          loadedMatchingTheme?.name ??
-          BUILDER_THEME_SWATCHES[0].name;
-
-        const savedColorMode = appearanceSettingsRecord.colorMode;
-
+        const inferredColorMode: BuilderColorMode = loadedMatchingTheme
+          ? "theme"
+          : "custom";
+        const storedColorMode = storedColorState?.colorMode;
         const loadedColorMode: BuilderColorMode =
-          savedColorMode === "custom" || savedColorMode === "theme"
-            ? savedColorMode
-            : loadedMatchingTheme
+          storedColorMode === "custom"
+            ? "custom"
+            : storedColorMode === "theme" && loadedMatchingTheme
               ? "theme"
-              : "custom";
+              : inferredColorMode;
+
+        const storedActiveThemeName = isBuilderThemeName(
+          storedColorState?.activeThemeName
+        )
+          ? storedColorState.activeThemeName
+          : null;
+
+        const loadedActiveThemeName =
+          loadedColorMode === "theme"
+            ? (loadedMatchingTheme?.name ??
+              storedActiveThemeName ??
+              BUILDER_THEME_SWATCHES[0].name)
+            : (storedActiveThemeName ??
+              loadedMatchingTheme?.name ??
+              BUILDER_THEME_SWATCHES[0].name);
 
         const loadedCustomBgColor =
-          getAppearanceString(appearanceSettingsRecord, [
-            "customBackgroundColour",
-            "customBackgroundColor",
-            "customBgColor",
-          ]) ??
+          storedColorState?.customBgColor ??
           (loadedColorMode === "custom"
             ? loadedBackgroundColour
             : THEME_DEFAULTS.BG_COLOR);
 
         const loadedCustomBrandColor =
-          getAppearanceString(appearanceSettingsRecord, [
-            "customAccentColour",
-            "customAccentColor",
-            "customBrandColor",
-          ]) ??
+          storedColorState?.customBrandColor ??
           (loadedColorMode === "custom"
             ? loadedAccentColour
             : THEME_DEFAULTS.ACCENT_COLORS.DEFAULT);
@@ -673,6 +766,24 @@ export default function ProfileBuilderContent() {
     profileAppearance.isError,
     profileAppearance.data,
     sectionParam,
+  ]);
+
+  useEffect(() => {
+    if (!contentLoadedRef.current) return;
+    if (appearanceHydratingRef.current) return;
+
+    writeStoredBuilderColorState(colorStateStorageKey, {
+      colorMode,
+      activeThemeName,
+      customBgColor,
+      customBrandColor,
+    });
+  }, [
+    colorStateStorageKey,
+    colorMode,
+    activeThemeName,
+    customBgColor,
+    customBrandColor,
   ]);
 
   const { mutate: saveAppearance, mutateAsync: saveAppearanceAsync } =
