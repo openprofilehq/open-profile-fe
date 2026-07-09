@@ -190,11 +190,13 @@ export default function RightPanel({
   const [manualBgColor, setManualBgColor] = useState<string | null>(null);
   const [manualBrandColor, setManualBrandColor] = useState<string | null>(null);
 
-  const isThemeActive = colorMode === "theme" && Boolean(activeThemeName);
-  const displayManualBgColor =
-    colorMode === "custom" ? bgColor : (manualBgColor ?? bgColor);
-  const displayManualBrandColor =
-    colorMode === "custom" ? iconColor : (manualBrandColor ?? iconColor);
+  const customColorsActive = colorMode === "custom";
+  const displayManualBgColor = customColorsActive
+    ? bgColor
+    : (manualBgColor ?? THEME_DEFAULTS.BG_COLOR);
+  const displayManualBrandColor = customColorsActive
+    ? iconColor
+    : (manualBrandColor ?? THEME_DEFAULTS.ACCENT_COLORS.DEFAULT);
 
   const handleSelectTheme = (theme: (typeof THEME_SWATCHES)[number]) => {
     setManualBgColor(bgColor);
@@ -205,7 +207,21 @@ export default function RightPanel({
     onChangeIconColor(theme.brand);
   };
 
-  const handleUseManualColors = () => {
+  const handleToggleCustomColors = () => {
+    if (customColorsActive) {
+      const nextTheme =
+        THEME_SWATCHES.find((theme) => theme.name === activeThemeName) ??
+        THEME_SWATCHES[0];
+
+      setManualBgColor(bgColor);
+      setManualBrandColor(iconColor);
+      setColorMode("theme");
+      setActiveThemeName(nextTheme.name);
+      onChangeBgColor(nextTheme.background);
+      onChangeIconColor(nextTheme.brand);
+      return;
+    }
+
     const nextBgColor = manualBgColor ?? bgColor;
     const nextBrandColor = manualBrandColor ?? iconColor;
 
@@ -314,11 +330,14 @@ export default function RightPanel({
                     type="button"
                     aria-label={`Use ${theme.name} theme`}
                     aria-pressed={selected}
+                    disabled={customColorsActive}
                     onClick={() => handleSelectTheme(theme)}
-                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all hover:scale-105 active:scale-95 ${
-                      selected
-                        ? "border-primary-text bg-background ring-primary-text/10 shadow-sm ring-2"
-                        : "border-transparent bg-transparent"
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all disabled:cursor-not-allowed disabled:opacity-40 ${
+                      customColorsActive
+                        ? "border-transparent bg-transparent"
+                        : selected
+                          ? "border-primary-text bg-background ring-primary-text/10 shadow-sm ring-2 hover:scale-105 active:scale-95"
+                          : "border-transparent bg-transparent hover:scale-105 active:scale-95"
                     }`}
                   >
                     <span
@@ -340,27 +359,33 @@ export default function RightPanel({
           <div>
             <div className="mb-2 flex items-center justify-between gap-3">
               <label className="text-primary-text block text-xs font-bold">
-                Colors
+                Custom colors
               </label>
-              {isThemeActive && (
-                <button
-                  type="button"
-                  onClick={handleUseManualColors}
-                  className="text-link-hover-text text-[11px] font-semibold hover:underline"
-                >
-                  Use custom colors
-                </button>
-              )}
+              <button
+                type="button"
+                role="switch"
+                aria-checked={customColorsActive}
+                onClick={handleToggleCustomColors}
+                className={`relative h-6 w-11 rounded-full transition-colors ${
+                  customColorsActive ? "bg-brand-hover-bg" : "bg-disabled-bg"
+                }`}
+              >
+                <span
+                  className={`bg-background absolute top-1 h-4 w-4 rounded-full shadow-sm transition-all ${
+                    customColorsActive ? "left-6" : "left-1"
+                  }`}
+                />
+              </button>
             </div>
             <div
               className={`border-tertiary-b bg-background flex flex-col gap-3 rounded-[12px] border p-3 ${
-                isThemeActive ? "opacity-50" : ""
+                customColorsActive ? "" : "opacity-50"
               }`}
-              aria-disabled={isThemeActive}
+              aria-disabled={!customColorsActive}
             >
-              {isThemeActive && (
+              {!customColorsActive && (
                 <p className="text-tertiary-text text-xs font-medium">
-                  A theme is active. Switch to custom colors to edit background
+                  A theme is active. Switch custom colors on to edit background
                   or brand colors manually.
                 </p>
               )}
@@ -381,7 +406,7 @@ export default function RightPanel({
                         key={color}
                         type="button"
                         aria-label={`Set background color to ${color}`}
-                        disabled={isThemeActive}
+                        disabled={!customColorsActive}
                         onClick={() => handleChangeBackgroundColor(color)}
                         className={`flex h-8 w-full items-center justify-center rounded-[8px] border transition-all disabled:cursor-not-allowed ${
                           selected
@@ -406,7 +431,7 @@ export default function RightPanel({
                   THEME_DEFAULTS.ACCENT_COLORS.DEFAULT
                 }
                 onChange={handleChangeBrandColor}
-                disabled={isThemeActive}
+                disabled={!customColorsActive}
               />
             </div>
           </div>

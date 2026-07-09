@@ -48,11 +48,6 @@ const navLinks = [
     label: "Notifications",
     icon: Bell,
   },
-  {
-    label: "Settings",
-    href: ROUTES.dashboard.settings.home,
-    icon: Settings,
-  },
 ];
 
 export default function DashboardTopbar() {
@@ -273,6 +268,14 @@ export default function DashboardTopbar() {
                         {displayName}
                       </p>
                     )}
+                    <Link
+                      href={ROUTES.dashboard.settings.home}
+                      onClick={() => setDropdownOpen(false)}
+                      className="text-primary-text hover:bg-hover-bg flex w-full cursor-pointer items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                    >
+                      <Settings size={15} />
+                      Settings
+                    </Link>
                     <button
                       onClick={() => {
                         setDropdownOpen(false);

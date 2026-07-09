@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -19,7 +19,6 @@ import {
 import LeftSidebar from "./LeftSidebar";
 import PreviewCanvas from "./PreviewCanvas";
 import RightPanel from "./RightPanel";
-import Link from "next/link";
 import type { Section } from "./types";
 import { THEME_DEFAULTS } from "@/constants/theme";
 import type {
@@ -31,7 +30,6 @@ import type {
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { isApiError } from "@/api/base";
 import { normalizeFullName, validateFullName } from "@/utils/nameValidation";
-import { ROUTES } from "@/constants/routes";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProfileBuilderPublishState } from "./profile-builder-publish-state";
 import { ChevronLeft, Eye } from "lucide-react";
@@ -263,11 +261,12 @@ function createPublishSnapshot({
 
 export default function ProfileBuilderContent() {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const {
     publishedVersion,
     setHasUnpublishedChanges,
     setBeforePublishHandler,
-    hasUnpublishedChanges: _hasUnpublishedChanges,
+    hasUnpublishedChanges,
     publishStatus,
     setPublishStatus,
     markProfilePublished,
@@ -331,7 +330,9 @@ export default function ProfileBuilderContent() {
       ? "Publishing…"
       : publishStatus === "published"
         ? "Published"
-        : "Publish";
+        : hasUnpublishedChanges
+          ? "Unpublished changes • Publish"
+          : "Publish";
 
   const isLoading =
     dashboardProfile.isPending ||
@@ -1242,8 +1243,9 @@ export default function ProfileBuilderContent() {
           ) : (
             /* Top-level — back arrow + tab title + eye + publish */
             <>
-              <Link
-                href={ROUTES.dashboard.home}
+              <button
+                type="button"
+                onClick={() => router.back()}
                 className="text-primary-text hover:text-link-hover-text flex items-center gap-1.5 text-sm font-semibold transition-colors"
               >
                 <ChevronLeft size={18} />
@@ -1254,7 +1256,7 @@ export default function ProfileBuilderContent() {
                       ? "Customization"
                       : "Preview"}
                 </span>
-              </Link>
+              </button>
 
               <div className="flex items-center gap-2">
                 <button
@@ -1364,8 +1366,8 @@ export default function ProfileBuilderContent() {
             }}
             className={`flex flex-1 items-center justify-center rounded-xl py-2 text-sm font-semibold transition-colors ${
               mobileTab === "sections"
-                ? "bg-[#1C1C1C] text-white"
-                : "text-secondary-text hover:bg-brand-hover-bg hover:text-white"
+                ? "bg-brand-hover-bg text-white"
+                : "text-secondary-text hover:bg-brand-light-subtle-bg hover:text-link-hover-text"
             }`}
           >
             Sections
@@ -1378,8 +1380,8 @@ export default function ProfileBuilderContent() {
             }}
             className={`flex flex-1 items-center justify-center rounded-xl py-2 text-sm font-semibold transition-colors ${
               mobileTab === "design"
-                ? "bg-[#1C1C1C] text-white"
-                : "text-secondary-text hover:bg-brand-hover-bg hover:text-white"
+                ? "bg-brand-hover-bg text-white"
+                : "text-secondary-text hover:bg-brand-light-subtle-bg hover:text-link-hover-text"
             }`}
           >
             Design

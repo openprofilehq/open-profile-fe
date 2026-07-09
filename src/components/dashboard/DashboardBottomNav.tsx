@@ -2,13 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Bell,
-  ChartNoAxesCombined,
-  House,
-  PanelsTopLeft,
-  Settings,
-} from "lucide-react";
+import { Bell, ChartNoAxesCombined, House, PanelsTopLeft } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 
 const bottomNavLinks = [
@@ -29,11 +23,6 @@ const bottomNavLinks = [
   {
     label: "Alerts",
     icon: Bell,
-  },
-  {
-    label: "Settings",
-    href: ROUTES.dashboard.settings.home,
-    icon: Settings,
   },
 ];
 

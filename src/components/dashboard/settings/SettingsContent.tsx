@@ -1,10 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
-import { toast } from "sonner";
-import { LogOut } from "lucide-react";
-import { logout } from "@/app/actions/auth";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { dashboardProfileOption } from "@/api/profile/profile.options";
 import { ROUTES } from "@/constants/routes";
@@ -57,8 +54,6 @@ const subscription: {
 export default function SettingsContent() {
   const [isProfileVisible, setIsProfileVisible] = useState(false);
 
-  const [isPending, startTransition] = useTransition();
-
   const dashboardProfile = useQuery(dashboardProfileOption());
   const profile = dashboardProfile.data;
 
@@ -83,17 +78,6 @@ export default function SettingsContent() {
         year: "numeric",
       })
     : "Not available";
-
-  function handleLogout() {
-    startTransition(async () => {
-      try {
-        await logout();
-      } catch (error) {
-        console.error("Logout failed:", error);
-        toast.error("Logout failed. Please try again.");
-      }
-    });
-  }
 
   return (
     <div className="mx-auto w-full max-w-[1030px]">
@@ -234,31 +218,6 @@ export default function SettingsContent() {
             >
               Manage billing
             </Link>
-          </section>
-
-          <section className="rounded-[10px] border border-[#EDEDED] bg-white p-5">
-            <h2 className="text-xl font-bold text-[#050505]">
-              Account Actions
-            </h2>
-
-            <div className="mt-4 flex items-start gap-3">
-              <LogOut className="mt-1 text-[#D92D20]" size={22} />
-              <div>
-                <p className="font-bold text-[#050505]">Log Out</p>
-                <p className="text-xs text-[#747474]">
-                  Sign out from your account on this device.
-                </p>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              disabled={isPending}
-              onClick={handleLogout}
-              className="mx-auto mt-4 block h-10 w-full rounded-[8px] border border-[#F04438] text-[#D92D20] disabled:cursor-not-allowed disabled:opacity-60 md:max-w-[260px]"
-            >
-              {isPending ? "Logging out..." : "Log out"}
-            </button>
           </section>
         </aside>
       </div>
