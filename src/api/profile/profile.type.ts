@@ -71,6 +71,35 @@ export type ProjectItem = {
   highlighted?: boolean;
 };
 
+export type ExperienceItem = {
+  id: string | number;
+  role?: string;
+  company?: string;
+  employmentType?: string;
+  startMonth?: string;
+  startYear?: string;
+  endMonth?: string;
+  endYear?: string;
+  currentlyWorking?: boolean;
+  description?: string;
+};
+
+export type EducationItem = {
+  id: string | number;
+  institution?: string;
+  degree?: string;
+  startMonth?: string;
+  startYear?: string;
+  endMonth?: string;
+  endYear?: string;
+};
+
+export type SkillItem = {
+  id: string | number;
+  name?: string;
+  label?: string;
+};
+
 export type ProfileContentSectionLinks = {
   visible: boolean;
   sectionTitle: string;
@@ -81,6 +110,24 @@ export type ProfileContentSectionProjects = {
   visible: boolean;
   sectionTitle: string;
   items: ProjectItem[];
+};
+
+export type ProfileContentSectionWorkExperience = {
+  visible: boolean;
+  sectionTitle: string;
+  items: ExperienceItem[];
+};
+
+export type ProfileContentSectionEducation = {
+  visible: boolean;
+  sectionTitle: string;
+  items: EducationItem[];
+};
+
+export type ProfileContentSectionSkills = {
+  visible: boolean;
+  sectionTitle: string;
+  items: SkillItem[];
 };
 
 export type ProfileContentSectionCta = {
@@ -104,6 +151,9 @@ export type ProfileContentDetails = {
   links: ProfileContentSectionLinks;
   projects: ProfileContentSectionProjects;
   cta: ProfileContentSectionCta;
+  workExperience?: ProfileContentSectionWorkExperience;
+  education?: ProfileContentSectionEducation;
+  skills?: ProfileContentSectionSkills;
 };
 
 export type ProfileContentResponse = {
@@ -124,6 +174,9 @@ export type UpsertDraftRequest = {
     links?: ProfileContentSectionLinks;
     projects?: ProfileContentSectionProjects;
     cta?: ProfileContentSectionCta;
+    workExperience?: ProfileContentSectionWorkExperience;
+    education?: ProfileContentSectionEducation;
+    skills?: ProfileContentSectionSkills;
     sectionOrder?: string[];
   };
 };
@@ -236,6 +289,9 @@ export type ProfileAppearanceRequest = {
     links?: Record<string, unknown>;
     projects?: Record<string, unknown>;
     cta?: Record<string, unknown>;
+    workExperience?: Record<string, unknown>;
+    education?: Record<string, unknown>;
+    skills?: Record<string, unknown>;
     [key: string]: unknown;
   };
 };

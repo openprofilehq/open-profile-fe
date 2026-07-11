@@ -12,6 +12,10 @@ import { getFontClass } from "../../templates/TemplateAppearanceProvider";
 import { CreatorLinkCard, getLinkIcon } from "../../shared/TemplateLinkCard";
 import HighlightPreviewCard from "./HighlightPreviewCard";
 import PreviewSectionControls from "./PreviewSectionControls";
+import {
+  isProfileTextSectionType,
+  ProfileTextSectionBlock,
+} from "../ProfileTextSections";
 import { getInitials } from "@/utils/avatar";
 
 interface CreatorPreviewProps {
@@ -54,6 +58,9 @@ export default function CreatorPreview({
   const projectsSection = visibleSections.find((s) => s.type === "projects");
   const linksSection = visibleSections.find((s) => s.type === "links");
   const ctaSection = visibleSections.find((s) => s.type === "cta");
+  const textSections = visibleSections.filter((section) =>
+    isProfileTextSectionType(section.type)
+  );
 
   const resolvedName = profile?.fullName ?? "";
 
@@ -485,6 +492,27 @@ export default function CreatorPreview({
             })}
           </div>
         </>
+      )}
+
+      {textSections.length > 0 && (
+        <div
+          className="mx-auto flex w-full max-w-4xl flex-col gap-10"
+          style={{ marginTop: "var(--op-spacing, 2rem)" }}
+        >
+          {textSections.map((section) => (
+            <section
+              key={section.id}
+              role="button"
+              tabIndex={0}
+              onClick={(event) => handleSelectSection(event, section)}
+              onKeyDown={(event) => handleSectionKeyDown(event, section)}
+              className={`group hover:border-border hover:bg-background/50 relative w-full cursor-pointer rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""}`}
+            >
+              {renderControls(section)}
+              <ProfileTextSectionBlock section={section} />
+            </section>
+          ))}
+        </div>
       )}
     </div>
   );

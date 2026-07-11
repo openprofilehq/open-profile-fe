@@ -1,14 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import Image from "next/image";
 import { Reorder, useDragControls } from "motion/react";
-import { ChevronLeft, Search, Plus, GripVertical } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  ChevronLeft,
+  GraduationCap,
+  GripVertical,
+  Plus,
+  Search,
+  Sparkles,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LinkSidebar from "./LinkSidebar";
 import BioSidebar from "./BioSidebar";
 import ProjectsSidebar from "./ProjectsSidebar";
 import CtaSidebar from "./CtaSidebar";
+import ExperienceSidebar from "./ExperienceSidebar";
+import EducationSidebar from "./EducationSidebar";
+import SkillsSidebar from "./SkillsSidebar";
 import {
   SECTION_TYPE,
   type Section,
@@ -40,6 +51,9 @@ const SECTION_STATIC_LABELS: Record<string, string> = {
   [SECTION_TYPE.LINKS]: "Links",
   [SECTION_TYPE.PROJECTS]: "Projects",
   [SECTION_TYPE.CTA]: "CTA",
+  [SECTION_TYPE.WORK_EXPERIENCE]: "Work Experience",
+  [SECTION_TYPE.EDUCATION]: "Education",
+  [SECTION_TYPE.SKILLS]: "Skills",
 };
 
 function getDisplayTitle(
@@ -87,6 +101,11 @@ export default function LeftSidebar({
     if (section.type === SECTION_TYPE.LINKS) return "Add links";
     if (section.type === SECTION_TYPE.PROJECTS) return "Add projects";
     if (section.type === SECTION_TYPE.CTA) return "Add CTA";
+    if (section.type === SECTION_TYPE.WORK_EXPERIENCE) {
+      return "Add experience";
+    }
+    if (section.type === SECTION_TYPE.EDUCATION) return "Add education";
+    if (section.type === SECTION_TYPE.SKILLS) return "Add skills";
 
     return "Customize section";
   }
@@ -132,6 +151,15 @@ export default function LeftSidebar({
   const isCtaDisabled = sections.some(
     (section) => section.type === SECTION_TYPE.CTA
   );
+  const isWorkExperienceDisabled = sections.some(
+    (section) => section.type === SECTION_TYPE.WORK_EXPERIENCE
+  );
+  const isEducationDisabled = sections.some(
+    (section) => section.type === SECTION_TYPE.EDUCATION
+  );
+  const isSkillsDisabled = sections.some(
+    (section) => section.type === SECTION_TYPE.SKILLS
+  );
   const isDisabled = isLinksDisabled;
 
   const handleSwitchToAddLinkSection = () => {
@@ -163,7 +191,7 @@ export default function LeftSidebar({
         <div className="border-tertiary-b mb-6 flex items-center justify-between border-b pb-4">
           <span className="text-primary-text text-sm font-bold">Sections</span>
           <span className="bg-hover-bg text-primary-text flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold">
-            4
+            7
           </span>
         </div>
 
@@ -262,6 +290,31 @@ export default function LeftSidebar({
               CTA
             </div>
           </button>
+
+          <SectionCard
+            label="Work Experience"
+            disabled={isWorkExperienceDisabled}
+            onClick={() =>
+              handleSelectCard("Work Experience", SECTION_TYPE.WORK_EXPERIENCE)
+            }
+            icon={<BriefcaseBusiness size={22} />}
+          />
+
+          <SectionCard
+            label="Education"
+            disabled={isEducationDisabled}
+            onClick={() =>
+              handleSelectCard("Education", SECTION_TYPE.EDUCATION)
+            }
+            icon={<GraduationCap size={22} />}
+          />
+
+          <SectionCard
+            label="Skills"
+            disabled={isSkillsDisabled}
+            onClick={() => handleSelectCard("Skills", SECTION_TYPE.SKILLS)}
+            icon={<Sparkles size={22} />}
+          />
         </div>
       </aside>
     );
@@ -306,6 +359,39 @@ export default function LeftSidebar({
     if (editingSection.type === SECTION_TYPE.CTA) {
       return (
         <CtaSidebar
+          returnTab={handleReturnToList}
+          section={editingSection}
+          onUpdateSection={onUpdateSection}
+          mobile={mobile}
+        />
+      );
+    }
+
+    if (editingSection.type === SECTION_TYPE.WORK_EXPERIENCE) {
+      return (
+        <ExperienceSidebar
+          returnTab={handleReturnToList}
+          section={editingSection}
+          onUpdateSection={onUpdateSection}
+          mobile={mobile}
+        />
+      );
+    }
+
+    if (editingSection.type === SECTION_TYPE.EDUCATION) {
+      return (
+        <EducationSidebar
+          returnTab={handleReturnToList}
+          section={editingSection}
+          onUpdateSection={onUpdateSection}
+          mobile={mobile}
+        />
+      );
+    }
+
+    if (editingSection.type === SECTION_TYPE.SKILLS) {
+      return (
+        <SkillsSidebar
           returnTab={handleReturnToList}
           section={editingSection}
           onUpdateSection={onUpdateSection}
@@ -363,6 +449,11 @@ export default function LeftSidebar({
                 Projects / Portfolio
               </option>
               <option value={SECTION_TYPE.CTA}>CTA</option>
+              <option value={SECTION_TYPE.WORK_EXPERIENCE}>
+                Work Experience
+              </option>
+              <option value={SECTION_TYPE.EDUCATION}>Education</option>
+              <option value={SECTION_TYPE.SKILLS}>Skills</option>
             </select>
           </div>
 
@@ -408,7 +499,10 @@ export default function LeftSidebar({
           {editingSection.type !== SECTION_TYPE.BIO &&
             editingSection.type !== SECTION_TYPE.LINKS &&
             editingSection.type !== SECTION_TYPE.PROJECTS &&
-            editingSection.type !== SECTION_TYPE.CTA && (
+            editingSection.type !== SECTION_TYPE.CTA &&
+            editingSection.type !== SECTION_TYPE.WORK_EXPERIENCE &&
+            editingSection.type !== SECTION_TYPE.EDUCATION &&
+            editingSection.type !== SECTION_TYPE.SKILLS && (
               <div className="border-secondary-b rounded-[12px] border border-dashed p-6 text-center">
                 <p className="text-secondary-text text-xs font-semibold">
                   Additional dynamic items editor will display here based on
@@ -521,6 +615,38 @@ export default function LeftSidebar({
         </Reorder.Group>
       </div>
     </aside>
+  );
+}
+
+function SectionCard({
+  label,
+  icon,
+  disabled,
+  onClick,
+}: {
+  label: string;
+  icon: ReactNode;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`group border-tertiary-b bg-background flex h-35 w-full flex-col overflow-hidden rounded-[16px] border text-left transition-all duration-200 ${
+        disabled
+          ? "bg-secondary-bg cursor-not-allowed opacity-70"
+          : "hover:border-brand-b cursor-pointer hover:shadow-sm"
+      }`}
+    >
+      <div className="bg-background text-tertiary-text flex flex-1 items-center p-4">
+        {icon}
+      </div>
+      <div className="text-primary-text bg-secondary-bg group-hover:bg-hover-bg flex h-9 items-center px-4 text-[13px] font-medium transition-colors">
+        {label}
+      </div>
+    </button>
   );
 }
 

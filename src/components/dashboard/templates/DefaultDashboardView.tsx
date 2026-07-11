@@ -21,6 +21,10 @@ import type { SavedLink } from "../profile-builder/types";
 import TemplateAppearanceProvider, {
   getFontClass,
 } from "./TemplateAppearanceProvider";
+import {
+  isProfileTextSectionType,
+  ProfileTextSectionBlock,
+} from "../profile-builder/ProfileTextSections";
 
 type Props = {
   profile?: DashboardProfileResponse;
@@ -458,6 +462,17 @@ export default function DefaultDashboardView({
                     </div>
                   </section>
                 </div>
+              );
+            }
+
+            if (isProfileTextSectionType(section.type)) {
+              return (
+                <section
+                  key={section.id}
+                  className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${section.font ? getFontClass(section.font) : ""}`}
+                >
+                  <ProfileTextSectionBlock section={section} />
+                </section>
               );
             }
 

@@ -24,6 +24,10 @@ import HighlightCard from "../HighlightCard";
 import { contentToSections } from "../profile-builder/builder.utils";
 import type { SavedLink } from "../profile-builder/types";
 import { getFontClass } from "./TemplateAppearanceProvider";
+import {
+  isProfileTextSectionType,
+  ProfileTextSectionBlock,
+} from "../profile-builder/ProfileTextSections";
 
 type Props = {
   profile?: DashboardProfileResponse;
@@ -134,6 +138,9 @@ export default function CreatorDashboardView({
   });
 
   const visibleSections = sections.filter((section) => section.visible);
+  const textSections = visibleSections.filter((section) =>
+    isProfileTextSectionType(section.type)
+  );
 
   const bioSection = sections.find((s) => s.type === "bio");
   const linksSection = sections.find((s) => s.type === "links");
@@ -507,6 +514,23 @@ export default function CreatorDashboardView({
           return null;
         })}
       </div>
+
+      {textSections.length > 0 && (
+        <div
+          className="mx-auto flex w-full max-w-4xl flex-col gap-10"
+          style={{ marginTop: "var(--op-spacing, 2rem)" }}
+        >
+          {textSections.map((section) => (
+            <section
+              key={section.id}
+              className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${section.font ? getFontClass(section.font) : ""}`}
+            >
+              <ProfileTextSectionBlock section={section} />
+            </section>
+          ))}
+        </div>
+      )}
+
       {!isPreview && <TemplateFooter />}
     </div>
   );

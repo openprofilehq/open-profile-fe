@@ -47,6 +47,9 @@ const createSection = (type: string, customTitle?: string): Section | null => {
     links: "links",
     projects: "projects",
     cta: "cta",
+    workExperience: "workExperience",
+    education: "education",
+    skills: "skills",
   };
 
   const resolvedType = allowedTypes[type];
@@ -57,6 +60,9 @@ const createSection = (type: string, customTitle?: string): Section | null => {
     links: "links",
     projects: "projects",
     cta: "cta",
+    workExperience: "workExperience",
+    education: "education",
+    skills: "skills",
   };
 
   const title =
@@ -67,7 +73,13 @@ const createSection = (type: string, customTitle?: string): Section | null => {
         ? "Portfolio"
         : resolvedType === "bio"
           ? "Profile"
-          : "CTA");
+          : resolvedType === "workExperience"
+            ? "Work Experience"
+            : resolvedType === "education"
+              ? "Education"
+              : resolvedType === "skills"
+                ? "Skills"
+                : "CTA");
 
   return {
     id: stableIds[type] ?? Math.random().toString(36).substring(2, 11),
@@ -75,9 +87,18 @@ const createSection = (type: string, customTitle?: string): Section | null => {
     type: resolvedType,
     visible: true,
     subtitle:
-      resolvedType === "links" ? "" : resolvedType === "cta" ? "" : undefined,
+      resolvedType === "links" ||
+      resolvedType === "cta" ||
+      resolvedType === "workExperience" ||
+      resolvedType === "education" ||
+      resolvedType === "skills"
+        ? ""
+        : undefined,
     links: resolvedType === "links" ? [] : undefined,
     projects: resolvedType === "projects" ? [] : undefined,
+    experiences: resolvedType === "workExperience" ? [] : undefined,
+    education: resolvedType === "education" ? [] : undefined,
+    skills: resolvedType === "skills" ? [] : undefined,
     layout: resolvedType === "cta" ? "1" : undefined,
     buttonText: resolvedType === "cta" ? "Start a Conversation" : undefined,
     url: resolvedType === "cta" ? "" : undefined,
@@ -304,6 +325,9 @@ type PublishSnapshotSection = {
   photoUrl?: string | null;
   links?: Section["links"];
   projects?: Section["projects"];
+  experiences?: Section["experiences"];
+  education?: Section["education"];
+  skills?: Section["skills"];
   layout?: Section["layout"];
   buttonText?: string;
   url?: string;
@@ -376,6 +400,9 @@ function createPublishSnapshot({
       photoUrl: section.photoUrl ?? undefined,
       links: section.links,
       projects: section.projects,
+      experiences: section.experiences,
+      education: section.education,
+      skills: section.skills,
       layout: section.layout ?? undefined,
       buttonText: section.buttonText ?? undefined,
       url: section.url ?? undefined,
@@ -559,8 +586,7 @@ export default function ProfileBuilderContent() {
     const components = appearanceSettingsData?.components;
     if (components) {
       loadedSections.forEach((section) => {
-        const componentKey =
-          section.type === "experience" ? "cta" : section.type;
+        const componentKey = section.type;
         const compApp = components[componentKey] as
           | {
               backgroundColour?: string;
