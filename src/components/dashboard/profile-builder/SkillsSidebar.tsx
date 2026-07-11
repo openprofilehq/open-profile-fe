@@ -53,6 +53,8 @@ export default function SkillsSidebar({
   const [sectionSubtitle, setSectionSubtitle] = useState(
     section?.subtitle || ""
   );
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -98,12 +100,14 @@ export default function SkillsSidebar({
   };
 
   const handleSave = async () => {
-    if (!canSave) return;
+    if (!canSave || isSaving || isDeleting) return;
 
     const nextItem: SkillItem = {
       id: editingSkill?.id ?? "",
       name: skillName.trim(),
     };
+
+    setIsSaving(true);
 
     try {
       const savedSkill = editingSkill
@@ -129,11 +133,15 @@ export default function SkillsSidebar({
       toast.error(
         error instanceof Error ? error.message : "Failed to save skill."
       );
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const handleDeleteCurrentSkill = async () => {
-    if (!editingSkill) return;
+    if (!editingSkill || isSaving || isDeleting) return;
+
+    setIsDeleting(true);
 
     try {
       await deleteProfileSkill(editingSkill.id);
@@ -148,6 +156,8 @@ export default function SkillsSidebar({
       toast.error(
         error instanceof Error ? error.message : "Failed to delete skill."
       );
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -229,6 +239,7 @@ export default function SkillsSidebar({
                   size="lg"
                   variant="waitlist"
                   onClick={() => openForm()}
+                  disabled={isSaving || isDeleting}
                 >
                   Add new skill +
                 </Button>
@@ -274,18 +285,19 @@ export default function SkillsSidebar({
                 size="lg"
                 variant="waitlist"
                 onClick={handleSave}
-                disabled={!canSave}
+                disabled={!canSave || isSaving || isDeleting}
               >
-                Save skill
+                {isSaving ? "Saving..." : "Save skill"}
               </Button>
 
               {editingSkill && (
                 <button
                   type="button"
                   onClick={handleDeleteCurrentSkill}
-                  className="border-negative-text text-negative-text hover:bg-negative-text/10 rounded-[10px] border px-4 py-2.5 text-sm font-semibold transition-colors"
+                  disabled={isSaving || isDeleting}
+                  className="border-negative-text text-negative-text hover:bg-negative-text/10 rounded-[10px] border px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Delete skill
+                  {isDeleting ? "Deleting..." : "Delete skill"}
                 </button>
               )}
             </div>

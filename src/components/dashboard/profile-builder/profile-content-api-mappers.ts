@@ -12,6 +12,12 @@ const toStringValue = (value: string | number | null | undefined) =>
   value == null ? "" : String(value);
 
 const toNumberValue = (value: string | number | null | undefined) => {
+  if (value == null) return undefined;
+
+  if (typeof value === "string" && value.trim().length === 0) {
+    return undefined;
+  }
+
   const numberValue = Number(value);
 
   return Number.isFinite(numberValue) ? numberValue : undefined;
@@ -73,9 +79,10 @@ export function workExperienceResponseToItem(
     id: workExperience.id,
     role: workExperience.jobTitle,
     company: workExperience.companyName,
-    // The current Figma form captures employment type where the API exposes a
-    // generic location field. Keep the UI field populated from that API value.
-    employmentType: workExperience.location ?? "",
+    // The API exposes location separately from the UI-only employment type.
+    // Preserve location without treating it as employmentType.
+    employmentType: "",
+    location: workExperience.location ?? "",
     startMonth: toStringValue(workExperience.startMonth),
     startYear: toStringValue(workExperience.startYear),
     endMonth: workExperience.isCurrent
@@ -97,7 +104,7 @@ export function workExperienceItemToRequest(
   return {
     companyName: item.company.trim(),
     jobTitle: item.role.trim(),
-    location: item.employmentType?.trim() || undefined,
+    location: item.location?.trim() || undefined,
     description: item.description?.trim() || undefined,
     startMonth: toNumberValue(item.startMonth) ?? 1,
     startYear: toNumberValue(item.startYear) ?? new Date().getFullYear(),

@@ -59,6 +59,7 @@ const emptyExperience: Omit<ExperienceItem, "id"> = {
   role: "",
   company: "",
   employmentType: "",
+  location: "",
   startMonth: "",
   startYear: "",
   endMonth: "",
@@ -80,6 +81,7 @@ export default function ExperienceSidebar({
 }) {
   const queryClient = useQueryClient();
   const orderTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingOrderIdsRef = useRef<string[] | null>(null);
   const [selectedTab, setSelectedTab] = useState<"content" | "form">("content");
   const [experiences, setExperiences] = useState<ExperienceItem[]>(() =>
     ensureExperienceIds(section?.experiences ?? [])
@@ -93,6 +95,10 @@ export default function ExperienceSidebar({
     section?.subtitle || ""
   );
   const [form, setForm] = useState<Omit<ExperienceItem, "id">>(emptyExperience);
+  const [isSaving, setIsSaving] = useState(false);
+  const [deletingExperienceId, setDeletingExperienceId] = useState<
+    string | null
+  >(null);
   const descriptionId = useId();
 
   useEffect(() => {
@@ -115,6 +121,21 @@ export default function ExperienceSidebar({
     return () => {
       if (orderTimerRef.current) {
         clearTimeout(orderTimerRef.current);
+        orderTimerRef.current = null;
+      }
+
+      const pendingOrderIds = pendingOrderIdsRef.current;
+      pendingOrderIdsRef.current = null;
+
+      if (pendingOrderIds && pendingOrderIds.length > 0) {
+        void reorderProfileWorkExperience({
+          workExperienceIds: pendingOrderIds,
+        }).catch((error) => {
+          console.error(
+            "Failed to flush work experience order on unmount.",
+            error
+          );
+        });
       }
     };
   }, []);
@@ -145,14 +166,32 @@ export default function ExperienceSidebar({
     onUpdateSection(section.id, updates);
   };
 
+  const clearPendingExperienceOrder = () => {
+    if (orderTimerRef.current) {
+      clearTimeout(orderTimerRef.current);
+      orderTimerRef.current = null;
+    }
+
+    pendingOrderIdsRef.current = null;
+  };
+
   const persistExperienceOrder = (nextExperiences: ExperienceItem[]) => {
     if (orderTimerRef.current) {
       clearTimeout(orderTimerRef.current);
     }
 
+    const nextOrderIds = nextExperiences.map((item) => item.id);
+    pendingOrderIdsRef.current = nextOrderIds;
+
     orderTimerRef.current = setTimeout(() => {
+      orderTimerRef.current = null;
+      const orderIds = pendingOrderIdsRef.current;
+      pendingOrderIdsRef.current = null;
+
+      if (!orderIds || orderIds.length === 0) return;
+
       void reorderProfileWorkExperience({
-        workExperienceIds: nextExperiences.map((item) => item.id),
+        workExperienceIds: orderIds,
       })
         .then(() => invalidateProfileQueries())
         .catch((error) => {
@@ -204,6 +243,7 @@ export default function ExperienceSidebar({
             role: item.role,
             company: item.company,
             employmentType: item.employmentType ?? "",
+            location: item.location ?? "",
             startMonth: item.startMonth,
             startYear: item.startYear,
             endMonth: item.endMonth ?? "",
@@ -217,9 +257,24 @@ export default function ExperienceSidebar({
   };
 
   const handleDeleteExperience = async (id: string) => {
+    if (isSaving || deletingExperienceId) return;
+
+    const nextExperiences = experiences.filter((item) => item.id !== id);
+    const hadPendingOrder = Boolean(
+      orderTimerRef.current || pendingOrderIdsRef.current
+    );
+
+    setDeletingExperienceId(id);
+
     try {
       await deleteProfileWorkExperience(id);
-      handleExperiencesChange(experiences.filter((item) => item.id !== id));
+      clearPendingExperienceOrder();
+      handleExperiencesChange(nextExperiences);
+
+      if (hadPendingOrder && nextExperiences.length > 0) {
+        persistExperienceOrder(nextExperiences);
+      }
+
       invalidateProfileQueries();
     } catch (error) {
       toast.error(
@@ -227,11 +282,13 @@ export default function ExperienceSidebar({
           ? error.message
           : "Failed to delete work experience."
       );
+    } finally {
+      setDeletingExperienceId(null);
     }
   };
 
   const handleSave = async () => {
-    if (!canSave) return;
+    if (!canSave || isSaving || deletingExperienceId) return;
 
     const nextItem: ExperienceItem = {
       id: editingExperience?.id ?? "",
@@ -243,6 +300,8 @@ export default function ExperienceSidebar({
       endYear: form.currentlyWorking ? "" : form.endYear,
       description: form.description?.trim() || "",
     };
+
+    setIsSaving(true);
 
     try {
       const savedExperience = editingExperience
@@ -272,6 +331,8 @@ export default function ExperienceSidebar({
           ? error.message
           : "Failed to save work experience."
       );
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -354,6 +415,7 @@ export default function ExperienceSidebar({
                       onEdit={openForm}
                       onDelete={handleDeleteExperience}
                       onMove={handleMoveExperience}
+                      deleteDisabled={isSaving || Boolean(deletingExperienceId)}
                     />
                   ))}
                 </Reorder.Group>
@@ -484,9 +546,13 @@ export default function ExperienceSidebar({
               size="lg"
               variant="waitlist"
               onClick={handleSave}
-              disabled={!canSave}
+              disabled={!canSave || isSaving || Boolean(deletingExperienceId)}
             >
-              {editingExperience ? "Update Experience" : "Save Experience"}
+              {isSaving
+                ? "Saving..."
+                : editingExperience
+                  ? "Update Experience"
+                  : "Save Experience"}
             </Button>
           </div>
         )}
@@ -521,11 +587,13 @@ function SortableExperienceItem({
   onEdit,
   onDelete,
   onMove,
+  deleteDisabled,
 }: {
   item: ExperienceItem;
   onEdit: (item: ExperienceItem) => void;
   onDelete: (id: string) => void;
   onMove: (id: string, direction: "up" | "down") => void;
+  deleteDisabled?: boolean;
 }) {
   const dragControls = useDragControls();
 
@@ -550,9 +618,12 @@ function SortableExperienceItem({
           type="button"
           onClick={(event) => {
             event.stopPropagation();
-            onDelete(item.id);
+            if (!deleteDisabled) {
+              onDelete(item.id);
+            }
           }}
-          className="text-tertiary-text hover:text-negative-text flex h-full items-center px-3 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 focus:opacity-100"
+          disabled={deleteDisabled}
+          className="text-tertiary-text hover:text-negative-text flex h-full items-center px-3 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 focus:opacity-100 disabled:cursor-not-allowed disabled:opacity-40"
           title="Delete experience"
           aria-label={`Delete experience ${item.role || "Untitled experience"}`}
         >

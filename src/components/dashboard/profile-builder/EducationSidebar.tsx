@@ -62,6 +62,7 @@ export default function EducationSidebar({
 }) {
   const queryClient = useQueryClient();
   const orderTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingOrderIdsRef = useRef<string[] | null>(null);
   const [selectedTab, setSelectedTab] = useState<"content" | "form">("content");
   const [education, setEducation] = useState<EducationItem[]>(() =>
     ensureEducationIds(section?.education ?? [])
@@ -75,6 +76,10 @@ export default function EducationSidebar({
     section?.subtitle || ""
   );
   const [form, setForm] = useState<Omit<EducationItem, "id">>(emptyEducation);
+  const [isSaving, setIsSaving] = useState(false);
+  const [deletingEducationId, setDeletingEducationId] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -96,6 +101,18 @@ export default function EducationSidebar({
     return () => {
       if (orderTimerRef.current) {
         clearTimeout(orderTimerRef.current);
+        orderTimerRef.current = null;
+      }
+
+      const pendingOrderIds = pendingOrderIdsRef.current;
+      pendingOrderIdsRef.current = null;
+
+      if (pendingOrderIds && pendingOrderIds.length > 0) {
+        void reorderProfileEducation({ educationIds: pendingOrderIds }).catch(
+          (error) => {
+            console.error("Failed to flush education order on unmount.", error);
+          }
+        );
       }
     };
   }, []);
@@ -125,14 +142,32 @@ export default function EducationSidebar({
     onUpdateSection(section.id, updates);
   };
 
+  const clearPendingEducationOrder = () => {
+    if (orderTimerRef.current) {
+      clearTimeout(orderTimerRef.current);
+      orderTimerRef.current = null;
+    }
+
+    pendingOrderIdsRef.current = null;
+  };
+
   const persistEducationOrder = (nextEducation: EducationItem[]) => {
     if (orderTimerRef.current) {
       clearTimeout(orderTimerRef.current);
     }
 
+    const nextOrderIds = nextEducation.map((item) => item.id);
+    pendingOrderIdsRef.current = nextOrderIds;
+
     orderTimerRef.current = setTimeout(() => {
+      orderTimerRef.current = null;
+      const orderIds = pendingOrderIdsRef.current;
+      pendingOrderIdsRef.current = null;
+
+      if (!orderIds || orderIds.length === 0) return;
+
       void reorderProfileEducation({
-        educationIds: nextEducation.map((item) => item.id),
+        educationIds: orderIds,
       })
         .then(() => invalidateProfileQueries())
         .catch((error) => {
@@ -192,19 +227,36 @@ export default function EducationSidebar({
   };
 
   const handleDeleteEducation = async (id: string) => {
+    if (isSaving || deletingEducationId) return;
+
+    const nextEducation = education.filter((item) => item.id !== id);
+    const hadPendingOrder = Boolean(
+      orderTimerRef.current || pendingOrderIdsRef.current
+    );
+
+    setDeletingEducationId(id);
+
     try {
       await deleteProfileEducation(id);
-      handleEducationChange(education.filter((item) => item.id !== id));
+      clearPendingEducationOrder();
+      handleEducationChange(nextEducation);
+
+      if (hadPendingOrder && nextEducation.length > 0) {
+        persistEducationOrder(nextEducation);
+      }
+
       invalidateProfileQueries();
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Failed to delete education."
       );
+    } finally {
+      setDeletingEducationId(null);
     }
   };
 
   const handleSave = async () => {
-    if (!canSave) return;
+    if (!canSave || isSaving || deletingEducationId) return;
 
     const nextItem: EducationItem = {
       id: editingEducation?.id ?? "",
@@ -212,6 +264,8 @@ export default function EducationSidebar({
       institution: form.institution.trim(),
       degree: form.degree.trim(),
     };
+
+    setIsSaving(true);
 
     try {
       const savedEducation = editingEducation
@@ -237,6 +291,8 @@ export default function EducationSidebar({
       toast.error(
         error instanceof Error ? error.message : "Failed to save education."
       );
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -317,6 +373,7 @@ export default function EducationSidebar({
                       onEdit={openForm}
                       onDelete={handleDeleteEducation}
                       onMove={handleMoveEducation}
+                      deleteDisabled={isSaving || Boolean(deletingEducationId)}
                     />
                   ))}
                 </Reorder.Group>
@@ -394,9 +451,13 @@ export default function EducationSidebar({
               size="lg"
               variant="waitlist"
               onClick={handleSave}
-              disabled={!canSave}
+              disabled={!canSave || isSaving || Boolean(deletingEducationId)}
             >
-              {editingEducation ? "Update education" : "Save education"}
+              {isSaving
+                ? "Saving..."
+                : editingEducation
+                  ? "Update education"
+                  : "Save education"}
             </Button>
           </div>
         )}
@@ -431,11 +492,13 @@ function SortableEducationItem({
   onEdit,
   onDelete,
   onMove,
+  deleteDisabled,
 }: {
   item: EducationItem;
   onEdit: (item: EducationItem) => void;
   onDelete: (id: string) => void;
   onMove: (id: string, direction: "up" | "down") => void;
+  deleteDisabled?: boolean;
 }) {
   const dragControls = useDragControls();
 
@@ -460,9 +523,12 @@ function SortableEducationItem({
           type="button"
           onClick={(event) => {
             event.stopPropagation();
-            onDelete(item.id);
+            if (!deleteDisabled) {
+              onDelete(item.id);
+            }
           }}
-          className="text-tertiary-text hover:text-negative-text flex h-full items-center px-3 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 focus:opacity-100"
+          disabled={deleteDisabled}
+          className="text-tertiary-text hover:text-negative-text flex h-full items-center px-3 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 focus:opacity-100 disabled:cursor-not-allowed disabled:opacity-40"
           title="Delete education"
           aria-label={`Delete education ${item.degree || "Untitled education"}`}
         >
