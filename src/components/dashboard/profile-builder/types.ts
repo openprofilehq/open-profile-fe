@@ -52,6 +52,7 @@ export interface EducationItem {
   startYear: string;
   endMonth?: string;
   endYear?: string;
+  currentlyStudying?: boolean;
 }
 
 export interface SkillItem {

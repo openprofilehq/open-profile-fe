@@ -33,6 +33,28 @@ const dateRange = ({
   return start || end;
 };
 
+const educationDateRange = ({
+  startMonth,
+  startYear,
+  endMonth,
+  endYear,
+  currentlyStudying,
+}: {
+  startMonth?: string;
+  startYear?: string;
+  endMonth?: string;
+  endYear?: string;
+  currentlyStudying?: boolean;
+}) => {
+  const start = [startMonth, startYear].filter(Boolean).join(" ");
+  const end = currentlyStudying
+    ? "Present"
+    : [endMonth, endYear].filter(Boolean).join(" ");
+
+  if (start && end) return `${start} – ${end}`;
+  return start || end;
+};
+
 const profileTextSectionStyle = (section: Section): CSSProperties => {
   const {
     backgroundColor: _backgroundColor,
@@ -152,7 +174,7 @@ function ExperienceEntry({ item }: { item: ExperienceItem }) {
 }
 
 function EducationEntry({ item }: { item: EducationItem }) {
-  const range = dateRange(item);
+  const range = educationDateRange(item);
 
   return (
     <article className="flex flex-col gap-1.5">

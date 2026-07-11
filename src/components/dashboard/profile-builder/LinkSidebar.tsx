@@ -4,6 +4,11 @@ import ContentOption from "./ContentOption";
 import SectionOption from "./SectionOption";
 
 import type { SavedLink } from "./types";
+import {
+  createId,
+  ensureItemIds,
+  slugifyItemIdPart,
+} from "./profile-builder-item-utils";
 export type { SavedLink } from "./types";
 
 type LinkSection = {
@@ -15,31 +20,15 @@ type LinkSection = {
 };
 
 const createFallbackLinkId = (link: SavedLink, index: number) => {
-  const source = `${link.title || "link"}-${link.url || index}`
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 40);
+  const source = slugifyItemIdPart(
+    `${link.title || "link"}-${link.url || index}`
+  );
 
   return `link-${index}-${source || "item"}`;
 };
 
-const ensureLinkIds = (savedLinks: SavedLink[]) => {
-  const seenIds = new Set<string>();
-
-  return savedLinks.map((link, index) => {
-    const existingId = typeof link.id === "string" ? link.id.trim() : "";
-    let nextId = existingId || createFallbackLinkId(link, index);
-
-    if (seenIds.has(nextId)) {
-      nextId = `${nextId}-${index}`;
-    }
-
-    seenIds.add(nextId);
-
-    return { ...link, id: nextId };
-  });
-};
+const ensureLinkIds = (savedLinks: SavedLink[]) =>
+  ensureItemIds(savedLinks, createFallbackLinkId);
 
 const LinkSidebar = ({
   returnTab,
@@ -122,10 +111,7 @@ const LinkSidebar = ({
       return;
     }
 
-    const id =
-      typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? crypto.randomUUID()
-        : `${Date.now()}-${links.length + 1}`;
+    const id = createId();
 
     handleLinksChange((currentLinks) => {
       if (editingId) {

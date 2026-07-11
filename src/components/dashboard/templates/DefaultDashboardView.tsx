@@ -467,12 +467,17 @@ export default function DefaultDashboardView({
 
             if (isProfileTextSectionType(section.type)) {
               return (
-                <section
+                <div
                   key={section.id}
-                  className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${section.font ? getFontClass(section.font) : ""}`}
+                  className={`group relative transition-opacity duration-200 ${section.font ? getFontClass(section.font) : ""}`}
                 >
-                  <ProfileTextSectionBlock section={section} />
-                </section>
+                  <section
+                    className="border-border bg-background relative w-full rounded-2xl border p-6 shadow-sm"
+                    style={getSectionStyle(section)}
+                  >
+                    <ProfileTextSectionBlock section={section} />
+                  </section>
+                </div>
               );
             }
 

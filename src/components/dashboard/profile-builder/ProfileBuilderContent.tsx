@@ -550,6 +550,7 @@ export default function ProfileBuilderContent() {
   const userEditedRef = useRef(false);
   const appearanceHydratingRef = useRef(false);
   const appearanceEditedRef = useRef(false);
+  const colorStateHydratedRef = useRef(false);
   const draftUpdatedAtRef = useRef<string | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const profileMetaSnapshotRef = useRef<ProfileMetaSnapshot | null>(null);
@@ -622,6 +623,9 @@ export default function ProfileBuilderContent() {
 
     const appearanceSettings =
       appearanceSettingsData?.global ?? appearanceSettingsData;
+    const storedColorState = readStoredBuilderColorState(
+      getBuilderColorStateStorageKey(dashboardProfile.data?.username)
+    );
 
     if (appearanceSettings) {
       appearanceHydratingRef.current = true;
@@ -631,9 +635,6 @@ export default function ProfileBuilderContent() {
           string,
           unknown
         >;
-        const storedColorState = readStoredBuilderColorState(
-          getBuilderColorStateStorageKey(dashboardProfile.data?.username)
-        );
 
         const loadedBackgroundColour =
           getAppearanceString(appearanceSettingsRecord, [
@@ -711,9 +712,7 @@ export default function ProfileBuilderContent() {
           setBgColor(appearanceSettings.bgColor);
         }
 
-        if (typeof appearanceSettings.accentColour === "string") {
-          setIconColor(appearanceSettings.accentColour);
-        }
+        setIconColor(loadedAccentColour);
 
         if (
           typeof appearanceSettings.spacing === "number" &&
@@ -736,6 +735,58 @@ export default function ProfileBuilderContent() {
         }
 
         queueMicrotask(() => {
+          colorStateHydratedRef.current = true;
+          appearanceHydratingRef.current = false;
+          appearanceEditedRef.current = true;
+        });
+      });
+    } else {
+      appearanceHydratingRef.current = true;
+
+      queueMicrotask(() => {
+        const loadedMatchingTheme = findMatchingBuilderTheme(
+          bgColor,
+          iconColor
+        );
+        const inferredColorMode: BuilderColorMode = loadedMatchingTheme
+          ? "theme"
+          : "custom";
+        const storedColorMode = storedColorState?.colorMode;
+        const loadedColorMode: BuilderColorMode =
+          storedColorMode === "custom"
+            ? "custom"
+            : storedColorMode === "theme" && loadedMatchingTheme
+              ? "theme"
+              : inferredColorMode;
+        const storedActiveThemeName = isBuilderThemeName(
+          storedColorState?.activeThemeName
+        )
+          ? storedColorState.activeThemeName
+          : null;
+
+        setColorMode(loadedColorMode);
+        setActiveThemeName(
+          loadedColorMode === "theme"
+            ? (loadedMatchingTheme?.name ??
+                storedActiveThemeName ??
+                BUILDER_THEME_SWATCHES[0].name)
+            : (storedActiveThemeName ??
+                loadedMatchingTheme?.name ??
+                BUILDER_THEME_SWATCHES[0].name)
+        );
+        setCustomBgColor(
+          storedColorState?.customBgColor ??
+            (loadedColorMode === "custom" ? bgColor : THEME_DEFAULTS.BG_COLOR)
+        );
+        setCustomBrandColor(
+          storedColorState?.customBrandColor ??
+            (loadedColorMode === "custom"
+              ? iconColor
+              : THEME_DEFAULTS.ACCENT_COLORS.DEFAULT)
+        );
+
+        queueMicrotask(() => {
+          colorStateHydratedRef.current = true;
           appearanceHydratingRef.current = false;
           appearanceEditedRef.current = true;
         });
@@ -792,11 +843,14 @@ export default function ProfileBuilderContent() {
     profileAppearance.isError,
     profileAppearance.data,
     sectionParam,
+    bgColor,
+    iconColor,
   ]);
 
   useEffect(() => {
     if (!contentLoadedRef.current) return;
     if (appearanceHydratingRef.current) return;
+    if (!colorStateHydratedRef.current) return;
 
     writeStoredBuilderColorState(colorStateStorageKey, {
       colorMode,
@@ -1002,6 +1056,9 @@ export default function ProfileBuilderContent() {
         links: buildComponentAppearance("links"),
         projects: buildComponentAppearance("projects"),
         cta: buildComponentAppearance("cta"),
+        workExperience: buildComponentAppearance("workExperience"),
+        education: buildComponentAppearance("education"),
+        skills: buildComponentAppearance("skills"),
       },
     };
   }, [
@@ -1465,14 +1522,14 @@ export default function ProfileBuilderContent() {
   if (isLoading) {
     return (
       <>
-        <div className="flex min-h-screen flex-col items-center justify-center bg-[#FAFAFA] px-6 text-center lg:hidden">
+        <div className="bg-primary-bg flex min-h-screen flex-col items-center justify-center px-6 text-center lg:hidden">
           <div className="border-muted-foreground/30 border-t-foreground mb-4 h-8 w-8 animate-spin rounded-full border-2" />
-          <h1 className="text-2xl font-bold text-[#050505]">
+          <h1 className="text-primary-text text-2xl font-bold">
             Loading profile editor...
           </h1>
         </div>
 
-        <div className="hidden w-full flex-1 gap-4 bg-[#FAFAFA] p-4 lg:flex lg:p-6 lg:px-8">
+        <div className="bg-primary-bg hidden w-full flex-1 gap-4 p-4 lg:flex lg:p-6 lg:px-8">
           <div className="flex w-[320px] shrink-0 flex-col gap-6 rounded-2xl bg-white p-6">
             <Skeleton className="h-8 w-1/2" />
             <div className="mt-4 flex flex-col gap-3">

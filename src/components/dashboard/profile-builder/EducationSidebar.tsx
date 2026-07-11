@@ -5,60 +5,28 @@ import { ChevronLeft, GraduationCap, GripVertical, Trash2 } from "lucide-react";
 import { Reorder, useDragControls } from "motion/react";
 import { Button } from "@/components/ui/button";
 import type { EducationItem, Section } from "./types";
-
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-
-const YEARS = Array.from({ length: 80 }, (_, index) =>
-  String(new Date().getFullYear() + 1 - index)
-);
-
-const createId = () =>
-  typeof crypto !== "undefined" && "randomUUID" in crypto
-    ? crypto.randomUUID()
-    : `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+import {
+  createId,
+  ensureItemIds,
+  slugifyItemIdPart,
+} from "./profile-builder-item-utils";
+import {
+  CompactList,
+  DatePair,
+  SectionHeadingFields,
+  TextField,
+} from "./profile-builder-fields";
 
 const createFallbackEducationId = (item: EducationItem, index: number) => {
-  const source = `${item.degree || "education"}-${item.institution || index}`
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 40);
+  const source = slugifyItemIdPart(
+    `${item.degree || "education"}-${item.institution || index}`
+  );
 
   return `education-${index}-${source || "item"}`;
 };
 
-const ensureEducationIds = (items: EducationItem[]) => {
-  const seenIds = new Set<string>();
-
-  return items.map((item, index) => {
-    const existingId = typeof item.id === "string" ? item.id.trim() : "";
-    const baseId = existingId || createFallbackEducationId(item, index);
-    let nextId = baseId;
-    let suffix = 1;
-
-    while (seenIds.has(nextId)) {
-      nextId = `${baseId}-${index}-${suffix}`;
-      suffix += 1;
-    }
-
-    seenIds.add(nextId);
-
-    return { ...item, id: nextId };
-  });
-};
+const ensureEducationIds = (items: EducationItem[]) =>
+  ensureItemIds(items, createFallbackEducationId);
 
 const emptyEducation: Omit<EducationItem, "id"> = {
   institution: "",
@@ -129,6 +97,23 @@ export default function EducationSidebar({
   const handleEducationChange = (nextEducation: EducationItem[]) => {
     setEducation(nextEducation);
     syncSection({ education: nextEducation });
+  };
+
+  const handleMoveEducation = (
+    educationId: string,
+    direction: "up" | "down"
+  ) => {
+    const currentIndex = education.findIndex((item) => item.id === educationId);
+    const nextIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+
+    if (currentIndex < 0 || nextIndex < 0 || nextIndex >= education.length) {
+      return;
+    }
+
+    const nextEducation = [...education];
+    const [movedEducation] = nextEducation.splice(currentIndex, 1);
+    nextEducation.splice(nextIndex, 0, movedEducation);
+    handleEducationChange(nextEducation);
   };
 
   const openForm = (item?: EducationItem) => {
@@ -216,6 +201,7 @@ export default function EducationSidebar({
               <SectionHeadingFields
                 title={sectionTitle}
                 subtitle={sectionSubtitle}
+                titlePlaceholder="Education"
                 onTitleChange={(value) => {
                   setSectionTitle(value);
                   syncSection({ title: value });
@@ -228,8 +214,10 @@ export default function EducationSidebar({
 
               <div className="flex flex-col gap-2.5">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-[#050505]">Education</span>
-                  <span className="font-medium text-gray-500">Tap to edit</span>
+                  <span className="text-primary-text font-bold">Education</span>
+                  <span className="text-tertiary-text font-medium">
+                    Tap to edit
+                  </span>
                 </div>
 
                 <Reorder.Group
@@ -245,6 +233,7 @@ export default function EducationSidebar({
                       item={item}
                       onEdit={openForm}
                       onDelete={handleDeleteEducation}
+                      onMove={handleMoveEducation}
                     />
                   ))}
                 </Reorder.Group>
@@ -333,43 +322,6 @@ export default function EducationSidebar({
   );
 }
 
-function SectionHeadingFields({
-  title,
-  subtitle,
-  onTitleChange,
-  onSubtitleChange,
-}: {
-  title: string;
-  subtitle: string;
-  onTitleChange: (value: string) => void;
-  onSubtitleChange: (value: string) => void;
-}) {
-  return (
-    <div className="flex flex-col gap-4">
-      <TextField
-        label="Heading"
-        value={title}
-        placeholder="Education"
-        onChange={onTitleChange}
-      />
-      <div className="flex flex-col gap-2">
-        <label className="text-xs font-bold text-[#050505]">Sub-heading</label>
-        <textarea
-          value={subtitle}
-          onChange={(event) => onSubtitleChange(event.target.value)}
-          maxLength={200}
-          placeholder="Add Text here"
-          rows={3}
-          className="border-border focus:border-brand-b w-full resize-none rounded-[10px] border px-4 py-3 text-sm text-[#050505] outline-none"
-        />
-        <p className="text-right text-[11px] text-[#A2A2A2]">
-          {subtitle.length}/200
-        </p>
-      </div>
-    </div>
-  );
-}
-
 function EmptyEducationState({ onAdd }: { onAdd: () => void }) {
   return (
     <div className="border-border bg-primary-bg flex flex-col items-center justify-center rounded-[14px] border px-6 py-10 text-center">
@@ -395,10 +347,12 @@ function SortableEducationItem({
   item,
   onEdit,
   onDelete,
+  onMove,
 }: {
   item: EducationItem;
   onEdit: (item: EducationItem) => void;
   onDelete: (id: string) => void;
+  onMove: (id: string, direction: "up" | "down") => void;
 }) {
   const dragControls = useDragControls();
 
@@ -419,7 +373,7 @@ function SortableEducationItem({
       }}
       className="group hover:border-brand-b/40 border-border bg-background flex h-[50px] cursor-pointer items-center justify-between overflow-hidden rounded-[8px] border pl-4 transition-all"
     >
-      <span className="flex-1 truncate text-sm font-semibold text-[#050505]">
+      <span className="text-primary-text flex-1 truncate text-sm font-semibold">
         {item.degree || "Untitled education"}
       </span>
       <div className="flex h-full items-center">
@@ -429,7 +383,7 @@ function SortableEducationItem({
             event.stopPropagation();
             onDelete(item.id);
           }}
-          className="flex h-full items-center px-3 text-gray-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-600 focus:opacity-100"
+          className="text-tertiary-text hover:text-negative-text flex h-full items-center px-3 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 focus:opacity-100"
           title="Delete education"
           aria-label={`Delete education ${item.degree || "Untitled education"}`}
         >
@@ -442,123 +396,20 @@ function SortableEducationItem({
             event.stopPropagation();
             dragControls.start(event);
           }}
-          className="border-border flex h-full w-[50px] shrink-0 cursor-grab items-center justify-center border-l bg-[#F4F4F5] text-gray-400 transition-colors hover:bg-gray-100 active:cursor-grabbing"
-          title="Drag to reorder education"
-          aria-label={`Drag to reorder ${item.degree || "education"}`}
+          onKeyDown={(event) => {
+            if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+              event.preventDefault();
+              event.stopPropagation();
+              onMove(item.id, event.key === "ArrowUp" ? "up" : "down");
+            }
+          }}
+          className="border-border bg-active-bg text-tertiary-text hover:bg-hover-bg flex h-full w-[50px] shrink-0 cursor-grab items-center justify-center border-l transition-colors active:cursor-grabbing"
+          title="Drag or use arrow keys to reorder education"
+          aria-label={`Drag or use arrow keys to reorder ${item.degree || "education"}`}
         >
           <GripVertical size={16} />
         </button>
       </div>
     </Reorder.Item>
-  );
-}
-
-function CompactList({
-  label,
-  items,
-  onEdit,
-}: {
-  label: string;
-  items: { id: string; name: string }[];
-  onEdit: (id: string) => void;
-}) {
-  return (
-    <div className="flex flex-col gap-2.5">
-      <div className="flex items-center justify-between text-xs">
-        <span className="font-bold text-[#050505]">{label}</span>
-        <span className="font-medium text-gray-500">Tap to edit</span>
-      </div>
-      {items.map((item) => (
-        <button
-          key={item.id}
-          type="button"
-          onClick={() => onEdit(item.id)}
-          className="border-border bg-background flex h-[42px] items-center rounded-[8px] border px-4 text-left text-xs font-medium text-[#050505]"
-        >
-          {item.name || "Untitled"}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function TextField({
-  label,
-  value,
-  placeholder,
-  onChange,
-  required = false,
-}: {
-  label: string;
-  value: string;
-  placeholder?: string;
-  onChange: (value: string) => void;
-  required?: boolean;
-}) {
-  return (
-    <div className="flex flex-col gap-2">
-      <label className="text-xs font-bold text-[#050505]">
-        {label}
-        {required && <span className="ml-1 text-red-500">*</span>}
-      </label>
-      <input
-        type="text"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
-        className="border-border focus:border-brand-b w-full rounded-[10px] border px-4 py-3 text-sm text-[#050505] outline-none"
-      />
-    </div>
-  );
-}
-
-function DatePair({
-  label,
-  month,
-  year,
-  onMonthChange,
-  onYearChange,
-  required = false,
-}: {
-  label: string;
-  month: string;
-  year: string;
-  onMonthChange: (value: string) => void;
-  onYearChange: (value: string) => void;
-  required?: boolean;
-}) {
-  return (
-    <div className="flex flex-col gap-2">
-      <label className="text-xs font-bold text-[#050505]">
-        {label}
-        {required && <span className="ml-1 text-red-500">*</span>}
-      </label>
-      <div className="grid grid-cols-2 gap-2">
-        <select
-          value={month}
-          onChange={(event) => onMonthChange(event.target.value)}
-          className="border-border focus:border-brand-b rounded-[10px] border px-3 py-3 text-sm text-[#050505] outline-none"
-        >
-          <option value="">Month</option>
-          {MONTHS.map((item) => (
-            <option key={item} value={item}>
-              {item}
-            </option>
-          ))}
-        </select>
-        <select
-          value={year}
-          onChange={(event) => onYearChange(event.target.value)}
-          className="border-border focus:border-brand-b rounded-[10px] border px-3 py-3 text-sm text-[#050505] outline-none"
-        >
-          <option value="">Year</option>
-          {YEARS.map((item) => (
-            <option key={item} value={item}>
-              {item}
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>
   );
 }

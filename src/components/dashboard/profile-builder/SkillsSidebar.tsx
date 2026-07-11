@@ -4,41 +4,21 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Section, SkillItem } from "./types";
-
-const createId = () =>
-  typeof crypto !== "undefined" && "randomUUID" in crypto
-    ? crypto.randomUUID()
-    : `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+import {
+  createId,
+  ensureItemIds,
+  slugifyItemIdPart,
+} from "./profile-builder-item-utils";
+import { SectionHeadingFields, TextField } from "./profile-builder-fields";
 
 const createFallbackSkillId = (item: SkillItem, index: number) => {
-  const source = `${item.name || "skill"}-${index}`
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 40);
+  const source = slugifyItemIdPart(`${item.name || "skill"}-${index}`);
 
   return `skill-${index}-${source || "item"}`;
 };
 
-const ensureSkillIds = (items: SkillItem[]) => {
-  const seenIds = new Set<string>();
-
-  return items.map((item, index) => {
-    const existingId = typeof item.id === "string" ? item.id.trim() : "";
-    const baseId = existingId || createFallbackSkillId(item, index);
-    let nextId = baseId;
-    let suffix = 1;
-
-    while (seenIds.has(nextId)) {
-      nextId = `${baseId}-${index}-${suffix}`;
-      suffix += 1;
-    }
-
-    seenIds.add(nextId);
-
-    return { ...item, id: nextId };
-  });
-};
+const ensureSkillIds = (items: SkillItem[]) =>
+  ensureItemIds(items, createFallbackSkillId);
 
 function SkillsIcon({
   className = "",
@@ -213,6 +193,7 @@ export default function SkillsSidebar({
               <SectionHeadingFields
                 title={sectionTitle}
                 subtitle={sectionSubtitle}
+                titlePlaceholder="Skills"
                 onTitleChange={(value) => {
                   setSectionTitle(value);
                   syncSection({ title: value });
@@ -225,8 +206,10 @@ export default function SkillsSidebar({
 
               <div className="flex flex-col gap-2.5">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-[#050505]">Skills</span>
-                  <span className="font-medium text-gray-500">Tap to edit</span>
+                  <span className="text-primary-text font-bold">Skills</span>
+                  <span className="text-tertiary-text font-medium">
+                    Tap to edit
+                  </span>
                 </div>
                 <div className="border-border bg-background flex flex-wrap gap-2 rounded-[10px] border p-3">
                   {skills.map((skill) => (
@@ -254,24 +237,21 @@ export default function SkillsSidebar({
           )
         ) : (
           <div className="flex flex-col gap-5">
-            <div className="flex flex-col gap-2">
-              <label className="text-xs font-bold text-[#050505]">
-                Skill<span className="ml-1 text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={skillName}
-                onChange={(event) => setSkillName(event.target.value)}
-                placeholder="e.g. Accessibility"
-                className="border-border focus:border-brand-b w-full rounded-[10px] border px-4 py-3 text-sm text-[#050505] outline-none"
-              />
-            </div>
+            <TextField
+              label="Skill"
+              required
+              value={skillName}
+              placeholder="e.g. Accessibility"
+              onChange={setSkillName}
+            />
 
             {skills.length > 0 && (
               <div className="flex flex-col gap-2.5">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-[#050505]">Skills</span>
-                  <span className="font-medium text-gray-500">Tap to edit</span>
+                  <span className="text-primary-text font-bold">Skills</span>
+                  <span className="text-tertiary-text font-medium">
+                    Tap to edit
+                  </span>
                 </div>
                 <div className="border-border bg-background flex flex-wrap gap-2 rounded-[10px] border p-3">
                   {skills.map((skill) => (
@@ -301,47 +281,6 @@ export default function SkillsSidebar({
         )}
       </div>
     </aside>
-  );
-}
-
-function SectionHeadingFields({
-  title,
-  subtitle,
-  onTitleChange,
-  onSubtitleChange,
-}: {
-  title: string;
-  subtitle: string;
-  onTitleChange: (value: string) => void;
-  onSubtitleChange: (value: string) => void;
-}) {
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2">
-        <label className="text-xs font-bold text-[#050505]">Heading</label>
-        <input
-          type="text"
-          value={title}
-          onChange={(event) => onTitleChange(event.target.value)}
-          placeholder="e.g. Accessibility"
-          className="border-border focus:border-brand-b w-full rounded-[10px] border px-4 py-3 text-sm text-[#050505] outline-none"
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <label className="text-xs font-bold text-[#050505]">Sub-heading</label>
-        <textarea
-          value={subtitle}
-          onChange={(event) => onSubtitleChange(event.target.value)}
-          maxLength={200}
-          placeholder="Add Text here"
-          rows={3}
-          className="border-border focus:border-brand-b w-full resize-none rounded-[10px] border px-4 py-3 text-sm text-[#050505] outline-none"
-        />
-        <p className="text-right text-[11px] text-[#A2A2A2]">
-          {subtitle.length}/200
-        </p>
-      </div>
-    </div>
   );
 }
 

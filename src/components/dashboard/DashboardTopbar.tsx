@@ -273,7 +273,7 @@ export default function DashboardTopbar() {
                       onClick={() => setDropdownOpen(false)}
                       className="text-primary-text hover:bg-hover-bg flex w-full cursor-pointer items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors"
                     >
-                      <Settings size={15} />
+                      <Settings size={15} aria-hidden="true" />
                       Settings
                     </Link>
                     <button

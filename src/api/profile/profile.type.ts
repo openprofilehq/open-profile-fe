@@ -92,6 +92,7 @@ export type EducationItem = {
   startYear?: string;
   endMonth?: string;
   endYear?: string;
+  currentlyStudying?: boolean;
 };
 
 export type SkillItem = {
