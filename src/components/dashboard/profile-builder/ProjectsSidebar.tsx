@@ -8,7 +8,12 @@ import { Button } from "@/components/ui/button";
 import type { ProjectItem, Section } from "./types";
 import { uploadImage } from "@/api/uploads/uploads.service";
 import { isValidUrl } from "./builder.utils";
-import { ensureItemIds, slugifyItemIdPart } from "./profile-builder-item-utils";
+import {
+  createId,
+  ensureItemIds,
+  moveItemById,
+  slugifyItemIdPart,
+} from "./profile-builder-item-utils";
 
 interface ProjectsSidebarProps {
   returnTab: () => void;
@@ -129,18 +134,10 @@ export default function ProjectsSidebar({
   };
 
   const handleMoveProject = (projectId: string, direction: "up" | "down") => {
-    const currentIndex = projects.findIndex(
-      (project) => project.id === projectId
-    );
-    const nextIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+    const nextProjects = moveItemById(projects, projectId, direction);
 
-    if (currentIndex < 0 || nextIndex < 0 || nextIndex >= projects.length) {
-      return;
-    }
+    if (nextProjects === projects) return;
 
-    const nextProjects = [...projects];
-    const [movedProject] = nextProjects.splice(currentIndex, 1);
-    nextProjects.splice(nextIndex, 0, movedProject);
     handleProjectsChange(nextProjects);
   };
 
@@ -276,7 +273,7 @@ export default function ProjectsSidebar({
       handleProjectsChange(updated);
     } else {
       const newProj: ProjectItem = {
-        id: Math.random().toString(36).substring(2, 9),
+        id: createId(),
         title: itemTitle.trim(),
         description: itemDesc.trim(),
         buttonText: itemButtonText.trim() || "View project",

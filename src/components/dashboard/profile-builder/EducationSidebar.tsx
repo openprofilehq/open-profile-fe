@@ -445,20 +445,16 @@ function SortableEducationItem({
       dragListener={false}
       dragControls={dragControls}
       whileDrag={{ zIndex: 20 }}
-      role="button"
-      tabIndex={0}
-      onClick={() => onEdit(item)}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onEdit(item);
-        }
-      }}
-      className="group hover:border-brand-b/40 border-border bg-background flex h-[50px] cursor-pointer items-center justify-between overflow-hidden rounded-[8px] border pl-4 transition-all"
+      className="group hover:border-brand-b/40 border-border bg-background flex h-[50px] items-center justify-between overflow-hidden rounded-[8px] border pl-4 transition-all"
     >
-      <span className="text-primary-text flex-1 truncate text-sm font-semibold">
+      <button
+        type="button"
+        onClick={() => onEdit(item)}
+        className="text-primary-text flex-1 truncate text-left text-sm font-semibold focus:outline-none"
+        aria-label={`Edit education ${item.degree || "Untitled education"}`}
+      >
         {item.degree || "Untitled education"}
-      </span>
+      </button>
       <div className="flex h-full items-center">
         <button
           type="button"

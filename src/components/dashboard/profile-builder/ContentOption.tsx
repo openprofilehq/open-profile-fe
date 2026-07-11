@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { GripVertical, Trash2 } from "lucide-react";
 import { Reorder, useDragControls } from "motion/react";
 import type { SavedLink } from "./LinkSidebar";
+import { moveItemById } from "./profile-builder-item-utils";
 
 export default function ContentOption({
   title,
@@ -27,16 +28,10 @@ export default function ContentOption({
   canAddLink: boolean;
 }) {
   const handleMoveLink = (linkId: string, direction: "up" | "down") => {
-    const currentIndex = links.findIndex((link) => link.id === linkId);
-    const nextIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+    const nextLinks = moveItemById(links, linkId, direction);
 
-    if (currentIndex < 0 || nextIndex < 0 || nextIndex >= links.length) {
-      return;
-    }
+    if (nextLinks === links) return;
 
-    const nextLinks = [...links];
-    const [movedLink] = nextLinks.splice(currentIndex, 1);
-    nextLinks.splice(nextIndex, 0, movedLink);
     onReorderLinks(nextLinks);
   };
 

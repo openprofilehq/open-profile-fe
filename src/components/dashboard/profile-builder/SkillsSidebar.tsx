@@ -14,6 +14,7 @@ import {
 } from "@/api/profile/profile.options";
 import {
   createProfileSkill,
+  deleteProfileSkill,
   updateProfileSkill,
 } from "@/api/profile/profile.service";
 import {
@@ -127,6 +128,25 @@ export default function SkillsSidebar({
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Failed to save skill."
+      );
+    }
+  };
+
+  const handleDeleteCurrentSkill = async () => {
+    if (!editingSkill) return;
+
+    try {
+      await deleteProfileSkill(editingSkill.id);
+      handleSkillsChange(
+        skills.filter((skill) => skill.id !== editingSkill.id)
+      );
+      invalidateProfileQueries();
+      setEditingSkill(null);
+      setSkillName("");
+      setSelectedTab("content");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to delete skill."
       );
     }
   };
@@ -248,15 +268,27 @@ export default function SkillsSidebar({
               </div>
             )}
 
-            <Button
-              type="button"
-              size="lg"
-              variant="waitlist"
-              onClick={handleSave}
-              disabled={!canSave}
-            >
-              Save skill
-            </Button>
+            <div className="flex flex-col gap-3">
+              <Button
+                type="button"
+                size="lg"
+                variant="waitlist"
+                onClick={handleSave}
+                disabled={!canSave}
+              >
+                Save skill
+              </Button>
+
+              {editingSkill && (
+                <button
+                  type="button"
+                  onClick={handleDeleteCurrentSkill}
+                  className="border-negative-text text-negative-text hover:bg-negative-text/10 rounded-[10px] border px-4 py-2.5 text-sm font-semibold transition-colors"
+                >
+                  Delete skill
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>

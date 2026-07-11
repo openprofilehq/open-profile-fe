@@ -1056,9 +1056,6 @@ export default function ProfileBuilderContent() {
         links: buildComponentAppearance("links"),
         projects: buildComponentAppearance("projects"),
         cta: buildComponentAppearance("cta"),
-        workExperience: buildComponentAppearance("workExperience"),
-        education: buildComponentAppearance("education"),
-        skills: buildComponentAppearance("skills"),
       },
     };
   }, [

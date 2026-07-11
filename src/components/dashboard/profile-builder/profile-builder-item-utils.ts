@@ -32,3 +32,22 @@ export function ensureItemIds<T extends { id?: string }>(
     return { ...item, id: nextId };
   });
 }
+
+export function moveItemById<T extends { id: string }>(
+  items: T[],
+  itemId: string,
+  direction: "up" | "down"
+) {
+  const currentIndex = items.findIndex((item) => item.id === itemId);
+  const nextIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+
+  if (currentIndex < 0 || nextIndex < 0 || nextIndex >= items.length) {
+    return items;
+  }
+
+  const nextItems = [...items];
+  const [movedItem] = nextItems.splice(currentIndex, 1);
+  nextItems.splice(nextIndex, 0, movedItem);
+
+  return nextItems;
+}
