@@ -36,6 +36,7 @@ export interface ExperienceItem {
   role: string;
   company: string;
   employmentType?: string;
+  location?: string;
   startMonth: string;
   startYear: string;
   endMonth?: string;
