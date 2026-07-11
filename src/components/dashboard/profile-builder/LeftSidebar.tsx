@@ -10,7 +10,6 @@ import {
   GripVertical,
   Plus,
   Search,
-  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LinkSidebar from "./LinkSidebar";
@@ -61,6 +60,56 @@ function getDisplayTitle(
   _profile: ProfilePreview | null | undefined
 ) {
   return SECTION_STATIC_LABELS[section.type] ?? section.title;
+}
+
+function SkillsIcon({ size = 22 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M14.7 5.3l4 4"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M15.9 4.1l4 4"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M13.9 6.1L4.8 15.2a2 2 0 0 0-.5.9L3.7 19a1 1 0 0 0 1.2 1.2l2.9-.6a2 2 0 0 0 .9-.5l9.1-9.1"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6.5 5.5l12 12"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M5.1 6.9l2.8-2.8"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M16.1 19.9l2.8-2.8"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
 }
 
 export default function LeftSidebar({
@@ -313,7 +362,7 @@ export default function LeftSidebar({
             label="Skills"
             disabled={isSkillsDisabled}
             onClick={() => handleSelectCard("Skills", SECTION_TYPE.SKILLS)}
-            icon={<Sparkles size={22} />}
+            icon={<SkillsIcon size={22} />}
           />
         </div>
       </aside>

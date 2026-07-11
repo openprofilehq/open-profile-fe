@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ChevronLeft, Sparkles, X } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Section, SkillItem } from "./types";
 
@@ -39,6 +39,63 @@ const ensureSkillIds = (items: SkillItem[]) => {
     return { ...item, id: nextId };
   });
 };
+
+function SkillsIcon({
+  className = "",
+  size = 18,
+}: {
+  className?: string;
+  size?: number;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      className={className}
+    >
+      <path
+        d="M14.7 5.3l4 4"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M15.9 4.1l4 4"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M13.9 6.1L4.8 15.2a2 2 0 0 0-.5.9L3.7 19a1 1 0 0 0 1.2 1.2l2.9-.6a2 2 0 0 0 .9-.5l9.1-9.1"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6.5 5.5l12 12"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M5.1 6.9l2.8-2.8"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M16.1 19.9l2.8-2.8"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
 
 export default function SkillsSidebar({
   returnTab,
@@ -112,10 +169,6 @@ export default function SkillsSidebar({
     setEditingSkill(null);
     setSkillName("");
     setSelectedTab("content");
-  };
-
-  const handleDeleteSkill = (id: string) => {
-    handleSkillsChange(skills.filter((item) => item.id !== id));
   };
 
   return (
@@ -222,26 +275,14 @@ export default function SkillsSidebar({
                 </div>
                 <div className="border-border bg-background flex flex-wrap gap-2 rounded-[10px] border p-3">
                   {skills.map((skill) => (
-                    <span
+                    <button
                       key={skill.id}
-                      className="bg-secondary-bg text-primary-text inline-flex items-center gap-1 rounded-md px-3 py-2 text-xs font-medium"
+                      type="button"
+                      onClick={() => openForm(skill)}
+                      className="bg-secondary-bg text-primary-text hover:bg-hover-bg rounded-md px-3 py-2 text-xs font-medium"
                     >
-                      <button
-                        type="button"
-                        onClick={() => openForm(skill)}
-                        className="text-left"
-                      >
-                        {skill.name}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteSkill(skill.id)}
-                        aria-label={`Delete skill ${skill.name}`}
-                        className="text-tertiary-text hover:text-red-500"
-                      >
-                        <X size={12} />
-                      </button>
-                    </span>
+                      {skill.name}
+                    </button>
                   ))}
                 </div>
               </div>
@@ -254,7 +295,7 @@ export default function SkillsSidebar({
               onClick={handleSave}
               disabled={!canSave}
             >
-              {editingSkill ? "Update skill" : "Save skill"}
+              Save skill
             </Button>
           </div>
         )}
@@ -308,7 +349,7 @@ function EmptySkillsState({ onAdd }: { onAdd: () => void }) {
   return (
     <div className="border-border bg-primary-bg flex flex-col items-center justify-center rounded-[14px] border px-6 py-10 text-center">
       <div className="bg-secondary-bg text-tertiary-text mb-4 flex h-10 w-10 items-center justify-center rounded-full">
-        <Sparkles size={18} />
+        <SkillsIcon size={18} />
       </div>
       <p className="text-primary-text text-sm font-bold">No skills added</p>
       <p className="text-secondary-text mt-1 max-w-[190px] text-xs leading-relaxed">
