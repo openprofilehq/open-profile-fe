@@ -14,6 +14,11 @@ import type {
   SkillItem,
 } from "./types";
 import { encodeUrlForBackend, decodeUrlForFrontend } from "@/utils/profile";
+import {
+  educationResponseToItem,
+  skillResponseToItem,
+  workExperienceResponseToItem,
+} from "./profile-content-api-mappers";
 
 export function deserializeTitleAndSubtitle(
   rawTitle: string,
@@ -98,24 +103,53 @@ const getSectionItems = (section: Record<string, unknown> | undefined) => {
     : [];
 };
 
+const API_SECTION_TYPE_TO_BUILDER_SECTION: Record<string, string> = {
+  bio: "bio",
+  links: "links",
+  projects: "projects",
+  cta: "cta",
+  work_experience: "workExperience",
+  workExperience: "workExperience",
+  education: "education",
+  skills: "skills",
+};
+
+const getProfileSectionOrder = (profile: DashboardProfileResponse) => {
+  const sections = Array.isArray(profile.sections) ? profile.sections : [];
+
+  return sections
+    .slice()
+    .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
+    .map((section) => API_SECTION_TYPE_TO_BUILDER_SECTION[section.type])
+    .filter((type): type is string => Boolean(type));
+};
+
 export function contentToSections(
   rawContent: ProfileContentResponse,
   profile: DashboardProfileResponse
 ): Section[] {
   const content = rawContent?.content;
+  const profileSectionOrder = getProfileSectionOrder(profile);
   let order = content?.sectionOrder?.length
     ? [...new Set(content.sectionOrder)]
-    : ["bio"];
+    : profileSectionOrder.length
+      ? [...new Set(profileSectionOrder)]
+      : ["bio"];
 
-  // Derive fallback order from existing keys in content if sectionOrder is missing to prevent data loss
+  // Derive fallback order from existing keys in content/profile if sectionOrder is missing to prevent data loss
   if (!content?.sectionOrder?.length) {
     if (content?.links) order.push("links");
     if (content?.projects) order.push("projects");
     if (content?.cta) order.push("cta");
-    if (getContentSection(content, "workExperience"))
+    if (
+      getContentSection(content, "workExperience") ||
+      profile.workExperience?.length
+    )
       order.push("workExperience");
-    if (getContentSection(content, "education")) order.push("education");
-    if (getContentSection(content, "skills")) order.push("skills");
+    if (getContentSection(content, "education") || profile.education?.length)
+      order.push("education");
+    if (getContentSection(content, "skills") || profile.skills?.length)
+      order.push("skills");
     order = [...new Set(order)];
   }
 
@@ -300,29 +334,40 @@ export function contentToSections(
             ? workExperience.visible
             : true,
         subtitle,
-        experiences: getSectionItems(workExperience).map((item, index) => ({
-          id: createStableContentItemId(
-            item.id,
-            "experience",
-            index,
-            [item.role, item.company, item.startYear],
-            seenExperienceIds
-          ),
-          role: typeof item.role === "string" ? item.role : "",
-          company: typeof item.company === "string" ? item.company : "",
-          employmentType:
-            typeof item.employmentType === "string"
-              ? item.employmentType
-              : undefined,
-          startMonth:
-            typeof item.startMonth === "string" ? item.startMonth : "",
-          startYear: typeof item.startYear === "string" ? item.startYear : "",
-          endMonth: typeof item.endMonth === "string" ? item.endMonth : "",
-          endYear: typeof item.endYear === "string" ? item.endYear : "",
-          currentlyWorking: item.currentlyWorking === true,
-          description:
-            typeof item.description === "string" ? item.description : "",
-        })) as ExperienceItem[],
+        experiences: (() => {
+          const contentItems = getSectionItems(workExperience);
+
+          if (contentItems.length > 0) {
+            return contentItems.map((item, index) => ({
+              id: createStableContentItemId(
+                item.id,
+                "experience",
+                index,
+                [item.role, item.company, item.startYear],
+                seenExperienceIds
+              ),
+              role: typeof item.role === "string" ? item.role : "",
+              company: typeof item.company === "string" ? item.company : "",
+              employmentType:
+                typeof item.employmentType === "string"
+                  ? item.employmentType
+                  : undefined,
+              startMonth:
+                typeof item.startMonth === "string" ? item.startMonth : "",
+              startYear:
+                typeof item.startYear === "string" ? item.startYear : "",
+              endMonth: typeof item.endMonth === "string" ? item.endMonth : "",
+              endYear: typeof item.endYear === "string" ? item.endYear : "",
+              currentlyWorking: item.currentlyWorking === true,
+              description:
+                typeof item.description === "string" ? item.description : "",
+            })) as ExperienceItem[];
+          }
+
+          return (profile.workExperience ?? []).map(
+            workExperienceResponseToItem
+          );
+        })(),
         textColor: workExperience?.textColor as string | undefined,
         bgColor: workExperience?.bgColor as string | undefined,
         font: workExperience?.font as string | undefined,
@@ -353,24 +398,33 @@ export function contentToSections(
         visible:
           typeof education?.visible === "boolean" ? education.visible : true,
         subtitle,
-        education: getSectionItems(education).map((item, index) => ({
-          id: createStableContentItemId(
-            item.id,
-            "education",
-            index,
-            [item.degree, item.institution, item.startYear],
-            seenEducationIds
-          ),
-          institution:
-            typeof item.institution === "string" ? item.institution : "",
-          degree: typeof item.degree === "string" ? item.degree : "",
-          startMonth:
-            typeof item.startMonth === "string" ? item.startMonth : "",
-          startYear: typeof item.startYear === "string" ? item.startYear : "",
-          endMonth: typeof item.endMonth === "string" ? item.endMonth : "",
-          endYear: typeof item.endYear === "string" ? item.endYear : "",
-          currentlyStudying: item.currentlyStudying === true,
-        })) as EducationItem[],
+        education: (() => {
+          const contentItems = getSectionItems(education);
+
+          if (contentItems.length > 0) {
+            return contentItems.map((item, index) => ({
+              id: createStableContentItemId(
+                item.id,
+                "education",
+                index,
+                [item.degree, item.institution, item.startYear],
+                seenEducationIds
+              ),
+              institution:
+                typeof item.institution === "string" ? item.institution : "",
+              degree: typeof item.degree === "string" ? item.degree : "",
+              startMonth:
+                typeof item.startMonth === "string" ? item.startMonth : "",
+              startYear:
+                typeof item.startYear === "string" ? item.startYear : "",
+              endMonth: typeof item.endMonth === "string" ? item.endMonth : "",
+              endYear: typeof item.endYear === "string" ? item.endYear : "",
+              currentlyStudying: item.currentlyStudying === true,
+            })) as EducationItem[];
+          }
+
+          return (profile.education ?? []).map(educationResponseToItem);
+        })(),
         textColor: education?.textColor as string | undefined,
         bgColor: education?.bgColor as string | undefined,
         font: education?.font as string | undefined,
@@ -400,21 +454,29 @@ export function contentToSections(
         type: "skills" as const,
         visible: typeof skills?.visible === "boolean" ? skills.visible : true,
         subtitle,
-        skills: getSectionItems(skills).map((item, index) => ({
-          id: createStableContentItemId(
-            item.id,
-            "skill",
-            index,
-            [item.name, item.label],
-            seenSkillIds
-          ),
-          name:
-            typeof item.name === "string"
-              ? item.name
-              : typeof item.label === "string"
-                ? item.label
-                : "",
-        })) as SkillItem[],
+        skills: (() => {
+          const contentItems = getSectionItems(skills);
+
+          if (contentItems.length > 0) {
+            return contentItems.map((item, index) => ({
+              id: createStableContentItemId(
+                item.id,
+                "skill",
+                index,
+                [item.name, item.label],
+                seenSkillIds
+              ),
+              name:
+                typeof item.name === "string"
+                  ? item.name
+                  : typeof item.label === "string"
+                    ? item.label
+                    : "",
+            })) as SkillItem[];
+          }
+
+          return (profile.skills ?? []).map(skillResponseToItem);
+        })(),
         textColor: skills?.textColor as string | undefined,
         bgColor: skills?.bgColor as string | undefined,
         font: skills?.font as string | undefined,

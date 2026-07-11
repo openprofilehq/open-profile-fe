@@ -28,6 +28,10 @@ export type ProfileResponse = {
   themeSettings?: unknown | null;
   appearance?: ProfileAppearanceSettings | null;
   content?: ProfileContentDetails | null;
+  skills?: SkillResponseDto[];
+  education?: EducationResponseDto[];
+  workExperience?: WorkExperienceResponseDto[];
+  sections?: ProfileSectionOrderItem[];
 };
 
 export type DashboardProfileResponse = {
@@ -42,6 +46,10 @@ export type DashboardProfileResponse = {
   ctaLabel: string | null;
   ctaUrl: string | null;
   components: unknown[];
+  skills?: SkillResponseDto[];
+  education?: EducationResponseDto[];
+  workExperience?: WorkExperienceResponseDto[];
+  sections?: ProfileSectionOrderItem[];
 };
 
 export type ProfileContentSectionBio = {
@@ -99,6 +107,138 @@ export type SkillItem = {
   id: string | number;
   name?: string;
   label?: string;
+};
+
+export type ProfileComponentSectionType =
+  | "bio"
+  | "links"
+  | "projects"
+  | "cta"
+  | "work_experience"
+  | "education"
+  | "skills"
+  | "awards";
+
+export type ProfileSectionOrderItem = {
+  id?: string;
+  componentId?: string;
+  type: ProfileComponentSectionType | string;
+  displayOrder: number;
+  isEnabled?: boolean;
+  title?: string | null;
+  subtitle?: string | null;
+};
+
+export type SkillLevel = "beginner" | "intermediate" | "expert";
+
+export type SkillResponseDto = {
+  id: string;
+  profileId?: string;
+  name: string;
+  level?: SkillLevel | null;
+  displayOrder?: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type CreateSkillRequest = {
+  name: string;
+  level?: SkillLevel;
+};
+
+export type UpdateSkillRequest = Partial<CreateSkillRequest>;
+
+export type ReorderSkillsRequest = {
+  skillIds: string[];
+};
+
+export type ReorderSkillsResponse = {
+  skills: SkillResponseDto[];
+};
+
+export type EducationResponseDto = {
+  id: string;
+  profileId?: string;
+  school: string;
+  degree: string;
+  fieldOfStudy: string;
+  location?: string | null;
+  activitiesHonors?: string | null;
+  startYear: number;
+  endYear: number;
+  displayOrder?: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type CreateEducationRequest = {
+  school: string;
+  degree: string;
+  fieldOfStudy: string;
+  location?: string;
+  activitiesHonors?: string;
+  startYear: number;
+  endYear: number;
+};
+
+export type UpdateEducationRequest = Partial<CreateEducationRequest>;
+
+export type ReorderEducationRequest = {
+  educationIds: string[];
+};
+
+export type ReorderEducationResponse = {
+  education: EducationResponseDto[];
+};
+
+export type WorkExperienceResponseDto = {
+  id: string;
+  profileId?: string;
+  companyName: string;
+  jobTitle: string;
+  location?: string | null;
+  description?: string | null;
+  startMonth: number;
+  startYear: number;
+  endMonth?: number | null;
+  endYear?: number | null;
+  isCurrent: boolean;
+  displayOrder?: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type CreateWorkExperienceRequest = {
+  companyName: string;
+  jobTitle: string;
+  location?: string;
+  description?: string;
+  startMonth: number;
+  startYear: number;
+  endMonth?: number | null;
+  endYear?: number | null;
+  isCurrent: boolean;
+};
+
+export type UpdateWorkExperienceRequest = Partial<CreateWorkExperienceRequest>;
+
+export type ReorderWorkExperienceRequest = {
+  workExperienceIds: string[];
+};
+
+export type ReorderWorkExperienceResponse = {
+  workExperience: WorkExperienceResponseDto[];
+};
+
+export type ProfileComponentUpdateRequest = {
+  isEnabled?: boolean;
+  title?: string;
+  subtitle?: string;
+  displayOrder?: number;
+};
+
+export type ReorderProfileComponentsRequest = {
+  componentIds: string[];
 };
 
 export type ProfileContentSectionLinks = {

@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   BriefcaseBusiness,
   ChevronLeft,
@@ -10,11 +12,7 @@ import {
 import { Reorder, useDragControls } from "motion/react";
 import { Button } from "@/components/ui/button";
 import type { ExperienceItem, Section } from "./types";
-import {
-  createId,
-  ensureItemIds,
-  slugifyItemIdPart,
-} from "./profile-builder-item-utils";
+import { ensureItemIds, slugifyItemIdPart } from "./profile-builder-item-utils";
 import {
   CompactList,
   DatePair,
@@ -22,6 +20,20 @@ import {
   SelectField,
   TextField,
 } from "./profile-builder-fields";
+import {
+  dashboardProfileOption,
+  profileContentOption,
+} from "@/api/profile/profile.options";
+import {
+  createProfileWorkExperience,
+  deleteProfileWorkExperience,
+  reorderProfileWorkExperience,
+  updateProfileWorkExperience,
+} from "@/api/profile/profile.service";
+import {
+  workExperienceItemToRequest,
+  workExperienceResponseToItem,
+} from "./profile-content-api-mappers";
 
 const EMPLOYMENT_TYPES = [
   "Full-time",
@@ -66,6 +78,8 @@ export default function ExperienceSidebar({
   onUpdateSection: (id: string, updates: Partial<Section>) => void;
   mobile?: boolean;
 }) {
+  const queryClient = useQueryClient();
+  const orderTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [selectedTab, setSelectedTab] = useState<"content" | "form">("content");
   const [experiences, setExperiences] = useState<ExperienceItem[]>(() =>
     ensureExperienceIds(section?.experiences ?? [])
@@ -97,6 +111,14 @@ export default function ExperienceSidebar({
     };
   }, [section?.experiences, section?.id, section?.subtitle, section?.title]);
 
+  useEffect(() => {
+    return () => {
+      if (orderTimerRef.current) {
+        clearTimeout(orderTimerRef.current);
+      }
+    };
+  }, []);
+
   const canSave = useMemo(() => {
     const hasEndDate = form.currentlyWorking || (form.endMonth && form.endYear);
 
@@ -109,14 +131,50 @@ export default function ExperienceSidebar({
     );
   }, [form]);
 
+  const invalidateProfileQueries = () => {
+    queryClient.invalidateQueries({
+      queryKey: dashboardProfileOption().queryKey,
+    });
+    queryClient.invalidateQueries({
+      queryKey: profileContentOption().queryKey,
+    });
+  };
+
   const syncSection = (updates: Partial<Section>) => {
     if (!section) return;
     onUpdateSection(section.id, updates);
   };
 
-  const handleExperiencesChange = (nextExperiences: ExperienceItem[]) => {
+  const persistExperienceOrder = (nextExperiences: ExperienceItem[]) => {
+    if (orderTimerRef.current) {
+      clearTimeout(orderTimerRef.current);
+    }
+
+    orderTimerRef.current = setTimeout(() => {
+      void reorderProfileWorkExperience({
+        workExperienceIds: nextExperiences.map((item) => item.id),
+      })
+        .then(() => invalidateProfileQueries())
+        .catch((error) => {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Failed to reorder work experience."
+          );
+        });
+    }, 500);
+  };
+
+  const handleExperiencesChange = (
+    nextExperiences: ExperienceItem[],
+    options: { persistOrder?: boolean } = {}
+  ) => {
     setExperiences(nextExperiences);
     syncSection({ experiences: nextExperiences });
+
+    if (options.persistOrder) {
+      persistExperienceOrder(nextExperiences);
+    }
   };
 
   const handleMoveExperience = (
@@ -135,7 +193,7 @@ export default function ExperienceSidebar({
     const nextExperiences = [...experiences];
     const [movedExperience] = nextExperiences.splice(currentIndex, 1);
     nextExperiences.splice(nextIndex, 0, movedExperience);
-    handleExperiencesChange(nextExperiences);
+    handleExperiencesChange(nextExperiences, { persistOrder: true });
   };
 
   const openForm = (item?: ExperienceItem) => {
@@ -158,15 +216,25 @@ export default function ExperienceSidebar({
     setSelectedTab("form");
   };
 
-  const handleDeleteExperience = (id: string) => {
-    handleExperiencesChange(experiences.filter((item) => item.id !== id));
+  const handleDeleteExperience = async (id: string) => {
+    try {
+      await deleteProfileWorkExperience(id);
+      handleExperiencesChange(experiences.filter((item) => item.id !== id));
+      invalidateProfileQueries();
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to delete work experience."
+      );
+    }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!canSave) return;
 
     const nextItem: ExperienceItem = {
-      id: editingExperience?.id ?? createId(),
+      id: editingExperience?.id ?? "",
       ...form,
       role: form.role.trim(),
       company: form.company.trim(),
@@ -176,16 +244,35 @@ export default function ExperienceSidebar({
       description: form.description?.trim() || "",
     };
 
-    handleExperiencesChange(
-      editingExperience
-        ? experiences.map((item) =>
-            item.id === editingExperience.id ? nextItem : item
+    try {
+      const savedExperience = editingExperience
+        ? await updateProfileWorkExperience(
+            editingExperience.id,
+            workExperienceItemToRequest(nextItem)
           )
-        : [...experiences, nextItem]
-    );
-    setEditingExperience(null);
-    setForm(emptyExperience);
-    setSelectedTab("content");
+        : await createProfileWorkExperience(
+            workExperienceItemToRequest(nextItem)
+          );
+      const savedItem = workExperienceResponseToItem(savedExperience);
+
+      handleExperiencesChange(
+        editingExperience
+          ? experiences.map((item) =>
+              item.id === editingExperience.id ? savedItem : item
+            )
+          : [...experiences, savedItem]
+      );
+      invalidateProfileQueries();
+      setEditingExperience(null);
+      setForm(emptyExperience);
+      setSelectedTab("content");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to save work experience."
+      );
+    }
   };
 
   return (
@@ -254,7 +341,9 @@ export default function ExperienceSidebar({
                 <Reorder.Group
                   axis="y"
                   values={experiences}
-                  onReorder={handleExperiencesChange}
+                  onReorder={(nextItems) =>
+                    handleExperiencesChange(nextItems, { persistOrder: true })
+                  }
                   layoutScroll
                   className="flex flex-col gap-2.5"
                 >

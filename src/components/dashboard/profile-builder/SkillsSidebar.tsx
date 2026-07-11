@@ -1,15 +1,25 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { ChevronLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Section, SkillItem } from "./types";
-import {
-  createId,
-  ensureItemIds,
-  slugifyItemIdPart,
-} from "./profile-builder-item-utils";
+import { ensureItemIds, slugifyItemIdPart } from "./profile-builder-item-utils";
 import { SectionHeadingFields, TextField } from "./profile-builder-fields";
+import {
+  dashboardProfileOption,
+  profileContentOption,
+} from "@/api/profile/profile.options";
+import {
+  createProfileSkill,
+  updateProfileSkill,
+} from "@/api/profile/profile.service";
+import {
+  skillItemToRequest,
+  skillResponseToItem,
+} from "./profile-content-api-mappers";
 
 const createFallbackSkillId = (item: SkillItem, index: number) => {
   const source = slugifyItemIdPart(`${item.name || "skill"}-${index}`);
@@ -31,6 +41,7 @@ export default function SkillsSidebar({
   onUpdateSection: (id: string, updates: Partial<Section>) => void;
   mobile?: boolean;
 }) {
+  const queryClient = useQueryClient();
   const [selectedTab, setSelectedTab] = useState<"content" | "form">("content");
   const [skills, setSkills] = useState<SkillItem[]>(() =>
     ensureSkillIds(section?.skills ?? [])
@@ -60,6 +71,15 @@ export default function SkillsSidebar({
 
   const canSave = useMemo(() => Boolean(skillName.trim()), [skillName]);
 
+  const invalidateProfileQueries = () => {
+    queryClient.invalidateQueries({
+      queryKey: dashboardProfileOption().queryKey,
+    });
+    queryClient.invalidateQueries({
+      queryKey: profileContentOption().queryKey,
+    });
+  };
+
   const syncSection = (updates: Partial<Section>) => {
     if (!section) return;
     onUpdateSection(section.id, updates);
@@ -76,22 +96,39 @@ export default function SkillsSidebar({
     setSelectedTab("form");
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!canSave) return;
 
     const nextItem: SkillItem = {
-      id: editingSkill?.id ?? createId(),
+      id: editingSkill?.id ?? "",
       name: skillName.trim(),
     };
 
-    handleSkillsChange(
-      editingSkill
-        ? skills.map((item) => (item.id === editingSkill.id ? nextItem : item))
-        : [...skills, nextItem]
-    );
-    setEditingSkill(null);
-    setSkillName("");
-    setSelectedTab("content");
+    try {
+      const savedSkill = editingSkill
+        ? await updateProfileSkill(
+            editingSkill.id,
+            skillItemToRequest(nextItem)
+          )
+        : await createProfileSkill(skillItemToRequest(nextItem));
+      const savedItem = skillResponseToItem(savedSkill);
+
+      handleSkillsChange(
+        editingSkill
+          ? skills.map((item) =>
+              item.id === editingSkill.id ? savedItem : item
+            )
+          : [...skills, savedItem]
+      );
+      invalidateProfileQueries();
+      setEditingSkill(null);
+      setSkillName("");
+      setSelectedTab("content");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to save skill."
+      );
+    }
   };
 
   return (

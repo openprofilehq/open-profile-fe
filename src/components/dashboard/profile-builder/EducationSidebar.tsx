@@ -1,21 +1,33 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { ChevronLeft, GraduationCap, GripVertical, Trash2 } from "lucide-react";
 import { Reorder, useDragControls } from "motion/react";
 import { Button } from "@/components/ui/button";
 import type { EducationItem, Section } from "./types";
-import {
-  createId,
-  ensureItemIds,
-  slugifyItemIdPart,
-} from "./profile-builder-item-utils";
+import { ensureItemIds, slugifyItemIdPart } from "./profile-builder-item-utils";
 import {
   CompactList,
   DatePair,
   SectionHeadingFields,
   TextField,
 } from "./profile-builder-fields";
+import {
+  dashboardProfileOption,
+  profileContentOption,
+} from "@/api/profile/profile.options";
+import {
+  createProfileEducation,
+  deleteProfileEducation,
+  reorderProfileEducation,
+  updateProfileEducation,
+} from "@/api/profile/profile.service";
+import {
+  educationItemToRequest,
+  educationResponseToItem,
+} from "./profile-content-api-mappers";
 
 const createFallbackEducationId = (item: EducationItem, index: number) => {
   const source = slugifyItemIdPart(
@@ -48,6 +60,8 @@ export default function EducationSidebar({
   onUpdateSection: (id: string, updates: Partial<Section>) => void;
   mobile?: boolean;
 }) {
+  const queryClient = useQueryClient();
+  const orderTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [selectedTab, setSelectedTab] = useState<"content" | "form">("content");
   const [education, setEducation] = useState<EducationItem[]>(() =>
     ensureEducationIds(section?.education ?? [])
@@ -78,6 +92,14 @@ export default function EducationSidebar({
     };
   }, [section?.education, section?.id, section?.subtitle, section?.title]);
 
+  useEffect(() => {
+    return () => {
+      if (orderTimerRef.current) {
+        clearTimeout(orderTimerRef.current);
+      }
+    };
+  }, []);
+
   const canSave = useMemo(
     () =>
       Boolean(
@@ -89,14 +111,50 @@ export default function EducationSidebar({
     [form]
   );
 
+  const invalidateProfileQueries = () => {
+    queryClient.invalidateQueries({
+      queryKey: dashboardProfileOption().queryKey,
+    });
+    queryClient.invalidateQueries({
+      queryKey: profileContentOption().queryKey,
+    });
+  };
+
   const syncSection = (updates: Partial<Section>) => {
     if (!section) return;
     onUpdateSection(section.id, updates);
   };
 
-  const handleEducationChange = (nextEducation: EducationItem[]) => {
+  const persistEducationOrder = (nextEducation: EducationItem[]) => {
+    if (orderTimerRef.current) {
+      clearTimeout(orderTimerRef.current);
+    }
+
+    orderTimerRef.current = setTimeout(() => {
+      void reorderProfileEducation({
+        educationIds: nextEducation.map((item) => item.id),
+      })
+        .then(() => invalidateProfileQueries())
+        .catch((error) => {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Failed to reorder education."
+          );
+        });
+    }, 500);
+  };
+
+  const handleEducationChange = (
+    nextEducation: EducationItem[],
+    options: { persistOrder?: boolean } = {}
+  ) => {
     setEducation(nextEducation);
     syncSection({ education: nextEducation });
+
+    if (options.persistOrder) {
+      persistEducationOrder(nextEducation);
+    }
   };
 
   const handleMoveEducation = (
@@ -113,7 +171,7 @@ export default function EducationSidebar({
     const nextEducation = [...education];
     const [movedEducation] = nextEducation.splice(currentIndex, 1);
     nextEducation.splice(nextIndex, 0, movedEducation);
-    handleEducationChange(nextEducation);
+    handleEducationChange(nextEducation, { persistOrder: true });
   };
 
   const openForm = (item?: EducationItem) => {
@@ -133,30 +191,53 @@ export default function EducationSidebar({
     setSelectedTab("form");
   };
 
-  const handleDeleteEducation = (id: string) => {
-    handleEducationChange(education.filter((item) => item.id !== id));
+  const handleDeleteEducation = async (id: string) => {
+    try {
+      await deleteProfileEducation(id);
+      handleEducationChange(education.filter((item) => item.id !== id));
+      invalidateProfileQueries();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to delete education."
+      );
+    }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!canSave) return;
 
     const nextItem: EducationItem = {
-      id: editingEducation?.id ?? createId(),
+      id: editingEducation?.id ?? "",
       ...form,
       institution: form.institution.trim(),
       degree: form.degree.trim(),
     };
 
-    handleEducationChange(
-      editingEducation
-        ? education.map((item) =>
-            item.id === editingEducation.id ? nextItem : item
+    try {
+      const savedEducation = editingEducation
+        ? await updateProfileEducation(
+            editingEducation.id,
+            educationItemToRequest(nextItem)
           )
-        : [...education, nextItem]
-    );
-    setEditingEducation(null);
-    setForm(emptyEducation);
-    setSelectedTab("content");
+        : await createProfileEducation(educationItemToRequest(nextItem));
+      const savedItem = educationResponseToItem(savedEducation);
+
+      handleEducationChange(
+        editingEducation
+          ? education.map((item) =>
+              item.id === editingEducation.id ? savedItem : item
+            )
+          : [...education, savedItem]
+      );
+      invalidateProfileQueries();
+      setEditingEducation(null);
+      setForm(emptyEducation);
+      setSelectedTab("content");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to save education."
+      );
+    }
   };
 
   return (
@@ -223,7 +304,9 @@ export default function EducationSidebar({
                 <Reorder.Group
                   axis="y"
                   values={education}
-                  onReorder={handleEducationChange}
+                  onReorder={(nextItems) =>
+                    handleEducationChange(nextItems, { persistOrder: true })
+                  }
                   layoutScroll
                   className="flex flex-col gap-2.5"
                 >
