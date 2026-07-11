@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Section, SkillItem } from "./types";
 import {
@@ -19,63 +19,6 @@ const createFallbackSkillId = (item: SkillItem, index: number) => {
 
 const ensureSkillIds = (items: SkillItem[]) =>
   ensureItemIds(items, createFallbackSkillId);
-
-function SkillsIcon({
-  className = "",
-  size = 18,
-}: {
-  className?: string;
-  size?: number;
-}) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-      className={className}
-    >
-      <path
-        d="M14.7 5.3l4 4"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-      <path
-        d="M15.9 4.1l4 4"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-      <path
-        d="M13.9 6.1L4.8 15.2a2 2 0 0 0-.5.9L3.7 19a1 1 0 0 0 1.2 1.2l2.9-.6a2 2 0 0 0 .9-.5l9.1-9.1"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M6.5 5.5l12 12"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-      <path
-        d="M5.1 6.9l2.8-2.8"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-      <path
-        d="M16.1 19.9l2.8-2.8"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
 
 export default function SkillsSidebar({
   returnTab,
@@ -288,7 +231,7 @@ function EmptySkillsState({ onAdd }: { onAdd: () => void }) {
   return (
     <div className="border-border bg-primary-bg flex flex-col items-center justify-center rounded-[14px] border px-6 py-10 text-center">
       <div className="bg-secondary-bg text-tertiary-text mb-4 flex h-10 w-10 items-center justify-center rounded-full">
-        <SkillsIcon size={18} />
+        <Sparkles size={18} aria-hidden="true" />
       </div>
       <p className="text-primary-text text-sm font-bold">No skills added</p>
       <p className="text-secondary-text mt-1 max-w-[190px] text-xs leading-relaxed">
