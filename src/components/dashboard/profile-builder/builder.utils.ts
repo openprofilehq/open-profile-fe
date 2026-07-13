@@ -5,8 +5,20 @@ import type {
   LinkItem,
   ProjectItem as ApiProjectItem,
 } from "@/api/profile/profile.type";
-import type { Section, SavedLink, ProjectItem } from "./types";
+import type {
+  Section,
+  SavedLink,
+  ProjectItem,
+  ExperienceItem,
+  EducationItem,
+  SkillItem,
+} from "./types";
 import { encodeUrlForBackend, decodeUrlForFrontend } from "@/utils/profile";
+import {
+  educationResponseToItem,
+  skillResponseToItem,
+  workExperienceResponseToItem,
+} from "./profile-content-api-mappers";
 
 export function deserializeTitleAndSubtitle(
   rawTitle: string,
@@ -30,6 +42,9 @@ export function deserializeTitleAndSubtitle(
     "selected projects",
     "projects",
     "portfolio",
+    "work experience",
+    "education",
+    "skills",
   ].includes(rawTitle.toLowerCase().trim());
   if (isDefaultTitle) {
     return { title: rawTitle, subtitle: "" };
@@ -39,7 +54,7 @@ export function deserializeTitleAndSubtitle(
 
 const createStableContentItemId = (
   rawId: unknown,
-  prefix: "link" | "project",
+  prefix: "link" | "project" | "experience" | "education" | "skill",
   index: number,
   parts: unknown[],
   seenIds: Set<string>
@@ -61,8 +76,11 @@ const createStableContentItemId = (
 
   let nextId = existingId || `${prefix}-${index}-${source || "item"}`;
 
-  if (seenIds.has(nextId)) {
-    nextId = `${nextId}-${index}`;
+  let suffix = 1;
+  const baseId = nextId;
+  while (seenIds.has(nextId)) {
+    nextId = `${baseId}-${index}-${suffix}`;
+    suffix += 1;
   }
 
   seenIds.add(nextId);
@@ -70,20 +88,68 @@ const createStableContentItemId = (
   return nextId;
 };
 
+const getContentSection = (
+  content: ProfileContentResponse["content"],
+  key: string
+) => {
+  return (content as Record<string, unknown> | null | undefined)?.[key] as
+    | Record<string, unknown>
+    | undefined;
+};
+
+const getSectionItems = (section: Record<string, unknown> | undefined) => {
+  return Array.isArray(section?.items)
+    ? (section.items as Record<string, unknown>[])
+    : [];
+};
+
+const API_SECTION_TYPE_TO_BUILDER_SECTION: Record<string, string> = {
+  bio: "bio",
+  links: "links",
+  projects: "projects",
+  cta: "cta",
+  work_experience: "workExperience",
+  workExperience: "workExperience",
+  education: "education",
+  skills: "skills",
+};
+
+const getProfileSectionOrder = (profile: DashboardProfileResponse) => {
+  const sections = Array.isArray(profile.sections) ? profile.sections : [];
+
+  return sections
+    .slice()
+    .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
+    .map((section) => API_SECTION_TYPE_TO_BUILDER_SECTION[section.type])
+    .filter((type): type is string => Boolean(type));
+};
+
 export function contentToSections(
   rawContent: ProfileContentResponse,
   profile: DashboardProfileResponse
 ): Section[] {
   const content = rawContent?.content;
+  const profileSectionOrder = getProfileSectionOrder(profile);
   let order = content?.sectionOrder?.length
     ? [...new Set(content.sectionOrder)]
-    : ["bio"];
+    : profileSectionOrder.length
+      ? [...new Set(profileSectionOrder)]
+      : ["bio"];
 
-  // Derive fallback order from existing keys in content if sectionOrder is missing to prevent data loss
+  // Derive fallback order from existing keys in content/profile if sectionOrder is missing to prevent data loss
   if (!content?.sectionOrder?.length) {
     if (content?.links) order.push("links");
     if (content?.projects) order.push("projects");
     if (content?.cta) order.push("cta");
+    if (
+      getContentSection(content, "workExperience") ||
+      profile.workExperience?.length
+    )
+      order.push("workExperience");
+    if (getContentSection(content, "education") || profile.education?.length)
+      order.push("education");
+    if (getContentSection(content, "skills") || profile.skills?.length)
+      order.push("skills");
     order = [...new Set(order)];
   }
 
@@ -247,6 +313,181 @@ export function contentToSections(
       };
     }
 
+    if (key === "workExperience") {
+      const workExperience = getContentSection(content, "workExperience");
+      const rawTitle =
+        typeof workExperience?.sectionTitle === "string"
+          ? workExperience.sectionTitle
+          : "Work Experience";
+      const { title, subtitle } = deserializeTitleAndSubtitle(
+        rawTitle,
+        "Work Experience"
+      );
+      const seenExperienceIds = new Set<string>();
+
+      return {
+        id: "workExperience",
+        title,
+        type: "workExperience" as const,
+        visible:
+          typeof workExperience?.visible === "boolean"
+            ? workExperience.visible
+            : true,
+        subtitle,
+        experiences: (() => {
+          const contentItems = getSectionItems(workExperience);
+
+          if (contentItems.length > 0) {
+            return contentItems.map((item, index) => ({
+              id: createStableContentItemId(
+                item.id,
+                "experience",
+                index,
+                [item.role, item.company, item.startYear],
+                seenExperienceIds
+              ),
+              role: typeof item.role === "string" ? item.role : "",
+              company: typeof item.company === "string" ? item.company : "",
+              employmentType:
+                typeof item.employmentType === "string"
+                  ? item.employmentType
+                  : undefined,
+              startMonth:
+                typeof item.startMonth === "string" ? item.startMonth : "",
+              startYear:
+                typeof item.startYear === "string" ? item.startYear : "",
+              endMonth: typeof item.endMonth === "string" ? item.endMonth : "",
+              endYear: typeof item.endYear === "string" ? item.endYear : "",
+              currentlyWorking: item.currentlyWorking === true,
+              description:
+                typeof item.description === "string" ? item.description : "",
+            })) as ExperienceItem[];
+          }
+
+          return (profile.workExperience ?? []).map(
+            workExperienceResponseToItem
+          );
+        })(),
+        textColor: workExperience?.textColor as string | undefined,
+        bgColor: workExperience?.bgColor as string | undefined,
+        font: workExperience?.font as string | undefined,
+        iconColor: workExperience?.iconColor as string | undefined,
+        paddingTop: workExperience?.paddingTop as number | undefined,
+        paddingBottom: workExperience?.paddingBottom as number | undefined,
+        gap: workExperience?.gap as number | undefined,
+        padding: workExperience?.padding as number | undefined,
+      };
+    }
+
+    if (key === "education") {
+      const education = getContentSection(content, "education");
+      const rawTitle =
+        typeof education?.sectionTitle === "string"
+          ? education.sectionTitle
+          : "Education";
+      const { title, subtitle } = deserializeTitleAndSubtitle(
+        rawTitle,
+        "Education"
+      );
+      const seenEducationIds = new Set<string>();
+
+      return {
+        id: "education",
+        title,
+        type: "education" as const,
+        visible:
+          typeof education?.visible === "boolean" ? education.visible : true,
+        subtitle,
+        education: (() => {
+          const contentItems = getSectionItems(education);
+
+          if (contentItems.length > 0) {
+            return contentItems.map((item, index) => ({
+              id: createStableContentItemId(
+                item.id,
+                "education",
+                index,
+                [item.degree, item.institution, item.startYear],
+                seenEducationIds
+              ),
+              institution:
+                typeof item.institution === "string" ? item.institution : "",
+              degree: typeof item.degree === "string" ? item.degree : "",
+              startMonth:
+                typeof item.startMonth === "string" ? item.startMonth : "",
+              startYear:
+                typeof item.startYear === "string" ? item.startYear : "",
+              endMonth: typeof item.endMonth === "string" ? item.endMonth : "",
+              endYear: typeof item.endYear === "string" ? item.endYear : "",
+              currentlyStudying: item.currentlyStudying === true,
+            })) as EducationItem[];
+          }
+
+          return (profile.education ?? []).map(educationResponseToItem);
+        })(),
+        textColor: education?.textColor as string | undefined,
+        bgColor: education?.bgColor as string | undefined,
+        font: education?.font as string | undefined,
+        iconColor: education?.iconColor as string | undefined,
+        paddingTop: education?.paddingTop as number | undefined,
+        paddingBottom: education?.paddingBottom as number | undefined,
+        gap: education?.gap as number | undefined,
+        padding: education?.padding as number | undefined,
+      };
+    }
+
+    if (key === "skills") {
+      const skills = getContentSection(content, "skills");
+      const rawTitle =
+        typeof skills?.sectionTitle === "string"
+          ? skills.sectionTitle
+          : "Skills";
+      const { title, subtitle } = deserializeTitleAndSubtitle(
+        rawTitle,
+        "Skills"
+      );
+      const seenSkillIds = new Set<string>();
+
+      return {
+        id: "skills",
+        title,
+        type: "skills" as const,
+        visible: typeof skills?.visible === "boolean" ? skills.visible : true,
+        subtitle,
+        skills: (() => {
+          const contentItems = getSectionItems(skills);
+
+          if (contentItems.length > 0) {
+            return contentItems.map((item, index) => ({
+              id: createStableContentItemId(
+                item.id,
+                "skill",
+                index,
+                [item.name, item.label],
+                seenSkillIds
+              ),
+              name:
+                typeof item.name === "string"
+                  ? item.name
+                  : typeof item.label === "string"
+                    ? item.label
+                    : "",
+            })) as SkillItem[];
+          }
+
+          return (profile.skills ?? []).map(skillResponseToItem);
+        })(),
+        textColor: skills?.textColor as string | undefined,
+        bgColor: skills?.bgColor as string | undefined,
+        font: skills?.font as string | undefined,
+        iconColor: skills?.iconColor as string | undefined,
+        paddingTop: skills?.paddingTop as number | undefined,
+        paddingBottom: skills?.paddingBottom as number | undefined,
+        gap: skills?.gap as number | undefined,
+        padding: skills?.padding as number | undefined,
+      };
+    }
+
     // key === "cta"
     return {
       id: "cta",
@@ -349,6 +590,11 @@ export function sectionsToContent(
   const linksSection = sections.find((s) => s.type === "links");
   const projectsSection = sections.find((s) => s.type === "projects");
   const ctaSection = sections.find((s) => s.type === "cta");
+  const workExperienceSection = sections.find(
+    (s) => s.type === "workExperience"
+  );
+  const educationSection = sections.find((s) => s.type === "education");
+  const skillsSection = sections.find((s) => s.type === "skills");
 
   const sectionStyleFields = (s: Section) => ({
     ...(s.textColor && { textColor: s.textColor }),
@@ -414,6 +660,54 @@ export function sectionsToContent(
             }
             return mappedProject;
           }) as unknown as ApiProjectItem[],
+        }
+      : undefined,
+
+    workExperience: workExperienceSection
+      ? {
+          visible: workExperienceSection.visible,
+          sectionTitle: `${workExperienceSection.title ?? "Work Experience"}///${workExperienceSection.subtitle ?? ""}`,
+          items: (workExperienceSection.experiences ?? []).map((item) => ({
+            id: item.id,
+            role: item.role,
+            company: item.company,
+            employmentType: item.employmentType ?? "",
+            startMonth: item.startMonth,
+            startYear: item.startYear,
+            endMonth: item.currentlyWorking ? "" : (item.endMonth ?? ""),
+            endYear: item.currentlyWorking ? "" : (item.endYear ?? ""),
+            currentlyWorking: item.currentlyWorking === true,
+            description: item.description ?? "",
+          })),
+          ...sectionStyleFields(workExperienceSection),
+        }
+      : undefined,
+    education: educationSection
+      ? {
+          visible: educationSection.visible,
+          sectionTitle: `${educationSection.title ?? "Education"}///${educationSection.subtitle ?? ""}`,
+          items: (educationSection.education ?? []).map((item) => ({
+            id: item.id,
+            institution: item.institution,
+            degree: item.degree,
+            startMonth: item.startMonth,
+            startYear: item.startYear,
+            endMonth: item.currentlyStudying ? "" : (item.endMonth ?? ""),
+            endYear: item.currentlyStudying ? "" : (item.endYear ?? ""),
+            currentlyStudying: item.currentlyStudying === true,
+          })),
+          ...sectionStyleFields(educationSection),
+        }
+      : undefined,
+    skills: skillsSection
+      ? {
+          visible: skillsSection.visible,
+          sectionTitle: `${skillsSection.title ?? "Skills"}///${skillsSection.subtitle ?? ""}`,
+          items: (skillsSection.skills ?? []).map((item) => ({
+            id: item.id,
+            name: item.name,
+          })),
+          ...sectionStyleFields(skillsSection),
         }
       : undefined,
     cta: ctaSection

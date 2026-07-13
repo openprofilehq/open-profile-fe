@@ -13,6 +13,23 @@ import {
   ProfileAppearanceRequest,
   ProfileAppearanceResponse,
   GetProfileAppearanceResponse,
+  CreateSkillRequest,
+  UpdateSkillRequest,
+  ReorderSkillsRequest,
+  ReorderSkillsResponse,
+  SkillResponseDto,
+  CreateEducationRequest,
+  UpdateEducationRequest,
+  ReorderEducationRequest,
+  ReorderEducationResponse,
+  EducationResponseDto,
+  CreateWorkExperienceRequest,
+  UpdateWorkExperienceRequest,
+  ReorderWorkExperienceRequest,
+  ReorderWorkExperienceResponse,
+  WorkExperienceResponseDto,
+  ProfileComponentUpdateRequest,
+  ReorderProfileComponentsRequest,
 } from "./profile.type";
 
 export function createProfile(data: CreateProfileRequest) {
@@ -71,7 +88,6 @@ export function getProfileContent(signal?: AbortSignal) {
     signal,
   });
 }
-
 
 export function getDraftState(signal?: AbortSignal) {
   return callApi<DraftStateResponse>({
@@ -139,5 +155,151 @@ export function getProfileAppearance(signal?: AbortSignal) {
     url: "/profiles/appearance",
     method: "GET",
     signal,
+  });
+}
+
+export function getProfileSkills(signal?: AbortSignal) {
+  return callApi<SkillResponseDto[]>({
+    url: "/profiles/me/skills",
+    method: "GET",
+    signal,
+  });
+}
+
+export function createProfileSkill(data: CreateSkillRequest) {
+  return callApi<SkillResponseDto>({
+    url: "/profiles/me/skills",
+    method: "POST",
+    data,
+  });
+}
+
+export function updateProfileSkill(skillId: string, data: UpdateSkillRequest) {
+  return callApi<SkillResponseDto>({
+    url: `/profiles/me/skills/${skillId}`,
+    method: "PATCH",
+    data,
+  });
+}
+
+export function deleteProfileSkill(skillId: string) {
+  return callApi<void>({
+    url: `/profiles/me/skills/${skillId}`,
+    method: "DELETE",
+  });
+}
+
+export function reorderProfileSkills(data: ReorderSkillsRequest) {
+  return callApi<ReorderSkillsResponse>({
+    url: "/profiles/me/skills/order",
+    method: "PUT",
+    data,
+  });
+}
+
+export function getProfileEducation(signal?: AbortSignal) {
+  return callApi<EducationResponseDto[]>({
+    url: "/profiles/me/education",
+    method: "GET",
+    signal,
+  });
+}
+
+export function createProfileEducation(data: CreateEducationRequest) {
+  return callApi<EducationResponseDto>({
+    url: "/profiles/me/education",
+    method: "POST",
+    data,
+  });
+}
+
+export function updateProfileEducation(
+  educationId: string,
+  data: UpdateEducationRequest
+) {
+  return callApi<EducationResponseDto>({
+    url: `/profiles/me/education/${educationId}`,
+    method: "PATCH",
+    data,
+  });
+}
+
+export function deleteProfileEducation(educationId: string) {
+  return callApi<void>({
+    url: `/profiles/me/education/${educationId}`,
+    method: "DELETE",
+  });
+}
+
+export function reorderProfileEducation(data: ReorderEducationRequest) {
+  return callApi<ReorderEducationResponse>({
+    url: "/profiles/me/education/order",
+    method: "PUT",
+    data,
+  });
+}
+
+export function getProfileWorkExperience(signal?: AbortSignal) {
+  return callApi<WorkExperienceResponseDto[]>({
+    url: "/profiles/me/work-experience",
+    method: "GET",
+    signal,
+  });
+}
+
+export function createProfileWorkExperience(data: CreateWorkExperienceRequest) {
+  return callApi<WorkExperienceResponseDto>({
+    url: "/profiles/me/work-experience",
+    method: "POST",
+    data,
+  });
+}
+
+export function updateProfileWorkExperience(
+  workExperienceId: string,
+  data: UpdateWorkExperienceRequest
+) {
+  return callApi<WorkExperienceResponseDto>({
+    url: `/profiles/me/work-experience/${workExperienceId}`,
+    method: "PATCH",
+    data,
+  });
+}
+
+export function deleteProfileWorkExperience(workExperienceId: string) {
+  return callApi<void>({
+    url: `/profiles/me/work-experience/${workExperienceId}`,
+    method: "DELETE",
+  });
+}
+
+export function reorderProfileWorkExperience(
+  data: ReorderWorkExperienceRequest
+) {
+  return callApi<ReorderWorkExperienceResponse>({
+    url: "/profiles/me/work-experience/order",
+    method: "PUT",
+    data,
+  });
+}
+
+export function updateProfileComponent(
+  componentId: string,
+  data: ProfileComponentUpdateRequest
+) {
+  return callApi<unknown>({
+    url: `/profiles/me/components/${componentId}`,
+    method: "PATCH",
+    data,
+  });
+}
+
+export function reorderProfileComponents(
+  data: ReorderProfileComponentsRequest
+) {
+  return callApi<unknown>({
+    url: "/profiles/me/components/order",
+    method: "PUT",
+    data,
   });
 }

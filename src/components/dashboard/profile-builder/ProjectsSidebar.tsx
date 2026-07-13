@@ -8,6 +8,12 @@ import { Button } from "@/components/ui/button";
 import type { ProjectItem, Section } from "./types";
 import { uploadImage } from "@/api/uploads/uploads.service";
 import { isValidUrl } from "./builder.utils";
+import {
+  createId,
+  ensureItemIds,
+  moveItemById,
+  slugifyItemIdPart,
+} from "./profile-builder-item-utils";
 
 interface ProjectsSidebarProps {
   returnTab: () => void;
@@ -17,31 +23,15 @@ interface ProjectsSidebarProps {
 }
 
 const createFallbackProjectId = (project: ProjectItem, index: number) => {
-  const source = `${project.title || "project"}-${project.url || index}`
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 40);
+  const source = slugifyItemIdPart(
+    `${project.title || "project"}-${project.url || index}`
+  );
 
   return `project-${index}-${source || "item"}`;
 };
 
-const ensureProjectIds = (projectItems: ProjectItem[]) => {
-  const seenIds = new Set<string>();
-
-  return projectItems.map((project, index) => {
-    const existingId = typeof project.id === "string" ? project.id.trim() : "";
-    let nextId = existingId || createFallbackProjectId(project, index);
-
-    if (seenIds.has(nextId)) {
-      nextId = `${nextId}-${index}`;
-    }
-
-    seenIds.add(nextId);
-
-    return { ...project, id: nextId };
-  });
-};
+const ensureProjectIds = (projectItems: ProjectItem[]) =>
+  ensureItemIds(projectItems, createFallbackProjectId);
 
 export default function ProjectsSidebar({
   returnTab,
@@ -141,6 +131,14 @@ export default function ProjectsSidebar({
   const handleProjectsChange = (updatedProjects: ProjectItem[]) => {
     setProjects(updatedProjects);
     syncSection({ projects: updatedProjects });
+  };
+
+  const handleMoveProject = (projectId: string, direction: "up" | "down") => {
+    const nextProjects = moveItemById(projects, projectId, direction);
+
+    if (nextProjects === projects) return;
+
+    handleProjectsChange(nextProjects);
   };
 
   const handleEditProjectClick = (proj: ProjectItem) => {
@@ -275,7 +273,7 @@ export default function ProjectsSidebar({
       handleProjectsChange(updated);
     } else {
       const newProj: ProjectItem = {
-        id: Math.random().toString(36).substring(2, 9),
+        id: createId(),
         title: itemTitle.trim(),
         description: itemDesc.trim(),
         buttonText: itemButtonText.trim() || "View project",
@@ -412,6 +410,7 @@ export default function ProjectsSidebar({
                       project={proj}
                       onEditProject={handleEditProjectClick}
                       onDeleteProject={handleDeleteProject}
+                      onMoveProject={handleMoveProject}
                     />
                   ))}
                 </Reorder.Group>
@@ -665,10 +664,12 @@ function SortableProjectItem({
   project,
   onEditProject,
   onDeleteProject,
+  onMoveProject,
 }: {
   project: ProjectItem;
   onEditProject: (project: ProjectItem) => void;
   onDeleteProject: (projectId: string) => void;
+  onMoveProject: (projectId: string, direction: "up" | "down") => void;
 }) {
   const dragControls = useDragControls();
 
@@ -689,7 +690,7 @@ function SortableProjectItem({
       }}
       className="group hover:border-brand-b/40 border-border bg-background flex h-[50px] cursor-pointer items-center justify-between overflow-hidden rounded-[8px] border pl-4 transition-all"
     >
-      <span className="flex-1 truncate text-sm font-semibold text-[#050505]">
+      <span className="text-primary-text flex-1 truncate text-sm font-semibold">
         {project.title}
       </span>
       <div className="flex h-full items-center">
@@ -699,8 +700,9 @@ function SortableProjectItem({
             e.stopPropagation();
             onDeleteProject(project.id);
           }}
-          className="flex h-full items-center px-3 text-gray-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-600"
+          className="text-tertiary-text hover:text-negative-text flex h-full items-center px-3 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 focus:opacity-100"
           title="Delete project"
+          aria-label={`Delete project ${project.title || "Untitled project"}`}
         >
           <Trash2 size={16} />
         </button>
@@ -711,9 +713,16 @@ function SortableProjectItem({
             e.stopPropagation();
             dragControls.start(e);
           }}
-          className="border-border flex h-full w-[50px] shrink-0 cursor-grab items-center justify-center border-l bg-[#F4F4F5] text-gray-400 transition-colors hover:bg-gray-100 active:cursor-grabbing"
-          title="Drag to reorder projects"
-          aria-label={`Drag to reorder ${project.title}`}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+              e.preventDefault();
+              e.stopPropagation();
+              onMoveProject(project.id, e.key === "ArrowUp" ? "up" : "down");
+            }
+          }}
+          className="border-border bg-active-bg text-tertiary-text hover:bg-hover-bg flex h-full w-[50px] shrink-0 cursor-grab items-center justify-center border-l transition-colors active:cursor-grabbing"
+          title="Drag or use arrow keys to reorder projects"
+          aria-label={`Drag or use arrow keys to reorder ${project.title || "project"}`}
         >
           <GripVertical size={16} />
         </button>

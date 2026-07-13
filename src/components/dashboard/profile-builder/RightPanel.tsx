@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { Section } from "./types";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { THEME_DEFAULTS } from "@/constants/theme";
@@ -208,6 +208,7 @@ export default function RightPanel({
 }: RightPanelProps) {
   const selectedTemplate = template ? template.toLowerCase() : "creator";
   const [spacingMode, setSpacingMode] = useState<"basic" | "advanced">("basic");
+  const customColorsLabelId = useId();
 
   const matchedTheme = findMatchingTheme(bgColor, iconColor);
   const customColorsActive = colorMode === "custom";
@@ -375,12 +376,16 @@ export default function RightPanel({
 
           <div>
             <div className="mb-2 flex items-center justify-between gap-3">
-              <label className="text-primary-text block text-xs font-bold">
+              <span
+                id={customColorsLabelId}
+                className="text-primary-text block text-xs font-bold"
+              >
                 Custom colors
-              </label>
+              </span>
               <button
                 type="button"
                 role="switch"
+                aria-labelledby={customColorsLabelId}
                 aria-checked={customColorsActive}
                 onClick={handleToggleCustomColors}
                 className={`relative h-6 w-11 rounded-full transition-colors ${

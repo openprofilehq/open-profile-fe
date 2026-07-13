@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { GripVertical, Trash2 } from "lucide-react";
 import { Reorder, useDragControls } from "motion/react";
 import type { SavedLink } from "./LinkSidebar";
+import { moveItemById } from "./profile-builder-item-utils";
 
 export default function ContentOption({
   title,
@@ -26,6 +27,14 @@ export default function ContentOption({
   switchTab: () => void;
   canAddLink: boolean;
 }) {
+  const handleMoveLink = (linkId: string, direction: "up" | "down") => {
+    const nextLinks = moveItemById(links, linkId, direction);
+
+    if (nextLinks === links) return;
+
+    onReorderLinks(nextLinks);
+  };
+
   return (
     <div>
       <div className="flex flex-col gap-4">
@@ -82,6 +91,7 @@ export default function ContentOption({
                     link={link}
                     onEditLink={onEditLink}
                     onDeleteLink={onDeleteLink}
+                    onMoveLink={handleMoveLink}
                   />
                 ))}
               </Reorder.Group>
@@ -107,10 +117,12 @@ function SortableLinkItem({
   link,
   onEditLink,
   onDeleteLink,
+  onMoveLink,
 }: {
   link: SavedLink;
   onEditLink: (link: SavedLink) => void;
   onDeleteLink: (id: string) => void;
+  onMoveLink: (id: string, direction: "up" | "down") => void;
 }) {
   const dragControls = useDragControls();
 
@@ -133,7 +145,7 @@ function SortableLinkItem({
       className="group border-tertiary-b relative flex cursor-pointer items-center justify-between overflow-hidden rounded-md border p-3 transition-all duration-200 focus:ring-2 focus:outline-none"
     >
       <div className="flex flex-1 items-center justify-between gap-3 px-4">
-        <p className="truncate text-sm text-black">{link.title}</p>
+        <p className="text-primary-text truncate text-sm">{link.title}</p>
 
         <button
           type="button"
@@ -141,7 +153,7 @@ function SortableLinkItem({
             e.stopPropagation();
             onDeleteLink(link.id);
           }}
-          className="hover:text-negative-text text-secondary-text mr-10 flex shrink-0 justify-end p-1.5 opacity-0 transition-all group-hover:opacity-100"
+          className="text-secondary-text hover:text-negative-text mr-10 flex shrink-0 justify-end p-1.5 opacity-0 transition-all group-focus-within:opacity-100 group-hover:opacity-100 focus:opacity-100"
           title="Delete link"
           aria-label={`Delete link ${link.title}`}
         >
@@ -156,9 +168,16 @@ function SortableLinkItem({
           e.stopPropagation();
           dragControls.start(e);
         }}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+            e.preventDefault();
+            e.stopPropagation();
+            onMoveLink(link.id, e.key === "ArrowUp" ? "up" : "down");
+          }
+        }}
         className="border-tertiary-b bg-active-bg text-tertiary-text hover:bg-hover-bg absolute top-0 right-0 flex h-full cursor-grab items-center justify-center self-stretch border-l px-3.5 transition-colors active:cursor-grabbing"
-        title="Drag to reorder links"
-        aria-label={`Drag to reorder ${link.title}`}
+        title="Drag or use arrow keys to reorder links"
+        aria-label={`Drag or use arrow keys to reorder ${link.title}`}
       >
         <GripVertical size={16} />
       </button>
