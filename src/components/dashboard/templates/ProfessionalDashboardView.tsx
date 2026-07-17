@@ -493,6 +493,7 @@ export default function ProfessionalDashboardView({
                   section={section}
                   isRegular
                   variant="professional"
+                  ignoreSectionStyle={true}
                 />
               </section>
             );

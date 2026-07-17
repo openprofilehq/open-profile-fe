@@ -404,6 +404,7 @@ export default function PortfolioPreview({
                   section={section}
                   isRegular
                   variant="portfolio"
+                  ignoreSectionStyle={true}
                 />
               </section>
             </div>

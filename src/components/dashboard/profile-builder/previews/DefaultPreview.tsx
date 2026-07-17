@@ -470,7 +470,10 @@ export default function DefaultPreview({
                 className="border-border bg-background relative w-full rounded-2xl border p-6 shadow-sm"
                 style={getSectionStyle(section)}
               >
-                <ProfileTextSectionBlock section={section} />
+                <ProfileTextSectionBlock
+                  section={section}
+                  ignoreSectionStyle={true}
+                />
               </section>
             </div>
           );

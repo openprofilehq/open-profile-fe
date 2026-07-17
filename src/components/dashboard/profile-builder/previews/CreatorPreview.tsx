@@ -49,7 +49,11 @@ export default function CreatorPreview({
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (selectedSection?.type === "projects") setActiveTab("projects");
     else if (selectedSection?.type === "links") setActiveTab("links");
-    else if (selectedSection?.type === "bio") setActiveTab("about");
+    else if (
+      selectedSection?.type === "bio" ||
+      isProfileTextSectionType(selectedSection?.type ?? "")
+    )
+      setActiveTab("about");
   }, [sections, selectedSectionId]);
 
   const visibleSections = sections;
@@ -64,7 +68,9 @@ export default function CreatorPreview({
   const availableTabIds = [
     projectsSection ? "projects" : null,
     linksSection ? "links" : null,
-    bioSection ? "about" : null,
+    bioSection || sections.some((s) => isProfileTextSectionType(s.type))
+      ? "about"
+      : null,
   ].filter(Boolean) as Array<"projects" | "links" | "about">;
 
   const currentActiveTab = availableTabIds.includes(activeTab)

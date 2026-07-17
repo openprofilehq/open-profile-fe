@@ -70,22 +70,27 @@ export function ProfileTextSectionBlock({
   className = "",
   isRegular = false,
   variant = "default",
+  ignoreSectionStyle = false,
 }: {
   section: Section;
   className?: string;
   isRegular?: boolean;
   variant?: "default" | "creator" | "professional" | "portfolio";
+  ignoreSectionStyle?: boolean;
 }) {
   const isCreator = variant === "creator";
   const isProfessional = variant === "professional";
   const isPortfolio = variant === "portfolio";
   const titleRegular = isRegular || isCreator || isProfessional || isPortfolio;
+  const blockStyle = ignoreSectionStyle
+    ? undefined
+    : profileTextSectionStyle(section);
 
   if (section.type === "workExperience") {
     return (
       <section
         className={`flex w-full flex-col gap-7 ${section.font ? getFontClass(section.font) : ""} ${className}`}
-        style={profileTextSectionStyle(section)}
+        style={blockStyle}
       >
         <SectionTitle
           title={section.title || "Work Experience"}
@@ -129,7 +134,7 @@ export function ProfileTextSectionBlock({
     return (
       <section
         className={`flex w-full flex-col gap-7 ${section.font ? getFontClass(section.font) : ""} ${className}`}
-        style={profileTextSectionStyle(section)}
+        style={blockStyle}
       >
         <SectionTitle
           title={section.title || "Education"}
@@ -173,7 +178,7 @@ export function ProfileTextSectionBlock({
     return (
       <section
         className={`flex w-full flex-col gap-6 ${section.font ? getFontClass(section.font) : ""} ${className}`}
-        style={profileTextSectionStyle(section)}
+        style={blockStyle}
       >
         <SectionTitle
           title={section.title || "Skills"}

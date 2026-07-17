@@ -119,14 +119,21 @@ export function SelectField({
   options: string[];
   onChange: (value: string) => void;
 }) {
+  const selectId = useId();
+
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-primary-text text-xs font-bold">{label}</label>
+      <label htmlFor={selectId} className="text-primary-text text-xs font-bold">
+        {label}
+      </label>
       <Select
         value={value || "__empty"}
         onValueChange={(val) => onChange(val === "__empty" ? "" : val)}
       >
-        <SelectTrigger className="border-border bg-background text-primary-text h-11 w-full rounded-[10px] border px-3 text-sm font-medium shadow-none outline-none">
+        <SelectTrigger
+          id={selectId}
+          className="border-border bg-background text-primary-text h-11 w-full rounded-[10px] border px-3 text-sm font-medium shadow-none outline-none"
+        >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent position="popper" className="max-h-[300px]">
@@ -177,7 +184,10 @@ export function DatePair({
           value={month || "__empty"}
           onValueChange={(val) => onMonthChange(val === "__empty" ? "" : val)}
         >
-          <SelectTrigger className="border-border bg-background text-primary-text h-11 w-full rounded-[10px] border px-3 text-sm font-medium shadow-none outline-none">
+          <SelectTrigger
+            aria-label={`${label} month`}
+            className="border-border bg-background text-primary-text h-11 w-full rounded-[10px] border px-3 text-sm font-medium shadow-none outline-none"
+          >
             <SelectValue placeholder="Month" />
           </SelectTrigger>
           <SelectContent position="popper" className="max-h-[300px]">
@@ -203,7 +213,10 @@ export function DatePair({
           value={year || "__empty"}
           onValueChange={(val) => onYearChange(val === "__empty" ? "" : val)}
         >
-          <SelectTrigger className="border-border bg-background text-primary-text h-11 w-full rounded-[10px] border px-3 text-sm font-medium shadow-none outline-none">
+          <SelectTrigger
+            aria-label={`${label} year`}
+            className="border-border bg-background text-primary-text h-11 w-full rounded-[10px] border px-3 text-sm font-medium shadow-none outline-none"
+          >
             <SelectValue placeholder="Year" />
           </SelectTrigger>
           <SelectContent position="popper" className="max-h-[300px]">

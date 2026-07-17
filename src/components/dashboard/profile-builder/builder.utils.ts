@@ -114,17 +114,34 @@ const API_SECTION_TYPE_TO_BUILDER_SECTION: Record<string, string> = {
   skills: "skills",
 };
 
+interface ComponentMetadata {
+  type?: string;
+  sectionType?: string;
+  displayOrder?: number;
+  isEnabled?: boolean;
+  title?: string;
+  subtitle?: string;
+}
+
 const getProfileComponentInfo = (
   profile: DashboardProfileResponse,
   type: string
 ) => {
+  const normalizedType = API_SECTION_TYPE_TO_BUILDER_SECTION[type] || type;
+
   const comp = Array.isArray(profile.components)
-    ? (profile.components as any[]).find(
-        (c) => (c.sectionType ?? c.type) === type
+    ? (profile.components as ComponentMetadata[]).find(
+        (c) =>
+          (API_SECTION_TYPE_TO_BUILDER_SECTION[c.sectionType ?? c.type ?? ""] ||
+            (c.sectionType ?? c.type)) === normalizedType
       )
     : undefined;
   const sect = Array.isArray(profile.sections)
-    ? profile.sections.find((s) => s.type === type)
+    ? profile.sections.find(
+        (s) =>
+          (API_SECTION_TYPE_TO_BUILDER_SECTION[s.type] || s.type) ===
+          normalizedType
+      )
     : undefined;
 
   return {
@@ -139,8 +156,8 @@ const getProfileSectionOrder = (profile: DashboardProfileResponse) => {
     Array.isArray(profile.sections) && profile.sections.length > 0
       ? profile.sections
       : Array.isArray(profile.components)
-        ? (profile.components as any[]).map((c) => ({
-            type: c.sectionType ?? c.type,
+        ? (profile.components as ComponentMetadata[]).map((c) => ({
+            type: c.sectionType ?? c.type ?? "",
             displayOrder: c.displayOrder,
             isEnabled: c.isEnabled,
             title: c.title,
@@ -189,6 +206,7 @@ export function contentToSections(
     if (content?.cta) order.push("cta");
     if (
       getContentSection(content, "workExperience") ||
+      getContentSection(content, "work_experience") ||
       profile.workExperience?.length
     )
       order.push("workExperience");

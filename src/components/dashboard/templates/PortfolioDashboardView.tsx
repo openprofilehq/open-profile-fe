@@ -481,6 +481,7 @@ export default function PortfolioDashboardView({
                   section={section}
                   isRegular
                   variant="portfolio"
+                  ignoreSectionStyle={true}
                 />
               </section>
             );

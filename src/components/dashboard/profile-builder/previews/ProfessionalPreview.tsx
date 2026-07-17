@@ -441,6 +441,7 @@ export default function ProfessionalPreview({
                   section={section}
                   isRegular
                   variant="professional"
+                  ignoreSectionStyle={true}
                 />
               </section>
             </div>
