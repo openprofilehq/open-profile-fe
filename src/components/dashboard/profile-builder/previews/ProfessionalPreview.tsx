@@ -149,9 +149,16 @@ export default function ProfessionalPreview({
             >
               {renderControls(section)}
 
-              <h2 className="text-tertiary-text mb-4 text-[13px]">
-                {section.subtitle || "Links"}
-              </h2>
+              <div className="mb-4 flex flex-col gap-1">
+                <h2 className="text-tertiary-text text-[13px]">
+                  {section.title || "Links"}
+                </h2>
+                {section.subtitle && (
+                  <p className="text-secondary-text text-xs">
+                    {section.subtitle}
+                  </p>
+                )}
+              </div>
               <div
                 className="border-border flex flex-col border-t"
                 style={{
