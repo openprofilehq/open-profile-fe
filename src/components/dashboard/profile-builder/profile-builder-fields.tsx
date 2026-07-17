@@ -1,4 +1,11 @@
 import { useId } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const MONTHS = [
   "Jan",
@@ -112,26 +119,34 @@ export function SelectField({
   options: string[];
   onChange: (value: string) => void;
 }) {
-  const selectId = useId();
-
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={selectId} className="text-primary-text text-xs font-bold">
-        {label}
-      </label>
-      <select
-        id={selectId}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="border-border text-primary-text focus:border-brand-b w-full rounded-[10px] border px-4 py-3 text-sm outline-none"
+      <label className="text-primary-text text-xs font-bold">{label}</label>
+      <Select
+        value={value || "__empty"}
+        onValueChange={(val) => onChange(val === "__empty" ? "" : val)}
       >
-        <option value="">{placeholder}</option>
-        {options.map((option) => (
-          <option key={option} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger className="border-border bg-background text-primary-text h-11 w-full rounded-[10px] border px-3 text-sm font-medium shadow-none outline-none">
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent position="popper" className="max-h-[300px]">
+          <SelectItem
+            value="__empty"
+            className="text-secondary-text data-[state=checked]:bg-[#CDE4E6] data-[state=checked]:text-black"
+          >
+            {placeholder}
+          </SelectItem>
+          {options.map((option) => (
+            <SelectItem
+              key={option}
+              value={option}
+              className="data-[state=checked]:bg-[#CDE4E6] data-[state=checked]:text-black"
+            >
+              {option}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }
@@ -151,9 +166,6 @@ export function DatePair({
   onYearChange: (value: string) => void;
   required?: boolean;
 }) {
-  const monthId = useId();
-  const yearId = useId();
-
   return (
     <div className="flex flex-col gap-2">
       <span className="text-primary-text text-xs font-bold">
@@ -161,38 +173,57 @@ export function DatePair({
         {required && <span className="text-negative-text ml-1">*</span>}
       </span>
       <div className="grid grid-cols-2 gap-2">
-        <label htmlFor={monthId} className="sr-only">
-          {label} month
-        </label>
-        <select
-          id={monthId}
-          value={month}
-          onChange={(event) => onMonthChange(event.target.value)}
-          className="border-border text-primary-text focus:border-brand-b rounded-[10px] border px-3 py-3 text-sm outline-none"
+        <Select
+          value={month || "__empty"}
+          onValueChange={(val) => onMonthChange(val === "__empty" ? "" : val)}
         >
-          <option value="">Month</option>
-          {MONTHS.map((item) => (
-            <option key={item} value={item}>
-              {item}
-            </option>
-          ))}
-        </select>
-        <label htmlFor={yearId} className="sr-only">
-          {label} year
-        </label>
-        <select
-          id={yearId}
-          value={year}
-          onChange={(event) => onYearChange(event.target.value)}
-          className="border-border text-primary-text focus:border-brand-b rounded-[10px] border px-3 py-3 text-sm outline-none"
+          <SelectTrigger className="border-border bg-background text-primary-text h-11 w-full rounded-[10px] border px-3 text-sm font-medium shadow-none outline-none">
+            <SelectValue placeholder="Month" />
+          </SelectTrigger>
+          <SelectContent position="popper" className="max-h-[300px]">
+            <SelectItem
+              value="__empty"
+              className="text-secondary-text data-[state=checked]:bg-[#CDE4E6] data-[state=checked]:text-black"
+            >
+              Month
+            </SelectItem>
+            {MONTHS.map((item) => (
+              <SelectItem
+                key={item}
+                value={item}
+                className="data-[state=checked]:bg-[#CDE4E6] data-[state=checked]:text-black"
+              >
+                {item}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={year || "__empty"}
+          onValueChange={(val) => onYearChange(val === "__empty" ? "" : val)}
         >
-          <option value="">Year</option>
-          {YEARS.map((item) => (
-            <option key={item} value={item}>
-              {item}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="border-border bg-background text-primary-text h-11 w-full rounded-[10px] border px-3 text-sm font-medium shadow-none outline-none">
+            <SelectValue placeholder="Year" />
+          </SelectTrigger>
+          <SelectContent position="popper" className="max-h-[300px]">
+            <SelectItem
+              value="__empty"
+              className="text-secondary-text data-[state=checked]:bg-[#CDE4E6] data-[state=checked]:text-black"
+            >
+              Year
+            </SelectItem>
+            {YEARS.map((item) => (
+              <SelectItem
+                key={item}
+                value={item}
+                className="data-[state=checked]:bg-[#CDE4E6] data-[state=checked]:text-black"
+              >
+                {item}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );
