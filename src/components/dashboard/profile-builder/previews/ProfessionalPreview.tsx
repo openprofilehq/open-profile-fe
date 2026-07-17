@@ -150,7 +150,7 @@ export default function ProfessionalPreview({
               {renderControls(section)}
 
               <div className="mb-4 flex flex-col gap-1">
-                <h2 className="text-tertiary-text text-[13px]">
+                <h2 className="text-primary-text text-[20px] leading-tight font-normal">
                   {section.title || "Links"}
                 </h2>
                 {section.subtitle && (
@@ -240,7 +240,7 @@ export default function ProfessionalPreview({
                 })()}
               >
                 <div className="mb-4 flex flex-col gap-1">
-                  <h2 className="text-tertiary-text text-[13px]">
+                  <h2 className="text-primary-text text-[20px] leading-tight font-normal">
                     {section.title || "Selected Work"}
                   </h2>
                   {section.subtitle && (
@@ -401,7 +401,7 @@ export default function ProfessionalPreview({
                     />
                   </div>
                 )}
-                <h2 className="text-primary-text text-[28px] font-bold tracking-tight">
+                <h2 className="text-primary-text text-[20px] leading-tight font-normal">
                   {section.title || "Open to new projects."}
                 </h2>
                 <p className="text-secondary-text mt-3 mb-8 max-w-[600px] text-base leading-relaxed">
@@ -432,7 +432,7 @@ export default function ProfessionalPreview({
               className={`group hover:border-border hover:bg-background/50 relative w-full cursor-pointer rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""}`}
             >
               {renderControls(section)}
-              <ProfileTextSectionBlock section={section} />
+              <ProfileTextSectionBlock section={section} isRegular />
             </section>
           );
         }

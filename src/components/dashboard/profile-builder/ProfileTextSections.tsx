@@ -68,9 +68,11 @@ const profileTextSectionStyle = (section: Section): CSSProperties => {
 export function ProfileTextSectionBlock({
   section,
   className = "",
+  isRegular = false,
 }: {
   section: Section;
   className?: string;
+  isRegular?: boolean;
 }) {
   if (section.type === "workExperience") {
     return (
@@ -78,7 +80,10 @@ export function ProfileTextSectionBlock({
         className={`flex w-full flex-col gap-7 ${section.font ? getFontClass(section.font) : ""} ${className}`}
         style={profileTextSectionStyle(section)}
       >
-        <SectionTitle title={section.title || "Work Experience"} />
+        <SectionTitle
+          title={section.title || "Work Experience"}
+          isRegular={isRegular}
+        />
         {section.subtitle && <SectionSubtitle text={section.subtitle} />}
         <div className="flex flex-col gap-7">
           {(section.experiences ?? []).map((item) => (
@@ -98,7 +103,10 @@ export function ProfileTextSectionBlock({
         className={`flex w-full flex-col gap-7 ${section.font ? getFontClass(section.font) : ""} ${className}`}
         style={profileTextSectionStyle(section)}
       >
-        <SectionTitle title={section.title || "Education"} />
+        <SectionTitle
+          title={section.title || "Education"}
+          isRegular={isRegular}
+        />
         {section.subtitle && <SectionSubtitle text={section.subtitle} />}
         <div className="flex flex-col gap-6">
           {(section.education ?? []).map((item) => (
@@ -118,7 +126,7 @@ export function ProfileTextSectionBlock({
         className={`flex w-full flex-col gap-6 ${section.font ? getFontClass(section.font) : ""} ${className}`}
         style={profileTextSectionStyle(section)}
       >
-        <SectionTitle title={section.title || "Skills"} />
+        <SectionTitle title={section.title || "Skills"} isRegular={isRegular} />
         {section.subtitle && <SectionSubtitle text={section.subtitle} />}
         <div className="flex flex-wrap gap-3">
           {(section.skills ?? []).map((item) => (
@@ -135,9 +143,17 @@ export function ProfileTextSectionBlock({
   return null;
 }
 
-function SectionTitle({ title }: { title: string }) {
+function SectionTitle({
+  title,
+  isRegular = false,
+}: {
+  title: string;
+  isRegular?: boolean;
+}) {
   return (
-    <h2 className="text-primary-text text-[20px] leading-tight font-semibold tracking-tight break-words">
+    <h2
+      className={`text-primary-text text-[20px] leading-tight ${isRegular ? "font-normal" : "font-semibold"} tracking-tight break-words`}
+    >
       {title}
     </h2>
   );
