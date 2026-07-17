@@ -138,9 +138,6 @@ export default function CreatorDashboardView({
   });
 
   const visibleSections = sections.filter((section) => section.visible);
-  const textSections = visibleSections.filter((section) =>
-    isProfileTextSectionType(section.type)
-  );
 
   const bioSection = sections.find((s) => s.type === "bio");
   const linksSection = sections.find((s) => s.type === "links");
@@ -268,6 +265,14 @@ export default function CreatorDashboardView({
         >
           {visibleSections
             .filter((s) => ["projects", "links", "bio"].includes(s.type))
+            .sort((a, b) => {
+              const order: Record<string, number> = {
+                projects: 1,
+                links: 2,
+                bio: 3,
+              };
+              return (order[a.type] ?? 99) - (order[b.type] ?? 99);
+            })
             .map((section) => {
               const tabKey = section.type === "bio" ? "about" : section.type;
               const label =
@@ -511,25 +516,20 @@ export default function CreatorDashboardView({
             );
           }
 
+          if (isProfileTextSectionType(section.type) && activeTab === "about") {
+            return (
+              <div
+                key={section.id}
+                className={`mx-auto mt-10 w-full max-w-4xl ${section.font ? getFontClass(section.font) : ""}`}
+              >
+                <ProfileTextSectionBlock section={section} variant="creator" />
+              </div>
+            );
+          }
+
           return null;
         })}
       </div>
-
-      {textSections.length > 0 && (
-        <div
-          className="mx-auto flex w-full max-w-4xl flex-col gap-10"
-          style={{ marginTop: "var(--op-spacing, 2rem)" }}
-        >
-          {textSections.map((section) => (
-            <section
-              key={section.id}
-              className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${section.font ? getFontClass(section.font) : ""}`}
-            >
-              <ProfileTextSectionBlock section={section} />
-            </section>
-          ))}
-        </div>
-      )}
 
       {!isPreview && <TemplateFooter />}
     </div>

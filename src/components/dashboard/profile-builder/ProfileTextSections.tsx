@@ -69,11 +69,16 @@ export function ProfileTextSectionBlock({
   section,
   className = "",
   isRegular = false,
+  variant = "default",
 }: {
   section: Section;
   className?: string;
   isRegular?: boolean;
+  variant?: "default" | "creator";
 }) {
+  const isCreator = variant === "creator";
+  const titleRegular = isRegular || isCreator;
+
   if (section.type === "workExperience") {
     return (
       <section
@@ -82,17 +87,38 @@ export function ProfileTextSectionBlock({
       >
         <SectionTitle
           title={section.title || "Work Experience"}
-          isRegular={isRegular}
+          isRegular={titleRegular}
+          isCentered={isCreator}
         />
-        {section.subtitle && <SectionSubtitle text={section.subtitle} />}
-        <div className="flex flex-col gap-7">
-          {(section.experiences ?? []).map((item) => (
-            <ExperienceEntry key={item.id} item={item} />
-          ))}
-          {(section.experiences ?? []).length === 0 && (
-            <EmptyText>No experience added yet.</EmptyText>
-          )}
-        </div>
+        {section.subtitle && (
+          <SectionSubtitle text={section.subtitle} isCentered={isCreator} />
+        )}
+        {isCreator ? (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {(section.experiences ?? []).map((item) => (
+              <div
+                key={item.id}
+                className="border-border bg-background rounded-2xl border p-6 text-left"
+              >
+                <ExperienceEntry item={item} />
+              </div>
+            ))}
+            {(section.experiences ?? []).length === 0 && (
+              <div className="col-span-full">
+                <EmptyText>No experience added yet.</EmptyText>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-7">
+            {(section.experiences ?? []).map((item) => (
+              <ExperienceEntry key={item.id} item={item} />
+            ))}
+            {(section.experiences ?? []).length === 0 && (
+              <EmptyText>No experience added yet.</EmptyText>
+            )}
+          </div>
+        )}
       </section>
     );
   }
@@ -105,17 +131,38 @@ export function ProfileTextSectionBlock({
       >
         <SectionTitle
           title={section.title || "Education"}
-          isRegular={isRegular}
+          isRegular={titleRegular}
+          isCentered={isCreator}
         />
-        {section.subtitle && <SectionSubtitle text={section.subtitle} />}
-        <div className="flex flex-col gap-6">
-          {(section.education ?? []).map((item) => (
-            <EducationEntry key={item.id} item={item} />
-          ))}
-          {(section.education ?? []).length === 0 && (
-            <EmptyText>No education added yet.</EmptyText>
-          )}
-        </div>
+        {section.subtitle && (
+          <SectionSubtitle text={section.subtitle} isCentered={isCreator} />
+        )}
+        {isCreator ? (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {(section.education ?? []).map((item) => (
+              <div
+                key={item.id}
+                className="border-border bg-background rounded-2xl border p-6 text-left"
+              >
+                <EducationEntry item={item} />
+              </div>
+            ))}
+            {(section.education ?? []).length === 0 && (
+              <div className="col-span-full">
+                <EmptyText>No education added yet.</EmptyText>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-6">
+            {(section.education ?? []).map((item) => (
+              <EducationEntry key={item.id} item={item} />
+            ))}
+            {(section.education ?? []).length === 0 && (
+              <EmptyText>No education added yet.</EmptyText>
+            )}
+          </div>
+        )}
       </section>
     );
   }
@@ -126,9 +173,17 @@ export function ProfileTextSectionBlock({
         className={`flex w-full flex-col gap-6 ${section.font ? getFontClass(section.font) : ""} ${className}`}
         style={profileTextSectionStyle(section)}
       >
-        <SectionTitle title={section.title || "Skills"} isRegular={isRegular} />
-        {section.subtitle && <SectionSubtitle text={section.subtitle} />}
-        <div className="flex flex-wrap gap-3">
+        <SectionTitle
+          title={section.title || "Skills"}
+          isRegular={titleRegular}
+          isCentered={isCreator}
+        />
+        {section.subtitle && (
+          <SectionSubtitle text={section.subtitle} isCentered={isCreator} />
+        )}
+        <div
+          className={`flex flex-wrap gap-3 ${isCreator ? "justify-center" : ""}`}
+        >
           {(section.skills ?? []).map((item) => (
             <SkillPill key={item.id} item={item} />
           ))}
@@ -146,22 +201,32 @@ export function ProfileTextSectionBlock({
 function SectionTitle({
   title,
   isRegular = false,
+  isCentered = false,
 }: {
   title: string;
   isRegular?: boolean;
+  isCentered?: boolean;
 }) {
   return (
     <h2
-      className={`text-primary-text text-[20px] leading-tight ${isRegular ? "font-normal" : "font-semibold"} tracking-tight break-words`}
+      className={`text-primary-text text-[20px] leading-tight ${isRegular ? "font-normal" : "font-semibold"} ${isCentered ? "text-center" : ""} tracking-tight break-words`}
     >
       {title}
     </h2>
   );
 }
 
-function SectionSubtitle({ text }: { text: string }) {
+function SectionSubtitle({
+  text,
+  isCentered = false,
+}: {
+  text: string;
+  isCentered?: boolean;
+}) {
   return (
-    <p className="text-secondary-text -mt-4 text-[14px] leading-relaxed break-words whitespace-pre-wrap">
+    <p
+      className={`text-secondary-text -mt-4 text-[14px] leading-relaxed break-words whitespace-pre-wrap ${isCentered ? "text-center" : ""}`}
+    >
       {text}
     </p>
   );
@@ -176,8 +241,15 @@ function ExperienceEntry({ item }: { item: ExperienceItem }) {
         {item.role}
       </h3>
       <div className="text-secondary-text flex flex-wrap items-center gap-x-3 gap-y-1 text-[15px]">
-        {item.company && <span>{item.company}</span>}
-        {item.employmentType && <span>{item.employmentType}</span>}
+        {item.company && (
+          <span>
+            {item.company}
+            {item.employmentType && ` · ${item.employmentType}`}
+          </span>
+        )}
+        {!item.company && item.employmentType && (
+          <span>{item.employmentType}</span>
+        )}
       </div>
       {range && <p className="text-tertiary-text text-[15px]">{range}</p>}
       {item.description && (
