@@ -1,9 +1,14 @@
 import { ChevronLeft } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ContentOption from "./ContentOption";
 import SectionOption from "./SectionOption";
 
 import type { SavedLink } from "./types";
+import {
+  createId,
+  ensureItemIds,
+  slugifyItemIdPart,
+} from "./profile-builder-item-utils";
 export type { SavedLink } from "./types";
 
 type LinkSection = {
@@ -13,6 +18,17 @@ type LinkSection = {
   subtitle?: string;
   links?: SavedLink[];
 };
+
+const createFallbackLinkId = (link: SavedLink, index: number) => {
+  const source = slugifyItemIdPart(
+    `${link.title || "link"}-${link.url || index}`
+  );
+
+  return `link-${index}-${source || "item"}`;
+};
+
+const ensureLinkIds = (savedLinks: SavedLink[]) =>
+  ensureItemIds(savedLinks, createFallbackLinkId);
 
 const LinkSidebar = ({
   returnTab,
@@ -28,12 +44,30 @@ const LinkSidebar = ({
   const [selectedTab, setSelectedTab] = useState<"content" | "section">(
     "content"
   );
-  const [links, setLinks] = useState<SavedLink[]>(section?.links ?? []);
+  const [links, setLinks] = useState<SavedLink[]>(() =>
+    ensureLinkIds(section?.links ?? [])
+  );
   const [editingLink, setEditingLink] = useState<SavedLink | null>(null);
   const [sectionTitle, setSectionTitle] = useState(section?.title || "Links");
   const [sectionSubtitle, setSectionSubtitle] = useState(
     section?.subtitle || ""
   );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    queueMicrotask(() => {
+      if (cancelled) return;
+
+      setLinks(ensureLinkIds(section?.links ?? []));
+      setSectionTitle(section?.title || "Links");
+      setSectionSubtitle(section?.subtitle || "");
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [section?.id, section?.links, section?.subtitle, section?.title]);
 
   const syncSection = (updates: Partial<LinkSection>) => {
     if (!section) return;
@@ -59,6 +93,11 @@ const LinkSidebar = ({
     syncSection({ links: nextLinks });
   };
 
+  const handleReorderLinks = (nextLinks: SavedLink[]) => {
+    setLinks(nextLinks);
+    syncSection({ links: nextLinks });
+  };
+
   const canAddMoreLinks = useMemo(
     () => links.length < 20 || Boolean(editingLink),
     [editingLink, links.length]
@@ -72,10 +111,7 @@ const LinkSidebar = ({
       return;
     }
 
-    const id =
-      typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? crypto.randomUUID()
-        : `${Date.now()}-${links.length + 1}`;
+    const id = createId();
 
     handleLinksChange((currentLinks) => {
       if (editingId) {
@@ -144,6 +180,7 @@ const LinkSidebar = ({
             onTitleChange={handleTitleChange}
             onSubtitleChange={handleSubtitleChange}
             links={links}
+            onReorderLinks={handleReorderLinks}
             onDeleteLink={handleDeleteLink}
             onEditLink={handleEditLink}
             switchTab={() => {

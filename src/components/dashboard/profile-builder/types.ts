@@ -3,6 +3,9 @@ export const SECTION_TYPE = {
   LINKS: "links",
   PROJECTS: "projects",
   CTA: "cta",
+  WORK_EXPERIENCE: "workExperience",
+  EDUCATION: "education",
+  SKILLS: "skills",
 } as const;
 
 export type SectionType = (typeof SECTION_TYPE)[keyof typeof SECTION_TYPE];
@@ -28,6 +31,36 @@ export interface ProjectItem {
   highlighted?: boolean;
 }
 
+export interface ExperienceItem {
+  id: string;
+  role: string;
+  company: string;
+  employmentType?: string;
+  location?: string;
+  startMonth: string;
+  startYear: string;
+  endMonth?: string;
+  endYear?: string;
+  currentlyWorking?: boolean;
+  description?: string;
+}
+
+export interface EducationItem {
+  id: string;
+  institution: string;
+  degree: string;
+  startMonth: string;
+  startYear: string;
+  endMonth?: string;
+  endYear?: string;
+  currentlyStudying?: boolean;
+}
+
+export interface SkillItem {
+  id: string;
+  name: string;
+}
+
 export interface Section {
   id: string;
   title: string;
@@ -39,6 +72,9 @@ export interface Section {
   subtitle?: string;
   links?: SavedLink[];
   projects?: ProjectItem[];
+  experiences?: ExperienceItem[];
+  education?: EducationItem[];
+  skills?: SkillItem[];
   font?: string;
   textColor?: string;
   bgColor?: string;

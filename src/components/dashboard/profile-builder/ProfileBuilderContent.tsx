@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -19,7 +19,6 @@ import {
 import LeftSidebar from "./LeftSidebar";
 import PreviewCanvas from "./PreviewCanvas";
 import RightPanel from "./RightPanel";
-import Link from "next/link";
 import type { Section } from "./types";
 import { THEME_DEFAULTS } from "@/constants/theme";
 import type {
@@ -31,7 +30,6 @@ import type {
 import { contentToSections, sectionsToContent } from "./builder.utils";
 import { isApiError } from "@/api/base";
 import { normalizeFullName, validateFullName } from "@/utils/nameValidation";
-import { ROUTES } from "@/constants/routes";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProfileBuilderPublishState } from "./profile-builder-publish-state";
 import { ChevronLeft, Eye } from "lucide-react";
@@ -49,6 +47,9 @@ const createSection = (type: string, customTitle?: string): Section | null => {
     links: "links",
     projects: "projects",
     cta: "cta",
+    workExperience: "workExperience",
+    education: "education",
+    skills: "skills",
   };
 
   const resolvedType = allowedTypes[type];
@@ -59,6 +60,9 @@ const createSection = (type: string, customTitle?: string): Section | null => {
     links: "links",
     projects: "projects",
     cta: "cta",
+    workExperience: "workExperience",
+    education: "education",
+    skills: "skills",
   };
 
   const title =
@@ -69,7 +73,13 @@ const createSection = (type: string, customTitle?: string): Section | null => {
         ? "Portfolio"
         : resolvedType === "bio"
           ? "Profile"
-          : "CTA");
+          : resolvedType === "workExperience"
+            ? "Work Experience"
+            : resolvedType === "education"
+              ? "Education"
+              : resolvedType === "skills"
+                ? "Skills"
+                : "CTA");
 
   return {
     id: stableIds[type] ?? Math.random().toString(36).substring(2, 11),
@@ -77,9 +87,18 @@ const createSection = (type: string, customTitle?: string): Section | null => {
     type: resolvedType,
     visible: true,
     subtitle:
-      resolvedType === "links" ? "" : resolvedType === "cta" ? "" : undefined,
+      resolvedType === "links" ||
+      resolvedType === "cta" ||
+      resolvedType === "workExperience" ||
+      resolvedType === "education" ||
+      resolvedType === "skills"
+        ? ""
+        : undefined,
     links: resolvedType === "links" ? [] : undefined,
     projects: resolvedType === "projects" ? [] : undefined,
+    experiences: resolvedType === "workExperience" ? [] : undefined,
+    education: resolvedType === "education" ? [] : undefined,
+    skills: resolvedType === "skills" ? [] : undefined,
     layout: resolvedType === "cta" ? "1" : undefined,
     buttonText: resolvedType === "cta" ? "Start a Conversation" : undefined,
     url: resolvedType === "cta" ? "" : undefined,
@@ -154,6 +173,141 @@ const mapCornerStyleFromApi = (cornerStyle: string) => {
   return cornerStyleMap[cornerStyle] ?? "rounded";
 };
 
+type BuilderColorMode = "theme" | "custom";
+
+const BUILDER_BLEND_THEME_VALUE = "#7C3AED__blend";
+
+const BUILDER_THEME_SWATCHES = [
+  {
+    name: "Teal",
+    brand: THEME_DEFAULTS.ACCENT_COLORS.DEFAULT,
+    background: "#F3FBF8",
+  },
+  {
+    name: "Blend",
+    brand: BUILDER_BLEND_THEME_VALUE,
+    background: "#FDF2F8",
+  },
+  { name: "Clay", brand: "#9A604B", background: "#F8F4F1" },
+  { name: "Red", brand: "#D92D20", background: "#FFF5F5" },
+  { name: "Violet", brand: "#6D3FD1", background: "#F3F0FF" },
+  { name: "Magenta", brand: "#D63384", background: "#FDF2F8" },
+  { name: "Green", brand: "#4D7C0F", background: "#F3FBF8" },
+];
+
+const normalizeAppearanceColorForCompare = (color: string) => {
+  return color.trim().split("__")[0].split("_")[0].toUpperCase();
+};
+
+const isSameAppearanceColor = (current: string, candidate: string) => {
+  return (
+    normalizeAppearanceColorForCompare(current) ===
+    normalizeAppearanceColorForCompare(candidate)
+  );
+};
+
+const findMatchingBuilderTheme = (bgColor: string, iconColor: string) => {
+  return BUILDER_THEME_SWATCHES.find(
+    (theme) =>
+      isSameAppearanceColor(theme.background, bgColor) &&
+      isSameAppearanceColor(theme.brand, iconColor)
+  );
+};
+
+const getAppearanceString = (
+  appearanceSettings: Record<string, unknown>,
+  keys: string[]
+) => {
+  const value = keys
+    .map((key) => appearanceSettings[key])
+    .find(
+      (item): item is string => typeof item === "string" && item.length > 0
+    );
+
+  return value;
+};
+
+const BUILDER_COLOR_STATE_STORAGE_KEY = "profile-builder-color-state";
+
+type StoredBuilderColorState = {
+  colorMode?: BuilderColorMode;
+  activeThemeName?: string | null;
+  customBgColor?: string;
+  customBrandColor?: string;
+};
+
+const getBuilderColorStateStorageKey = (username?: string | null) => {
+  return username
+    ? `${BUILDER_COLOR_STATE_STORAGE_KEY}:${username}`
+    : BUILDER_COLOR_STATE_STORAGE_KEY;
+};
+
+const isBuilderColorMode = (value: unknown): value is BuilderColorMode => {
+  return value === "theme" || value === "custom";
+};
+
+const isBuilderThemeName = (value: unknown): value is string => {
+  return (
+    typeof value === "string" &&
+    BUILDER_THEME_SWATCHES.some((theme) => theme.name === value)
+  );
+};
+
+const readStoredBuilderColorState = (
+  storageKey: string
+): StoredBuilderColorState | null => {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const rawValue = window.localStorage.getItem(storageKey);
+    if (!rawValue) return null;
+
+    const parsedValue = JSON.parse(rawValue) as Record<string, unknown>;
+
+    return {
+      colorMode: isBuilderColorMode(parsedValue.colorMode)
+        ? parsedValue.colorMode
+        : undefined,
+      activeThemeName:
+        isBuilderThemeName(parsedValue.activeThemeName) ||
+        parsedValue.activeThemeName === null
+          ? parsedValue.activeThemeName
+          : undefined,
+      customBgColor:
+        typeof parsedValue.customBgColor === "string" &&
+        parsedValue.customBgColor.length > 0
+          ? parsedValue.customBgColor
+          : undefined,
+      customBrandColor:
+        typeof parsedValue.customBrandColor === "string" &&
+        parsedValue.customBrandColor.length > 0
+          ? parsedValue.customBrandColor
+          : undefined,
+    };
+  } catch {
+    return null;
+  }
+};
+
+const writeStoredBuilderColorState = (
+  storageKey: string,
+  state: {
+    colorMode: BuilderColorMode;
+    activeThemeName: string | null;
+    customBgColor: string;
+    customBrandColor: string;
+  }
+) => {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.localStorage.setItem(storageKey, JSON.stringify(state));
+  } catch {
+    // Ignore storage failures. The backend still remains the source of truth
+    // for the active appearance colors.
+  }
+};
+
 type ProfileMetaSnapshot = {
   fullName: string;
   bio: string | null;
@@ -171,6 +325,9 @@ type PublishSnapshotSection = {
   photoUrl?: string | null;
   links?: Section["links"];
   projects?: Section["projects"];
+  experiences?: Section["experiences"];
+  education?: Section["education"];
+  skills?: Section["skills"];
   layout?: Section["layout"];
   buttonText?: string;
   url?: string;
@@ -212,6 +369,10 @@ function createPublishSnapshot({
   spacing,
   borderRadius,
   appearanceTheme,
+  colorMode,
+  activeThemeName,
+  customBgColor,
+  customBrandColor,
 }: {
   sections: Section[];
   template: string;
@@ -222,6 +383,10 @@ function createPublishSnapshot({
   spacing: number;
   borderRadius: "sharp" | "rounded" | "pill";
   appearanceTheme: "light" | "dark";
+  colorMode: BuilderColorMode;
+  activeThemeName: string | null;
+  customBgColor: string;
+  customBrandColor: string;
 }) {
   const snapshotSections: PublishSnapshotSection[] = sections.map(
     (section) => ({
@@ -235,6 +400,9 @@ function createPublishSnapshot({
       photoUrl: section.photoUrl ?? undefined,
       links: section.links,
       projects: section.projects,
+      experiences: section.experiences,
+      education: section.education,
+      skills: section.skills,
       layout: section.layout ?? undefined,
       buttonText: section.buttonText ?? undefined,
       url: section.url ?? undefined,
@@ -258,16 +426,21 @@ function createPublishSnapshot({
     spacing,
     borderRadius,
     appearanceTheme,
+    colorMode,
+    activeThemeName,
+    customBgColor,
+    customBrandColor,
   });
 }
 
 export default function ProfileBuilderContent() {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const {
     publishedVersion,
     setHasUnpublishedChanges,
     setBeforePublishHandler,
-    hasUnpublishedChanges: _hasUnpublishedChanges,
+    hasUnpublishedChanges,
     publishStatus,
     setPublishStatus,
     markProfilePublished,
@@ -331,7 +504,9 @@ export default function ProfileBuilderContent() {
       ? "Publishing…"
       : publishStatus === "published"
         ? "Published"
-        : "Publish";
+        : hasUnpublishedChanges
+          ? "Unpublished changes • Publish"
+          : "Publish";
 
   const isLoading =
     dashboardProfile.isPending ||
@@ -345,6 +520,16 @@ export default function ProfileBuilderContent() {
   const [iconColor, setIconColor] = useState<string>(
     THEME_DEFAULTS.ACCENT_COLORS.DEFAULT
   );
+  const [colorMode, setColorMode] = useState<BuilderColorMode>("theme");
+  const [activeThemeName, setActiveThemeName] = useState<string | null>(
+    BUILDER_THEME_SWATCHES[0].name
+  );
+  const [customBgColor, setCustomBgColor] = useState<string>(
+    THEME_DEFAULTS.BG_COLOR
+  );
+  const [customBrandColor, setCustomBrandColor] = useState<string>(
+    THEME_DEFAULTS.ACCENT_COLORS.DEFAULT
+  );
   const [spacing, setSpacing] = useState(20);
   const [borderRadius, setBorderRadius] = useState<
     "sharp" | "rounded" | "pill"
@@ -356,10 +541,16 @@ export default function ProfileBuilderContent() {
   const [sections, setSections] = useState<Section[]>([]);
   const [sectionToDelete, setSectionToDelete] = useState<string | null>(null);
 
+  const colorStateStorageKey = useMemo(
+    () => getBuilderColorStateStorageKey(profile?.username),
+    [profile?.username]
+  );
+
   const contentLoadedRef = useRef(false);
   const userEditedRef = useRef(false);
   const appearanceHydratingRef = useRef(false);
   const appearanceEditedRef = useRef(false);
+  const colorStateHydratedRef = useRef(false);
   const draftUpdatedAtRef = useRef<string | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const profileMetaSnapshotRef = useRef<ProfileMetaSnapshot | null>(null);
@@ -396,8 +587,7 @@ export default function ProfileBuilderContent() {
     const components = appearanceSettingsData?.components;
     if (components) {
       loadedSections.forEach((section) => {
-        const componentKey =
-          section.type === "experience" ? "cta" : section.type;
+        const componentKey = section.type;
         const compApp = components[componentKey] as
           | {
               backgroundColour?: string;
@@ -433,11 +623,79 @@ export default function ProfileBuilderContent() {
 
     const appearanceSettings =
       appearanceSettingsData?.global ?? appearanceSettingsData;
+    const storedColorState = readStoredBuilderColorState(
+      getBuilderColorStateStorageKey(dashboardProfile.data?.username)
+    );
 
     if (appearanceSettings) {
       appearanceHydratingRef.current = true;
 
       queueMicrotask(() => {
+        const appearanceSettingsRecord = appearanceSettings as Record<
+          string,
+          unknown
+        >;
+
+        const loadedBackgroundColour =
+          getAppearanceString(appearanceSettingsRecord, [
+            "backgroundColour",
+            "bgColor",
+          ]) ?? THEME_DEFAULTS.BG_COLOR;
+
+        const loadedAccentColour =
+          getAppearanceString(appearanceSettingsRecord, [
+            "accentColour",
+            "iconColor",
+          ]) ?? THEME_DEFAULTS.ACCENT_COLORS.DEFAULT;
+
+        const loadedMatchingTheme = findMatchingBuilderTheme(
+          loadedBackgroundColour,
+          loadedAccentColour
+        );
+
+        const inferredColorMode: BuilderColorMode = loadedMatchingTheme
+          ? "theme"
+          : "custom";
+        const storedColorMode = storedColorState?.colorMode;
+        const loadedColorMode: BuilderColorMode =
+          storedColorMode === "custom"
+            ? "custom"
+            : storedColorMode === "theme" && loadedMatchingTheme
+              ? "theme"
+              : inferredColorMode;
+
+        const storedActiveThemeName = isBuilderThemeName(
+          storedColorState?.activeThemeName
+        )
+          ? storedColorState.activeThemeName
+          : null;
+
+        const loadedActiveThemeName =
+          loadedColorMode === "theme"
+            ? (loadedMatchingTheme?.name ??
+              storedActiveThemeName ??
+              BUILDER_THEME_SWATCHES[0].name)
+            : (storedActiveThemeName ??
+              loadedMatchingTheme?.name ??
+              BUILDER_THEME_SWATCHES[0].name);
+
+        const loadedCustomBgColor =
+          storedColorState?.customBgColor ??
+          (loadedColorMode === "custom"
+            ? loadedBackgroundColour
+            : THEME_DEFAULTS.BG_COLOR);
+
+        const loadedCustomBrandColor =
+          storedColorState?.customBrandColor ??
+          (loadedColorMode === "custom"
+            ? loadedAccentColour
+            : THEME_DEFAULTS.ACCENT_COLORS.DEFAULT);
+
+        setColorMode(loadedColorMode);
+        setActiveThemeName(loadedActiveThemeName);
+        setCustomBgColor(loadedCustomBgColor);
+        setCustomBrandColor(loadedCustomBrandColor);
+
         if (typeof appearanceSettings.font === "string") {
           setFont(mapFontFromApi(appearanceSettings.font));
         }
@@ -454,9 +712,7 @@ export default function ProfileBuilderContent() {
           setBgColor(appearanceSettings.bgColor);
         }
 
-        if (typeof appearanceSettings.accentColour === "string") {
-          setIconColor(appearanceSettings.accentColour);
-        }
+        setIconColor(loadedAccentColour);
 
         if (
           typeof appearanceSettings.spacing === "number" &&
@@ -479,6 +735,58 @@ export default function ProfileBuilderContent() {
         }
 
         queueMicrotask(() => {
+          colorStateHydratedRef.current = true;
+          appearanceHydratingRef.current = false;
+          appearanceEditedRef.current = true;
+        });
+      });
+    } else {
+      appearanceHydratingRef.current = true;
+
+      queueMicrotask(() => {
+        const loadedMatchingTheme = findMatchingBuilderTheme(
+          bgColor,
+          iconColor
+        );
+        const inferredColorMode: BuilderColorMode = loadedMatchingTheme
+          ? "theme"
+          : "custom";
+        const storedColorMode = storedColorState?.colorMode;
+        const loadedColorMode: BuilderColorMode =
+          storedColorMode === "custom"
+            ? "custom"
+            : storedColorMode === "theme" && loadedMatchingTheme
+              ? "theme"
+              : inferredColorMode;
+        const storedActiveThemeName = isBuilderThemeName(
+          storedColorState?.activeThemeName
+        )
+          ? storedColorState.activeThemeName
+          : null;
+
+        setColorMode(loadedColorMode);
+        setActiveThemeName(
+          loadedColorMode === "theme"
+            ? (loadedMatchingTheme?.name ??
+                storedActiveThemeName ??
+                BUILDER_THEME_SWATCHES[0].name)
+            : (storedActiveThemeName ??
+                loadedMatchingTheme?.name ??
+                BUILDER_THEME_SWATCHES[0].name)
+        );
+        setCustomBgColor(
+          storedColorState?.customBgColor ??
+            (loadedColorMode === "custom" ? bgColor : THEME_DEFAULTS.BG_COLOR)
+        );
+        setCustomBrandColor(
+          storedColorState?.customBrandColor ??
+            (loadedColorMode === "custom"
+              ? iconColor
+              : THEME_DEFAULTS.ACCENT_COLORS.DEFAULT)
+        );
+
+        queueMicrotask(() => {
+          colorStateHydratedRef.current = true;
           appearanceHydratingRef.current = false;
           appearanceEditedRef.current = true;
         });
@@ -535,6 +843,27 @@ export default function ProfileBuilderContent() {
     profileAppearance.isError,
     profileAppearance.data,
     sectionParam,
+    bgColor,
+    iconColor,
+  ]);
+
+  useEffect(() => {
+    if (!contentLoadedRef.current) return;
+    if (appearanceHydratingRef.current) return;
+    if (!colorStateHydratedRef.current) return;
+
+    writeStoredBuilderColorState(colorStateStorageKey, {
+      colorMode,
+      activeThemeName,
+      customBgColor,
+      customBrandColor,
+    });
+  }, [
+    colorStateStorageKey,
+    colorMode,
+    activeThemeName,
+    customBgColor,
+    customBrandColor,
   ]);
 
   const { mutate: saveAppearance, mutateAsync: saveAppearanceAsync } =
@@ -991,6 +1320,10 @@ export default function ProfileBuilderContent() {
         spacing,
         borderRadius,
         appearanceTheme,
+        colorMode,
+        activeThemeName,
+        customBgColor,
+        customBrandColor,
       }),
     [
       resolvedSections,
@@ -1002,6 +1335,10 @@ export default function ProfileBuilderContent() {
       spacing,
       borderRadius,
       appearanceTheme,
+      colorMode,
+      activeThemeName,
+      customBgColor,
+      customBrandColor,
     ]
   );
 
@@ -1182,14 +1519,14 @@ export default function ProfileBuilderContent() {
   if (isLoading) {
     return (
       <>
-        <div className="flex min-h-screen flex-col items-center justify-center bg-[#FAFAFA] px-6 text-center lg:hidden">
+        <div className="bg-primary-bg flex min-h-screen flex-col items-center justify-center px-6 text-center lg:hidden">
           <div className="border-muted-foreground/30 border-t-foreground mb-4 h-8 w-8 animate-spin rounded-full border-2" />
-          <h1 className="text-2xl font-bold text-[#050505]">
+          <h1 className="text-primary-text text-2xl font-bold">
             Loading profile editor...
           </h1>
         </div>
 
-        <div className="hidden w-full flex-1 gap-4 bg-[#FAFAFA] p-4 lg:flex lg:p-6 lg:px-8">
+        <div className="bg-primary-bg hidden w-full flex-1 gap-4 p-4 lg:flex lg:p-6 lg:px-8">
           <div className="flex w-[320px] shrink-0 flex-col gap-6 rounded-2xl bg-white p-6">
             <Skeleton className="h-8 w-1/2" />
             <div className="mt-4 flex flex-col gap-3">
@@ -1242,19 +1579,20 @@ export default function ProfileBuilderContent() {
           ) : (
             /* Top-level — back arrow + tab title + eye + publish */
             <>
-              <Link
-                href={ROUTES.dashboard.home}
+              <button
+                type="button"
+                onClick={() => router.back()}
                 className="text-primary-text hover:text-link-hover-text flex items-center gap-1.5 text-sm font-semibold transition-colors"
               >
                 <ChevronLeft size={18} />
                 <span>
                   {mobileTab === "sections"
-                    ? "Profile Builder"
+                    ? "Builder"
                     : mobileTab === "design"
                       ? "Customization"
                       : "Preview"}
                 </span>
-              </Link>
+              </button>
 
               <div className="flex items-center gap-2">
                 <button
@@ -1337,6 +1675,14 @@ export default function ProfileBuilderContent() {
               onChangeBgColor={setBgColor}
               iconColor={iconColor}
               onChangeIconColor={setIconColor}
+              colorMode={colorMode}
+              onChangeColorMode={setColorMode}
+              activeThemeName={activeThemeName}
+              onChangeActiveThemeName={setActiveThemeName}
+              customBgColor={customBgColor}
+              onChangeCustomBgColor={setCustomBgColor}
+              customBrandColor={customBrandColor}
+              onChangeCustomBrandColor={setCustomBrandColor}
               spacing={spacing}
               onChangeSpacing={setSpacing}
               borderRadius={borderRadius}
@@ -1364,8 +1710,8 @@ export default function ProfileBuilderContent() {
             }}
             className={`flex flex-1 items-center justify-center rounded-xl py-2 text-sm font-semibold transition-colors ${
               mobileTab === "sections"
-                ? "bg-[#1C1C1C] text-white"
-                : "text-secondary-text hover:bg-brand-hover-bg hover:text-white"
+                ? "bg-brand-hover-bg text-white"
+                : "text-secondary-text hover:bg-brand-light-subtle-bg hover:text-link-hover-text"
             }`}
           >
             Sections
@@ -1378,8 +1724,8 @@ export default function ProfileBuilderContent() {
             }}
             className={`flex flex-1 items-center justify-center rounded-xl py-2 text-sm font-semibold transition-colors ${
               mobileTab === "design"
-                ? "bg-[#1C1C1C] text-white"
-                : "text-secondary-text hover:bg-brand-hover-bg hover:text-white"
+                ? "bg-brand-hover-bg text-white"
+                : "text-secondary-text hover:bg-brand-light-subtle-bg hover:text-link-hover-text"
             }`}
           >
             Design
@@ -1431,6 +1777,14 @@ export default function ProfileBuilderContent() {
             onChangeBgColor={setBgColor}
             iconColor={iconColor}
             onChangeIconColor={setIconColor}
+            colorMode={colorMode}
+            onChangeColorMode={setColorMode}
+            activeThemeName={activeThemeName}
+            onChangeActiveThemeName={setActiveThemeName}
+            customBgColor={customBgColor}
+            onChangeCustomBgColor={setCustomBgColor}
+            customBrandColor={customBrandColor}
+            onChangeCustomBrandColor={setCustomBrandColor}
             spacing={spacing}
             onChangeSpacing={setSpacing}
             borderRadius={borderRadius}

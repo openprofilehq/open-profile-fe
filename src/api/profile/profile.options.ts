@@ -5,6 +5,15 @@ import type {
   TemplateType,
   ProfileAppearanceValues,
   ComponentAppearance,
+  CreateSkillRequest,
+  UpdateSkillRequest,
+  ReorderSkillsRequest,
+  CreateEducationRequest,
+  UpdateEducationRequest,
+  ReorderEducationRequest,
+  CreateWorkExperienceRequest,
+  UpdateWorkExperienceRequest,
+  ReorderWorkExperienceRequest,
 } from "./profile.type";
 import {
   createProfile,
@@ -16,6 +25,21 @@ import {
   publishProfile,
   updateProfileAppearance,
   getProfileAppearance,
+  getProfileSkills,
+  createProfileSkill,
+  updateProfileSkill,
+  deleteProfileSkill,
+  reorderProfileSkills,
+  getProfileEducation,
+  createProfileEducation,
+  updateProfileEducation,
+  deleteProfileEducation,
+  reorderProfileEducation,
+  getProfileWorkExperience,
+  createProfileWorkExperience,
+  updateProfileWorkExperience,
+  deleteProfileWorkExperience,
+  reorderProfileWorkExperience,
 } from "./profile.service";
 import { isQueryEnabled } from "@/api/base/base.util";
 import { QueryStaleTime } from "@/api/base/base.const";
@@ -145,4 +169,98 @@ export const saveTemplateOption = mutationOptions({
 
     return { appearanceRes, templateType };
   },
+});
+
+export function profileSkillsOption() {
+  return queryOptions({
+    queryKey: [QueryBaseKeys.profile, "skills"],
+    queryFn: ({ signal }) => getProfileSkills(signal),
+    staleTime: 0,
+  });
+}
+
+export const createProfileSkillOption = mutationOptions({
+  mutationKey: [QueryBaseKeys.profile, "skills", "create"],
+  mutationFn: (data: CreateSkillRequest) => createProfileSkill(data),
+});
+
+export const updateProfileSkillOption = mutationOptions({
+  mutationKey: [QueryBaseKeys.profile, "skills", "update"],
+  mutationFn: (variables: { skillId: string; data: UpdateSkillRequest }) =>
+    updateProfileSkill(variables.skillId, variables.data),
+});
+
+export const deleteProfileSkillOption = mutationOptions({
+  mutationKey: [QueryBaseKeys.profile, "skills", "delete"],
+  mutationFn: (skillId: string) => deleteProfileSkill(skillId),
+});
+
+export const reorderProfileSkillsOption = mutationOptions({
+  mutationKey: [QueryBaseKeys.profile, "skills", "order"],
+  mutationFn: (data: ReorderSkillsRequest) => reorderProfileSkills(data),
+});
+
+export function profileEducationOption() {
+  return queryOptions({
+    queryKey: [QueryBaseKeys.profile, "education"],
+    queryFn: ({ signal }) => getProfileEducation(signal),
+    staleTime: 0,
+  });
+}
+
+export const createProfileEducationOption = mutationOptions({
+  mutationKey: [QueryBaseKeys.profile, "education", "create"],
+  mutationFn: (data: CreateEducationRequest) => createProfileEducation(data),
+});
+
+export const updateProfileEducationOption = mutationOptions({
+  mutationKey: [QueryBaseKeys.profile, "education", "update"],
+  mutationFn: (variables: {
+    educationId: string;
+    data: UpdateEducationRequest;
+  }) => updateProfileEducation(variables.educationId, variables.data),
+});
+
+export const deleteProfileEducationOption = mutationOptions({
+  mutationKey: [QueryBaseKeys.profile, "education", "delete"],
+  mutationFn: (educationId: string) => deleteProfileEducation(educationId),
+});
+
+export const reorderProfileEducationOption = mutationOptions({
+  mutationKey: [QueryBaseKeys.profile, "education", "order"],
+  mutationFn: (data: ReorderEducationRequest) => reorderProfileEducation(data),
+});
+
+export function profileWorkExperienceOption() {
+  return queryOptions({
+    queryKey: [QueryBaseKeys.profile, "work-experience"],
+    queryFn: ({ signal }) => getProfileWorkExperience(signal),
+    staleTime: 0,
+  });
+}
+
+export const createProfileWorkExperienceOption = mutationOptions({
+  mutationKey: [QueryBaseKeys.profile, "work-experience", "create"],
+  mutationFn: (data: CreateWorkExperienceRequest) =>
+    createProfileWorkExperience(data),
+});
+
+export const updateProfileWorkExperienceOption = mutationOptions({
+  mutationKey: [QueryBaseKeys.profile, "work-experience", "update"],
+  mutationFn: (variables: {
+    workExperienceId: string;
+    data: UpdateWorkExperienceRequest;
+  }) => updateProfileWorkExperience(variables.workExperienceId, variables.data),
+});
+
+export const deleteProfileWorkExperienceOption = mutationOptions({
+  mutationKey: [QueryBaseKeys.profile, "work-experience", "delete"],
+  mutationFn: (workExperienceId: string) =>
+    deleteProfileWorkExperience(workExperienceId),
+});
+
+export const reorderProfileWorkExperienceOption = mutationOptions({
+  mutationKey: [QueryBaseKeys.profile, "work-experience", "order"],
+  mutationFn: (data: ReorderWorkExperienceRequest) =>
+    reorderProfileWorkExperience(data),
 });

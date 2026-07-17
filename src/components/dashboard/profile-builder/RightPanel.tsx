@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { Section } from "./types";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { THEME_DEFAULTS } from "@/constants/theme";
@@ -22,6 +22,14 @@ interface RightPanelProps {
   onChangeBgColor: (color: string) => void;
   iconColor: string;
   onChangeIconColor: (color: string) => void;
+  colorMode: "theme" | "custom";
+  onChangeColorMode: (mode: "theme" | "custom") => void;
+  activeThemeName: string | null;
+  onChangeActiveThemeName: (themeName: string | null) => void;
+  customBgColor: string;
+  onChangeCustomBgColor: (color: string) => void;
+  customBrandColor: string;
+  onChangeCustomBrandColor: (color: string) => void;
   spacing: number;
   onChangeSpacing: (spacing: number) => void;
   borderRadius: "sharp" | "rounded" | "pill";
@@ -110,7 +118,7 @@ const RADIUS_OPTIONS: {
 ];
 
 function normalizeThemeValue(color: string) {
-  return color.trim().toUpperCase();
+  return color.trim().split("__")[0].split("_")[0].toUpperCase();
 }
 
 function normalizeFontValue(value: string) {
@@ -124,6 +132,14 @@ function normalizeFontValue(value: string) {
 
 function isSelectedColor(current: string, candidate: string) {
   return normalizeThemeValue(current) === normalizeThemeValue(candidate);
+}
+
+function findMatchingTheme(bgColor: string, iconColor: string) {
+  return THEME_SWATCHES.find(
+    (theme) =>
+      isSelectedColor(theme.background, bgColor) &&
+      isSelectedColor(theme.brand, iconColor)
+  );
 }
 
 function RadiusIcon({ type }: { type: "sharp" | "soft" | "rounded" }) {
@@ -172,6 +188,14 @@ export default function RightPanel({
   onChangeBgColor,
   iconColor,
   onChangeIconColor,
+  colorMode,
+  onChangeColorMode,
+  activeThemeName,
+  onChangeActiveThemeName,
+  customBgColor,
+  onChangeCustomBgColor,
+  customBrandColor,
+  onChangeCustomBrandColor,
   spacing,
   onChangeSpacing,
   borderRadius,
@@ -184,48 +208,58 @@ export default function RightPanel({
 }: RightPanelProps) {
   const selectedTemplate = template ? template.toLowerCase() : "creator";
   const [spacingMode, setSpacingMode] = useState<"basic" | "advanced">("basic");
+  const customColorsLabelId = useId();
 
-  const [colorMode, setColorMode] = useState<"theme" | "custom">("custom");
-  const [activeThemeName, setActiveThemeName] = useState<string | null>(null);
-  const [manualBgColor, setManualBgColor] = useState<string | null>(null);
-  const [manualBrandColor, setManualBrandColor] = useState<string | null>(null);
+  const matchedTheme = findMatchingTheme(bgColor, iconColor);
+  const customColorsActive = colorMode === "custom";
 
-  const isThemeActive = colorMode === "theme" && Boolean(activeThemeName);
-  const displayManualBgColor =
-    colorMode === "custom" ? bgColor : (manualBgColor ?? bgColor);
-  const displayManualBrandColor =
-    colorMode === "custom" ? iconColor : (manualBrandColor ?? iconColor);
+  const resolvedActiveThemeName =
+    activeThemeName ?? matchedTheme?.name ?? THEME_SWATCHES[0].name;
+
+  const displayManualBgColor = customBgColor;
+  const displayManualBrandColor = customBrandColor;
 
   const handleSelectTheme = (theme: (typeof THEME_SWATCHES)[number]) => {
-    setManualBgColor(bgColor);
-    setManualBrandColor(iconColor);
-    setColorMode("theme");
-    setActiveThemeName(theme.name);
+    onChangeColorMode("theme");
+    onChangeActiveThemeName(theme.name);
     onChangeBgColor(theme.background);
     onChangeIconColor(theme.brand);
   };
 
-  const handleUseManualColors = () => {
-    const nextBgColor = manualBgColor ?? bgColor;
-    const nextBrandColor = manualBrandColor ?? iconColor;
+  const handleToggleCustomColors = () => {
+    if (customColorsActive) {
+      const nextTheme =
+        THEME_SWATCHES.find(
+          (theme) => theme.name === resolvedActiveThemeName
+        ) ?? THEME_SWATCHES[0];
 
-    setColorMode("custom");
-    setActiveThemeName(null);
-    onChangeBgColor(nextBgColor);
-    onChangeIconColor(nextBrandColor);
+      onChangeCustomBgColor(bgColor);
+      onChangeCustomBrandColor(iconColor);
+      onChangeColorMode("theme");
+      onChangeActiveThemeName(nextTheme.name);
+      onChangeBgColor(nextTheme.background);
+      onChangeIconColor(nextTheme.brand);
+      return;
+    }
+
+    if (!activeThemeName && matchedTheme) {
+      onChangeActiveThemeName(matchedTheme.name);
+    }
+
+    onChangeColorMode("custom");
+    onChangeBgColor(customBgColor);
+    onChangeIconColor(customBrandColor);
   };
 
   const handleChangeBackgroundColor = (color: string) => {
-    setColorMode("custom");
-    setActiveThemeName(null);
-    setManualBgColor(color);
+    onChangeColorMode("custom");
+    onChangeCustomBgColor(color);
     onChangeBgColor(color);
   };
 
   const handleChangeBrandColor = (color: string) => {
-    setColorMode("custom");
-    setActiveThemeName(null);
-    setManualBrandColor(color);
+    onChangeColorMode("custom");
+    onChangeCustomBrandColor(color);
     onChangeIconColor(color);
   };
 
@@ -305,7 +339,7 @@ export default function RightPanel({
             <div className="border-tertiary-b bg-background flex w-full flex-nowrap items-center justify-between gap-1 rounded-[12px] border px-2 py-2">
               {THEME_SWATCHES.map((theme) => {
                 const selected =
-                  colorMode === "theme" && activeThemeName === theme.name;
+                  !customColorsActive && resolvedActiveThemeName === theme.name;
                 const isBlend = theme.name === "Blend";
 
                 return (
@@ -314,11 +348,14 @@ export default function RightPanel({
                     type="button"
                     aria-label={`Use ${theme.name} theme`}
                     aria-pressed={selected}
+                    disabled={customColorsActive}
                     onClick={() => handleSelectTheme(theme)}
-                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all hover:scale-105 active:scale-95 ${
-                      selected
-                        ? "border-primary-text bg-background ring-primary-text/10 shadow-sm ring-2"
-                        : "border-transparent bg-transparent"
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all disabled:cursor-not-allowed disabled:opacity-40 ${
+                      customColorsActive
+                        ? "border-transparent bg-transparent"
+                        : selected
+                          ? "border-primary-text bg-background ring-primary-text/10 shadow-sm ring-2 hover:scale-105 active:scale-95"
+                          : "border-transparent bg-transparent hover:scale-105 active:scale-95"
                     }`}
                   >
                     <span
@@ -339,28 +376,38 @@ export default function RightPanel({
 
           <div>
             <div className="mb-2 flex items-center justify-between gap-3">
-              <label className="text-primary-text block text-xs font-bold">
-                Colors
-              </label>
-              {isThemeActive && (
-                <button
-                  type="button"
-                  onClick={handleUseManualColors}
-                  className="text-link-hover-text text-[11px] font-semibold hover:underline"
-                >
-                  Use custom colors
-                </button>
-              )}
+              <span
+                id={customColorsLabelId}
+                className="text-primary-text block text-xs font-bold"
+              >
+                Custom colors
+              </span>
+              <button
+                type="button"
+                role="switch"
+                aria-labelledby={customColorsLabelId}
+                aria-checked={customColorsActive}
+                onClick={handleToggleCustomColors}
+                className={`relative h-6 w-11 rounded-full transition-colors ${
+                  customColorsActive ? "bg-brand-hover-bg" : "bg-disabled-bg"
+                }`}
+              >
+                <span
+                  className={`bg-background absolute top-1 h-4 w-4 rounded-full shadow-sm transition-all ${
+                    customColorsActive ? "left-6" : "left-1"
+                  }`}
+                />
+              </button>
             </div>
             <div
               className={`border-tertiary-b bg-background flex flex-col gap-3 rounded-[12px] border p-3 ${
-                isThemeActive ? "opacity-50" : ""
+                customColorsActive ? "" : "opacity-50"
               }`}
-              aria-disabled={isThemeActive}
+              aria-disabled={!customColorsActive}
             >
-              {isThemeActive && (
+              {!customColorsActive && (
                 <p className="text-tertiary-text text-xs font-medium">
-                  A theme is active. Switch to custom colors to edit background
+                  A theme is active. Switch custom colors on to edit background
                   or brand colors manually.
                 </p>
               )}
@@ -381,7 +428,7 @@ export default function RightPanel({
                         key={color}
                         type="button"
                         aria-label={`Set background color to ${color}`}
-                        disabled={isThemeActive}
+                        disabled={!customColorsActive}
                         onClick={() => handleChangeBackgroundColor(color)}
                         className={`flex h-8 w-full items-center justify-center rounded-[8px] border transition-all disabled:cursor-not-allowed ${
                           selected
@@ -406,7 +453,7 @@ export default function RightPanel({
                   THEME_DEFAULTS.ACCENT_COLORS.DEFAULT
                 }
                 onChange={handleChangeBrandColor}
-                disabled={isThemeActive}
+                disabled={!customColorsActive}
               />
             </div>
           </div>
