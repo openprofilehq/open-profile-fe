@@ -437,7 +437,11 @@ export default function ProfessionalPreview({
                 className="bg-background relative w-full rounded-2xl p-6"
                 style={getSectionStyle(section)}
               >
-                <ProfileTextSectionBlock section={section} isRegular />
+                <ProfileTextSectionBlock
+                  section={section}
+                  isRegular
+                  variant="professional"
+                />
               </section>
             </div>
           );

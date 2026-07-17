@@ -477,7 +477,11 @@ export default function PortfolioDashboardView({
                 className={`bg-background relative w-full rounded-2xl p-6 ${section.font ? getFontClass(section.font) : ""}`}
                 style={getSectionStyle(section)}
               >
-                <ProfileTextSectionBlock section={section} isRegular />
+                <ProfileTextSectionBlock
+                  section={section}
+                  isRegular
+                  variant="portfolio"
+                />
               </section>
             );
           }

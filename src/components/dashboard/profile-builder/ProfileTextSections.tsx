@@ -74,10 +74,12 @@ export function ProfileTextSectionBlock({
   section: Section;
   className?: string;
   isRegular?: boolean;
-  variant?: "default" | "creator";
+  variant?: "default" | "creator" | "professional" | "portfolio";
 }) {
   const isCreator = variant === "creator";
-  const titleRegular = isRegular || isCreator;
+  const isProfessional = variant === "professional";
+  const isPortfolio = variant === "portfolio";
+  const titleRegular = isRegular || isCreator || isProfessional || isPortfolio;
 
   if (section.type === "workExperience") {
     return (
@@ -110,9 +112,9 @@ export function ProfileTextSectionBlock({
             )}
           </div>
         ) : (
-          <div className="flex flex-col gap-7">
+          <div className={`flex flex-col ${isPortfolio ? "gap-4" : "gap-7"}`}>
             {(section.experiences ?? []).map((item) => (
-              <ExperienceEntry key={item.id} item={item} />
+              <ExperienceEntry key={item.id} item={item} variant={variant} />
             ))}
             {(section.experiences ?? []).length === 0 && (
               <EmptyText>No experience added yet.</EmptyText>
@@ -154,9 +156,9 @@ export function ProfileTextSectionBlock({
             )}
           </div>
         ) : (
-          <div className="flex flex-col gap-6">
+          <div className={`flex flex-col ${isPortfolio ? "gap-4" : "gap-6"}`}>
             {(section.education ?? []).map((item) => (
-              <EducationEntry key={item.id} item={item} />
+              <EducationEntry key={item.id} item={item} variant={variant} />
             ))}
             {(section.education ?? []).length === 0 && (
               <EmptyText>No education added yet.</EmptyText>
@@ -232,8 +234,80 @@ function SectionSubtitle({
   );
 }
 
-function ExperienceEntry({ item }: { item: ExperienceItem }) {
+function ExperienceEntry({
+  item,
+  variant = "default",
+}: {
+  item: ExperienceItem;
+  variant?: "default" | "creator" | "professional" | "portfolio";
+}) {
   const range = dateRange(item);
+
+  if (variant === "professional") {
+    return (
+      <article className="border-border w-full border-b pb-6 text-left">
+        <div className="flex w-full flex-col gap-2">
+          <div className="flex w-full items-start justify-between gap-4">
+            <h3 className="text-primary-text text-[16px] leading-tight font-bold break-words">
+              {item.role}
+            </h3>
+            {range && (
+              <p className="text-tertiary-text shrink-0 text-[14px] whitespace-nowrap">
+                {range}
+              </p>
+            )}
+          </div>
+          <div className="mt-1 grid w-full grid-cols-1 items-start gap-4 md:grid-cols-[180px_1fr] md:gap-8">
+            <div className="text-secondary-text text-[14px] font-medium">
+              {item.company}
+              {item.company && item.employmentType && "  "}
+              {item.company && item.employmentType && (
+                <span className="text-tertiary-text font-normal">•</span>
+              )}
+              {item.company && item.employmentType && "  "}
+              {item.employmentType}
+            </div>
+            <div className="text-secondary-text text-justify text-[14px] leading-relaxed break-words whitespace-pre-wrap md:text-justify">
+              {item.description}
+            </div>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
+  if (variant === "portfolio") {
+    return (
+      <article className="border-border bg-background w-full rounded-2xl border p-6 text-left shadow-sm">
+        <div className="flex w-full flex-col gap-2">
+          <div className="flex w-full items-start justify-between gap-4">
+            <h3 className="text-primary-text text-[16px] leading-tight font-bold break-words">
+              {item.role}
+            </h3>
+            {range && (
+              <p className="text-tertiary-text shrink-0 text-[14px] whitespace-nowrap">
+                {range}
+              </p>
+            )}
+          </div>
+          <div className="mt-1 grid w-full grid-cols-1 items-start gap-4 md:grid-cols-[180px_1fr] md:gap-8">
+            <div className="text-secondary-text text-[14px] font-medium">
+              {item.company}
+              {item.company && item.employmentType && "  "}
+              {item.company && item.employmentType && (
+                <span className="text-tertiary-text font-normal">•</span>
+              )}
+              {item.company && item.employmentType && "  "}
+              {item.employmentType}
+            </div>
+            <div className="text-secondary-text text-justify text-[14px] leading-relaxed break-words whitespace-pre-wrap md:text-justify">
+              {item.description}
+            </div>
+          </div>
+        </div>
+      </article>
+    );
+  }
 
   return (
     <article className="flex flex-col gap-2">
@@ -261,8 +335,62 @@ function ExperienceEntry({ item }: { item: ExperienceItem }) {
   );
 }
 
-function EducationEntry({ item }: { item: EducationItem }) {
+function EducationEntry({
+  item,
+  variant = "default",
+}: {
+  item: EducationItem;
+  variant?: "default" | "creator" | "professional" | "portfolio";
+}) {
   const range = educationDateRange(item);
+
+  if (variant === "professional") {
+    return (
+      <article className="border-border w-full border-b pb-6 text-left">
+        <div className="flex w-full flex-col gap-2">
+          <div className="flex w-full items-start justify-between gap-4">
+            <h3 className="text-primary-text text-[16px] leading-tight font-bold break-words">
+              {item.degree}
+            </h3>
+            {range && (
+              <p className="text-tertiary-text shrink-0 text-[14px] whitespace-nowrap">
+                {range}
+              </p>
+            )}
+          </div>
+          {item.institution && (
+            <p className="text-secondary-text mt-1 text-[14px] font-medium break-words">
+              {item.institution}
+            </p>
+          )}
+        </div>
+      </article>
+    );
+  }
+
+  if (variant === "portfolio") {
+    return (
+      <article className="border-border bg-background w-full rounded-2xl border p-6 text-left shadow-sm">
+        <div className="flex w-full flex-col gap-2">
+          <div className="flex w-full items-start justify-between gap-4">
+            <h3 className="text-primary-text text-[16px] leading-tight font-bold break-words">
+              {item.degree}
+            </h3>
+            {range && (
+              <p className="text-tertiary-text shrink-0 text-[14px] whitespace-nowrap">
+                {range}
+              </p>
+            )}
+          </div>
+          {item.institution && (
+            <p className="text-secondary-text mt-1 text-[14px] font-medium break-words">
+              {item.institution}
+            </p>
+          )}
+        </div>
+      </article>
+    );
+  }
 
   return (
     <article className="flex flex-col gap-1.5">

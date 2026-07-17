@@ -400,7 +400,11 @@ export default function PortfolioPreview({
                 className="bg-background relative w-full rounded-2xl p-6"
                 style={getSectionStyle(section)}
               >
-                <ProfileTextSectionBlock section={section} isRegular />
+                <ProfileTextSectionBlock
+                  section={section}
+                  isRegular
+                  variant="portfolio"
+                />
               </section>
             </div>
           );
