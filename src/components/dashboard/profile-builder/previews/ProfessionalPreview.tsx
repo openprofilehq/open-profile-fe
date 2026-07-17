@@ -422,18 +422,24 @@ export default function ProfessionalPreview({
         }
 
         if (isProfileTextSectionType(section.type)) {
+          const isSelected = _selectedSectionId === section.id;
           return (
-            <section
+            <div
               key={section.id}
               role="button"
               tabIndex={0}
               onClick={(event) => handleSelectSection(event, section)}
               onKeyDown={(event) => handleSectionKeyDown(event, section)}
-              className={`group hover:border-border hover:bg-background/50 relative w-full cursor-pointer rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""}`}
+              className={`group hover:border-border/50 hover:bg-background/20 relative w-full cursor-pointer rounded-2xl border border-transparent p-0.5 transition-colors ${isSelected ? "border-brand-b" : ""} ${!section.visible ? "opacity-50 grayscale" : ""}`}
             >
               {renderControls(section)}
-              <ProfileTextSectionBlock section={section} isRegular />
-            </section>
+              <section
+                className="border-border bg-background relative w-full rounded-2xl border p-6 shadow-sm"
+                style={getSectionStyle(section)}
+              >
+                <ProfileTextSectionBlock section={section} isRegular />
+              </section>
+            </div>
           );
         }
 
