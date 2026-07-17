@@ -434,7 +434,7 @@ export default function ProfessionalPreview({
             >
               {renderControls(section)}
               <section
-                className="border-border bg-background relative w-full rounded-2xl border p-6 shadow-sm"
+                className="bg-background relative w-full rounded-2xl p-6"
                 style={getSectionStyle(section)}
               >
                 <ProfileTextSectionBlock section={section} isRegular />

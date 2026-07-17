@@ -486,7 +486,7 @@ export default function ProfessionalDashboardView({
             return (
               <section
                 key={section.id}
-                className={`border-border bg-background relative w-full rounded-2xl border p-6 shadow-sm ${section.font ? getFontClass(section.font) : ""}`}
+                className={`bg-background relative w-full rounded-2xl p-6 ${section.font ? getFontClass(section.font) : ""}`}
                 style={getSectionStyle(section)}
               >
                 <ProfileTextSectionBlock section={section} isRegular />
