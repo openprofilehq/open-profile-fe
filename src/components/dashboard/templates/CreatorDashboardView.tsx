@@ -162,20 +162,7 @@ export default function CreatorDashboardView({
           ? `https://wa.me/${ctaSection.url.replace(/\D/g, "")}`
           : sanitizeUrl(ctaSection.url);
 
-  const socialLinks = allLinks
-    .filter((link) => {
-      const url = (link.url || "").toLowerCase();
-      return (
-        url.includes("twitter") ||
-        url.includes("x.com") ||
-        url.includes("linkedin") ||
-        url.includes("instagram") ||
-        url.includes("facebook") ||
-        url.includes("youtube") ||
-        url.includes("whatsapp")
-      );
-    })
-    .slice(0, 4);
+  const socialLinks = allLinks.slice(0, 4);
 
   return (
     <div className="flex w-full flex-col px-4 sm:px-6">
@@ -183,7 +170,11 @@ export default function CreatorDashboardView({
       {(!bioSection || bioSection.visible !== false) && (
         <div
           className={`relative mx-auto mt-6 flex w-full max-w-4xl flex-col items-center gap-4 rounded-2xl p-6 text-center ${bioSection?.font ? getFontClass(bioSection.font) : ""}`}
-          style={getSectionStyle(bioSection)}
+          style={(() => {
+            const { backgroundColor: _bg, ...rest } =
+              getSectionStyle(bioSection);
+            return rest;
+          })()}
         >
           <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
             {getImageUrl(profile?.photoUrl) ? (

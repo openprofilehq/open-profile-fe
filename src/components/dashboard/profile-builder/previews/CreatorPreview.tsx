@@ -115,20 +115,7 @@ export default function CreatorPreview({
 
   // Filter links for the header social row in Creator layout
   const allLinks = linksSection?.links || [];
-  const socialLinks = allLinks
-    .filter((link) => {
-      const url = (link.url || "").toLowerCase();
-      return (
-        url.includes("twitter") ||
-        url.includes("x.com") ||
-        url.includes("linkedin") ||
-        url.includes("instagram") ||
-        url.includes("facebook") ||
-        url.includes("youtube") ||
-        url.includes("whatsapp")
-      );
-    })
-    .slice(0, 4);
+  const socialLinks = allLinks.slice(0, 4);
 
   return (
     <div className="flex w-full flex-col">
@@ -140,7 +127,11 @@ export default function CreatorPreview({
           onClick={(event) => handleSelectSection(event, bioSection)}
           onKeyDown={(event) => handleSectionKeyDown(event, bioSection)}
           className={`group relative mx-auto mt-6 flex w-full max-w-4xl cursor-pointer flex-col items-center gap-4 rounded-2xl p-6 text-center ${bioSection.font ? getFontClass(bioSection.font) : ""}`}
-          style={getSectionStyle(bioSection)}
+          style={(() => {
+            const { backgroundColor: _bg, ...rest } =
+              getSectionStyle(bioSection);
+            return rest;
+          })()}
         >
           <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
             {getImageUrl(profile?.photoUrl) ? (
@@ -162,7 +153,7 @@ export default function CreatorPreview({
             <h1 className="text-primary-text flex items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
               {resolvedName}
             </h1>
-            <p className="text-brand-hover-bg mt-1 text-[15px]">
+            <p className="text-secondary-text mt-1 text-[15px]">
               openprofile.app/{profile?.username || "micaela"}
             </p>
           </div>
@@ -173,7 +164,7 @@ export default function CreatorPreview({
                 return (
                   <div
                     key={i}
-                    className="text-brand-hover-bg transition-colors"
+                    className="text-secondary-text transition-colors"
                   >
                     {getLinkIcon(
                       (link.url || "") + " " + (link.title || link.label || "")
