@@ -138,9 +138,6 @@ export default function CreatorDashboardView({
   });
 
   const visibleSections = sections.filter((section) => section.visible);
-  const textSections = visibleSections.filter((section) =>
-    isProfileTextSectionType(section.type)
-  );
 
   const bioSection = sections.find((s) => s.type === "bio");
   const linksSection = sections.find((s) => s.type === "links");
@@ -165,20 +162,21 @@ export default function CreatorDashboardView({
           ? `https://wa.me/${ctaSection.url.replace(/\D/g, "")}`
           : sanitizeUrl(ctaSection.url);
 
-  const socialLinks = allLinks
-    .filter((link) => {
-      const url = (link.url || "").toLowerCase();
-      return (
-        url.includes("twitter") ||
-        url.includes("x.com") ||
-        url.includes("linkedin") ||
-        url.includes("instagram") ||
-        url.includes("facebook") ||
-        url.includes("youtube") ||
-        url.includes("whatsapp")
-      );
-    })
-    .slice(0, 4);
+  const socialLinks = allLinks.slice(0, 4);
+
+  const availableTabs = [
+    visibleSections.some((s) => s.type === "projects") ? "projects" : null,
+    visibleSections.some((s) => s.type === "links") ? "links" : null,
+    visibleSections.some((s) =>
+      ["bio", "workExperience", "education", "skills"].includes(s.type)
+    )
+      ? "about"
+      : null,
+  ].filter((t): t is "projects" | "links" | "about" => t !== null);
+
+  const currentActiveTab = availableTabs.includes(activeTab)
+    ? activeTab
+    : availableTabs[0] || "about";
 
   return (
     <div className="flex w-full flex-col px-4 sm:px-6">
@@ -186,7 +184,11 @@ export default function CreatorDashboardView({
       {(!bioSection || bioSection.visible !== false) && (
         <div
           className={`relative mx-auto mt-6 flex w-full max-w-4xl flex-col items-center gap-4 rounded-2xl p-6 text-center ${bioSection?.font ? getFontClass(bioSection.font) : ""}`}
-          style={getSectionStyle(bioSection)}
+          style={(() => {
+            const { backgroundColor: _bg, ...rest } =
+              getSectionStyle(bioSection);
+            return rest;
+          })()}
         >
           <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
             {getImageUrl(profile?.photoUrl) ? (
@@ -259,38 +261,31 @@ export default function CreatorDashboardView({
       )}
 
       {/* CREATOR TABS */}
-      {visibleSections.some((s) =>
-        ["projects", "links", "bio"].includes(s.type)
-      ) && (
+      {availableTabs.length > 0 && (
         <div
           className="border-border flex items-center justify-center gap-8 border-b"
           style={{ marginTop: "var(--op-spacing, 2rem)" }}
         >
-          {visibleSections
-            .filter((s) => ["projects", "links", "bio"].includes(s.type))
-            .map((section) => {
-              const tabKey = section.type === "bio" ? "about" : section.type;
-              const label =
-                section.type === "bio"
-                  ? "About"
-                  : section.type === "links"
-                    ? "Links"
-                    : "Projects";
-              return (
-                <button
-                  key={section.id}
-                  onClick={() =>
-                    setActiveTab(tabKey as "projects" | "links" | "about")
-                  }
-                  className={`relative pb-3 text-[15px] font-semibold transition-colors ${activeTab === tabKey ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
-                >
-                  {label}
-                  {activeTab === tabKey && (
-                    <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
-                  )}
-                </button>
-              );
-            })}
+          {availableTabs.map((tabKey) => {
+            const label =
+              tabKey === "about"
+                ? "About"
+                : tabKey === "links"
+                  ? "Links"
+                  : "Projects";
+            return (
+              <button
+                key={tabKey}
+                onClick={() => setActiveTab(tabKey)}
+                className={`relative pb-3 text-[15px] font-semibold transition-colors ${currentActiveTab === tabKey ? "text-brand-hover-bg" : "text-secondary-text hover:text-primary-text"}`}
+              >
+                {label}
+                {currentActiveTab === tabKey && (
+                  <span className="bg-brand-hover-bg absolute right-0 -bottom-px left-0 h-[2px]" />
+                )}
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -300,7 +295,7 @@ export default function CreatorDashboardView({
       >
         {visibleSections.map((section) => {
           // Projects Tab
-          if (section.type === "projects" && activeTab === "projects") {
+          if (section.type === "projects" && currentActiveTab === "projects") {
             const projectsToRender = (
               section.projects?.length
                 ? section.projects
@@ -457,7 +452,7 @@ export default function CreatorDashboardView({
           }
 
           // Links Tab
-          if (section.type === "links" && activeTab === "links") {
+          if (section.type === "links" && currentActiveTab === "links") {
             return (
               <div
                 key={section.id}
@@ -497,7 +492,7 @@ export default function CreatorDashboardView({
           }
 
           // About Tab
-          if (section.type === "bio" && activeTab === "about") {
+          if (section.type === "bio" && currentActiveTab === "about") {
             return (
               <div
                 key={section.id}
@@ -511,25 +506,23 @@ export default function CreatorDashboardView({
             );
           }
 
+          if (
+            isProfileTextSectionType(section.type) &&
+            currentActiveTab === "about"
+          ) {
+            return (
+              <div
+                key={section.id}
+                className={`mx-auto mt-10 w-full max-w-4xl ${section.font ? getFontClass(section.font) : ""}`}
+              >
+                <ProfileTextSectionBlock section={section} variant="creator" />
+              </div>
+            );
+          }
+
           return null;
         })}
       </div>
-
-      {textSections.length > 0 && (
-        <div
-          className="mx-auto flex w-full max-w-4xl flex-col gap-10"
-          style={{ marginTop: "var(--op-spacing, 2rem)" }}
-        >
-          {textSections.map((section) => (
-            <section
-              key={section.id}
-              className={`group hover:border-border hover:bg-background/50 relative w-full rounded-2xl border border-transparent p-6 transition-colors ${section.font ? getFontClass(section.font) : ""}`}
-            >
-              <ProfileTextSectionBlock section={section} />
-            </section>
-          ))}
-        </div>
-      )}
 
       {!isPreview && <TemplateFooter />}
     </div>

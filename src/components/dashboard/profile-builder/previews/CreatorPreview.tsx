@@ -49,7 +49,11 @@ export default function CreatorPreview({
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (selectedSection?.type === "projects") setActiveTab("projects");
     else if (selectedSection?.type === "links") setActiveTab("links");
-    else if (selectedSection?.type === "bio") setActiveTab("about");
+    else if (
+      selectedSection?.type === "bio" ||
+      isProfileTextSectionType(selectedSection?.type ?? "")
+    )
+      setActiveTab("about");
   }, [sections, selectedSectionId]);
 
   const visibleSections = sections;
@@ -58,16 +62,15 @@ export default function CreatorPreview({
   const projectsSection = visibleSections.find((s) => s.type === "projects");
   const linksSection = visibleSections.find((s) => s.type === "links");
   const ctaSection = visibleSections.find((s) => s.type === "cta");
-  const textSections = visibleSections.filter((section) =>
-    isProfileTextSectionType(section.type)
-  );
 
   const resolvedName = profile?.fullName ?? "";
 
   const availableTabIds = [
     projectsSection ? "projects" : null,
     linksSection ? "links" : null,
-    bioSection ? "about" : null,
+    bioSection || sections.some((s) => isProfileTextSectionType(s.type))
+      ? "about"
+      : null,
   ].filter(Boolean) as Array<"projects" | "links" | "about">;
 
   const currentActiveTab = availableTabIds.includes(activeTab)
@@ -118,20 +121,7 @@ export default function CreatorPreview({
 
   // Filter links for the header social row in Creator layout
   const allLinks = linksSection?.links || [];
-  const socialLinks = allLinks
-    .filter((link) => {
-      const url = (link.url || "").toLowerCase();
-      return (
-        url.includes("twitter") ||
-        url.includes("x.com") ||
-        url.includes("linkedin") ||
-        url.includes("instagram") ||
-        url.includes("facebook") ||
-        url.includes("youtube") ||
-        url.includes("whatsapp")
-      );
-    })
-    .slice(0, 4);
+  const socialLinks = allLinks.slice(0, 4);
 
   return (
     <div className="flex w-full flex-col">
@@ -143,7 +133,11 @@ export default function CreatorPreview({
           onClick={(event) => handleSelectSection(event, bioSection)}
           onKeyDown={(event) => handleSectionKeyDown(event, bioSection)}
           className={`group relative mx-auto mt-6 flex w-full max-w-4xl cursor-pointer flex-col items-center gap-4 rounded-2xl p-6 text-center ${bioSection.font ? getFontClass(bioSection.font) : ""}`}
-          style={getSectionStyle(bioSection)}
+          style={(() => {
+            const { backgroundColor: _bg, ...rest } =
+              getSectionStyle(bioSection);
+            return rest;
+          })()}
         >
           <div className="border-border bg-secondary-bg relative h-24 w-24 shrink-0 overflow-hidden rounded-full border">
             {getImageUrl(profile?.photoUrl) ? (
@@ -165,7 +159,7 @@ export default function CreatorPreview({
             <h1 className="text-primary-text flex items-center gap-2 text-2xl font-bold tracking-tight sm:text-3xl">
               {resolvedName}
             </h1>
-            <p className="text-brand-hover-bg mt-1 text-[15px]">
+            <p className="text-secondary-text mt-1 text-[15px]">
               openprofile.app/{profile?.username || "micaela"}
             </p>
           </div>
@@ -176,7 +170,7 @@ export default function CreatorPreview({
                 return (
                   <div
                     key={i}
-                    className="text-brand-hover-bg transition-colors"
+                    className="text-secondary-text transition-colors"
                   >
                     {getLinkIcon(
                       (link.url || "") + " " + (link.title || link.label || "")
@@ -488,31 +482,33 @@ export default function CreatorPreview({
                 );
               }
 
+              if (
+                isProfileTextSectionType(section.type) &&
+                currentActiveTab === "about"
+              ) {
+                const isSelected = selectedSectionId === section.id;
+                return (
+                  <div
+                    key={section.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={(event) => handleSelectSection(event, section)}
+                    onKeyDown={(event) => handleSectionKeyDown(event, section)}
+                    className={`group relative mx-auto mt-10 w-full max-w-4xl cursor-pointer rounded-2xl border border-transparent p-0.5 transition-colors ${isSelected ? "border-brand-b" : ""} ${!section.visible ? "opacity-50 grayscale" : ""}`}
+                  >
+                    {renderControls(section)}
+                    <ProfileTextSectionBlock
+                      section={section}
+                      variant="creator"
+                    />
+                  </div>
+                );
+              }
+
               return null;
             })}
           </div>
         </>
-      )}
-
-      {textSections.length > 0 && (
-        <div
-          className="mx-auto flex w-full max-w-4xl flex-col gap-10"
-          style={{ marginTop: "var(--op-spacing, 2rem)" }}
-        >
-          {textSections.map((section) => (
-            <section
-              key={section.id}
-              role="button"
-              tabIndex={0}
-              onClick={(event) => handleSelectSection(event, section)}
-              onKeyDown={(event) => handleSectionKeyDown(event, section)}
-              className={`group hover:border-border hover:bg-background/50 relative w-full cursor-pointer rounded-2xl border border-transparent p-6 transition-colors ${!section.visible ? "opacity-50 grayscale" : ""}`}
-            >
-              {renderControls(section)}
-              <ProfileTextSectionBlock section={section} />
-            </section>
-          ))}
-        </div>
       )}
     </div>
   );

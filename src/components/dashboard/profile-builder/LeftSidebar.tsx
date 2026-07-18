@@ -1,17 +1,9 @@
 "use client";
 
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Reorder, useDragControls } from "motion/react";
-import {
-  BriefcaseBusiness,
-  ChevronLeft,
-  GraduationCap,
-  GripVertical,
-  Plus,
-  Search,
-  Sparkles,
-} from "lucide-react";
+import { ChevronLeft, GripVertical, Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LinkSidebar from "./LinkSidebar";
 import BioSidebar from "./BioSidebar";
@@ -213,7 +205,7 @@ export default function LeftSidebar({
                 className="object-contain"
               />
             </div>
-            <div className="text-primary-text bg-secondary-bg group-hover:bg-hover-bg flex h-9 items-center px-4 text-[13px] font-medium transition-colors">
+            <div className="text-primary-text bg-secondary-bg group-hover:bg-hover-bg flex h-9 items-center px-2.5 text-[12px] font-medium whitespace-nowrap transition-colors xl:px-3">
               Bio
             </div>
           </button>
@@ -244,7 +236,7 @@ export default function LeftSidebar({
                 />
               )}
             </div>
-            <div className="text-primary-text bg-secondary-bg group-hover:bg-hover-bg flex h-9 items-center px-4 text-[13px] font-medium transition-colors">
+            <div className="text-primary-text bg-secondary-bg group-hover:bg-hover-bg flex h-9 items-center px-2.5 text-[12px] font-medium whitespace-nowrap transition-colors xl:px-3">
               Links
             </div>
           </button>
@@ -265,7 +257,7 @@ export default function LeftSidebar({
                 className="object-contain"
               />
             </div>
-            <div className="text-primary-text bg-secondary-bg group-hover:bg-hover-bg flex h-9 items-center px-4 text-[13px] font-medium transition-colors">
+            <div className="text-primary-text bg-secondary-bg group-hover:bg-hover-bg flex h-9 items-center px-2.5 text-[12px] font-medium whitespace-nowrap transition-colors xl:px-3">
               Portfolio
             </div>
           </button>
@@ -279,42 +271,84 @@ export default function LeftSidebar({
           >
             <div className="bg-background flex flex-1 items-center p-2">
               <Image
-                src="/profilebuilder_home/cta.png"
+                src="/profilebuilder_home/cta.svg"
                 alt="CTA"
                 width={48}
                 height={48}
                 className="object-contain"
               />
             </div>
-            <div className="text-primary-text bg-secondary-bg group-hover:bg-hover-bg flex h-9 items-center px-4 text-[13px] font-medium transition-colors">
+            <div className="text-primary-text bg-secondary-bg group-hover:bg-hover-bg flex h-9 items-center px-2.5 text-[12px] font-medium whitespace-nowrap transition-colors xl:px-3">
               CTA
             </div>
           </button>
 
-          <SectionCard
-            label="Work Experience"
-            disabled={isWorkExperienceDisabled}
+          {/* Card 5: Work Experience */}
+          <button
+            type="button"
             onClick={() =>
               handleSelectCard("Work Experience", SECTION_TYPE.WORK_EXPERIENCE)
             }
-            icon={<BriefcaseBusiness size={22} />}
-          />
+            disabled={isWorkExperienceDisabled}
+            className={`group border-tertiary-b bg-background flex h-35 w-full flex-col overflow-hidden rounded-[16px] border text-left transition-all duration-200 ${isWorkExperienceDisabled ? "bg-secondary-bg cursor-not-allowed opacity-70" : "hover:border-brand-b cursor-pointer hover:shadow-sm"}`}
+          >
+            <div className="bg-background flex flex-1 items-center p-2">
+              <Image
+                src="/profilebuilder_home/workexperience.svg"
+                alt="Work Experience"
+                width={46}
+                height={48}
+                className="object-contain"
+              />
+            </div>
+            <div className="text-primary-text bg-secondary-bg group-hover:bg-hover-bg flex h-9 items-center px-2.5 text-[12px] font-medium whitespace-nowrap transition-colors xl:px-3">
+              Work Experience
+            </div>
+          </button>
 
-          <SectionCard
-            label="Education"
-            disabled={isEducationDisabled}
+          {/* Card 6: Education */}
+          <button
+            type="button"
             onClick={() =>
               handleSelectCard("Education", SECTION_TYPE.EDUCATION)
             }
-            icon={<GraduationCap size={22} />}
-          />
+            disabled={isEducationDisabled}
+            className={`group border-tertiary-b bg-background flex h-35 w-full flex-col overflow-hidden rounded-[16px] border text-left transition-all duration-200 ${isEducationDisabled ? "bg-secondary-bg cursor-not-allowed opacity-70" : "hover:border-brand-b cursor-pointer hover:shadow-sm"}`}
+          >
+            <div className="bg-background flex flex-1 items-center p-2">
+              <Image
+                src="/profilebuilder_home/education.svg"
+                alt="Education"
+                width={46}
+                height={48}
+                className="object-contain"
+              />
+            </div>
+            <div className="text-primary-text bg-secondary-bg group-hover:bg-hover-bg flex h-9 items-center px-2.5 text-[12px] font-medium whitespace-nowrap transition-colors xl:px-3">
+              Education
+            </div>
+          </button>
 
-          <SectionCard
-            label="Skills"
-            disabled={isSkillsDisabled}
+          {/* Card 7: Skills */}
+          <button
+            type="button"
             onClick={() => handleSelectCard("Skills", SECTION_TYPE.SKILLS)}
-            icon={<Sparkles size={22} aria-hidden="true" />}
-          />
+            disabled={isSkillsDisabled}
+            className={`group border-tertiary-b bg-background flex h-35 w-full flex-col overflow-hidden rounded-[16px] border text-left transition-all duration-200 ${isSkillsDisabled ? "bg-secondary-bg cursor-not-allowed opacity-70" : "hover:border-brand-b cursor-pointer hover:shadow-sm"}`}
+          >
+            <div className="bg-background flex flex-1 items-center p-2">
+              <Image
+                src="/profilebuilder_home/skills.svg"
+                alt="Skills"
+                width={48}
+                height={48}
+                className="object-contain"
+              />
+            </div>
+            <div className="text-primary-text bg-secondary-bg group-hover:bg-hover-bg flex h-9 items-center px-2.5 text-[12px] font-medium whitespace-nowrap transition-colors xl:px-3">
+              Skills
+            </div>
+          </button>
         </div>
       </aside>
     );
@@ -615,38 +649,6 @@ export default function LeftSidebar({
         </Reorder.Group>
       </div>
     </aside>
-  );
-}
-
-function SectionCard({
-  label,
-  icon,
-  disabled,
-  onClick,
-}: {
-  label: string;
-  icon: ReactNode;
-  disabled: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={`group border-tertiary-b bg-background flex h-35 w-full flex-col overflow-hidden rounded-[16px] border text-left transition-all duration-200 ${
-        disabled
-          ? "bg-secondary-bg cursor-not-allowed opacity-70"
-          : "hover:border-brand-b cursor-pointer hover:shadow-sm"
-      }`}
-    >
-      <div className="bg-background text-tertiary-text flex flex-1 items-center p-4">
-        {icon}
-      </div>
-      <div className="text-primary-text bg-secondary-bg group-hover:bg-hover-bg flex h-9 items-center px-4 text-[13px] font-medium transition-colors">
-        {label}
-      </div>
-    </button>
   );
 }
 
