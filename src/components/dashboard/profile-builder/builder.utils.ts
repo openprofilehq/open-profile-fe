@@ -114,8 +114,56 @@ const API_SECTION_TYPE_TO_BUILDER_SECTION: Record<string, string> = {
   skills: "skills",
 };
 
+interface ComponentMetadata {
+  type?: string;
+  sectionType?: string;
+  displayOrder?: number;
+  isEnabled?: boolean;
+  title?: string;
+  subtitle?: string;
+}
+
+const getProfileComponentInfo = (
+  profile: DashboardProfileResponse,
+  type: string
+) => {
+  const normalizedType = API_SECTION_TYPE_TO_BUILDER_SECTION[type] || type;
+
+  const comp = Array.isArray(profile.components)
+    ? (profile.components as ComponentMetadata[]).find(
+        (c) =>
+          (API_SECTION_TYPE_TO_BUILDER_SECTION[c.sectionType ?? c.type ?? ""] ||
+            (c.sectionType ?? c.type)) === normalizedType
+      )
+    : undefined;
+  const sect = Array.isArray(profile.sections)
+    ? profile.sections.find(
+        (s) =>
+          (API_SECTION_TYPE_TO_BUILDER_SECTION[s.type] || s.type) ===
+          normalizedType
+      )
+    : undefined;
+
+  return {
+    visible: sect?.isEnabled ?? comp?.isEnabled ?? true,
+    title: sect?.title ?? comp?.title ?? undefined,
+    subtitle: sect?.subtitle ?? comp?.subtitle ?? undefined,
+  };
+};
+
 const getProfileSectionOrder = (profile: DashboardProfileResponse) => {
-  const sections = Array.isArray(profile.sections) ? profile.sections : [];
+  const sections =
+    Array.isArray(profile.sections) && profile.sections.length > 0
+      ? profile.sections
+      : Array.isArray(profile.components)
+        ? (profile.components as ComponentMetadata[]).map((c) => ({
+            type: c.sectionType ?? c.type ?? "",
+            displayOrder: c.displayOrder,
+            isEnabled: c.isEnabled,
+            title: c.title,
+            subtitle: c.subtitle,
+          }))
+        : [];
 
   return sections
     .slice()
@@ -131,10 +179,25 @@ export function contentToSections(
   const content = rawContent?.content;
   const profileSectionOrder = getProfileSectionOrder(profile);
   let order = content?.sectionOrder?.length
-    ? [...new Set(content.sectionOrder)]
+    ? [...new Set(content.sectionOrder)].map((key) =>
+        key === "work_experience" ? "workExperience" : key
+      )
     : profileSectionOrder.length
       ? [...new Set(profileSectionOrder)]
       : ["bio"];
+
+  // Merge any sections from the database component list that are enabled but missing from the draft order
+  profileSectionOrder.forEach((key) => {
+    if (!order.includes(key)) {
+      const compInfo = getProfileComponentInfo(
+        profile,
+        key === "workExperience" ? "work_experience" : key
+      );
+      if (compInfo.visible) {
+        order.push(key);
+      }
+    }
+  });
 
   // Derive fallback order from existing keys in content/profile if sectionOrder is missing to prevent data loss
   if (!content?.sectionOrder?.length) {
@@ -143,6 +206,7 @@ export function contentToSections(
     if (content?.cta) order.push("cta");
     if (
       getContentSection(content, "workExperience") ||
+      getContentSection(content, "work_experience") ||
       profile.workExperience?.length
     )
       order.push("workExperience");
@@ -314,11 +378,18 @@ export function contentToSections(
     }
 
     if (key === "workExperience") {
-      const workExperience = getContentSection(content, "workExperience");
+      const workExperience =
+        getContentSection(content, "work_experience") ||
+        getContentSection(content, "workExperience");
+      const compInfo =
+        getProfileComponentInfo(profile, "work_experience") ||
+        getProfileComponentInfo(profile, "workExperience");
       const rawTitle =
         typeof workExperience?.sectionTitle === "string"
           ? workExperience.sectionTitle
-          : "Work Experience";
+          : typeof compInfo.title === "string"
+            ? compInfo.title
+            : "Work Experience";
       const { title, subtitle } = deserializeTitleAndSubtitle(
         rawTitle,
         "Work Experience"
@@ -332,8 +403,8 @@ export function contentToSections(
         visible:
           typeof workExperience?.visible === "boolean"
             ? workExperience.visible
-            : true,
-        subtitle,
+            : compInfo.visible,
+        subtitle: subtitle || compInfo.subtitle || "",
         experiences: (() => {
           const contentItems = getSectionItems(workExperience);
 
@@ -381,10 +452,13 @@ export function contentToSections(
 
     if (key === "education") {
       const education = getContentSection(content, "education");
+      const compInfo = getProfileComponentInfo(profile, "education");
       const rawTitle =
         typeof education?.sectionTitle === "string"
           ? education.sectionTitle
-          : "Education";
+          : typeof compInfo.title === "string"
+            ? compInfo.title
+            : "Education";
       const { title, subtitle } = deserializeTitleAndSubtitle(
         rawTitle,
         "Education"
@@ -396,8 +470,10 @@ export function contentToSections(
         title,
         type: "education" as const,
         visible:
-          typeof education?.visible === "boolean" ? education.visible : true,
-        subtitle,
+          typeof education?.visible === "boolean"
+            ? education.visible
+            : compInfo.visible,
+        subtitle: subtitle || compInfo.subtitle || "",
         education: (() => {
           const contentItems = getSectionItems(education);
 
@@ -438,10 +514,13 @@ export function contentToSections(
 
     if (key === "skills") {
       const skills = getContentSection(content, "skills");
+      const compInfo = getProfileComponentInfo(profile, "skills");
       const rawTitle =
         typeof skills?.sectionTitle === "string"
           ? skills.sectionTitle
-          : "Skills";
+          : typeof compInfo.title === "string"
+            ? compInfo.title
+            : "Skills";
       const { title, subtitle } = deserializeTitleAndSubtitle(
         rawTitle,
         "Skills"
@@ -452,8 +531,11 @@ export function contentToSections(
         id: "skills",
         title,
         type: "skills" as const,
-        visible: typeof skills?.visible === "boolean" ? skills.visible : true,
-        subtitle,
+        visible:
+          typeof skills?.visible === "boolean"
+            ? skills.visible
+            : compInfo.visible,
+        subtitle: subtitle || compInfo.subtitle || "",
         skills: (() => {
           const contentItems = getSectionItems(skills);
 
@@ -584,17 +666,14 @@ export const isValidUrl = (urlString: string, iconId?: string | null) => {
 export function sectionsToContent(
   sections: Section[]
 ): NonNullable<UpsertDraftRequest["content"]> {
-  const sectionOrder = sections.map((s) => s.id);
+  const sectionOrder = sections.map((s) =>
+    s.id === "workExperience" ? "work_experience" : s.id
+  );
 
   const bioSection = sections.find((s) => s.type === "bio");
   const linksSection = sections.find((s) => s.type === "links");
   const projectsSection = sections.find((s) => s.type === "projects");
   const ctaSection = sections.find((s) => s.type === "cta");
-  const workExperienceSection = sections.find(
-    (s) => s.type === "workExperience"
-  );
-  const educationSection = sections.find((s) => s.type === "education");
-  const skillsSection = sections.find((s) => s.type === "skills");
 
   const sectionStyleFields = (s: Section) => ({
     ...(s.textColor && { textColor: s.textColor }),
@@ -660,54 +739,6 @@ export function sectionsToContent(
             }
             return mappedProject;
           }) as unknown as ApiProjectItem[],
-        }
-      : undefined,
-
-    workExperience: workExperienceSection
-      ? {
-          visible: workExperienceSection.visible,
-          sectionTitle: `${workExperienceSection.title ?? "Work Experience"}///${workExperienceSection.subtitle ?? ""}`,
-          items: (workExperienceSection.experiences ?? []).map((item) => ({
-            id: item.id,
-            role: item.role,
-            company: item.company,
-            employmentType: item.employmentType ?? "",
-            startMonth: item.startMonth,
-            startYear: item.startYear,
-            endMonth: item.currentlyWorking ? "" : (item.endMonth ?? ""),
-            endYear: item.currentlyWorking ? "" : (item.endYear ?? ""),
-            currentlyWorking: item.currentlyWorking === true,
-            description: item.description ?? "",
-          })),
-          ...sectionStyleFields(workExperienceSection),
-        }
-      : undefined,
-    education: educationSection
-      ? {
-          visible: educationSection.visible,
-          sectionTitle: `${educationSection.title ?? "Education"}///${educationSection.subtitle ?? ""}`,
-          items: (educationSection.education ?? []).map((item) => ({
-            id: item.id,
-            institution: item.institution,
-            degree: item.degree,
-            startMonth: item.startMonth,
-            startYear: item.startYear,
-            endMonth: item.currentlyStudying ? "" : (item.endMonth ?? ""),
-            endYear: item.currentlyStudying ? "" : (item.endYear ?? ""),
-            currentlyStudying: item.currentlyStudying === true,
-          })),
-          ...sectionStyleFields(educationSection),
-        }
-      : undefined,
-    skills: skillsSection
-      ? {
-          visible: skillsSection.visible,
-          sectionTitle: `${skillsSection.title ?? "Skills"}///${skillsSection.subtitle ?? ""}`,
-          items: (skillsSection.skills ?? []).map((item) => ({
-            id: item.id,
-            name: item.name,
-          })),
-          ...sectionStyleFields(skillsSection),
         }
       : undefined,
     cta: ctaSection

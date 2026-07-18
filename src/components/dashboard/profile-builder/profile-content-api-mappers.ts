@@ -23,6 +23,37 @@ const toNumberValue = (value: string | number | null | undefined) => {
   return Number.isFinite(numberValue) ? numberValue : undefined;
 };
 
+const MONTH_NAMES = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+const monthNumberToString = (num: number | string | null | undefined) => {
+  if (num == null) return "";
+  const n = Number(num);
+  if (!Number.isFinite(n) || n < 1 || n > 12) return "";
+  return MONTH_NAMES[n - 1];
+};
+
+const monthStringToNumber = (str: string | null | undefined): number | null => {
+  if (!str) return null;
+  const idx = MONTH_NAMES.indexOf(str);
+  if (idx !== -1) return idx + 1;
+  const n = Number(str);
+  if (Number.isFinite(n) && n >= 1 && n <= 12) return n;
+  return null;
+};
+
 export function skillResponseToItem(skill: SkillResponseDto): SkillItem {
   return {
     id: skill.id,
@@ -83,11 +114,11 @@ export function workExperienceResponseToItem(
     // Preserve location without treating it as employmentType.
     employmentType: "",
     location: workExperience.location ?? "",
-    startMonth: toStringValue(workExperience.startMonth),
+    startMonth: monthNumberToString(workExperience.startMonth),
     startYear: toStringValue(workExperience.startYear),
     endMonth: workExperience.isCurrent
       ? ""
-      : toStringValue(workExperience.endMonth),
+      : monthNumberToString(workExperience.endMonth),
     endYear: workExperience.isCurrent
       ? ""
       : toStringValue(workExperience.endYear),
@@ -106,9 +137,9 @@ export function workExperienceItemToRequest(
     jobTitle: item.role.trim(),
     location: item.location?.trim() || undefined,
     description: item.description?.trim() || undefined,
-    startMonth: toNumberValue(item.startMonth) ?? 1,
+    startMonth: monthStringToNumber(item.startMonth) ?? 1,
     startYear: toNumberValue(item.startYear) ?? new Date().getFullYear(),
-    endMonth: isCurrent ? null : (toNumberValue(item.endMonth) ?? null),
+    endMonth: isCurrent ? null : monthStringToNumber(item.endMonth),
     endYear: isCurrent ? null : (toNumberValue(item.endYear) ?? null),
     isCurrent,
   };
