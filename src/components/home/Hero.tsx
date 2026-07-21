@@ -302,7 +302,7 @@ export function Hero() {
               bottom: "-20px",
               width: "160px",
               background:
-                "linear-gradient(to right, #ffffff 0%, #ffffff 40%, rgba(255,255,255,0) 100%)",
+                "linear-gradient(to right, var(--hero-overlay-color) 0%, var(--hero-overlay-color) 40%, var(--hero-overlay-transparent) 100%)",
               zIndex: 20,
               pointerEvents: "none",
             }}
@@ -316,7 +316,7 @@ export function Hero() {
               bottom: "-20px",
               width: "220px",
               background:
-                "linear-gradient(to left, #ffffff 0%, #ffffff 50%, rgba(255,255,255,0) 100%)",
+                "linear-gradient(to left, var(--hero-overlay-color) 0%, var(--hero-overlay-color) 50%, var(--hero-overlay-transparent) 100%)",
               zIndex: 20,
               pointerEvents: "none",
             }}
@@ -388,7 +388,7 @@ export function Hero() {
               bottom: "-20px",
               width: "80px",
               background:
-                "linear-gradient(to right, #ffffff 0%, #ffffff 30%, rgba(255,255,255,0) 100%)",
+                "linear-gradient(to right, var(--hero-overlay-color) 0%, var(--hero-overlay-color) 30%, var(--hero-overlay-transparent) 100%)",
               zIndex: 20,
               pointerEvents: "none",
             }}
@@ -402,7 +402,7 @@ export function Hero() {
               bottom: "-20px",
               width: "80px",
               background:
-                "linear-gradient(to left, #ffffff 0%, #ffffff 30%, rgba(255,255,255,0) 100%)",
+                "linear-gradient(to left, var(--hero-overlay-color) 0%, var(--hero-overlay-color) 30%, var(--hero-overlay-transparent) 100%)",
               zIndex: 20,
               pointerEvents: "none",
             }}

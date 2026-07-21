@@ -244,6 +244,8 @@
   scrollbar-width: thin !important;
   --brand: #065e69;
   --brand-subheading: #00798c;
+  --hero-overlay-color: #ffffff;
+  --hero-overlay-transparent: rgba(255, 255, 255, 0);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -366,6 +368,8 @@
 
   /* Redefine main tokens */
   --background: #000404;
+  --hero-overlay-color: #000404;
+  --hero-overlay-transparent: rgba(0, 4, 4, 0);
   --brand-subheading: #66abb4;
   --foreground: #fafafa;
   --card: #0c0f10;
@@ -406,7 +410,8 @@
   --tertiary-foreground-text: #94a3b8;
   --secondary-foreground-text: #94a3b8;
   --inverse-text: #000404;
-  --disabled-text: #475569;
+  --disabled-text: #64748b;
+  --label-text: #cbd5e1;
 
   /* bg */
   --primary-bg: #000404;
@@ -415,7 +420,7 @@
   --hover-bg: #111819;
   --active-bg: #1e292b;
   --selected-bg: #2d3f42;
-  --disabled-bg: #0a0d0d;
+  --disabled-bg: #232d30;
   --inverse-bg: #ffffff;
   --neutral-bg: #1e292b;
   --brand-light-subtle-bg: rgba(6, 94, 105, 0.15);
