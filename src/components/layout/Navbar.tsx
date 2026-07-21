@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCurrentUserOption } from "@/api/auth/auth.options";
 import { Navlinks, ROUTES } from "@/constants/routes";
 import { useAuthCookie } from "@/hooks/useAuthCookie";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -64,6 +65,7 @@ export function Navbar() {
 
           {/* Desktop auth buttons */}
           <div className="hidden items-center gap-3 md:flex">
+            <ThemeToggle />
             {user ? (
               <Link
                 href={ROUTES.dashboard.home}
@@ -92,21 +94,25 @@ export function Navbar() {
             )}
           </div>
 
-          <button
-            className="z-50 flex cursor-pointer flex-col gap-1.5 p-2 md:hidden"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
-          >
-            <span
-              className={`block h-0.5 w-5 bg-[#050505] transition-transform duration-200 ${mobileOpen ? "translate-y-2 rotate-45" : ""}`}
-            />
-            <span
-              className={`block h-0.5 w-5 bg-[#050505] transition-opacity duration-200 ${mobileOpen ? "opacity-0" : ""}`}
-            />
-            <span
-              className={`block h-0.5 w-5 bg-[#050505] transition-transform duration-200 ${mobileOpen ? "-translate-y-2 -rotate-45" : ""}`}
-            />
-          </button>
+          {/* Mobile actions & hamburger menu */}
+          <div className="z-50 flex items-center gap-3 md:hidden">
+            <ThemeToggle />
+            <button
+              className="flex cursor-pointer flex-col gap-1.5 p-2"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Toggle menu"
+            >
+              <span
+                className={`bg-primary-text block h-0.5 w-5 transition-transform duration-200 ${mobileOpen ? "translate-y-2 rotate-45" : ""}`}
+              />
+              <span
+                className={`bg-primary-text block h-0.5 w-5 transition-opacity duration-200 ${mobileOpen ? "opacity-0" : ""}`}
+              />
+              <span
+                className={`bg-primary-text block h-0.5 w-5 transition-transform duration-200 ${mobileOpen ? "-translate-y-2 -rotate-45" : ""}`}
+              />
+            </button>
+          </div>
         </nav>
       </header>
 

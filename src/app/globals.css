@@ -356,37 +356,53 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  color-scheme: dark;
+
+  /* Redefine main tokens */
+  --background: #000404;
+  --foreground: #fafafa;
+  --card: #0c0f10;
+  --card-foreground: #fafafa;
+  --popover: #0c0f10;
+  --popover-foreground: #fafafa;
+  --primary: #fafafa;
+  --primary-foreground: #000404;
+  --secondary: #171c1d;
+  --secondary-foreground: #fafafa;
+  --muted: #171c1d;
+  --muted-foreground: #9ca3af;
+  --accent: #171c1d;
+  --accent-foreground: #fafafa;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #087583;
+
+  /* text */
+  --primary-text: #ffffff;
+  --secondary-text: #e2e8f0;
+  --tertiary-text: #94a3b8;
+  --tertiary-foreground-text: #94a3b8;
+  --secondary-foreground-text: #94a3b8;
+  --inverse-text: #000404;
+  --disabled-text: #475569;
+
+  /* bg */
+  --primary-bg: #000404;
+  --primary-foreground-bg: #0a0e0e;
+  --secondary-bg: #080c0d;
+  --hover-bg: #111819;
+  --active-bg: #1e292b;
+  --selected-bg: #2d3f42;
+  --disabled-bg: #0a0d0d;
+  --inverse-bg: #ffffff;
+  --neutral-bg: #1e292b;
+  --brand-light-subtle-bg: rgba(6, 94, 105, 0.15);
+
+  /* border */
+  --primary-b: rgba(255, 255, 255, 0.15);
+  --primary-foreground-b: rgba(255, 255, 255, 0.08);
+  --secondary-b: rgba(255, 255, 255, 0.1);
+  --tertiary-b: rgba(255, 255, 255, 0.08);
 }
 
 @layer base {
@@ -557,4 +573,108 @@
 
 .profile-builder-scrollbar::-webkit-scrollbar-corner {
   background: transparent !important;
+}
+
+/* Override utility classes for elements hardcoded with white or light backgrounds (excluding preview canvas) */
+.dark:not(.preview-root, .preview-root *),
+.dark body:not(.preview-root, .preview-root *),
+.dark header:not(.preview-root, .preview-root *),
+.dark .bg-white:not(.preview-root, .preview-root *),
+.dark .bg-\[\#FAFAFA\]:not(.preview-root, .preview-root *),
+.dark .bg-\[\#FEFEFE\]:not(.preview-root, .preview-root *),
+.dark .bg-\[\#FBFBFB\]:not(.preview-root, .preview-root *),
+.dark .bg-card:not(.preview-root, .preview-root *) {
+  background-color: #000404 !important;
+}
+
+/* Overrides for specific page background accents to look premium in dark mode */
+.dark .bg-\[\#F2FDFE\]:not(.preview-root, .preview-root *),
+.dark .bg-brand-light-subtle-bg:not(.preview-root, .preview-root *),
+.dark .bg-brand-subtle-bg:not(.preview-root, .preview-root *) {
+  background-color: rgba(6, 94, 105, 0.15) !important;
+}
+
+.dark .bg-secondary-bg\/50:not(.preview-root, .preview-root *) {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Ensure text colors are light enough to read */
+.dark .text-\[\#050505\]:not(.preview-root, .preview-root *),
+.dark .text-primary-text:not(.preview-root, .preview-root *),
+.dark .text-secondary-text:not(.preview-root, .preview-root *),
+.dark .text-tertiary-foreground-text:not(.preview-root, .preview-root *),
+.dark .text-secondary-foreground-text:not(.preview-root, .preview-root *),
+.dark .text-label-text:not(.preview-root, .preview-root *) {
+  color: #fafafa !important;
+}
+
+.dark .text-tertiary-text:not(.preview-root, .preview-root *) {
+  color: #94a3b8 !important;
+}
+
+.dark .border-\[\#EDEDED\]:not(.preview-root, .preview-root *),
+.dark .border-\[\#E5E5E5\]:not(.preview-root, .preview-root *),
+.dark .border-\[\#ABABAB\]:not(.preview-root, .preview-root *),
+.dark .border-primary-foreground-b:not(.preview-root, .preview-root *),
+.dark .border-tertiary-b:not(.preview-root, .preview-root *),
+.dark .border-border:not(.preview-root, .preview-root *) {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Invert the logo to stand out in dark mode */
+.dark img[alt="Open Profile"] {
+  filter: brightness(0) invert(1);
+}
+
+/* Reset theme variables inside preview canvas to prevent inheriting the global custom dark theme values */
+.dark .preview-root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+
+  /* text */
+  --primary-text: #050505;
+  --secondary-text: #454545;
+  --tertiary-text: #747474;
+  --tertiary-foreground-text: #525252;
+  --secondary-foreground-text: #6b7280;
+  --inverse-text: #e8e8e8;
+  --danger-text: #d92d20;
+  --disabled-text: #a2a2a2;
+  --brand-text: #0a92a4;
+  --brand-subtle-text: #daf2f5;
+
+  /* bg */
+  --primary-bg: #fafafa;
+  --primary-foreground-bg: #f2fdfe;
+  --secondary-bg: #f6f6f6;
+  --hover-bg: #f1f1f1;
+  --active-bg: #ededed;
+  --selected-bg: #e8e8e8;
+  --disabled-bg: #fafafa;
+  --inverse-bg: #171717;
+  --neutral-bg: #e8e8e8;
+  --brand-light-subtle-bg: #f1fdfe;
+
+  /* border */
+  --primary-b: #ababab;
+  --primary-foreground-b: #e5e5e5;
+  --secondary-b: #c9c9c9;
+  --tertiary-b: #ededed;
+  --disabled-b: #f1f1f1;
+  --border-border: #ededed;
 }

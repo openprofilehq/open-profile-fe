@@ -28,6 +28,7 @@ import { getInitials } from "@/utils/avatar";
 import { getImageUrl } from "@/utils/profile";
 import type { PublishProfileResponse } from "@/api/profile/profile.type";
 import { useProfileBuilderPublishState } from "./profile-builder/profile-builder-publish-state";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 const navLinks = [
   {
@@ -206,6 +207,7 @@ export default function DashboardTopbar() {
 
           {/* Right Actions */}
           <div className="flex shrink-0 items-center gap-3 md:gap-4">
+            <ThemeToggle />
             <Button
               asChild
               variant="outline"

@@ -47,6 +47,21 @@ export default function RootLayout({
       lang="en"
       className={cn("font-afacad h-full antialiased", afacad.variable)}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                if (localStorage.getItem('theme-bg-override') === 'dark') {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (_) {}
+            `,
+          }}
+        />
+      </head>
       <body
         className={`flex min-h-full flex-col ${afacad.variable} ${dancing.variable} ${inter.variable} ${geologica.variable} ${playfair.variable}`}
       >
