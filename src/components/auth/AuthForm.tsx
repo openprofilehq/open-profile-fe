@@ -137,7 +137,7 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
   }
 
   const inputClass =
-    "h-11 bg-[#FAFAFA] border border-input-b shadow-none placeholder:text-input-text";
+    "h-11 bg-primary-bg border border-input-b shadow-none placeholder:text-input-text";
 
   return (
     <AuthLayout>

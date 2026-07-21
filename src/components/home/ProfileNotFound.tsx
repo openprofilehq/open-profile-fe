@@ -31,14 +31,23 @@ export function ProfileNotFound() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center gap-6 bg-white px-6 py-6">
+    <main className="bg-background flex min-h-screen flex-col items-center gap-6 px-6 py-6">
       <Link href="/">
         <Image
-          src="/auth/logo.png"
-          alt="Open.Profile"
+          src="/logo.svg"
+          alt="Open Profile"
           width={140}
           height={32}
           priority
+          className="dark:hidden"
+        />
+        <Image
+          src="/logo-dark.svg"
+          alt="Open Profile"
+          width={140}
+          height={32}
+          priority
+          className="hidden dark:block"
         />
       </Link>
 

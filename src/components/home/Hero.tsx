@@ -108,7 +108,7 @@ export function Hero() {
   const remainingCount = Math.max(0, totalResults - 2);
 
   return (
-    <section className="w-full overflow-hidden bg-white">
+    <section className="bg-background w-full overflow-hidden">
       <div className="relative mx-auto flex w-full max-w-[1100px] flex-col items-start gap-8 px-4 pt-[60px] pb-[40px] sm:px-6 md:pt-[80px] lg:flex-row lg:items-center lg:gap-4 lg:px-0">
         <div className="z-10 flex w-full shrink-0 flex-col gap-4 lg:max-w-[450px] xl:max-w-[500px]">
           <motion.h1
@@ -163,7 +163,7 @@ export function Hero() {
             <Button
               onClick={handleSearch}
               disabled={query.trim().length < 3}
-              className="bg-link-hover-text hover:bg-button-brand-bg h-12 w-full rounded-[8px] px-4 text-[16px] leading-6 whitespace-nowrap text-white transition-colors disabled:cursor-not-allowed disabled:bg-[#E5E5E5] disabled:text-[#A3A3A3] sm:w-auto lg:h-12.5"
+              className="bg-link-hover-text hover:bg-button-brand-bg disabled:bg-disabled-bg disabled:text-disabled-text h-12 w-full rounded-[8px] px-4 text-[16px] leading-6 whitespace-nowrap text-white transition-colors disabled:cursor-not-allowed sm:w-auto lg:h-12.5"
             >
               Search a Profile
             </Button>
@@ -175,7 +175,7 @@ export function Hero() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 4 }}
                   transition={{ duration: 0.15 }}
-                  className="border-border absolute top-full left-0 z-50 mt-2 w-full overflow-hidden rounded-lg border bg-white shadow-lg"
+                  className="border-border bg-card absolute top-full left-0 z-50 mt-2 w-full overflow-hidden rounded-lg border shadow-lg"
                 >
                   {isSearchPending && searchResults.length === 0 ? (
                     <div className="text-secondary-text p-4 text-center text-sm">
@@ -192,7 +192,7 @@ export function Hero() {
                           key={result.id || result.username}
                           href={`/${result.username}`}
                           onClick={() => setInputFocused(false)}
-                          className="border-border/50 flex items-center gap-3 border-b p-3 transition-colors last:border-0 hover:bg-[#FAFAFA]"
+                          className="border-border/50 hover:bg-hover-bg flex items-center gap-3 border-b p-3 transition-colors last:border-0"
                         >
                           <Avatar className="border-border h-10 w-10 border">
                             <AvatarImage
@@ -230,7 +230,7 @@ export function Hero() {
                       <Link
                         href={`/search?q=${encodeURIComponent(debouncedQuery)}`}
                         onClick={() => setInputFocused(false)}
-                        className="border-border border-t bg-[#FEFEFE] p-3 text-center text-[14px] font-medium text-[#087583] transition-colors hover:bg-[#FAFAFA]"
+                        className="border-border bg-card hover:bg-hover-bg border-t p-3 text-center text-[14px] font-medium text-[#087583] transition-colors"
                       >
                         {remainingCount > 0
                           ? `${remainingCount} more results, see more...`

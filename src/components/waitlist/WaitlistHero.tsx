@@ -87,7 +87,15 @@ export function WaitlistHero() {
             alt="Open Profile"
             width={170}
             height={32}
-            className="h-[32px] w-auto cursor-pointer"
+            className="h-[32px] w-auto cursor-pointer dark:hidden"
+            style={{ width: "auto" }}
+          />
+          <Image
+            src="/logo-dark.svg"
+            alt="Open Profile"
+            width={170}
+            height={32}
+            className="hidden h-[32px] w-auto cursor-pointer dark:block"
             style={{ width: "auto" }}
           />
         </Link>

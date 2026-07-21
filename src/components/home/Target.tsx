@@ -5,7 +5,8 @@ import { motion } from "motion/react";
 
 const audiences = [
   {
-    bg: "#EFF6F8",
+    bgClass:
+      "bg-[#EFF6F8] dark:bg-[#082329]/40 border border-transparent dark:border-white/5",
     right: "right-[-7px]",
     icon: "/target_assets/icon-code.svg",
     checkIcon: "/target_assets/icon-check.svg",
@@ -19,7 +20,8 @@ const audiences = [
     ],
   },
   {
-    bg: "#FFF6EF",
+    bgClass:
+      "bg-[#FFF6EF] dark:bg-[#2d1607]/40 border border-transparent dark:border-white/5",
     right: "right-[-20px]",
     icon: "/target_assets/icon-pencil.svg",
     checkIcon: "/target_assets/icon-orange-check.svg",
@@ -33,7 +35,8 @@ const audiences = [
     ],
   },
   {
-    bg: "#F3FEF7",
+    bgClass:
+      "bg-[#F3FEF7] dark:bg-[#0b2414]/40 border border-transparent dark:border-white/5",
     right: "right-[-21px]",
     icon: "/target_assets/icon-artboard.svg",
     checkIcon: "/target_assets/icon-green-check.svg",
@@ -63,7 +66,7 @@ export default function Target() {
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
-        <div className="mx-auto flex h-7.5 w-fit items-center gap-1 rounded-[24px] bg-[#F2FDFE] pr-5.5 pl-3.5">
+        <div className="bg-brand-light-subtle-bg mx-auto flex h-7.5 w-fit items-center gap-1 rounded-[24px] pr-5.5 pl-3.5">
           <Image
             src="/target_assets/icon-flash.svg"
             alt="target"
@@ -82,16 +85,18 @@ export default function Target() {
 
       <div className="mt-10 grid grid-cols-1 items-center justify-center gap-6 lg:grid-cols-3">
         {audiences.map(
-          ({ bg, right, icon, checkIcon, title, description, items }, i) => (
+          (
+            { bgClass, right, icon, checkIcon, title, description, items },
+            i
+          ) => (
             <motion.div
               key={title}
-              style={{ backgroundColor: bg }}
               variants={fadeUp}
               initial="hidden"
               whileInView="show"
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.15 }}
-              className="relative mx-auto flex h-full w-full max-w-112.5 flex-col space-y-4 overflow-hidden rounded-[16px] px-6 pt-20 pb-6 transition-all duration-200 hover:shadow-lg"
+              className={`relative mx-auto flex h-full w-full max-w-112.5 flex-col space-y-4 overflow-hidden rounded-[16px] px-6 pt-20 pb-6 transition-all duration-200 hover:shadow-lg ${bgClass}`}
             >
               <div className={`absolute top-0 ${right}`}>
                 <Image

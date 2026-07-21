@@ -12,6 +12,7 @@
   --font-playfair: var(--font-playfair);
 
   --color-brand: var(--brand);
+  --color-brand-subheading: var(--brand-subheading);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
@@ -239,7 +240,10 @@
 }
 
 :root {
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent !important;
+  scrollbar-width: thin !important;
   --brand: #065e69;
+  --brand-subheading: #00798c;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -357,9 +361,12 @@
 
 .dark {
   color-scheme: dark;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent !important;
+  scrollbar-width: thin !important;
 
   /* Redefine main tokens */
   --background: #000404;
+  --brand-subheading: #66abb4;
   --foreground: #fafafa;
   --card: #0c0f10;
   --card-foreground: #fafafa;
@@ -508,124 +515,6 @@
   animation-play-state: paused;
 }
 
-/* Profile Builder scrollbars */
-.profile-builder-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-}
-
-.profile-builder-scrollbar:hover,
-.profile-builder-scrollbar:focus-within {
-  scrollbar-color: rgba(190, 190, 190, 0.4) transparent;
-}
-
-.profile-builder-scrollbar::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-.profile-builder-scrollbar::-webkit-scrollbar-track,
-.profile-builder-scrollbar::-webkit-scrollbar-track-piece {
-  background: transparent !important;
-  border: 0 !important;
-}
-
-.profile-builder-scrollbar::-webkit-scrollbar-thumb {
-  min-height: 36px;
-  border-radius: 9999px;
-  background: transparent !important;
-  background-color: transparent !important;
-  border-inline: 3px solid transparent;
-  border-block: 22px solid transparent;
-  background-clip: content-box;
-  box-shadow: none !important;
-}
-
-.profile-builder-scrollbar:hover::-webkit-scrollbar-thumb,
-.profile-builder-scrollbar:focus-within::-webkit-scrollbar-thumb,
-.profile-builder-scrollbar::-webkit-scrollbar-thumb:hover,
-.profile-builder-scrollbar::-webkit-scrollbar-thumb:active,
-.profile-builder-scrollbar::-webkit-scrollbar-thumb:window-inactive {
-  background: rgba(190, 190, 190, 0.4) !important;
-  background-color: rgba(190, 190, 190, 0.4) !important;
-  background-clip: content-box !important;
-  box-shadow: none !important;
-}
-
-.profile-builder-scrollbar::-webkit-scrollbar-button,
-.profile-builder-scrollbar::-webkit-scrollbar-button:single-button,
-.profile-builder-scrollbar::-webkit-scrollbar-button:vertical,
-.profile-builder-scrollbar::-webkit-scrollbar-button:horizontal,
-.profile-builder-scrollbar::-webkit-scrollbar-button:start,
-.profile-builder-scrollbar::-webkit-scrollbar-button:end,
-.profile-builder-scrollbar::-webkit-scrollbar-button:decrement,
-.profile-builder-scrollbar::-webkit-scrollbar-button:increment {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
-  min-width: 0 !important;
-  min-height: 0 !important;
-  background: transparent !important;
-  background-color: transparent !important;
-  border: 0 !important;
-  -webkit-appearance: none !important;
-}
-
-.profile-builder-scrollbar::-webkit-scrollbar-corner {
-  background: transparent !important;
-}
-
-/* Override utility classes for elements hardcoded with white or light backgrounds (excluding preview canvas) */
-.dark:not(.preview-root, .preview-root *),
-.dark body:not(.preview-root, .preview-root *),
-.dark header:not(.preview-root, .preview-root *),
-.dark .bg-white:not(.preview-root, .preview-root *),
-.dark .bg-\[\#FAFAFA\]:not(.preview-root, .preview-root *),
-.dark .bg-\[\#FEFEFE\]:not(.preview-root, .preview-root *),
-.dark .bg-\[\#FBFBFB\]:not(.preview-root, .preview-root *),
-.dark .bg-card:not(.preview-root, .preview-root *) {
-  background-color: #000404 !important;
-}
-
-/* Overrides for specific page background accents to look premium in dark mode */
-.dark .bg-\[\#F2FDFE\]:not(.preview-root, .preview-root *),
-.dark .bg-brand-light-subtle-bg:not(.preview-root, .preview-root *),
-.dark .bg-brand-subtle-bg:not(.preview-root, .preview-root *) {
-  background-color: rgba(6, 94, 105, 0.15) !important;
-}
-
-.dark .bg-secondary-bg\/50:not(.preview-root, .preview-root *) {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-}
-
-/* Ensure text colors are light enough to read */
-.dark .text-\[\#050505\]:not(.preview-root, .preview-root *),
-.dark .text-primary-text:not(.preview-root, .preview-root *),
-.dark .text-secondary-text:not(.preview-root, .preview-root *),
-.dark .text-tertiary-foreground-text:not(.preview-root, .preview-root *),
-.dark .text-secondary-foreground-text:not(.preview-root, .preview-root *),
-.dark .text-label-text:not(.preview-root, .preview-root *) {
-  color: #fafafa !important;
-}
-
-.dark .text-tertiary-text:not(.preview-root, .preview-root *) {
-  color: #94a3b8 !important;
-}
-
-.dark .border-\[\#EDEDED\]:not(.preview-root, .preview-root *),
-.dark .border-\[\#E5E5E5\]:not(.preview-root, .preview-root *),
-.dark .border-\[\#ABABAB\]:not(.preview-root, .preview-root *),
-.dark .border-primary-foreground-b:not(.preview-root, .preview-root *),
-.dark .border-tertiary-b:not(.preview-root, .preview-root *),
-.dark .border-border:not(.preview-root, .preview-root *) {
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-/* Invert the logo to stand out in dark mode */
-.dark img[alt="Open Profile"] {
-  filter: brightness(0) invert(1);
-}
-
 /* Reset theme variables inside preview canvas to prevent inheriting the global custom dark theme values */
 .dark .preview-root {
   --background: oklch(1 0 0);
@@ -677,4 +566,43 @@
   --tertiary-b: #ededed;
   --disabled-b: #f1f1f1;
   --border-border: #ededed;
+}
+
+/* Custom thin scrollbar settings for both light and dark modes (no track background) */
+::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+
+::-webkit-scrollbar-track,
+*::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15) !important;
+  border-radius: 9999px !important;
+}
+
+::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark::-webkit-scrollbar-thumb,
+.dark *::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-radius: 9999px !important;
+}
+
+.dark::-webkit-scrollbar-thumb:hover,
+.dark *::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+::-webkit-scrollbar-corner,
+*::-webkit-scrollbar-corner {
+  background: transparent !important;
 }

@@ -13,24 +13,24 @@ import Target from "@/components/home/Target";
 
 export default function Home() {
   return (
-    <div className="font-afacad min-h-screen overflow-hidden bg-white text-[#050505] selection:bg-[#065E69] selection:text-white">
+    <div className="font-afacad bg-background text-primary-text min-h-screen overflow-hidden selection:bg-[#065E69] selection:text-white">
       <Navbar />
 
       <div className="pt-19">
         <WaitlistBanner />
-        <div className="w-full bg-[#FAFAFA]">
+        <div className="bg-primary-bg w-full">
           <main className="relative mx-auto w-full">
             <Hero />
           </main>
         </div>
 
-        <section className="w-full bg-[#FAFAFA]">
+        <section className="bg-primary-bg w-full">
           <div className="mx-auto w-full max-w-[1100px] px-4 py-16 sm:px-6 lg:px-0">
             <Impression />
           </div>
         </section>
 
-        <section className="w-full bg-[#FEFEFE]">
+        <section className="bg-background w-full">
           <div className="mx-auto w-full max-w-[1100px] px-4 py-16 sm:px-6 lg:px-0">
             <Target />
           </div>

@@ -31,7 +31,7 @@ export function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 right-0 left-0 z-50 w-full border-b border-[#EDEDED] transition-colors duration-300 ${scrolled ? "bg-white/70 backdrop-blur-md" : "bg-white"}`}
+        className={`border-border fixed top-0 right-0 left-0 z-50 w-full border-b transition-colors duration-300 ${scrolled ? "bg-background/70 backdrop-blur-md" : "bg-background"}`}
       >
         <nav className="max-w-9xl mx-auto flex h-[76px] w-full items-center justify-between px-5 md:px-10 lg:px-16 xl:px-[125px]">
           {/* Logo */}
@@ -44,7 +44,15 @@ export function Navbar() {
               alt="Open Profile"
               width={170}
               height={32}
-              className="h-[30px] w-auto md:h-[28px] lg:h-[32px]"
+              className="h-[30px] w-auto md:h-[28px] lg:h-[32px] dark:hidden"
+              style={{ width: "auto" }}
+            />
+            <Image
+              src="/logo-dark.svg"
+              alt="Open Profile"
+              width={170}
+              height={32}
+              className="hidden h-[30px] w-auto md:h-[28px] lg:h-[32px] dark:block"
               style={{ width: "auto" }}
             />
           </Link>
@@ -55,7 +63,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-lg leading-[26px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
+                className="text-primary-text text-lg leading-[26px] font-medium transition-colors hover:text-[#087583]"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               >
                 {link.label}
@@ -78,7 +86,7 @@ export function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="flex h-[44px] items-center justify-center rounded-[8px] bg-[#FAFAFA] px-[16px] py-[12px] text-[15px] font-semibold text-[#087583] transition-colors hover:bg-[#E5F4F6]"
+                  className="bg-primary-bg hover:bg-brand-light-subtle-bg flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-semibold text-[#087583] transition-colors"
                   style={{ fontFamily: "'Inter', sans-serif" }}
                 >
                   Login
@@ -124,7 +132,7 @@ export function Navbar() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="fixed inset-0 z-50 flex flex-col bg-white md:hidden"
+            className="bg-background fixed inset-0 z-50 flex flex-col md:hidden"
           >
             <div className="border-primary-foreground-bg flex h-19 items-center justify-between border-b px-6">
               <span
