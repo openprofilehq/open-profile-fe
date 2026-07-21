@@ -372,10 +372,10 @@
   --card-foreground: #fafafa;
   --popover: #0c0f10;
   --popover-foreground: #fafafa;
-  --primary: #fafafa;
+  --primary: #66abb4;
   --primary-foreground: #000404;
-  --secondary: #171c1d;
-  --secondary-foreground: #fafafa;
+  --secondary: #c3e2e5;
+  --secondary-foreground: #000404;
   --muted: #171c1d;
   --muted-foreground: #9ca3af;
   --accent: #171c1d;
@@ -383,6 +383,21 @@
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.1);
   --ring: #087583;
+
+  /* border */
+  --primary-b: rgba(255, 255, 255, 0.2);
+  --primary-foreground-b: rgba(255, 255, 255, 0.1);
+  --secondary-b: rgba(255, 255, 255, 0.15);
+  --tertiary-b: rgba(255, 255, 255, 0.1);
+  --disabled-b: rgba(255, 255, 255, 0.05);
+  --inverse-b: rgba(255, 255, 255, 0.1);
+  --inverse-bold-b: rgba(255, 255, 255, 0.2);
+  --brand-b: #66abb4;
+  --brand-subtle-b: rgba(102, 171, 180, 0.2);
+  --info-b: #66abb4;
+  --input-b: rgba(255, 255, 255, 0.1);
+  --button-b: rgba(255, 255, 255, 0.2);
+  --selected-b: rgba(255, 255, 255, 0.2);
 
   /* text */
   --primary-text: #ffffff;
@@ -404,12 +419,6 @@
   --inverse-bg: #ffffff;
   --neutral-bg: #1e292b;
   --brand-light-subtle-bg: rgba(6, 94, 105, 0.15);
-
-  /* border */
-  --primary-b: rgba(255, 255, 255, 0.15);
-  --primary-foreground-b: rgba(255, 255, 255, 0.08);
-  --secondary-b: rgba(255, 255, 255, 0.1);
-  --tertiary-b: rgba(255, 255, 255, 0.08);
 }
 
 @layer base {
