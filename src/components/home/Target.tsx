@@ -58,7 +58,7 @@ const fadeUp = {
 
 export default function Target() {
   return (
-    <div className="text-primary w-full">
+    <div className="text-primary-text w-full">
       <motion.div
         variants={fadeUp}
         initial="hidden"
