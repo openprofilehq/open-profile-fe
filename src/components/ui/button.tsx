@@ -14,7 +14,7 @@ const buttonVariants = cva(
         secondary:
           "bg-button-bg text-brand hover:bg-white/95 aria-expanded:bg-brand aria-expanded:text-secondary-foreground",
         outline:
-          "bg-white text-brand border-brand aria-expanded:bg-muted aria-expanded:text-foreground",
+          "bg-background text-brand border-brand aria-expanded:bg-muted aria-expanded:text-foreground",
         links:
           "bg-transparent text-brand hover:bg-transparent aria-expanded:bg-transparent aria-expanded:text-brand",
         logout:
