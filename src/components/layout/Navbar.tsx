@@ -64,7 +64,6 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className="text-primary-text hover:text-link-hover-text text-lg leading-[26px] font-medium transition-colors"
-                style={{ fontFamily: "'Afacad', sans-serif" }}
               >
                 {link.label}
               </Link>
@@ -78,7 +77,6 @@ export function Navbar() {
               <Link
                 href={ROUTES.dashboard.home}
                 className="bg-brand hover:bg-brand-hover flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-medium whitespace-nowrap text-white transition-colors"
-                style={{ fontFamily: "'Afacad', sans-serif" }}
               >
                 Dashboard
               </Link>
@@ -86,15 +84,13 @@ export function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="bg-primary-bg hover:bg-brand-light-subtle-bg text-link-hover-text flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-semibold transition-colors"
-                  style={{ fontFamily: "'Inter', sans-serif" }}
+                  className="bg-primary-bg hover:bg-brand-light-subtle-bg text-link-hover-text flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-medium transition-colors"
                 >
                   Login
                 </Link>
                 <Link
                   href="/signup"
                   className="bg-brand hover:bg-brand-hover flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-medium whitespace-nowrap text-white transition-colors"
-                  style={{ fontFamily: "'Afacad', sans-serif" }}
                 >
                   Get Started
                 </Link>
@@ -136,12 +132,7 @@ export function Navbar() {
             className="bg-background fixed inset-0 z-50 flex flex-col md:hidden"
           >
             <div className="border-primary-foreground-bg flex h-19 items-center justify-between border-b px-6">
-              <span
-                className="text-brand text-[18px] font-semibold"
-                style={{ fontFamily: "'Afacad', sans-serif" }}
-              >
-                Menu
-              </span>
+              <span className="text-brand text-[18px] font-semibold">Menu</span>
               <button
                 onClick={() => setMobileOpen(false)}
                 className="text-primary-text cursor-pointer p-2"
@@ -162,7 +153,6 @@ export function Navbar() {
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
                   className="text-primary-text text-[18px] font-medium"
-                  style={{ fontFamily: "'Afacad', sans-serif" }}
                 >
                   {item.label}
                 </Link>
@@ -175,7 +165,6 @@ export function Navbar() {
                   href={ROUTES.dashboard.home}
                   onClick={() => setMobileOpen(false)}
                   className="bg-brand hover:bg-brand-hover flex h-13 w-full items-center justify-center rounded-[10px] text-base text-white"
-                  style={{ fontFamily: "'Afacad', sans-serif" }}
                 >
                   Dashboard
                 </Link>
@@ -184,8 +173,7 @@ export function Navbar() {
                   <Link
                     href="/login"
                     onClick={() => setMobileOpen(false)}
-                    className="bg-primary-bg text-link-hover-text flex h-13 w-full items-center justify-center rounded-[10px] text-base font-semibold"
-                    style={{ fontFamily: "'Afacad', sans-serif" }}
+                    className="bg-primary-bg text-link-hover-text flex h-13 w-full items-center justify-center rounded-[10px] text-base font-medium"
                   >
                     Login
                   </Link>
@@ -193,7 +181,6 @@ export function Navbar() {
                     href="/signup"
                     onClick={() => setMobileOpen(false)}
                     className="bg-brand hover:bg-brand-hover flex h-13 w-full items-center justify-center rounded-[10px] text-base font-medium text-white"
-                    style={{ fontFamily: "'Afacad', sans-serif" }}
                   >
                     Get Started
                   </Link>
