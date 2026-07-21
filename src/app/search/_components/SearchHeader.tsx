@@ -31,7 +31,7 @@ export default function SearchHeader({ initialQuery }: SearchHeaderProps) {
   }
 
   return (
-    <section className="border-secondary-b border-b bg-[#DBEFF2] px-4 pt-[100px] pb-10 text-[#050505] md:pt-[120px] md:pb-16">
+    <section className="border-secondary-b bg-brand-progress-bg text-primary-text border-b px-4 pt-[100px] pb-10 md:pt-[120px] md:pb-16">
       <div className="mx-auto max-w-[800px] text-center">
         <h1 className="mb-6 text-[28px] leading-tight font-semibold md:text-[36px]">
           Find Someone on Open Profile

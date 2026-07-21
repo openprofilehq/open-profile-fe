@@ -243,7 +243,7 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
           type="submit"
           disabled={pending || !email || !password || (isSignup && !agreed)}
           className={`mt-1 h-13 w-full rounded-[10px] text-base font-medium shadow-none transition-colors ${
-            pending || !email || !password
+            pending || !email || !password || (isSignup && !agreed)
               ? "border-button-b text-label-text bg-disabled-bg border"
               : "bg-brand-hover-bg hover:bg-brand border-0 text-white"
           }`}

@@ -187,7 +187,7 @@ export default function TermsOfService() {
 
   return (
     <div className="text-primary-text selection:bg-brand bg-background min-h-screen overflow-x-clip font-sans selection:text-white">
-      <div className="h-80 w-screen bg-[#DBEFF2] pt-20 text-[#050505] lg:pt-36">
+      <div className="bg-brand-progress-bg text-primary-text h-80 w-screen pt-20 lg:pt-36">
         <div className="mx-auto flex max-w-[70%] flex-col gap-3 p-3">
           <div>
             <h3 className="text-4xl font-bold">Terms of Service</h3>

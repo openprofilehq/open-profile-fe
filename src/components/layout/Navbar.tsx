@@ -63,7 +63,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-primary-text text-lg leading-[26px] font-medium transition-colors hover:text-[#087583]"
+                className="text-primary-text hover:text-link-hover-text text-lg leading-[26px] font-medium transition-colors"
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               >
                 {link.label}
@@ -86,7 +86,7 @@ export function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="bg-primary-bg hover:bg-brand-light-subtle-bg flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-semibold text-[#087583] transition-colors"
+                  className="bg-primary-bg hover:bg-brand-light-subtle-bg text-link-hover-text flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-semibold transition-colors"
                   style={{ fontFamily: "'Inter', sans-serif" }}
                 >
                   Login
@@ -106,6 +106,7 @@ export function Navbar() {
           <div className="z-50 flex items-center gap-3 md:hidden">
             <ThemeToggle />
             <button
+              type="button"
               className="flex cursor-pointer flex-col gap-1.5 p-2"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Toggle menu"

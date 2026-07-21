@@ -4,9 +4,10 @@ import { useRef, useState } from "react";
 type Props = {
   length?: number;
   onChange: (code: string[]) => void;
+  labelId?: string;
 };
 
-export function OtpInput({ length = 6, onChange }: Props) {
+export function OtpInput({ length = 6, onChange, labelId }: Props) {
   const [code, setCode] = useState<string[]>(Array(length).fill(""));
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -47,6 +48,8 @@ export function OtpInput({ length = 6, onChange }: Props) {
     <div
       className="flex items-center justify-between gap-2"
       onPaste={handlePaste}
+      role="group"
+      aria-labelledby={labelId}
     >
       {code.map((val, i) => (
         <input

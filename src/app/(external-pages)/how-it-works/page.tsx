@@ -152,7 +152,7 @@ export default function HowItWorksPage() {
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={containerVariants}
-        className="mx-auto mt-10 bg-[#DBEFF2] p-5 text-[#050505] lg:pt-16 lg:pb-20"
+        className="bg-brand-progress-bg text-primary-text mx-auto mt-10 p-5 lg:pt-16 lg:pb-20"
       >
         <div className="mx-auto grid max-w-2xl gap-6 md:grid-cols-2">
           {data.map((item, index) => (

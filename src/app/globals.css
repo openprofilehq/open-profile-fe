@@ -424,6 +424,7 @@
   --inverse-bg: #ffffff;
   --neutral-bg: #1e292b;
   --brand-light-subtle-bg: rgba(6, 94, 105, 0.15);
+  --link-hover-text: #66abb4;
 }
 
 @layer base {
@@ -579,7 +580,6 @@
   --secondary-b: #c9c9c9;
   --tertiary-b: #ededed;
   --disabled-b: #f1f1f1;
-  --border-border: #ededed;
 }
 
 /* Custom thin scrollbar settings for both light and dark modes (no track background) */

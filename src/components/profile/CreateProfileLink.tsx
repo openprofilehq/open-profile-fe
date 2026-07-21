@@ -62,9 +62,7 @@ export default function CreateProfileLink({
             className={`bg-primary-bg h-[56px] flex-1 rounded-[8px] px-4 text-lg shadow-none ${
               isUnavailable
                 ? "border-negative-text text-negative-text"
-                : isAvailable
-                  ? "border-input-b text-primary-text"
-                  : "border-input-b text-primary-text"
+                : "border-input-b text-primary-text"
             }`}
           />
         </div>

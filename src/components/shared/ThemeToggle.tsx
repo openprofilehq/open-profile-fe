@@ -37,6 +37,7 @@ export function ThemeToggle() {
 
   return (
     <button
+      type="button"
       onClick={toggleTheme}
       className="border-primary-foreground-b text-primary-text hover:bg-hover-bg relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-[10px] border bg-white transition-all hover:shadow-sm active:scale-95 dark:border-white/10 dark:bg-transparent dark:text-white"
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}

@@ -79,7 +79,7 @@ export default function FaqPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="mt-19 flex flex-col items-center justify-center space-y-1 bg-[#DBEFF2] py-10 text-center text-[#050505] lg:py-17"
+        className="bg-brand-progress-bg text-primary-text mt-19 flex flex-col items-center justify-center space-y-1 py-10 text-center lg:py-17"
       >
         <p className="text-[36px] leading-18 font-semibold tracking-[-1.51px] lg:text-[60px] lg:leading-18">
           Frequently asked questions
