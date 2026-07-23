@@ -4,7 +4,6 @@ on:
   pull_request:
     branches: [feat/ci-cd-pipeline, dev, staging, production]
 
-
 jobs:
   ci:
     name: CI — Lint, Typecheck & Build
@@ -37,4 +36,4 @@ jobs:
       - name: Build
         run: pnpm build
         env:
-          NODE_ENV: production    
+          NODE_ENV: production

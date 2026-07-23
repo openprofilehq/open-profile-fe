@@ -79,7 +79,7 @@ export default function FaqPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="mt-19 flex flex-col items-center justify-center space-y-1 bg-[#DBEFF2] py-10 text-center lg:py-17"
+        className="bg-brand-progress-bg text-primary-text mt-19 flex flex-col items-center justify-center space-y-1 py-10 text-center lg:py-17"
       >
         <p className="text-[36px] leading-18 font-semibold tracking-[-1.51px] lg:text-[60px] lg:leading-18">
           Frequently asked questions
@@ -109,7 +109,7 @@ export default function FaqPage() {
                 >
                   <span className="pr-4">{item.question}</span>
                 </AccordionTrigger>
-                <AccordionContent className="px-6 pb-6 text-[18px] leading-relaxed text-[#525252]">
+                <AccordionContent className="text-secondary-text px-6 pb-6 text-[18px] leading-relaxed">
                   {item.answer}
                 </AccordionContent>
               </AccordionItem>

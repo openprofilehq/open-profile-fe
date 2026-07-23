@@ -28,6 +28,7 @@ import { getInitials } from "@/utils/avatar";
 import { getImageUrl } from "@/utils/profile";
 import type { PublishProfileResponse } from "@/api/profile/profile.type";
 import { useProfileBuilderPublishState } from "./profile-builder/profile-builder-publish-state";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 const navLinks = [
   {
@@ -151,7 +152,14 @@ export default function DashboardTopbar() {
               alt="Open Profile"
               width={180}
               height={40}
-              className="h-auto w-36 shrink-0 cursor-pointer sm:w-40"
+              className="h-auto w-36 shrink-0 cursor-pointer sm:w-40 dark:hidden"
+            />
+            <Image
+              src="/logo-dark.svg"
+              alt="Open Profile"
+              width={180}
+              height={40}
+              className="hidden h-auto w-36 shrink-0 cursor-pointer sm:w-40 dark:block"
             />
           </Link>
 
@@ -206,6 +214,7 @@ export default function DashboardTopbar() {
 
           {/* Right Actions */}
           <div className="flex shrink-0 items-center gap-3 md:gap-4">
+            <ThemeToggle />
             <Button
               asChild
               variant="outline"

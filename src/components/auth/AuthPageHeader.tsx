@@ -6,8 +6,8 @@ type Props = {
 export function AuthPageHeader({ title, subtitle }: Props) {
   return (
     <div className="mb-2 text-center">
-      <h1 className="text-2xl font-bold text-[#050505]">{title}</h1>
-      <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
+      <h1 className="text-primary-text text-2xl font-bold">{title}</h1>
+      <p className="text-secondary-text mt-1 text-sm">{subtitle}</p>
     </div>
   );
 }

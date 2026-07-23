@@ -53,7 +53,7 @@ export function WaitlistCTA() {
   };
 
   return (
-    <section className="relative w-full overflow-hidden bg-[#FAFAFA] px-6 py-16">
+    <section className="bg-primary-bg relative w-full overflow-hidden px-6 py-16">
       <div className="pointer-events-none absolute bottom-0 left-0 hidden h-auto w-auto select-none lg:block">
         <Image
           src="/waitlist/cta-left.svg"
@@ -75,7 +75,7 @@ export function WaitlistCTA() {
         />
       </div>
 
-      <div className="bg-inverse-bg relative mx-auto flex max-w-[1280px] flex-col items-center overflow-hidden rounded-[24px] px-6 py-16 text-center md:px-12">
+      <div className="bg-inverse-bg relative mx-auto flex max-w-[1280px] flex-col items-center overflow-hidden rounded-[24px] px-6 py-16 text-center md:px-12 dark:bg-[#202020]">
         <div className="relative z-10 flex w-full max-w-[700px] flex-col items-center">
           <motion.h2
             {...fadeUp(0)}
@@ -87,7 +87,7 @@ export function WaitlistCTA() {
 
           <motion.p
             {...fadeUp(0.1)}
-            className="mb-10 max-w-[540px] text-[16px] text-[#E5E5E5] md:text-[18px]"
+            className="text-secondary-text mb-10 max-w-[540px] text-[16px] md:text-[18px]"
             style={{ fontFamily: "'Afacad', sans-serif" }}
           >
             Join the waitlist and be among the first to access the new way to
@@ -110,10 +110,10 @@ export function WaitlistCTA() {
                 }}
                 onBlur={handleBlur}
                 disabled={isPending}
-                className={`h-13.5 w-full rounded-[10px] border bg-white px-5 text-[#050505] transition-colors outline-none placeholder:text-[#999] ${
+                className={`bg-card text-primary-text placeholder:text-secondary-text h-13.5 w-full rounded-[10px] border px-5 transition-colors outline-none ${
                   emailError
                     ? "border-red-400"
-                    : "border-transparent focus:border-[#087583]"
+                    : "focus:border-link-hover-text border-transparent"
                 }`}
                 style={{ fontFamily: "'Afacad', sans-serif" }}
               />

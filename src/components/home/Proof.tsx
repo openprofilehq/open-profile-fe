@@ -54,8 +54,8 @@ const row2 = [testimonials[3], testimonials[4], testimonials[1]];
 
 function TestimonialCard({ t }: { t: Testimonial }) {
   return (
-    <div className="mx-3 flex w-70 shrink-0 flex-col justify-between rounded-[16px] bg-white p-5 shadow-sm md:w-80">
-      <p className="mb-5 text-[13px] leading-relaxed text-[#4A4A4A]">
+    <div className="bg-card mx-3 flex w-70 shrink-0 flex-col justify-between rounded-[16px] p-5 shadow-sm md:w-80">
+      <p className="text-secondary-text mb-5 text-[13px] leading-relaxed">
         &quot;{t.text}&quot;
       </p>
       <div className="flex items-center gap-3">

@@ -99,14 +99,14 @@ export function Features() {
         transition={{ duration: 0.6 }}
         className="mx-auto mb-10 flex w-full max-w-[1100px] flex-col items-center gap-4 px-4 text-center sm:px-6 lg:px-0"
       >
-        <span className="bg-brand-light-subtle-bg mx-auto flex h-7.5 w-fit items-center gap-1 rounded-[24px] pr-5.5 pl-3.5">
+        <span className="mx-auto flex h-7.5 w-fit items-center gap-1 rounded-[24px] bg-[#F1FDFE] pr-5.5 pl-3.5">
           <Image
             src="/target_assets/icon-flash.svg"
             alt=""
             width={16}
             height={16}
           />
-          <p className="text-brand text-[12px] leading-4 font-medium">
+          <p className="text-[12px] leading-4 font-medium text-[#065E69]">
             Powerful Features
           </p>
         </span>

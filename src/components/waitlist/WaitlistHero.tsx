@@ -54,7 +54,7 @@ export function WaitlistHero() {
   };
 
   return (
-    <section className="relative flex min-h-screen w-full flex-col items-center overflow-hidden bg-[#FAFAFA] px-6 pt-8 md:h-[700px] md:min-h-[700px] md:pt-12">
+    <section className="bg-primary-bg relative flex min-h-screen w-full flex-col items-center overflow-hidden px-6 pt-8 md:h-[700px] md:min-h-[700px] md:pt-12">
       {/* Background Images */}
       <div className="pointer-events-none absolute bottom-0 -left-0 hidden select-none lg:block">
         <Image
@@ -87,7 +87,15 @@ export function WaitlistHero() {
             alt="Open Profile"
             width={170}
             height={32}
-            className="h-[32px] w-auto cursor-pointer"
+            className="h-[32px] w-auto cursor-pointer dark:hidden"
+            style={{ width: "auto" }}
+          />
+          <Image
+            src="/logo-dark.svg"
+            alt="Open Profile"
+            width={170}
+            height={32}
+            className="hidden h-[32px] w-auto cursor-pointer dark:block"
             style={{ width: "auto" }}
           />
         </Link>
@@ -97,7 +105,7 @@ export function WaitlistHero() {
       <div className="z-10 flex w-full max-w-[800px] flex-col items-center text-center">
         <motion.h1
           {...fadeUp(0.1)}
-          className="mb-6 text-[40px] leading-[1.1] font-semibold tracking-[-1.5px] text-[#050505] md:text-[60px]"
+          className="text-primary-text mb-6 text-[40px] leading-[1.1] font-semibold tracking-[-1.5px] md:text-[60px]"
           style={{ fontFamily: "'Afacad', sans-serif" }}
         >
           Join the waitlist for <br className="hidden md:block" />
@@ -106,7 +114,7 @@ export function WaitlistHero() {
 
         <motion.p
           {...fadeUp(0.2)}
-          className="text-label-text mb-10 max-w-[740px] text-[16px] leading-[26px] md:text-[18px]"
+          className="text-secondary-text mb-10 max-w-[740px] text-[16px] leading-[26px] md:text-[18px]"
           style={{ fontFamily: "'Afacad', sans-serif" }}
         >
           Stop losing clients to identity doubt. Open Profile is the first
@@ -132,10 +140,10 @@ export function WaitlistHero() {
               }}
               onBlur={handleBlur}
               disabled={isPending}
-              className={`h-[50px] w-full rounded-[8px] border bg-[#FAFAFA] px-4 text-[#050505] transition-colors outline-none placeholder:text-[#999] ${
+              className={`bg-card text-primary-text placeholder:text-secondary-text h-[50px] w-full rounded-[8px] border px-4 transition-colors outline-none ${
                 emailError
                   ? "border-red-400"
-                  : "border-[#E5E5E5] focus:border-[#087583]"
+                  : "border-secondary-b focus:border-link-hover-text"
               }`}
               style={{ fontFamily: "'Afacad', sans-serif" }}
             />
@@ -175,7 +183,7 @@ export function WaitlistHero() {
             />
           </div>
           <p
-            className="text-label-text text-[14px] md:text-[15px]"
+            className="text-secondary-text text-[14px] md:text-[15px]"
             style={{ fontFamily: "'Afacad', sans-serif" }}
           >
             <span className="hidden md:inline">

@@ -10,7 +10,7 @@ type DashboardLayoutProps = {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <ProfileBuilderPublishStateProvider>
-      <div className="min-h-screen bg-[#FAFAFA]">
+      <div className="bg-background min-h-screen">
         <DashboardTopbar />
         <main className="min-w-0 flex-1 overflow-x-hidden px-4 py-5 pb-24 sm:px-5 md:px-6 md:py-8 lg:px-8 lg:pb-8">
           {children}

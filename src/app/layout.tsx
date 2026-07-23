@@ -11,6 +11,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { env } from "@/env/client";
 import { Toaster } from "sonner";
+import Script from "next/script";
 
 const afacad = Afacad({ subsets: ["latin"], variable: "--font-afacad" });
 const dancing = Dancing_Script({
@@ -47,6 +48,19 @@ export default function RootLayout({
       lang="en"
       className={cn("font-afacad h-full antialiased", afacad.variable)}
     >
+      <head>
+        <Script id="theme-override" strategy="beforeInteractive">
+          {`
+            try {
+              if (localStorage.getItem('theme-bg-override') === 'dark') {
+                document.documentElement.classList.add('dark');
+              } else {
+                document.documentElement.classList.remove('dark');
+              }
+            } catch (_) {}
+          `}
+        </Script>
+      </head>
       <body
         className={`flex min-h-full flex-col ${afacad.variable} ${dancing.variable} ${inter.variable} ${geologica.variable} ${playfair.variable}`}
       >

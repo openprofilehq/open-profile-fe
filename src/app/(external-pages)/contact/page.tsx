@@ -4,7 +4,7 @@ import { ContactForm } from "@/components/contact/ContactForm";
 
 export default function ContactPage() {
   return (
-    <div className="selection:bg-brand text-primary-text min-h-screen overflow-hidden bg-white font-sans selection:text-white">
+    <div className="selection:bg-brand text-primary-text bg-background min-h-screen overflow-hidden font-sans selection:text-white">
       <div className="pt-[76px]">
         <main className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24">
           {/* Header */}

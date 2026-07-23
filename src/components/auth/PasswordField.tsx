@@ -53,7 +53,7 @@ export function PasswordField({
             setFocused(false);
             onBlur?.(e);
           }}
-          className={`border-input-b placeholder:text-input-text h-11 border bg-[#FAFAFA] pr-10 shadow-none transition-all duration-200 hover:border-[#ABABAB] hover:bg-white hover:shadow-sm ${error ? "border-red-400" : ""}`}
+          className={`border-input-b placeholder:text-input-text bg-primary-bg hover:border-primary-b hover:bg-hover-bg h-11 border pr-10 shadow-none transition-all duration-200 hover:shadow-sm ${error ? "border-red-400" : ""}`}
         />
         <Button
           type="button"
@@ -122,7 +122,9 @@ export function PasswordField({
             >
               <div className="flex flex-col">
                 {!allMet && (
-                  <p className="text-label-text mb-[16px] text-xs">{label}</p>
+                  <p className="text-secondary-text mb-[16px] text-xs">
+                    {label}
+                  </p>
                 )}
                 <div className="flex flex-col gap-[12px]">
                   {rules.map((rule) => {
@@ -131,7 +133,7 @@ export function PasswordField({
                       <div key={rule.label} className="flex items-center gap-2">
                         <div
                           style={{ borderRadius: "2px" }}
-                          className={`flex h-4 w-4 items-center justify-center border transition-colors ${met ? "border-selected-b" : "border-gray-300"}`}
+                          className={`flex h-4 w-4 items-center justify-center border transition-colors ${met ? "border-selected-b" : "border-input-b"}`}
                         >
                           {met && (
                             <svg
@@ -151,7 +153,7 @@ export function PasswordField({
                           )}
                         </div>
                         <span
-                          className={`text-xs ${met ? "text-selected-text" : "text-input-text"}`}
+                          className={`text-xs ${met ? "text-brand" : "text-secondary-text"}`}
                         >
                           {rule.label}
                         </span>
