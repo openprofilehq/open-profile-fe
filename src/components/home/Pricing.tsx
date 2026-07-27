@@ -105,7 +105,7 @@ export function Pricing() {
 
         <motion.div
           variants={itemVariants}
-          className="border-primary-foreground-b mb-10 inline-flex items-center rounded-2xl border bg-white text-center transition-all duration-300"
+          className="border-primary-foreground-b bg-background mb-10 inline-flex items-center rounded-2xl border text-center transition-all duration-300"
         >
           <Button
             variant={null}
@@ -140,7 +140,7 @@ export function Pricing() {
               className={`flex h-full flex-col rounded-[16px] border p-4 xl:p-8 ${
                 plan.highlighted
                   ? "bg-brand-hover-bg border-brand text-white"
-                  : "border-primary-foreground-b text-primary-text bg-white"
+                  : "border-primary-foreground-b text-primary-text bg-card"
               }`}
             >
               <div className="mb-8">

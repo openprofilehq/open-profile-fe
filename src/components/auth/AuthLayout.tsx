@@ -10,16 +10,24 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAFAFA]">
+    <div className="bg-primary-bg flex min-h-screen flex-col">
       <div className="flex justify-center pt-6">
         <Link href="/">
           <Image
-            src="/auth/logo.png"
-            alt="Open.Profile"
+            src="/logo.svg"
+            alt="Open Profile"
             width={140}
             height={32}
             priority
-            className="mb-12"
+            className="mb-12 dark:hidden"
+          />
+          <Image
+            src="/logo-dark.svg"
+            alt="Open Profile"
+            width={140}
+            height={32}
+            priority
+            className="mb-12 hidden dark:block"
           />
         </Link>
       </div>
@@ -33,7 +41,14 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             alt=""
             width={270}
             height={350}
-            className="object-contain"
+            className="object-contain dark:hidden"
+          />
+          <Image
+            src="/auth/bg-left-dark.png"
+            alt=""
+            width={270}
+            height={350}
+            className="hidden object-contain dark:block"
           />
         </div>
 
@@ -41,7 +56,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="border-input-b relative z-10 flex w-full max-w-2xl flex-col gap-5 rounded-2xl border bg-[#FEFEFE] px-6 py-8 shadow-none sm:px-20 sm:py-14"
+          className="border-input-b bg-card relative z-10 flex w-full max-w-2xl flex-col gap-5 rounded-2xl border px-6 py-8 shadow-none sm:px-20 sm:py-14"
         >
           <Button
             variant="links"
@@ -72,7 +87,14 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             alt=""
             width={270}
             height={350}
-            className="object-contain"
+            className="object-contain dark:hidden"
+          />
+          <Image
+            src="/auth/bg-right-dark.png"
+            alt=""
+            width={270}
+            height={350}
+            className="hidden object-contain dark:block"
           />
         </div>
       </div>

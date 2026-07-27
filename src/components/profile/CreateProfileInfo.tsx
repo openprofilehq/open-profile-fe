@@ -154,7 +154,7 @@ export default function CreateProfileInfo({
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
         <div className="mb-1 text-center">
-          <h1 className="text-primary text-3xl font-bold">
+          <h1 className="text-brand text-3xl font-bold">
             Tell us about yourself
           </h1>
           <p className="text-secondary-text my-2">
@@ -258,7 +258,7 @@ export default function CreateProfileInfo({
               placeholder="Enter your full name"
               aria-invalid={shouldShowFullNameError}
               aria-describedby="full-name-help"
-              className={`border-2 bg-white shadow-none ${
+              className={`bg-primary-bg text-primary-text border-2 shadow-none ${
                 shouldShowFullNameError
                   ? "border-danger-text focus-visible:ring-danger-text"
                   : "border-active-bg"
@@ -284,7 +284,7 @@ export default function CreateProfileInfo({
               <span className="text-danger-text">*</span> Bio
             </label>
             <textarea
-              className={`w-full resize-none rounded-lg border-2 bg-white p-3 focus:outline-none ${
+              className={`text-primary-text bg-primary-bg w-full resize-none rounded-lg border-2 p-3 focus:outline-none ${
                 errors.bio
                   ? "focus:ring-danger-text border-danger-text focus:ring-1"
                   : "border-active-bg"

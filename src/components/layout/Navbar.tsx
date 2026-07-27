@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCurrentUserOption } from "@/api/auth/auth.options";
 import { Navlinks, ROUTES } from "@/constants/routes";
 import { useAuthCookie } from "@/hooks/useAuthCookie";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -30,7 +31,7 @@ export function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 right-0 left-0 z-50 w-full border-b border-[#EDEDED] transition-colors duration-300 ${scrolled ? "bg-white/70 backdrop-blur-md" : "bg-white"}`}
+        className={`border-border fixed top-0 right-0 left-0 z-50 w-full border-b transition-colors duration-300 ${scrolled ? "bg-background/70 backdrop-blur-md" : "bg-background"}`}
       >
         <nav className="max-w-9xl mx-auto flex h-[76px] w-full items-center justify-between px-5 md:px-10 lg:px-16 xl:px-[125px]">
           {/* Logo */}
@@ -43,7 +44,15 @@ export function Navbar() {
               alt="Open Profile"
               width={170}
               height={32}
-              className="h-[30px] w-auto md:h-[28px] lg:h-[32px]"
+              className="h-[30px] w-auto md:h-[28px] lg:h-[32px] dark:hidden"
+              style={{ width: "auto" }}
+            />
+            <Image
+              src="/logo-dark.svg"
+              alt="Open Profile"
+              width={170}
+              height={32}
+              className="hidden h-[30px] w-auto md:h-[28px] lg:h-[32px] dark:block"
               style={{ width: "auto" }}
             />
           </Link>
@@ -54,8 +63,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-lg leading-[26px] font-medium text-[#050505] transition-colors hover:text-[#087583]"
-                style={{ fontFamily: "'Afacad', sans-serif" }}
+                className="text-primary-text hover:text-link-hover-text text-lg leading-[26px] font-medium transition-colors"
               >
                 {link.label}
               </Link>
@@ -64,11 +72,11 @@ export function Navbar() {
 
           {/* Desktop auth buttons */}
           <div className="hidden items-center gap-3 md:flex">
+            <ThemeToggle />
             {user ? (
               <Link
                 href={ROUTES.dashboard.home}
                 className="bg-brand hover:bg-brand-hover flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-medium whitespace-nowrap text-white transition-colors"
-                style={{ fontFamily: "'Afacad', sans-serif" }}
               >
                 Dashboard
               </Link>
@@ -76,15 +84,13 @@ export function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="flex h-[44px] items-center justify-center rounded-[8px] bg-[#FAFAFA] px-[16px] py-[12px] text-[15px] font-semibold text-[#087583] transition-colors hover:bg-[#E5F4F6]"
-                  style={{ fontFamily: "'Inter', sans-serif" }}
+                  className="bg-primary-bg hover:bg-brand-light-subtle-bg text-link-hover-text flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-medium transition-colors"
                 >
                   Login
                 </Link>
                 <Link
                   href="/signup"
                   className="bg-brand hover:bg-brand-hover flex h-[44px] items-center justify-center rounded-[8px] px-[16px] py-[12px] text-[15px] font-medium whitespace-nowrap text-white transition-colors"
-                  style={{ fontFamily: "'Afacad', sans-serif" }}
                 >
                   Get Started
                 </Link>
@@ -92,21 +98,26 @@ export function Navbar() {
             )}
           </div>
 
-          <button
-            className="z-50 flex cursor-pointer flex-col gap-1.5 p-2 md:hidden"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
-          >
-            <span
-              className={`block h-0.5 w-5 bg-[#050505] transition-transform duration-200 ${mobileOpen ? "translate-y-2 rotate-45" : ""}`}
-            />
-            <span
-              className={`block h-0.5 w-5 bg-[#050505] transition-opacity duration-200 ${mobileOpen ? "opacity-0" : ""}`}
-            />
-            <span
-              className={`block h-0.5 w-5 bg-[#050505] transition-transform duration-200 ${mobileOpen ? "-translate-y-2 -rotate-45" : ""}`}
-            />
-          </button>
+          {/* Mobile actions & hamburger menu */}
+          <div className="z-50 flex items-center gap-3 md:hidden">
+            <ThemeToggle />
+            <button
+              type="button"
+              className="flex cursor-pointer flex-col gap-1.5 p-2"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Toggle menu"
+            >
+              <span
+                className={`bg-primary-text block h-0.5 w-5 transition-transform duration-200 ${mobileOpen ? "translate-y-2 rotate-45" : ""}`}
+              />
+              <span
+                className={`bg-primary-text block h-0.5 w-5 transition-opacity duration-200 ${mobileOpen ? "opacity-0" : ""}`}
+              />
+              <span
+                className={`bg-primary-text block h-0.5 w-5 transition-transform duration-200 ${mobileOpen ? "-translate-y-2 -rotate-45" : ""}`}
+              />
+            </button>
+          </div>
         </nav>
       </header>
 
@@ -118,15 +129,10 @@ export function Navbar() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="fixed inset-0 z-50 flex flex-col bg-white md:hidden"
+            className="bg-background fixed inset-0 z-50 flex flex-col md:hidden"
           >
             <div className="border-primary-foreground-bg flex h-19 items-center justify-between border-b px-6">
-              <span
-                className="text-brand text-[18px] font-semibold"
-                style={{ fontFamily: "'Afacad', sans-serif" }}
-              >
-                Menu
-              </span>
+              <span className="text-brand text-[18px] font-semibold">Menu</span>
               <button
                 onClick={() => setMobileOpen(false)}
                 className="text-primary-text cursor-pointer p-2"
@@ -147,7 +153,6 @@ export function Navbar() {
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
                   className="text-primary-text text-[18px] font-medium"
-                  style={{ fontFamily: "'Afacad', sans-serif" }}
                 >
                   {item.label}
                 </Link>
@@ -160,7 +165,6 @@ export function Navbar() {
                   href={ROUTES.dashboard.home}
                   onClick={() => setMobileOpen(false)}
                   className="bg-brand hover:bg-brand-hover flex h-13 w-full items-center justify-center rounded-[10px] text-base text-white"
-                  style={{ fontFamily: "'Afacad', sans-serif" }}
                 >
                   Dashboard
                 </Link>
@@ -169,8 +173,7 @@ export function Navbar() {
                   <Link
                     href="/login"
                     onClick={() => setMobileOpen(false)}
-                    className="bg-primary-bg text-link-hover-text flex h-13 w-full items-center justify-center rounded-[10px] text-base font-semibold"
-                    style={{ fontFamily: "'Afacad', sans-serif" }}
+                    className="bg-primary-bg text-link-hover-text flex h-13 w-full items-center justify-center rounded-[10px] text-base font-medium"
                   >
                     Login
                   </Link>
@@ -178,7 +181,6 @@ export function Navbar() {
                     href="/signup"
                     onClick={() => setMobileOpen(false)}
                     className="bg-brand hover:bg-brand-hover flex h-13 w-full items-center justify-center rounded-[10px] text-base font-medium text-white"
-                    style={{ fontFamily: "'Afacad', sans-serif" }}
                   >
                     Get Started
                   </Link>

@@ -86,7 +86,7 @@ export default function ResetPasswordPage() {
                 confirm && password !== confirm ? "Passwords do not match" : ""
               )
             }
-            className={`border-input-b placeholder:text-input-text h-11 border bg-[#FAFAFA] shadow-none ${confirmError ? "border-red-400" : ""}`}
+            className={`border-input-b placeholder:text-input-text bg-primary-bg h-11 border shadow-none ${confirmError ? "border-red-400" : ""}`}
           />
           {confirmError && (
             <p className="text-xs text-red-500">{confirmError}</p>

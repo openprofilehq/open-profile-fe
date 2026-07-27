@@ -162,7 +162,7 @@ export function ContactForm() {
               type="text"
               placeholder="Shukuneh Itouer"
               {...register("name")}
-              className={`placeholder:text-disabled-text w-full rounded-[8px] border px-4 py-3 text-[13px] transition focus:ring-2 focus:outline-none ${
+              className={`placeholder:text-disabled-text bg-primary-bg text-primary-text w-full rounded-[8px] border px-4 py-3 text-[13px] transition focus:ring-2 focus:outline-none ${
                 errors.name
                   ? "border-negative-text focus:ring-negative-text"
                   : "border-input-b focus:ring-brand focus:border-transparent"
@@ -187,7 +187,7 @@ export function ContactForm() {
               type="email"
               placeholder="shukuneh025@gmail.com"
               {...register("email")}
-              className={`placeholder:text-disabled-text w-full rounded-[8px] border px-4 py-3 text-[13px] transition focus:ring-2 focus:outline-none ${
+              className={`placeholder:text-disabled-text bg-primary-bg text-primary-text w-full rounded-[8px] border px-4 py-3 text-[13px] transition focus:ring-2 focus:outline-none ${
                 errors.email
                   ? "border-negative-text focus:ring-negative-text"
                   : "border-input-b focus:ring-brand focus:border-transparent"
@@ -209,7 +209,7 @@ export function ContactForm() {
               <Button
                 type="button"
                 onClick={() => setOpen((o) => !o)}
-                className="border-input-b focus:ring-brand flex w-full items-center justify-between rounded-[8px] border bg-white px-4 py-3 text-[13px] transition focus:ring-2 focus:outline-none"
+                className="border-input-b focus:ring-brand bg-primary-bg flex w-full items-center justify-between rounded-[8px] border px-4 py-3 text-[13px] transition focus:ring-2 focus:outline-none"
               >
                 <span
                   className={
@@ -225,7 +225,7 @@ export function ContactForm() {
               </Button>
 
               {open && (
-                <div className="border-input-b absolute z-10 mt-1 w-full origin-top overflow-hidden rounded-[8px] border bg-white shadow-lg">
+                <div className="border-input-b bg-card absolute z-10 mt-1 w-full origin-top overflow-hidden rounded-[8px] border shadow-lg">
                   {industries.map((i) => (
                     <Button
                       key={i}
@@ -261,7 +261,7 @@ export function ContactForm() {
               rows={5}
               placeholder="Type your messages"
               {...register("message")}
-              className={`placeholder:text-disabled-text w-full resize-none rounded-[8px] border px-4 py-3 text-[13px] transition focus:ring-2 focus:outline-none ${
+              className={`placeholder:text-disabled-text bg-primary-bg text-primary-text w-full resize-none rounded-[8px] border px-4 py-3 text-[13px] transition focus:ring-2 focus:outline-none ${
                 errors.message || characterCount > MESSAGE_MAX_LENGTH
                   ? "border-negative-text focus:ring-negative-text"
                   : "border-input-b focus:ring-brand focus:border-transparent"

@@ -45,10 +45,10 @@ export default function VerifyEmailPage() {
       />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <label className="text-label-text text-sm font-medium">
+        <p id="otp-label" className="text-primary-text text-sm font-medium">
           Enter code
-        </label>
-        <OtpInput onChange={setCode} />
+        </p>
+        <OtpInput onChange={setCode} labelId="otp-label" />
         <Button
           type="submit"
           disabled={!isComplete || verifyMutation.isPending}

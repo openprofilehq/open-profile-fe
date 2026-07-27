@@ -157,7 +157,7 @@ export default async function UserProfilePage({ params }: Props) {
   return (
     <TemplateAppearanceProvider
       appearance={themeSettings}
-      className="flex min-h-screen w-full flex-col"
+      className="light flex min-h-screen w-full flex-col"
     >
       <div className="relative z-50 flex w-full shrink-0 justify-center py-6">
         <Link href="/">
@@ -166,7 +166,7 @@ export default async function UserProfilePage({ params }: Props) {
             alt="Open.Profile"
             width={120}
             height={28}
-            className="object-contain drop-shadow-sm transition-opacity hover:opacity-80 dark:invert"
+            className="object-contain drop-shadow-sm transition-opacity hover:opacity-80"
             priority
           />
         </Link>

@@ -6,7 +6,7 @@ import React from "react";
 
 const PrivacyPolicy = () => {
   return (
-    <div className="text-primary selection:bg-brand min-h-screen overflow-x-clip bg-white font-sans selection:text-white">
+    <div className="text-primary-text selection:bg-brand bg-background min-h-screen overflow-x-clip font-sans selection:text-white">
       <PrivacyHero />
       <div className="mx-auto flex flex-col gap-10 px-4 py-16 lg:max-w-6xl lg:flex-row">
         <div className="flex-1">

@@ -10,10 +10,10 @@ export default function VerifySuccessPage() {
         <BadgeCheck size={80} className="text-link-hover-text" />
 
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-[#050505]">
+          <h1 className="text-primary-text text-2xl font-bold">
             Email Verified Successfully
           </h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="text-secondary-text mt-2 text-sm">
             Your email has been verified. You can now set up your profile.
           </p>
         </div>

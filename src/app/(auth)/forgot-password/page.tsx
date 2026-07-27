@@ -64,7 +64,7 @@ export default function ForgotPasswordPage() {
                   : ""
               )
             }
-            className={`border-input-b placeholder:text-input-text h-11 border bg-[#FAFAFA] shadow-none ${emailError ? "border-red-400" : ""}`}
+            className={`border-input-b placeholder:text-input-text bg-primary-bg h-11 border shadow-none ${emailError ? "border-red-400" : ""}`}
           />
           {emailError && <p className="text-xs text-red-500">{emailError}</p>}
         </div>

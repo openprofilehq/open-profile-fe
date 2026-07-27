@@ -17,15 +17,15 @@ export function CTA() {
   });
 
   return (
-    <section className="bg-[#FAFAFA] py-24 md:py-26">
+    <section className="bg-primary-bg py-24 md:py-26">
       <div className="mx-auto w-full max-w-[1100px] px-4 sm:px-6 lg:px-0">
         <div className="bg-brand relative mx-auto flex w-full items-center justify-between overflow-hidden rounded-[24px] px-8 py-9 md:rounded-[32px] lg:px-16 lg:py-18">
           <div className="relative z-10 max-w-105 space-y-4">
-            <h2 className="text-[28px] leading-[1.2] font-semibold tracking-tight text-[#FEFEFE] md:text-[32px] md:whitespace-nowrap">
+            <h2 className="text-[28px] leading-[1.2] font-semibold tracking-tight text-white md:text-[32px] md:whitespace-nowrap">
               Be the profile people find first
             </h2>
 
-            <p className="text-[14px] leading-relaxed font-normal text-[#FEFEFE] md:text-[15px]">
+            <p className="text-[14px] leading-relaxed font-normal text-white md:text-[15px]">
               Create one searchable profile that shows who you are, what you do
               and why people should trust you
             </p>

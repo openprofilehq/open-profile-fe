@@ -6,7 +6,7 @@ const FOOTER_LINK_CLASS =
 
 export default function Footer() {
   return (
-    <footer className="bg-inverse-bg relative w-full overflow-hidden rounded-t-3xl px-6 pt-14 pb-8 md:px-8 md:py-16">
+    <footer className="relative w-full overflow-hidden rounded-t-3xl bg-[#171717] px-6 pt-14 pb-8 md:px-8 md:py-16">
       <div className="pointer-events-none absolute -bottom-16 -left-16 z-0 h-72 w-72 opacity-80 select-none md:-bottom-24 md:-left-20 md:h-[400px] md:w-[400px]">
         <Image
           src="/footer/footer.svg"
@@ -29,7 +29,7 @@ export default function Footer() {
               />
             </div>
 
-            <p className="text-inverse-text mt-5 leading-[1.6] font-normal">
+            <p className="mt-5 leading-[1.6] font-normal text-slate-300">
               Your verified identity, <br />
               discoverable everywhere.
             </p>

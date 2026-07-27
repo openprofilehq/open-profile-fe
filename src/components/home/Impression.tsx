@@ -103,7 +103,7 @@ export default function Impression() {
   });
 
   return (
-    <div className="font-afacad text-primary grid w-full grid-cols-1 items-center gap-10 lg:grid-cols-2 xl:gap-20">
+    <div className="font-afacad text-primary-text grid w-full grid-cols-1 items-center gap-10 lg:grid-cols-2 xl:gap-20">
       {/* left visual */}
       <motion.div
         variants={fadeIn}
@@ -185,7 +185,7 @@ export default function Impression() {
               whileInView="show"
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.3 + i * 0.15 }}
-              className="border-input-b flex h-18 w-[143px] rotate-[0.82deg] items-center justify-start gap-2 rounded-[16px] border bg-[#FEFEFE] pl-4"
+              className="border-input-b bg-card flex h-18 w-[143px] rotate-[0.82deg] items-center justify-start gap-2 rounded-[16px] border pl-4"
             >
               <div
                 style={{ backgroundColor: bg }}
@@ -211,7 +211,7 @@ export default function Impression() {
               whileInView="show"
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.5 + i * 0.15 }}
-              className="border-input-b flex h-18 w-[143px] rotate-[0.82deg] items-center justify-start gap-2 rounded-[16px] border bg-[#FEFEFE] pl-4"
+              className="border-input-b bg-card flex h-18 w-[143px] rotate-[0.82deg] items-center justify-start gap-2 rounded-[16px] border pl-4"
             >
               <div
                 style={{ backgroundColor: bg }}
@@ -258,7 +258,7 @@ export default function Impression() {
             whileInView="show"
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="font-afacad flex flex-col gap-4 text-[15px] leading-6 md:gap-6 md:text-[16px] lg:text-[18px] lg:leading-6.5"
+            className="font-afacad text-secondary-text flex flex-col gap-4 text-[15px] leading-6 md:gap-6 md:text-[16px] lg:text-[18px] lg:leading-6.5"
           >
             <span>
               Your projects may be on GitHub. Your designs may be on Behance.
@@ -286,7 +286,7 @@ export default function Impression() {
         >
           <Link
             href={user ? ROUTES.dashboard.home : "/signup"}
-            className="bg-brand flex h-12 cursor-pointer items-center justify-center rounded-[8px] px-4 font-medium text-[#FEFEFE]"
+            className="bg-brand flex h-12 cursor-pointer items-center justify-center rounded-[8px] px-4 font-medium text-white"
           >
             {user ? "Go to Dashboard" : "Create Your Profile Now"}
           </Link>

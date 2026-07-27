@@ -60,7 +60,7 @@ export function WaitlistFAQ() {
   };
 
   return (
-    <section className="w-full bg-[#FAFAFA] py-16 md:py-24">
+    <section className="bg-primary-bg w-full py-16 md:py-24">
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -71,7 +71,7 @@ export function WaitlistFAQ() {
         <div className="mb-12 text-center">
           <motion.h2
             variants={itemVariants}
-            className="text-[32px] font-semibold text-[#050505] md:text-[40px]"
+            className="text-primary-text text-[32px] font-semibold md:text-[40px]"
             style={{ fontFamily: "'Afacad', sans-serif" }}
           >
             FAQs
@@ -84,11 +84,11 @@ export function WaitlistFAQ() {
               <motion.div key={index} variants={itemVariants}>
                 <AccordionItem
                   value={`item-${index}`}
-                  className="border-[#E5E5E5]"
+                  className="border-secondary-b"
                 >
                   <AccordionTrigger className="py-6 hover:no-underline">
                     <span
-                      className="text-left text-[16px] font-medium text-[#050505] md:text-[18px]"
+                      className="text-primary-text text-left text-[16px] font-medium md:text-[18px]"
                       style={{ fontFamily: "'Afacad', sans-serif" }}
                     >
                       {item.question}
