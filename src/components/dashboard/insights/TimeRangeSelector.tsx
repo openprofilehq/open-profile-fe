@@ -32,6 +32,7 @@ export default function TimeRangeSelector({
             key={range.value}
             type="button"
             disabled={disabled}
+            aria-pressed={isActive}
             onClick={() => onChange(range.value)}
             className={`flex-1 rounded-lg px-4 py-1.5 text-xs font-semibold transition-all sm:flex-initial sm:text-sm ${
               isActive

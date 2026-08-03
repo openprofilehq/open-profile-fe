@@ -11,10 +11,37 @@ interface ViewsTrendChartProps {
   endDate?: string;
 }
 
+const MONTH_NAMES = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+function formatLocalDate(d: Date): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function parseLocalDate(dateStr: string): Date {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, (month || 1) - 1, day || 1);
+}
+
 export default function ViewsTrendChart({
   data = [],
   timeRange,
-  startDate,
   endDate,
 }: ViewsTrendChartProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -30,7 +57,6 @@ export default function ViewsTrendChart({
         const count = item.views ?? item.count ?? item.total ?? 0;
         const rawDate = item.date || item.day;
         if (rawDate) {
-          // Normalize date string (YYYY-MM-DD)
           const cleanDate = rawDate.includes("T")
             ? rawDate.split("T")[0]
             : rawDate;
@@ -43,29 +69,19 @@ export default function ViewsTrendChart({
     }
 
     const pointsCount = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90;
-    const end = endDate ? new Date(endDate) : new Date();
+    const end = endDate ? parseLocalDate(endDate) : new Date();
     const result = [];
 
-    // Generate date sequence
+    // Generate date sequence using local date arithmetic
     for (let i = pointsCount - 1; i >= 0; i--) {
-      const d = new Date(end);
-      d.setDate(end.getDate() - i);
-      const isoDate = d.toISOString().split("T")[0];
+      const d = new Date(end.getFullYear(), end.getMonth(), end.getDate() - i);
+      const isoDate = formatLocalDate(d);
 
       let label = "";
       if (timeRange === "7d") {
-        label = d.toLocaleDateString("en-US", { weekday: "short" });
-      } else if (timeRange === "30d") {
-        // Show date every 5 days or weekday
-        label = d.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        });
+        label = WEEKDAY_NAMES[d.getDay()];
       } else {
-        label = d.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        });
+        label = `${MONTH_NAMES[d.getMonth()]} ${d.getDate()}`;
       }
 
       const views = viewsByDateMap.get(isoDate) ?? 0;
@@ -77,9 +93,8 @@ export default function ViewsTrendChart({
       });
     }
 
-    // If 30d or 90d, filter labels on axis to avoid overcrowding
     return result;
-  }, [data, timeRange, startDate, endDate]);
+  }, [data, timeRange, endDate]);
 
   const rangeTitle =
     timeRange === "7d"

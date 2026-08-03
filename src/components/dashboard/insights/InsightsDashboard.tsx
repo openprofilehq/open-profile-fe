@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { dashboardProfileOption } from "@/api/profile/profile.options";
 import {
@@ -19,21 +19,81 @@ import PerformanceCard from "./PerformanceCard";
 import LinkPerformanceCard from "./LinkPerformanceCard";
 import KeyInsightCard from "./KeyInsightCard";
 import InsightsEmptyState from "./InsightsEmptyState";
+import InsightsErrorState from "./InsightsErrorState";
 import InsightsSkeleton from "./InsightsSkeleton";
+
+const WEEKDAY_NAMES = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+function formatLocalDate(d: Date): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+// Extraction helpers for API responses that may wrap data or use camelCase/snake_case
+function pickNumber(obj: unknown, ...keys: string[]): number | undefined {
+  if (!obj || typeof obj !== "object") return undefined;
+  const record = obj as Record<string, unknown>;
+
+  for (const key of keys) {
+    if (typeof record[key] === "number") return record[key] as number;
+  }
+
+  if (record.data && typeof record.data === "object") {
+    const dataRecord = record.data as Record<string, unknown>;
+    for (const key of keys) {
+      if (typeof dataRecord[key] === "number") return dataRecord[key] as number;
+    }
+  }
+
+  return undefined;
+}
+
+function pickArray<T>(obj: unknown, ...keys: string[]): T[] {
+  if (!obj) return [];
+  if (Array.isArray(obj)) return obj as T[];
+  if (typeof obj !== "object") return [];
+  const record = obj as Record<string, unknown>;
+
+  if (Array.isArray(record.data)) return record.data as T[];
+
+  for (const key of keys) {
+    if (Array.isArray(record[key])) return record[key] as T[];
+  }
+
+  return [];
+}
+
+// Normalize conversion rates to 0-1 scale
+function normalizeRate(rate?: number | null): number {
+  if (rate == null || Number.isNaN(rate)) return 0;
+  return rate > 1 ? rate / 100 : rate;
+}
 
 export default function InsightsDashboard() {
   const [timeRange, setTimeRange] = useState<TimeRange>("7d");
 
-  // Calculate ISO startDate and endDate based on timeRange
+  // Calculate local startDate and endDate based on timeRange
   const { startDate, endDate, dateParams } = useMemo(() => {
     const end = new Date();
-    const start = new Date();
+    const start = new Date(
+      end.getFullYear(),
+      end.getMonth(),
+      end.getDate() -
+        ((timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90) - 1)
+    );
 
-    const days = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90;
-    start.setDate(end.getDate() - (days - 1));
-
-    const startDateStr = start.toISOString().split("T")[0];
-    const endDateStr = end.toISOString().split("T")[0];
+    const startDateStr = formatLocalDate(start);
+    const endDateStr = formatLocalDate(end);
 
     return {
       startDate: startDateStr,
@@ -58,32 +118,35 @@ export default function InsightsDashboard() {
     (searchConversions.isPending && !searchConversions.data) ||
     (inviteConversions.isPending && !inviteConversions.data);
 
+  const isError =
+    profileViews.isError ||
+    linkClicks.isError ||
+    searchConversions.isError ||
+    inviteConversions.isError;
+
+  const handleRetry = useCallback(() => {
+    profileViews.refetch();
+    linkClicks.refetch();
+    searchConversions.refetch();
+    inviteConversions.refetch();
+  }, [profileViews, linkClicks, searchConversions, inviteConversions]);
+
   // 1. Process Profile Views data
   const viewsData: DailyViewData[] = useMemo(() => {
-    const raw = profileViews.data;
-    if (!raw) return [];
-    if (Array.isArray(raw)) return raw;
-    if (Array.isArray(raw.data)) return raw.data;
-    if (Array.isArray(raw.viewsByDate)) return raw.viewsByDate;
-    if (Array.isArray(raw.views_by_date)) return raw.views_by_date;
-    if (Array.isArray(raw.dailyViews)) return raw.dailyViews;
-    if (Array.isArray(raw.daily_views)) return raw.daily_views;
-    if (Array.isArray(raw.views)) return raw.views;
-    return [];
+    return pickArray<DailyViewData>(
+      profileViews.data,
+      "viewsByDate",
+      "views_by_date",
+      "dailyViews",
+      "daily_views",
+      "views"
+    );
   }, [profileViews.data]);
 
   const totalViews = useMemo(() => {
-    const raw = profileViews.data;
-    if (!raw) return 0;
-    if (typeof raw.totalViews === "number") return raw.totalViews;
-    if (typeof raw.total_views === "number") return raw.total_views;
-    if (
-      raw.data &&
-      typeof (raw.data as Record<string, unknown>).total_views === "number"
-    ) {
-      return (raw.data as Record<string, unknown>).total_views as number;
-    }
-    // Sum from daily views
+    const explicit = pickNumber(profileViews.data, "totalViews", "total_views");
+    if (explicit != null) return explicit;
+
     if (viewsData.length > 0) {
       return viewsData.reduce(
         (sum, item) => sum + (item.views ?? item.count ?? item.total ?? 0),
@@ -94,33 +157,26 @@ export default function InsightsDashboard() {
   }, [profileViews.data, viewsData]);
 
   const changePercentage = useMemo(() => {
-    const raw = profileViews.data;
-    if (!raw) return 0;
-    if (typeof raw.changePercentage === "number") return raw.changePercentage;
-    if (typeof raw.percentage_change === "number") return raw.percentage_change;
-    if (typeof raw.viewsChangePercentage === "number")
-      return raw.viewsChangePercentage;
-    if (typeof raw.views_change_percentage === "number")
-      return raw.views_change_percentage;
-    return 0;
+    return (
+      pickNumber(
+        profileViews.data,
+        "changePercentage",
+        "percentage_change",
+        "viewsChangePercentage",
+        "views_change_percentage"
+      ) ?? 0
+    );
   }, [profileViews.data]);
 
   // 2. Process Link Clicks data
   const links: LinkClickItem[] = useMemo(() => {
-    const raw = linkClicks.data;
-    if (!raw) return [];
-    if (Array.isArray(raw)) return raw;
-    if (Array.isArray(raw.data)) return raw.data;
-    if (Array.isArray(raw.links)) return raw.links;
-    if (Array.isArray(raw.items)) return raw.items;
-    return [];
+    return pickArray<LinkClickItem>(linkClicks.data, "links", "items");
   }, [linkClicks.data]);
 
   const totalClicks = useMemo(() => {
-    const raw = linkClicks.data;
-    if (!raw) return 0;
-    if (typeof raw.totalClicks === "number") return raw.totalClicks;
-    if (typeof raw.total_clicks === "number") return raw.total_clicks;
+    const explicit = pickNumber(linkClicks.data, "totalClicks", "total_clicks");
+    if (explicit != null) return explicit;
+
     if (links.length > 0) {
       return links.reduce(
         (sum, l) => sum + (l.clicks ?? l.total_clicks ?? 0),
@@ -130,35 +186,53 @@ export default function InsightsDashboard() {
     return 0;
   }, [linkClicks.data, links]);
 
-  // 3. Process Search Conversions
+  // 3. Process Search Conversions (Normalized to 0-1 scale)
   const searchConversionRate = useMemo(() => {
-    const raw = searchConversions.data;
-    if (!raw) return 0;
-    if (typeof raw.conversionRate === "number") return raw.conversionRate;
-    if (typeof raw.conversion_rate === "number") return raw.conversion_rate;
-    if (raw.data && typeof raw.data.conversion_rate === "number") {
-      return raw.data.conversion_rate;
-    }
-    const impressions = raw.searchImpressions ?? raw.search_impressions;
-    const views =
-      raw.profileViews ?? raw.profile_views ?? raw.profile_views_from_search;
+    const rate = pickNumber(
+      searchConversions.data,
+      "conversionRate",
+      "conversion_rate"
+    );
+    if (rate != null) return normalizeRate(rate);
+
+    const impressions = pickNumber(
+      searchConversions.data,
+      "searchImpressions",
+      "search_impressions"
+    );
+    const views = pickNumber(
+      searchConversions.data,
+      "profileViews",
+      "profile_views",
+      "profile_views_from_search"
+    );
+
     if (impressions && impressions > 0 && views != null) {
       return views / impressions;
     }
     return 0;
   }, [searchConversions.data]);
 
-  // 4. Process Invite Conversions
+  // 4. Process Invite Conversions (Normalized to 0-1 scale)
   const inviteConversionRate = useMemo(() => {
-    const raw = inviteConversions.data;
-    if (!raw) return 0;
-    if (typeof raw.conversion_rate === "number") return raw.conversion_rate;
-    if (typeof raw.conversionRate === "number") return raw.conversionRate;
-    if (raw.data && typeof raw.data.conversion_rate === "number") {
-      return raw.data.conversion_rate;
-    }
-    const sent = raw.invites_sent ?? raw.invitesSent;
-    const claimed = raw.invites_claimed ?? raw.invitesClaimed;
+    const rate = pickNumber(
+      inviteConversions.data,
+      "conversionRate",
+      "conversion_rate"
+    );
+    if (rate != null) return normalizeRate(rate);
+
+    const sent = pickNumber(
+      inviteConversions.data,
+      "invites_sent",
+      "invitesSent"
+    );
+    const claimed = pickNumber(
+      inviteConversions.data,
+      "invites_claimed",
+      "invitesClaimed"
+    );
+
     if (sent && sent > 0 && claimed != null) {
       return claimed / sent;
     }
@@ -171,7 +245,6 @@ export default function InsightsDashboard() {
       profileViews.data?.keyInsight ?? profileViews.data?.key_insight;
     if (rawInsight) return rawInsight;
 
-    // Generate dynamic insight based on real view distribution if points exist
     if (viewsData.length > 0) {
       let maxDay: DailyViewData | null = null;
       let maxCount = 0;
@@ -185,7 +258,8 @@ export default function InsightsDashboard() {
           maxDay = d;
         }
         if (d.date) {
-          const dayOfWeek = new Date(d.date).getDay();
+          const [y, m, dayNum] = d.date.split("-").map(Number);
+          const dayOfWeek = new Date(y, (m || 1) - 1, dayNum || 1).getDay();
           if (dayOfWeek === 0 || dayOfWeek === 6) {
             weekendCount += count;
           } else {
@@ -197,13 +271,9 @@ export default function InsightsDashboard() {
       if (maxDay && maxCount > 0) {
         let dayName = maxDay.day;
         if (!dayName && maxDay.date) {
-          try {
-            dayName = new Date(maxDay.date).toLocaleDateString("en-US", {
-              weekday: "long",
-            });
-          } catch {
-            dayName = maxDay.date;
-          }
+          const [y, m, dayNum] = maxDay.date.split("-").map(Number);
+          dayName =
+            WEEKDAY_NAMES[new Date(y, (m || 1) - 1, dayNum || 1).getDay()];
         }
         if (
           weekdayCount > 0 &&
@@ -232,6 +302,7 @@ export default function InsightsDashboard() {
   // Determine if profile has zero total activity across all metrics
   const isExplicitlyEmpty =
     !isLoading &&
+    !isError &&
     totalViews === 0 &&
     totalClicks === 0 &&
     links.length === 0 &&
@@ -258,6 +329,8 @@ export default function InsightsDashboard() {
       {/* Main Content Area */}
       {isLoading ? (
         <InsightsSkeleton />
+      ) : isError ? (
+        <InsightsErrorState onRetry={handleRetry} />
       ) : isExplicitlyEmpty ? (
         <InsightsEmptyState username={dashboardProfile.data?.username} />
       ) : (

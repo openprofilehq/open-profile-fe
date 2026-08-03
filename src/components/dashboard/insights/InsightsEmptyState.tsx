@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChartNoAxesCombined, Check, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -14,28 +14,43 @@ export default function InsightsEmptyState({
   username,
 }: InsightsEmptyStateProps) {
   const [copied, setCopied] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleShare = async () => {
     const profileUrl = getProfileUrl(username || undefined);
+    const targetUrl = profileUrl || window.location.origin;
 
     if (navigator.share && typeof navigator.share === "function") {
       try {
         await navigator.share({
           title: "My Open Profile",
           text: "Check out my Open Profile!",
-          url: profileUrl || window.location.origin,
+          url: targetUrl,
         });
         return;
-      } catch {
-        // Fallback to clipboard copy
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === "AbortError") {
+          // User dismissed the share sheet - do not fall back to clipboard
+          return;
+        }
+        // Fallback to clipboard copy for real share failures
       }
     }
 
     try {
-      await navigator.clipboard.writeText(profileUrl || window.location.origin);
+      await navigator.clipboard.writeText(targetUrl);
       setCopied(true);
       toast.success("Profile link copied to clipboard!");
-      setTimeout(() => setCopied(false), 2500);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setCopied(false), 2500);
     } catch {
       toast.error("Failed to copy link");
     }
