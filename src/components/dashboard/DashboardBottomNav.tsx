@@ -18,6 +18,7 @@ const bottomNavLinks = [
   },
   {
     label: "Insights",
+    href: ROUTES.dashboard.insights,
     icon: ChartNoAxesCombined,
   },
   {
