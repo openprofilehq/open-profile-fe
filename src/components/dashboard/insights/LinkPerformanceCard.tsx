@@ -1,26 +1,17 @@
 "use client";
 
-import { LinkClickItem } from "@/api/analytics/analytics.type";
+import { NormalizedLinkClick } from "@/api/analytics";
 import { Link2 } from "lucide-react";
 
 interface LinkPerformanceCardProps {
-  links?: LinkClickItem[];
-  totalClicks?: number;
+  links?: NormalizedLinkClick[];
 }
 
 export default function LinkPerformanceCard({
   links = [],
-  totalClicks = 0,
 }: LinkPerformanceCardProps) {
   const hasLinks = links && links.length > 0;
-  const maxClicks = Math.max(
-    ...links.map((l) => l.clicks ?? l.total_clicks ?? 0),
-    1
-  );
-  const calculatedTotal =
-    totalClicks > 0
-      ? totalClicks
-      : links.reduce((sum, l) => sum + (l.clicks ?? l.total_clicks ?? 0), 0);
+  const maxClicks = Math.max(...links.map((l) => l.clicks), 1);
 
   return (
     <div className="border-tertiary-b/70 bg-card flex h-full flex-col justify-between rounded-2xl border p-5 sm:p-6">
@@ -53,48 +44,28 @@ export default function LinkPerformanceCard({
         </div>
       ) : (
         <div className="mt-5 space-y-4">
-          {links.map((item, index) => {
-            const clicks = item.clicks ?? item.total_clicks ?? 0;
-            const title =
-              item.title ||
-              item.label ||
-              item.name ||
-              item.url ||
-              `Link ${index + 1}`;
-
-            let ctrValue = 0;
-            if (item.ctr != null) {
-              ctrValue = item.ctr <= 1 ? item.ctr * 100 : item.ctr;
-            } else if (item.click_through_rate != null) {
-              ctrValue =
-                item.click_through_rate <= 1
-                  ? item.click_through_rate * 100
-                  : item.click_through_rate;
-            } else if (calculatedTotal > 0) {
-              ctrValue = (clicks / calculatedTotal) * 100;
-            }
-
+          {links.map((item) => {
             const progressPercent = Math.min(
               100,
-              Math.max(clicks > 0 ? 8 : 0, (clicks / maxClicks) * 100)
+              Math.max(item.clicks > 0 ? 8 : 0, (item.clicks / maxClicks) * 100)
             );
 
             return (
               <div
-                key={item.id ?? item.linkId ?? item.link_id ?? index}
+                key={item.id}
                 className="flex items-center justify-between gap-3 text-xs sm:text-sm"
               >
                 {/* Link Title */}
                 <span
-                  title={title}
+                  title={item.title}
                   className="text-primary-text w-28 truncate font-medium sm:w-36"
                 >
-                  {title}
+                  {item.title}
                 </span>
 
                 {/* Number of Clicks */}
                 <span className="text-primary-text w-12 text-right font-bold">
-                  {clicks}
+                  {item.clicks}
                 </span>
 
                 {/* Progress Bar */}
@@ -107,7 +78,7 @@ export default function LinkPerformanceCard({
 
                 {/* CTR % */}
                 <span className="text-secondary-text w-12 text-right font-medium">
-                  {ctrValue.toFixed(1)}%
+                  {item.ctr.toFixed(1)}%
                 </span>
               </div>
             );

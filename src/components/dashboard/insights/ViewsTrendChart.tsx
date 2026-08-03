@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { DailyViewData } from "@/api/analytics/analytics.type";
+import { NormalizedDailyView } from "@/api/analytics";
 import { TimeRange } from "./TimeRangeSelector";
 
 interface ViewsTrendChartProps {
-  data?: DailyViewData[];
+  data?: NormalizedDailyView[];
   timeRange: TimeRange;
   startDate?: string;
   endDate?: string;
@@ -27,16 +27,21 @@ const MONTH_NAMES = [
 ];
 const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-function formatLocalDate(d: Date): string {
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+function parseDateKey(dateStr: string) {
+  const clean = dateStr.includes("T") ? dateStr.split("T")[0] : dateStr;
+  const [year, month, day] = clean.split("-").map(Number);
+  return {
+    year: year || 2026,
+    month: (month || 1) - 1, // 0-indexed month
+    day: day || 1,
+    dateString: clean,
+  };
 }
 
-function parseLocalDate(dateStr: string): Date {
-  const [year, month, day] = dateStr.split("-").map(Number);
-  return new Date(year, (month || 1) - 1, day || 1);
+function formatDateKey(year: number, monthIndex: number, day: number): string {
+  const m = String(monthIndex + 1).padStart(2, "0");
+  const d = String(day).padStart(2, "0");
+  return `${year}-${m}-${d}`;
 }
 
 export default function ViewsTrendChart({
@@ -46,48 +51,55 @@ export default function ViewsTrendChart({
 }: ViewsTrendChartProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  // Parse and normalize time-series chart data based on real date range and API counts
+  // Generate chart data using stable API date keys and pure UTC date arithmetic
   const chartData = useMemo(() => {
-    // Create lookup map of date -> view count from API data
     const viewsByDateMap = new Map<string, number>();
 
     if (Array.isArray(data)) {
       data.forEach((item) => {
-        if (!item) return;
-        const count = item.views ?? item.count ?? item.total ?? 0;
-        const rawDate = item.date || item.day;
-        if (rawDate) {
-          const cleanDate = rawDate.includes("T")
-            ? rawDate.split("T")[0]
-            : rawDate;
-          viewsByDateMap.set(
-            cleanDate,
-            (viewsByDateMap.get(cleanDate) || 0) + count
-          );
-        }
+        if (!item || !item.date) return;
+        const cleanDate = item.date.includes("T")
+          ? item.date.split("T")[0]
+          : item.date;
+        viewsByDateMap.set(
+          cleanDate,
+          (viewsByDateMap.get(cleanDate) || 0) + (item.views || 0)
+        );
       });
     }
 
     const pointsCount = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90;
-    const end = endDate ? parseLocalDate(endDate) : new Date();
+    const endParts = endDate
+      ? parseDateKey(endDate)
+      : parseDateKey(
+          formatDateKey(
+            new Date().getFullYear(),
+            new Date().getMonth(),
+            new Date().getDate()
+          )
+        );
+
     const result = [];
 
-    // Generate date sequence using local date arithmetic
     for (let i = pointsCount - 1; i >= 0; i--) {
-      const d = new Date(end.getFullYear(), end.getMonth(), end.getDate() - i);
-      const isoDate = formatLocalDate(d);
+      // Step days back in UTC so calendar days are never shifted by browser timezone or DST
+      const d = new Date(
+        Date.UTC(endParts.year, endParts.month, endParts.day - i)
+      );
+      const year = d.getUTCFullYear();
+      const month = d.getUTCMonth();
+      const day = d.getUTCDate();
+      const dateKey = formatDateKey(year, month, day);
 
-      let label = "";
-      if (timeRange === "7d") {
-        label = WEEKDAY_NAMES[d.getDay()];
-      } else {
-        label = `${MONTH_NAMES[d.getMonth()]} ${d.getDate()}`;
-      }
+      const label =
+        timeRange === "7d"
+          ? WEEKDAY_NAMES[d.getUTCDay()]
+          : `${MONTH_NAMES[month]} ${day}`;
 
-      const views = viewsByDateMap.get(isoDate) ?? 0;
+      const views = viewsByDateMap.get(dateKey) ?? 0;
 
       result.push({
-        date: isoDate,
+        date: dateKey,
         label,
         views,
       });

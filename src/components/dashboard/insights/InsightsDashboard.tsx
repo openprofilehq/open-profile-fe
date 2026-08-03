@@ -8,8 +8,11 @@ import {
   linkClicksOption,
   searchConversionsOption,
   inviteConversionsOption,
-  DailyViewData,
-  LinkClickItem,
+  normalizeProfileViews,
+  normalizeLinkClicks,
+  normalizeSearchConversions,
+  normalizeInviteConversions,
+  NormalizedAnalyticsDashboard,
 } from "@/api/analytics";
 
 import TimeRangeSelector, { TimeRange } from "./TimeRangeSelector";
@@ -32,51 +35,11 @@ const WEEKDAY_NAMES = [
   "Saturday",
 ];
 
-function formatLocalDate(d: Date): string {
+function formatLocalDateKey(d: Date): string {
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
-}
-
-// Extraction helpers for API responses that may wrap data or use camelCase/snake_case
-function pickNumber(obj: unknown, ...keys: string[]): number | undefined {
-  if (!obj || typeof obj !== "object") return undefined;
-  const record = obj as Record<string, unknown>;
-
-  for (const key of keys) {
-    if (typeof record[key] === "number") return record[key] as number;
-  }
-
-  if (record.data && typeof record.data === "object") {
-    const dataRecord = record.data as Record<string, unknown>;
-    for (const key of keys) {
-      if (typeof dataRecord[key] === "number") return dataRecord[key] as number;
-    }
-  }
-
-  return undefined;
-}
-
-function pickArray<T>(obj: unknown, ...keys: string[]): T[] {
-  if (!obj) return [];
-  if (Array.isArray(obj)) return obj as T[];
-  if (typeof obj !== "object") return [];
-  const record = obj as Record<string, unknown>;
-
-  if (Array.isArray(record.data)) return record.data as T[];
-
-  for (const key of keys) {
-    if (Array.isArray(record[key])) return record[key] as T[];
-  }
-
-  return [];
-}
-
-// Normalize conversion rates to 0-1 scale
-function normalizeRate(rate?: number | null): number {
-  if (rate == null || Number.isNaN(rate)) return 0;
-  return rate > 1 ? rate / 100 : rate;
 }
 
 export default function InsightsDashboard() {
@@ -85,15 +48,15 @@ export default function InsightsDashboard() {
   // Calculate local startDate and endDate based on timeRange
   const { startDate, endDate, dateParams } = useMemo(() => {
     const end = new Date();
+    const days = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90;
     const start = new Date(
       end.getFullYear(),
       end.getMonth(),
-      end.getDate() -
-        ((timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90) - 1)
+      end.getDate() - (days - 1)
     );
 
-    const startDateStr = formatLocalDate(start);
-    const endDateStr = formatLocalDate(end);
+    const startDateStr = formatLocalDateKey(start);
+    const endDateStr = formatLocalDateKey(end);
 
     return {
       startDate: startDateStr,
@@ -131,150 +94,70 @@ export default function InsightsDashboard() {
     inviteConversions.refetch();
   }, [profileViews, linkClicks, searchConversions, inviteConversions]);
 
-  // 1. Process Profile Views data
-  const viewsData: DailyViewData[] = useMemo(() => {
-    return pickArray<DailyViewData>(
-      profileViews.data,
-      "viewsByDate",
-      "views_by_date",
-      "dailyViews",
-      "daily_views",
-      "views"
+  // Normalize all analytics responses into a single trusted shape
+  const analytics: NormalizedAnalyticsDashboard = useMemo(() => {
+    const { viewsData, totalViews, changePercentage, keyInsight } =
+      normalizeProfileViews(profileViews.data);
+    const { links, totalClicks } = normalizeLinkClicks(linkClicks.data);
+    const searchConversionRate = normalizeSearchConversions(
+      searchConversions.data
     );
-  }, [profileViews.data]);
-
-  const totalViews = useMemo(() => {
-    const explicit = pickNumber(profileViews.data, "totalViews", "total_views");
-    if (explicit != null) return explicit;
-
-    if (viewsData.length > 0) {
-      return viewsData.reduce(
-        (sum, item) => sum + (item.views ?? item.count ?? item.total ?? 0),
-        0
-      );
-    }
-    return 0;
-  }, [profileViews.data, viewsData]);
-
-  const changePercentage = useMemo(() => {
-    return (
-      pickNumber(
-        profileViews.data,
-        "changePercentage",
-        "percentage_change",
-        "viewsChangePercentage",
-        "views_change_percentage"
-      ) ?? 0
-    );
-  }, [profileViews.data]);
-
-  // 2. Process Link Clicks data
-  const links: LinkClickItem[] = useMemo(() => {
-    return pickArray<LinkClickItem>(linkClicks.data, "links", "items");
-  }, [linkClicks.data]);
-
-  const totalClicks = useMemo(() => {
-    const explicit = pickNumber(linkClicks.data, "totalClicks", "total_clicks");
-    if (explicit != null) return explicit;
-
-    if (links.length > 0) {
-      return links.reduce(
-        (sum, l) => sum + (l.clicks ?? l.total_clicks ?? 0),
-        0
-      );
-    }
-    return 0;
-  }, [linkClicks.data, links]);
-
-  // 3. Process Search Conversions (Normalized to 0-1 scale)
-  const searchConversionRate = useMemo(() => {
-    const rate = pickNumber(
-      searchConversions.data,
-      "conversionRate",
-      "conversion_rate"
-    );
-    if (rate != null) return normalizeRate(rate);
-
-    const impressions = pickNumber(
-      searchConversions.data,
-      "searchImpressions",
-      "search_impressions"
-    );
-    const views = pickNumber(
-      searchConversions.data,
-      "profileViews",
-      "profile_views",
-      "profile_views_from_search"
+    const inviteConversionRate = normalizeInviteConversions(
+      inviteConversions.data
     );
 
-    if (impressions && impressions > 0 && views != null) {
-      return views / impressions;
-    }
-    return 0;
-  }, [searchConversions.data]);
+    return {
+      viewsData,
+      totalViews,
+      changePercentage,
+      links,
+      totalClicks,
+      searchConversionRate,
+      inviteConversionRate,
+      keyInsight,
+    };
+  }, [
+    profileViews.data,
+    linkClicks.data,
+    searchConversions.data,
+    inviteConversions.data,
+  ]);
 
-  // 4. Process Invite Conversions (Normalized to 0-1 scale)
-  const inviteConversionRate = useMemo(() => {
-    const rate = pickNumber(
-      inviteConversions.data,
-      "conversionRate",
-      "conversion_rate"
-    );
-    if (rate != null) return normalizeRate(rate);
+  // Generate Dynamic Data-Driven Key Insight if none provided by API
+  const displayKeyInsight = useMemo(() => {
+    if (analytics.keyInsight) return analytics.keyInsight;
 
-    const sent = pickNumber(
-      inviteConversions.data,
-      "invites_sent",
-      "invitesSent"
-    );
-    const claimed = pickNumber(
-      inviteConversions.data,
-      "invites_claimed",
-      "invitesClaimed"
-    );
-
-    if (sent && sent > 0 && claimed != null) {
-      return claimed / sent;
-    }
-    return 0;
-  }, [inviteConversions.data]);
-
-  // 5. Generate Dynamic Data-Driven Key Insight
-  const keyInsight = useMemo(() => {
-    const rawInsight =
-      profileViews.data?.keyInsight ?? profileViews.data?.key_insight;
-    if (rawInsight) return rawInsight;
-
-    if (viewsData.length > 0) {
-      let maxDay: DailyViewData | null = null;
+    if (analytics.viewsData.length > 0) {
       let maxCount = 0;
+      let maxDayDate: string | null = null;
       let weekdayCount = 0;
       let weekendCount = 0;
 
-      for (const d of viewsData) {
-        const count = d.views ?? d.count ?? d.total ?? 0;
-        if (count > maxCount || !maxDay) {
-          maxCount = count;
-          maxDay = d;
+      for (const d of analytics.viewsData) {
+        if (d.views > maxCount || !maxDayDate) {
+          maxCount = d.views;
+          maxDayDate = d.date;
         }
         if (d.date) {
           const [y, m, dayNum] = d.date.split("-").map(Number);
-          const dayOfWeek = new Date(y, (m || 1) - 1, dayNum || 1).getDay();
+          const dayOfWeek = new Date(
+            Date.UTC(y, (m || 1) - 1, dayNum || 1)
+          ).getUTCDay();
           if (dayOfWeek === 0 || dayOfWeek === 6) {
-            weekendCount += count;
+            weekendCount += d.views;
           } else {
-            weekdayCount += count;
+            weekdayCount += d.views;
           }
         }
       }
 
-      if (maxDay && maxCount > 0) {
-        let dayName = maxDay.day;
-        if (!dayName && maxDay.date) {
-          const [y, m, dayNum] = maxDay.date.split("-").map(Number);
-          dayName =
-            WEEKDAY_NAMES[new Date(y, (m || 1) - 1, dayNum || 1).getDay()];
-        }
+      if (maxDayDate && maxCount > 0) {
+        const [y, m, dayNum] = maxDayDate.split("-").map(Number);
+        const dayName =
+          WEEKDAY_NAMES[
+            new Date(Date.UTC(y, (m || 1) - 1, dayNum || 1)).getUTCDay()
+          ];
+
         if (
           weekdayCount > 0 &&
           weekendCount > 0 &&
@@ -287,27 +170,27 @@ export default function InsightsDashboard() {
       }
     }
 
-    if (links.length > 0) {
-      const topLink = [...links].sort(
-        (a, b) => (b.clicks ?? 0) - (a.clicks ?? 0)
+    if (analytics.links.length > 0) {
+      const topLink = [...analytics.links].sort(
+        (a, b) => b.clicks - a.clicks
       )[0];
-      if (topLink && (topLink.clicks ?? 0) > 0) {
-        return `Your "${topLink.title || "featured"}" link is currently your top performer with ${topLink.clicks} clicks.`;
+      if (topLink && topLink.clicks > 0) {
+        return `Your "${topLink.title}" link is currently your top performer with ${topLink.clicks} clicks.`;
       }
     }
 
     return null;
-  }, [profileViews.data, viewsData, links]);
+  }, [analytics]);
 
   // Determine if profile has zero total activity across all metrics
   const isExplicitlyEmpty =
     !isLoading &&
     !isError &&
-    totalViews === 0 &&
-    totalClicks === 0 &&
-    links.length === 0 &&
-    searchConversionRate === 0 &&
-    inviteConversionRate === 0;
+    analytics.totalViews === 0 &&
+    analytics.totalClicks === 0 &&
+    analytics.links.length === 0 &&
+    analytics.searchConversionRate === 0 &&
+    analytics.inviteConversionRate === 0;
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6 pb-12">
@@ -339,13 +222,13 @@ export default function InsightsDashboard() {
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
             <div className="lg:col-span-1">
               <InsightsOverviewCard
-                totalViews={totalViews}
-                changePercentage={changePercentage}
+                totalViews={analytics.totalViews}
+                changePercentage={analytics.changePercentage}
               />
             </div>
             <div className="lg:col-span-2">
               <ViewsTrendChart
-                data={viewsData}
+                data={analytics.viewsData}
                 timeRange={timeRange}
                 startDate={startDate}
                 endDate={endDate}
@@ -357,17 +240,17 @@ export default function InsightsDashboard() {
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
             <div className="lg:col-span-1">
               <PerformanceCard
-                searchConversionRate={searchConversionRate}
-                inviteConversionRate={inviteConversionRate}
+                searchConversionRate={analytics.searchConversionRate}
+                inviteConversionRate={analytics.inviteConversionRate}
               />
             </div>
             <div className="lg:col-span-2">
-              <LinkPerformanceCard links={links} totalClicks={totalClicks} />
+              <LinkPerformanceCard links={analytics.links} />
             </div>
           </div>
 
           {/* Row 3: Key Insight Card */}
-          <KeyInsightCard insight={keyInsight} />
+          <KeyInsightCard insight={displayKeyInsight} />
         </div>
       )}
     </div>
