@@ -8,6 +8,7 @@ export interface DailyViewData {
   day?: string;
   count?: number;
   views?: number;
+  total?: number;
 }
 
 export interface ProfileViewsResponse {
@@ -17,23 +18,38 @@ export interface ProfileViewsResponse {
   previous_period_views?: number;
   changePercentage?: number;
   percentage_change?: number;
+  viewsChangePercentage?: number;
+  views_change_percentage?: number;
   viewsByDate?: DailyViewData[];
   views_by_date?: DailyViewData[];
   dailyViews?: DailyViewData[];
+  daily_views?: DailyViewData[];
   views?: DailyViewData[];
+  data?:
+    | DailyViewData[]
+    | {
+        total_views?: number;
+        views_by_date?: DailyViewData[];
+        percentage_change?: number;
+      };
   keyInsight?: string;
   key_insight?: string;
 }
 
 export interface LinkClickItem {
-  id?: string;
-  linkId?: string;
-  link_id?: string;
-  title: string;
+  id?: string | number;
+  linkId?: string | number;
+  link_id?: string | number;
+  title?: string;
+  label?: string;
+  name?: string;
   url?: string;
-  clicks: number;
+  clicks?: number;
+  total_clicks?: number;
   ctr?: number;
+  click_through_rate?: number;
   percentage?: number;
+  conversion_rate?: number;
 }
 
 export interface LinkClicksResponse {
@@ -41,6 +57,12 @@ export interface LinkClicksResponse {
   total_clicks?: number;
   links?: LinkClickItem[];
   items?: LinkClickItem[];
+  data?:
+    | LinkClickItem[]
+    | {
+        total_clicks?: number;
+        links?: LinkClickItem[];
+      };
 }
 
 export interface SearchConversionsResponse {
@@ -50,13 +72,24 @@ export interface SearchConversionsResponse {
   search_impressions?: number;
   profileViews?: number;
   profile_views?: number;
+  profile_views_from_search?: number;
+  data?: {
+    conversion_rate?: number;
+    search_impressions?: number;
+    profile_views?: number;
+  };
 }
 
 export interface InviteConversionsResponse {
-  invites_sent: number;
-  invites_claimed: number;
-  conversion_rate: number;
+  invites_sent?: number;
+  invites_claimed?: number;
+  conversion_rate?: number;
   invitesSent?: number;
   invitesClaimed?: number;
   conversionRate?: number;
+  data?: {
+    invites_sent?: number;
+    invites_claimed?: number;
+    conversion_rate?: number;
+  };
 }

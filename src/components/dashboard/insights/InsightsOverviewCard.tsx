@@ -4,16 +4,17 @@ import { TrendingDown, TrendingUp } from "lucide-react";
 
 interface InsightsOverviewCardProps {
   totalViews?: number;
-  changePercentage?: number;
+  changePercentage?: number | null;
 }
 
 export default function InsightsOverviewCard({
   totalViews = 0,
   changePercentage = 0,
 }: InsightsOverviewCardProps) {
-  const isPositive = changePercentage >= 0;
+  const percent = changePercentage ?? 0;
+  const isPositive = percent >= 0;
   const formattedViews = new Intl.NumberFormat().format(totalViews);
-  const formattedChange = Math.abs(changePercentage).toFixed(0);
+  const formattedChange = Math.abs(percent).toFixed(0);
 
   return (
     <div className="border-tertiary-b/70 bg-card flex h-full flex-col justify-between rounded-2xl border p-5 sm:p-6">

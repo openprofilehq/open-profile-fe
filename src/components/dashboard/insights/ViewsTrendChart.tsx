@@ -7,44 +7,79 @@ import { TimeRange } from "./TimeRangeSelector";
 interface ViewsTrendChartProps {
   data?: DailyViewData[];
   timeRange: TimeRange;
+  startDate?: string;
+  endDate?: string;
 }
 
 export default function ViewsTrendChart({
   data = [],
   timeRange,
+  startDate,
+  endDate,
 }: ViewsTrendChartProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  // Parse and normalize time-series chart data
+  // Parse and normalize time-series chart data based on real date range and API counts
   const chartData = useMemo(() => {
-    if (data && data.length > 0) {
-      return data.map((item, idx) => {
-        let label = item.day;
-        if (!label && item.date) {
-          try {
-            const parsed = new Date(item.date);
-            label = parsed.toLocaleDateString("en-US", { weekday: "short" });
-          } catch {
-            label = `Day ${idx + 1}`;
-          }
+    // Create lookup map of date -> view count from API data
+    const viewsByDateMap = new Map<string, number>();
+
+    if (Array.isArray(data)) {
+      data.forEach((item) => {
+        if (!item) return;
+        const count = item.views ?? item.count ?? item.total ?? 0;
+        const rawDate = item.date || item.day;
+        if (rawDate) {
+          // Normalize date string (YYYY-MM-DD)
+          const cleanDate = rawDate.includes("T")
+            ? rawDate.split("T")[0]
+            : rawDate;
+          viewsByDateMap.set(
+            cleanDate,
+            (viewsByDateMap.get(cleanDate) || 0) + count
+          );
         }
-        return {
-          date: item.date || `2026-07-${idx + 1}`,
-          label: label || `D${idx + 1}`,
-          views: item.views ?? item.count ?? 0,
-        };
       });
     }
 
-    // Default 7-day pattern if no explicit points provided
-    const defaultDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-    const defaultViews = [65, 95, 88, 142, 195, 110, 102];
-    return defaultDays.map((day, idx) => ({
-      date: `Day ${idx + 1}`,
-      label: day,
-      views: defaultViews[idx] ?? 0,
-    }));
-  }, [data]);
+    const pointsCount = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90;
+    const end = endDate ? new Date(endDate) : new Date();
+    const result = [];
+
+    // Generate date sequence
+    for (let i = pointsCount - 1; i >= 0; i--) {
+      const d = new Date(end);
+      d.setDate(end.getDate() - i);
+      const isoDate = d.toISOString().split("T")[0];
+
+      let label = "";
+      if (timeRange === "7d") {
+        label = d.toLocaleDateString("en-US", { weekday: "short" });
+      } else if (timeRange === "30d") {
+        // Show date every 5 days or weekday
+        label = d.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
+      } else {
+        label = d.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
+      }
+
+      const views = viewsByDateMap.get(isoDate) ?? 0;
+
+      result.push({
+        date: isoDate,
+        label,
+        views,
+      });
+    }
+
+    // If 30d or 90d, filter labels on axis to avoid overcrowding
+    return result;
+  }, [data, timeRange, startDate, endDate]);
 
   const rangeTitle =
     timeRange === "7d"
@@ -63,20 +98,22 @@ export default function ViewsTrendChart({
   // Chart coordinates
   const svgWidth = 600;
   const svgHeight = 160;
-  const paddingX = 40;
+  const paddingX = 30;
   const paddingTop = 25;
   const paddingBottom = 25;
 
   const innerWidth = svgWidth - paddingX * 2;
   const innerHeight = svgHeight - paddingTop - paddingBottom;
 
-  const maxViews = Math.max(...chartData.map((d) => d.views), 10);
+  const maxViews = Math.max(...chartData.map((d) => d.views), 5);
   const minViews = 0;
 
   const points = useMemo(() => {
     const total = chartData.length;
     if (total <= 1) {
-      return [{ x: svgWidth / 2, y: svgHeight / 2, ...chartData[0] }];
+      return [
+        { x: svgWidth / 2, y: svgHeight - paddingBottom, ...chartData[0] },
+      ];
     }
 
     return chartData.map((d, index) => {
@@ -103,6 +140,20 @@ export default function ViewsTrendChart({
       return `${acc} L ${point.x} ${point.y}`;
     }, "");
   }, [points]);
+
+  // Labels to display on X-axis (sample down for 30d / 90d)
+  const displayLabels = useMemo(() => {
+    if (timeRange === "7d") {
+      return points.map((p, i) => ({ ...p, show: true, originalIndex: i }));
+    }
+    // Show 6-7 evenly spaced ticks for 30d/90d
+    const step = Math.ceil(points.length / 6);
+    return points.map((p, i) => ({
+      ...p,
+      show: i === 0 || i === points.length - 1 || i % step === 0,
+      originalIndex: i,
+    }));
+  }, [points, timeRange]);
 
   return (
     <div className="border-tertiary-b/70 bg-card flex h-full flex-col justify-between rounded-2xl border p-5 sm:p-6">
@@ -178,7 +229,7 @@ export default function ViewsTrendChart({
                 <rect
                   x={point.x - innerWidth / (points.length * 2)}
                   y={0}
-                  width={innerWidth / points.length}
+                  width={Math.max(innerWidth / points.length, 10)}
                   height={svgHeight}
                   fill="transparent"
                   className="cursor-pointer"
@@ -193,27 +244,43 @@ export default function ViewsTrendChart({
         {/* Hover Tooltip */}
         {hoveredIndex !== null && points[hoveredIndex] && (
           <div
-            className="bg-primary-text text-inverse-text pointer-events-none absolute -top-8 -translate-x-1/2 rounded-md px-2.5 py-1 text-[11px] font-medium shadow-md transition-all"
+            className="bg-primary-text text-inverse-text pointer-events-none absolute -top-8 z-10 -translate-x-1/2 rounded-md px-2.5 py-1 text-[11px] font-medium shadow-md transition-all"
             style={{
               left: `${(points[hoveredIndex].x / svgWidth) * 100}%`,
             }}
           >
-            {points[hoveredIndex].label}: {points[hoveredIndex].views} views
+            {points[hoveredIndex].date}: {points[hoveredIndex].views} view
+            {points[hoveredIndex].views === 1 ? "" : "s"}
           </div>
         )}
 
         {/* X-Axis Labels */}
         <div className="border-tertiary-b/30 text-tertiary-text mt-2 flex justify-between border-t pt-2 text-[11px] sm:text-xs">
-          {points.map((point, i) => (
-            <span
-              key={i}
-              className={`text-center transition-colors ${
-                hoveredIndex === i ? "text-primary-text font-semibold" : ""
-              }`}
-            >
-              {point.label}
-            </span>
-          ))}
+          {timeRange === "7d"
+            ? points.map((point, i) => (
+                <span
+                  key={i}
+                  className={`text-center transition-colors ${
+                    hoveredIndex === i ? "text-primary-text font-semibold" : ""
+                  }`}
+                >
+                  {point.label}
+                </span>
+              ))
+            : displayLabels
+                .filter((l) => l.show)
+                .map((labelPoint, i) => (
+                  <span
+                    key={i}
+                    className={`text-center transition-colors ${
+                      hoveredIndex === labelPoint.originalIndex
+                        ? "text-primary-text font-semibold"
+                        : ""
+                    }`}
+                  >
+                    {labelPoint.label}
+                  </span>
+                ))}
         </div>
       </div>
     </div>

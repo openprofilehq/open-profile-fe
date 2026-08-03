@@ -1,17 +1,19 @@
 "use client";
 
 interface PerformanceCardProps {
-  searchConversionRate?: number;
-  inviteConversionRate?: number;
+  searchConversionRate?: number | null;
+  inviteConversionRate?: number | null;
 }
 
 export default function PerformanceCard({
-  searchConversionRate = 0.064,
-  inviteConversionRate = 0.312,
+  searchConversionRate = null,
+  inviteConversionRate = null,
 }: PerformanceCardProps) {
-  // Format percentage rates nicely
-  const formatRate = (rate: number) => {
-    // If rate is between 0 and 1 (like 0.064), multiply by 100
+  // Format percentage rates accurately based on actual numbers
+  const formatRate = (rate?: number | null) => {
+    if (rate == null || Number.isNaN(rate)) {
+      return "0.0%";
+    }
     const percent = rate <= 1 ? rate * 100 : rate;
     return `${percent.toFixed(1)}%`;
   };
