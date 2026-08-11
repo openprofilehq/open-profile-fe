@@ -24,26 +24,9 @@ export default function InsightsEmptyState({
     };
   }, []);
 
-  const handleShare = async () => {
+  const handleCopy = async () => {
     const profileUrl = getProfileUrl(username || undefined);
     const targetUrl = profileUrl || window.location.origin;
-
-    if (navigator.share && typeof navigator.share === "function") {
-      try {
-        await navigator.share({
-          title: "My Open Profile",
-          text: "Check out my Open Profile!",
-          url: targetUrl,
-        });
-        return;
-      } catch (err: unknown) {
-        if (err instanceof Error && err.name === "AbortError") {
-          // User dismissed the share sheet - do not fall back to clipboard
-          return;
-        }
-        // Fallback to clipboard copy for real share failures
-      }
-    }
 
     try {
       await navigator.clipboard.writeText(targetUrl);
@@ -78,7 +61,7 @@ export default function InsightsEmptyState({
       <div className="mt-6">
         <Button
           type="button"
-          onClick={handleShare}
+          onClick={handleCopy}
           className="bg-brand-hover-bg hover:bg-brand-active-bg rounded-xl px-6 py-2.5 text-sm font-semibold text-white shadow-xs transition-all active:scale-95"
         >
           {copied ? (

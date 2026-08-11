@@ -45,20 +45,38 @@ export function normalizeProfileViews(
   }
 
   let items: DailyViewData[] = [];
+  const rawObj = raw as ProfileViewsResponse;
+  const rawDataObj =
+    rawObj.data && !Array.isArray(rawObj.data)
+      ? (rawObj.data as Record<string, unknown>)
+      : null;
+
   if (Array.isArray(raw)) {
     items = raw;
-  } else if (Array.isArray(raw.data)) {
-    items = raw.data;
-  } else if (Array.isArray(raw.viewsByDate)) {
-    items = raw.viewsByDate;
-  } else if (Array.isArray(raw.views_by_date)) {
-    items = raw.views_by_date;
-  } else if (Array.isArray(raw.dailyViews)) {
-    items = raw.dailyViews;
-  } else if (Array.isArray(raw.daily_views)) {
-    items = raw.daily_views;
-  } else if (Array.isArray(raw.views)) {
-    items = raw.views;
+  } else if (Array.isArray(rawObj.data)) {
+    items = rawObj.data;
+  } else if (rawDataObj && Array.isArray(rawDataObj.daily_breakdown)) {
+    items = rawDataObj.daily_breakdown as DailyViewData[];
+  } else if (rawDataObj && Array.isArray(rawDataObj.dailyBreakdown)) {
+    items = rawDataObj.dailyBreakdown as DailyViewData[];
+  } else if (rawDataObj && Array.isArray(rawDataObj.views_by_date)) {
+    items = rawDataObj.views_by_date as DailyViewData[];
+  } else if (rawDataObj && Array.isArray(rawDataObj.daily_views)) {
+    items = rawDataObj.daily_views as DailyViewData[];
+  } else if (Array.isArray(rawObj.daily_breakdown)) {
+    items = rawObj.daily_breakdown;
+  } else if (Array.isArray(rawObj.dailyBreakdown)) {
+    items = rawObj.dailyBreakdown;
+  } else if (Array.isArray(rawObj.viewsByDate)) {
+    items = rawObj.viewsByDate;
+  } else if (Array.isArray(rawObj.views_by_date)) {
+    items = rawObj.views_by_date;
+  } else if (Array.isArray(rawObj.dailyViews)) {
+    items = rawObj.dailyViews;
+  } else if (Array.isArray(rawObj.daily_views)) {
+    items = rawObj.daily_views;
+  } else if (Array.isArray(rawObj.views)) {
+    items = rawObj.views;
   }
 
   const viewsData: NormalizedDailyView[] = items.map((item, idx) => ({
@@ -68,23 +86,35 @@ export function normalizeProfileViews(
   }));
 
   let totalViews = 0;
-  if (typeof (raw as ProfileViewsResponse).totalViews === "number") {
-    totalViews = (raw as ProfileViewsResponse).totalViews!;
-  } else if (typeof (raw as ProfileViewsResponse).total_views === "number") {
-    totalViews = (raw as ProfileViewsResponse).total_views!;
-  } else if (
-    (raw as ProfileViewsResponse).data &&
-    typeof ((raw as ProfileViewsResponse).data as Record<string, unknown>)
-      .total_views === "number"
-  ) {
-    totalViews = ((raw as ProfileViewsResponse).data as Record<string, unknown>)
-      .total_views as number;
+  if (typeof rawObj.totalViews === "number") {
+    totalViews = rawObj.totalViews;
+  } else if (typeof rawObj.total_views === "number") {
+    totalViews = rawObj.total_views;
+  } else if (typeof rawObj.range_total === "number") {
+    totalViews = rawObj.range_total;
+  } else if (typeof rawObj.rangeTotal === "number") {
+    totalViews = rawObj.rangeTotal;
+  } else if (typeof rawObj.total === "number") {
+    totalViews = rawObj.total;
+  } else if (rawDataObj) {
+    if (typeof rawDataObj.range_total === "number") {
+      totalViews = rawDataObj.range_total as number;
+    } else if (typeof rawDataObj.rangeTotal === "number") {
+      totalViews = rawDataObj.rangeTotal as number;
+    } else if (typeof rawDataObj.total === "number") {
+      totalViews = rawDataObj.total as number;
+    } else if (typeof rawDataObj.total_views === "number") {
+      totalViews = rawDataObj.total_views as number;
+    } else if (typeof rawDataObj.totalViews === "number") {
+      totalViews = rawDataObj.totalViews as number;
+    } else {
+      totalViews = viewsData.reduce((sum, d) => sum + d.views, 0);
+    }
   } else {
     totalViews = viewsData.reduce((sum, d) => sum + d.views, 0);
   }
 
   let changePercentage = 0;
-  const rawObj = raw as ProfileViewsResponse;
   if (typeof rawObj.changePercentage === "number") {
     changePercentage = rawObj.changePercentage;
   } else if (typeof rawObj.percentage_change === "number") {
@@ -93,13 +123,16 @@ export function normalizeProfileViews(
     changePercentage = rawObj.viewsChangePercentage;
   } else if (typeof rawObj.views_change_percentage === "number") {
     changePercentage = rawObj.views_change_percentage;
-  } else if (
-    rawObj.data &&
-    typeof (rawObj.data as Record<string, unknown>).percentage_change ===
-      "number"
-  ) {
-    changePercentage = (rawObj.data as Record<string, unknown>)
-      .percentage_change as number;
+  } else if (rawDataObj) {
+    if (typeof rawDataObj.percentage_change === "number") {
+      changePercentage = rawDataObj.percentage_change as number;
+    } else if (typeof rawDataObj.percentageChange === "number") {
+      changePercentage = rawDataObj.percentageChange as number;
+    } else if (typeof rawDataObj.change_percentage === "number") {
+      changePercentage = rawDataObj.change_percentage as number;
+    } else if (typeof rawDataObj.changePercentage === "number") {
+      changePercentage = rawDataObj.changePercentage as number;
+    }
   }
 
   const keyInsight = rawObj.keyInsight ?? rawObj.key_insight;
@@ -187,6 +220,8 @@ export function normalizeSearchConversions(
   raw?: SearchConversionsResponse | null
 ): number {
   if (!raw) return 0;
+  const rawData = raw.data;
+
   if (typeof raw.conversionRate === "number") {
     return raw.conversionRate > 1
       ? raw.conversionRate / 100
@@ -197,15 +232,35 @@ export function normalizeSearchConversions(
       ? raw.conversion_rate / 100
       : raw.conversion_rate;
   }
-  if (raw.data && typeof raw.data.conversion_rate === "number") {
-    return raw.data.conversion_rate > 1
-      ? raw.data.conversion_rate / 100
-      : raw.data.conversion_rate;
+  if (rawData && typeof rawData.conversion_rate === "number") {
+    return rawData.conversion_rate > 1
+      ? rawData.conversion_rate / 100
+      : rawData.conversion_rate;
+  }
+  if (rawData && typeof rawData.conversionRate === "number") {
+    return rawData.conversionRate > 1
+      ? rawData.conversionRate / 100
+      : rawData.conversionRate;
   }
 
-  const impressions = raw.searchImpressions ?? raw.search_impressions;
+  const impressions =
+    raw.searches_surfaced ??
+    raw.searchesSurfaced ??
+    raw.searchImpressions ??
+    raw.search_impressions ??
+    rawData?.searches_surfaced ??
+    rawData?.searchesSurfaced ??
+    rawData?.search_impressions;
+
   const views =
-    raw.profileViews ?? raw.profile_views ?? raw.profile_views_from_search;
+    raw.search_driven_views ??
+    raw.searchDrivenViews ??
+    raw.profileViews ??
+    raw.profile_views ??
+    raw.profile_views_from_search ??
+    rawData?.search_driven_views ??
+    rawData?.searchDrivenViews ??
+    rawData?.profile_views;
 
   if (impressions && impressions > 0 && views != null) {
     return views / impressions;
@@ -218,6 +273,8 @@ export function normalizeInviteConversions(
   raw?: InviteConversionsResponse | null
 ): number {
   if (!raw) return 0;
+  const rawData = raw.data;
+
   if (typeof raw.conversion_rate === "number") {
     return raw.conversion_rate > 1
       ? raw.conversion_rate / 100
@@ -228,14 +285,28 @@ export function normalizeInviteConversions(
       ? raw.conversionRate / 100
       : raw.conversionRate;
   }
-  if (raw.data && typeof raw.data.conversion_rate === "number") {
-    return raw.data.conversion_rate > 1
-      ? raw.data.conversion_rate / 100
-      : raw.data.conversion_rate;
+  if (rawData && typeof rawData.conversion_rate === "number") {
+    return rawData.conversion_rate > 1
+      ? rawData.conversion_rate / 100
+      : rawData.conversion_rate;
+  }
+  if (rawData && typeof rawData.conversionRate === "number") {
+    return rawData.conversionRate > 1
+      ? rawData.conversionRate / 100
+      : rawData.conversionRate;
   }
 
-  const sent = raw.invites_sent ?? raw.invitesSent;
-  const claimed = raw.invites_claimed ?? raw.invitesClaimed;
+  const sent =
+    raw.invites_sent ??
+    raw.invitesSent ??
+    rawData?.invites_sent ??
+    rawData?.invitesSent;
+
+  const claimed =
+    raw.invites_claimed ??
+    raw.invitesClaimed ??
+    rawData?.invites_claimed ??
+    rawData?.invitesClaimed;
 
   if (sent && sent > 0 && claimed != null) {
     return claimed / sent;
