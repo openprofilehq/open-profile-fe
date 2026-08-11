@@ -2,6 +2,7 @@ export const ROUTES = {
   dashboard: {
     home: "/dashboard",
     profileBuilder: "/dashboard/profile-builder",
+    insights: "/dashboard/insights",
     canvas: "/dashboard/canvas",
     help: {
       home: "/dashboard/help",
