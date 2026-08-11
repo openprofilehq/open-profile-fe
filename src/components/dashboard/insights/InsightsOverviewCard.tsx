@@ -12,7 +12,8 @@ export default function InsightsOverviewCard({
   changePercentage = 0,
 }: InsightsOverviewCardProps) {
   const percent = changePercentage ?? 0;
-  const isPositive = percent >= 0;
+  const isNeutral = percent === 0;
+  const isPositive = percent > 0;
   const formattedViews = new Intl.NumberFormat().format(totalViews);
   const formattedChange = Math.abs(percent).toFixed(0);
 
@@ -31,7 +32,9 @@ export default function InsightsOverviewCard({
       </div>
 
       <div className="mt-6 flex items-center gap-1.5 text-xs font-semibold sm:text-sm">
-        {isPositive ? (
+        {isNeutral ? (
+          <span className="text-secondary-text font-semibold">0%</span>
+        ) : isPositive ? (
           <>
             <TrendingUp
               className="shrink-0 text-[#065e69] dark:text-[#31e47f]"

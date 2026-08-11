@@ -24,12 +24,13 @@ export default function InsightsEmptyState({
     };
   }, []);
 
+  const profileUrl = getProfileUrl(username || undefined);
+
   const handleCopy = async () => {
-    const profileUrl = getProfileUrl(username || undefined);
-    const targetUrl = profileUrl || window.location.origin;
+    if (!profileUrl) return;
 
     try {
-      await navigator.clipboard.writeText(targetUrl);
+      await navigator.clipboard.writeText(profileUrl);
       setCopied(true);
       toast.success("Profile link copied to clipboard!");
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -62,7 +63,8 @@ export default function InsightsEmptyState({
         <Button
           type="button"
           onClick={handleCopy}
-          className="bg-brand-hover-bg hover:bg-brand-active-bg rounded-xl px-6 py-2.5 text-sm font-semibold text-white shadow-xs transition-all active:scale-95"
+          disabled={!profileUrl}
+          className="bg-brand-hover-bg hover:bg-brand-active-bg rounded-xl px-6 py-2.5 text-sm font-semibold text-white shadow-xs transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {copied ? (
             <>

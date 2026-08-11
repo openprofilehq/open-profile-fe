@@ -263,7 +263,7 @@ export function normalizeSearchConversions(
     rawData?.profile_views;
 
   if (impressions && impressions > 0 && views != null) {
-    return views / impressions;
+    return Math.min(views / impressions, 1);
   }
 
   return 0;
@@ -309,7 +309,7 @@ export function normalizeInviteConversions(
     rawData?.invitesClaimed;
 
   if (sent && sent > 0 && claimed != null) {
-    return claimed / sent;
+    return Math.min(claimed / sent, 1);
   }
 
   return 0;

@@ -7,6 +7,13 @@ import {
   InviteConversionsResponse,
 } from "./analytics.type";
 
+function toRangeParams(params?: AnalyticsDateRangeParams) {
+  return {
+    ...(params?.startDate ? { startDate: params.startDate } : {}),
+    ...(params?.endDate ? { endDate: params.endDate } : {}),
+  };
+}
+
 export function getProfileViews(
   params?: AnalyticsDateRangeParams,
   signal?: AbortSignal
@@ -14,10 +21,7 @@ export function getProfileViews(
   return callApi<ProfileViewsResponse>({
     url: "/analytics/profile-views",
     method: "GET",
-    params: {
-      ...(params?.startDate ? { startDate: params.startDate } : {}),
-      ...(params?.endDate ? { endDate: params.endDate } : {}),
-    },
+    params: toRangeParams(params),
     signal,
   });
 }
@@ -29,10 +33,7 @@ export function getLinkClicks(
   return callApi<LinkClicksResponse>({
     url: "/analytics/link-clicks",
     method: "GET",
-    params: {
-      ...(params?.startDate ? { startDate: params.startDate } : {}),
-      ...(params?.endDate ? { endDate: params.endDate } : {}),
-    },
+    params: toRangeParams(params),
     signal,
   });
 }
@@ -44,10 +45,7 @@ export function getSearchConversions(
   return callApi<SearchConversionsResponse>({
     url: "/analytics/search-conversions",
     method: "GET",
-    params: {
-      ...(params?.startDate ? { startDate: params.startDate } : {}),
-      ...(params?.endDate ? { endDate: params.endDate } : {}),
-    },
+    params: toRangeParams(params),
     signal,
   });
 }
@@ -59,10 +57,7 @@ export function getInviteConversions(
   return callApi<InviteConversionsResponse>({
     url: "/analytics/invite-conversions",
     method: "GET",
-    params: {
-      ...(params?.startDate ? { startDate: params.startDate } : {}),
-      ...(params?.endDate ? { endDate: params.endDate } : {}),
-    },
+    params: toRangeParams(params),
     signal,
   });
 }

@@ -46,7 +46,7 @@ export default function InsightsDashboard() {
   const [timeRange, setTimeRange] = useState<TimeRange>("7d");
 
   // Calculate local startDate and endDate based on timeRange
-  const { startDate, endDate, dateParams } = useMemo(() => {
+  const { endDate, dateParams } = useMemo(() => {
     const end = new Date();
     const days = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90;
     const start = new Date(
@@ -59,7 +59,6 @@ export default function InsightsDashboard() {
     const endDateStr = formatLocalDateKey(end);
 
     return {
-      startDate: startDateStr,
       endDate: endDateStr,
       dateParams: {
         startDate: startDateStr,
@@ -76,23 +75,32 @@ export default function InsightsDashboard() {
   const inviteConversions = useQuery(inviteConversionsOption(dateParams));
 
   const isLoading =
+    (dashboardProfile.isPending && !dashboardProfile.data) ||
     (profileViews.isPending && !profileViews.data) ||
     (linkClicks.isPending && !linkClicks.data) ||
     (searchConversions.isPending && !searchConversions.data) ||
     (inviteConversions.isPending && !inviteConversions.data);
 
   const isError =
+    dashboardProfile.isError ||
     profileViews.isError ||
     linkClicks.isError ||
     searchConversions.isError ||
     inviteConversions.isError;
 
   const handleRetry = useCallback(() => {
+    dashboardProfile.refetch();
     profileViews.refetch();
     linkClicks.refetch();
     searchConversions.refetch();
     inviteConversions.refetch();
-  }, [profileViews, linkClicks, searchConversions, inviteConversions]);
+  }, [
+    dashboardProfile,
+    profileViews,
+    linkClicks,
+    searchConversions,
+    inviteConversions,
+  ]);
 
   // Normalize all analytics responses into a single trusted shape
   const analytics: NormalizedAnalyticsDashboard = useMemo(() => {
@@ -132,6 +140,8 @@ export default function InsightsDashboard() {
       let maxDayDate: string | null = null;
       let weekdayCount = 0;
       let weekendCount = 0;
+      let numWeekdays = 0;
+      let numWeekendDays = 0;
 
       for (const d of analytics.viewsData) {
         if (d.views > maxCount || !maxDayDate) {
@@ -145,8 +155,10 @@ export default function InsightsDashboard() {
           ).getUTCDay();
           if (dayOfWeek === 0 || dayOfWeek === 6) {
             weekendCount += d.views;
+            numWeekendDays++;
           } else {
             weekdayCount += d.views;
+            numWeekdays++;
           }
         }
       }
@@ -158,12 +170,12 @@ export default function InsightsDashboard() {
             new Date(Date.UTC(y, (m || 1) - 1, dayNum || 1)).getUTCDay()
           ];
 
-        if (
-          weekdayCount > 0 &&
-          weekendCount > 0 &&
-          weekdayCount > weekendCount * 1.5
-        ) {
-          const ratio = (weekdayCount / (weekendCount || 1)).toFixed(1);
+        const avgWeekday = numWeekdays > 0 ? weekdayCount / numWeekdays : 0;
+        const avgWeekend =
+          numWeekendDays > 0 ? weekendCount / numWeekendDays : 0;
+
+        if (avgWeekday > 0 && avgWeekend > 0 && avgWeekday > avgWeekend * 1.5) {
+          const ratio = (avgWeekday / avgWeekend).toFixed(1);
           return `Your profile gets ${ratio}x more visits on weekdays. Try sharing updates during peak business hours for maximum reach.`;
         }
         return `Your profile received peak traffic on ${dayName || "your top day"} with ${maxCount} views.`;
@@ -230,7 +242,6 @@ export default function InsightsDashboard() {
               <ViewsTrendChart
                 data={analytics.viewsData}
                 timeRange={timeRange}
-                startDate={startDate}
                 endDate={endDate}
               />
             </div>
