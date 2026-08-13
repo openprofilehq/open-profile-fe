@@ -47,13 +47,17 @@ export default function SearchEmptyState({ query }: SearchEmptyStateProps) {
   return (
     <div className="mx-auto flex w-full max-w-[680px] flex-col gap-4 py-4">
       {/* Top Card: Profile Not Found */}
-      <div className="bg-card flex flex-col items-center rounded-[12px] border border-[#98A2B3]/60 px-6 py-8 text-center shadow-[0_2px_8px_rgba(0,0,0,0.02)] md:px-8 md:py-10">
-        <div className="mb-5 flex h-[48px] w-[48px] items-center justify-center rounded-[10px] bg-[#E6F7F9]">
-          <Search className="text-[#087583]" size={22} />
+      <div className="border-secondary-b bg-card flex flex-col items-center rounded-[12px] border px-6 py-8 text-center shadow-[0_2px_8px_rgba(0,0,0,0.02)] md:px-8 md:py-10">
+        <div className="bg-brand-subtle-bg mb-5 flex h-[48px] w-[48px] items-center justify-center rounded-[10px]">
+          <Search
+            className="text-link-hover-text"
+            size={22}
+            aria-hidden="true"
+          />
         </div>
-        <h3 className="text-primary-text text-[20px] font-bold md:text-[22px]">
+        <h2 className="text-primary-text text-[20px] font-bold md:text-[22px]">
           No profile found for &lsquo;{query}&rsquo;
-        </h3>
+        </h2>
         <p className="text-secondary-text mt-2 max-w-[460px] text-[14px] leading-relaxed md:text-[15px]">
           Try a different name or username, or invite them to create their Open
           Profile.
@@ -62,30 +66,34 @@ export default function SearchEmptyState({ query }: SearchEmptyStateProps) {
 
       {/* Bottom Card: Invite Form / Success View */}
       {isSuccess ? (
-        <div className="bg-card flex flex-col items-center rounded-[12px] border border-[#EAECF0] px-6 py-8 text-center shadow-[0_2px_8px_rgba(0,0,0,0.02)] md:px-8 md:py-10">
-          <div className="mb-4 flex h-[48px] w-[48px] items-center justify-center rounded-full bg-[#E6F7F9]">
-            <BadgeCheck className="text-[#087583]" size={24} />
+        <div className="border-secondary-b/60 bg-card flex flex-col items-center rounded-[12px] border px-6 py-8 text-center shadow-[0_2px_8px_rgba(0,0,0,0.02)] md:px-8 md:py-10">
+          <div className="bg-brand-subtle-bg mb-4 flex h-[48px] w-[48px] items-center justify-center rounded-full">
+            <BadgeCheck
+              className="text-link-hover-text"
+              size={24}
+              aria-hidden="true"
+            />
           </div>
-          <h3 className="text-primary-text text-[20px] font-bold md:text-[22px]">
+          <h2 className="text-primary-text text-[20px] font-bold md:text-[22px]">
             Invite sent!
-          </h3>
+          </h2>
           <p className="text-secondary-text mt-2 max-w-[520px] text-[14px] leading-relaxed md:text-[15px]">
-            We&apos;ve sent an invite to {sentEmail}. They&apos;ll receive a
+            We&apos;ll send an invite to {sentEmail}. They&apos;ll receive a
             link to create their Open.Profile.
           </p>
           <button
             type="button"
             onClick={() => setIsSuccess(false)}
-            className="mt-6 inline-flex cursor-pointer items-center gap-1 text-[14px] font-medium text-[#087583] transition-colors hover:text-[#065d68]"
+            className="text-link-hover-text hover:text-link-active-text mt-6 inline-flex cursor-pointer items-center gap-1 text-[14px] font-medium transition-colors"
           >
             Invite another person &rarr;
           </button>
         </div>
       ) : (
-        <div className="bg-card flex flex-col items-center rounded-[12px] border border-[#EAECF0] px-6 py-8 text-center shadow-[0_2px_8px_rgba(0,0,0,0.02)] md:px-8 md:py-10">
-          <h3 className="text-primary-text text-[20px] font-bold md:text-[22px]">
+        <div className="border-secondary-b/60 bg-card flex flex-col items-center rounded-[12px] border px-6 py-8 text-center shadow-[0_2px_8px_rgba(0,0,0,0.02)] md:px-8 md:py-10">
+          <h2 className="text-primary-text text-[20px] font-bold md:text-[22px]">
             Invite them to join Open.Profile
-          </h3>
+          </h2>
           <p className="text-secondary-text mt-2 mb-6 max-w-[520px] text-[14px] leading-relaxed md:text-[15px]">
             We&apos;ll send an email with a secure link they can use to create
             and claim their profile.
@@ -97,6 +105,7 @@ export default function SearchEmptyState({ query }: SearchEmptyStateProps) {
           >
             <div className="flex w-full min-w-0 flex-1 flex-col">
               <input
+                id="invite-email"
                 type="email"
                 value={email}
                 onChange={(e) => {
@@ -105,14 +114,22 @@ export default function SearchEmptyState({ query }: SearchEmptyStateProps) {
                 }}
                 onBlur={() => setTouched(true)}
                 placeholder="Enter their email address"
+                aria-label="Recipient email address"
+                aria-invalid={isInvalidEmail}
+                aria-describedby={
+                  isInvalidEmail ? "invite-email-error" : undefined
+                }
                 className={`h-[48px] w-full shrink-0 rounded-[8px] border px-4 text-[15px] transition-colors outline-none ${
                   isInvalidEmail
-                    ? "bg-background border-[#F04438] text-[#D92D20] focus:border-[#F04438]"
+                    ? "border-danger-text bg-background text-danger-text focus:border-danger-text"
                     : "border-secondary-b bg-secondary-bg/40 text-primary-text placeholder:text-disabled-text focus:border-brand-hover-bg focus:bg-background"
                 }`}
               />
               {isInvalidEmail && (
-                <p className="mt-1.5 text-left text-[13px] font-normal text-[#D92D20]">
+                <p
+                  id="invite-email-error"
+                  className="text-danger-text mt-1.5 text-left text-[13px] font-normal"
+                >
                   Invalid email address
                 </p>
               )}
@@ -121,15 +138,19 @@ export default function SearchEmptyState({ query }: SearchEmptyStateProps) {
             <button
               type="submit"
               disabled={!isValidEmail || isSubmitting}
+              aria-busy={isSubmitting}
               className={`h-[48px] shrink-0 rounded-[8px] px-6 text-[15px] font-medium whitespace-nowrap transition-all ${
                 isValidEmail && !isSubmitting
                   ? "bg-brand-hover-bg cursor-pointer text-white hover:opacity-90"
-                  : "cursor-not-allowed bg-[#F3F4F6] text-[#9CA3AF] dark:bg-neutral-800 dark:text-neutral-500"
+                  : "bg-disabled-bg text-disabled-text border-secondary-b/40 cursor-not-allowed border"
               }`}
             >
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2
+                    className="h-4 w-4 animate-spin"
+                    aria-hidden="true"
+                  />
                   Sending...
                 </span>
               ) : (
