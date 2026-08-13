@@ -3,7 +3,8 @@ import { Search, AlertCircle } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Footer from "@/components/layout/Footer";
-import { searchProfiles, SearchResult } from "@/api/search/search.service";
+import { SearchResult } from "@/api/search/search.service";
+import { searchProfilesServer } from "@/api/search/search.server";
 import SearchHeader from "./_components/SearchHeader";
 import PaginationControls from "./_components/PaginationControls";
 import SearchRetryButton from "./_components/SearchRetryButton";
@@ -32,7 +33,7 @@ export default async function SearchPage(props: PageProps) {
 
   if (queryIsValid) {
     try {
-      const data = await searchProfiles({
+      const data = await searchProfilesServer({
         q: q.trim(),
         page: currentPage,
         limit,
