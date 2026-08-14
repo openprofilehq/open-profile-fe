@@ -2,10 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, ChartNoAxesCombined, House, PanelsTopLeft } from "lucide-react";
+import {
+  Bell,
+  ChartNoAxesCombined,
+  House,
+  PanelsTopLeft,
+  type LucideIcon,
+} from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 
-const bottomNavLinks = [
+interface BottomNavLinkItem {
+  label: string;
+  href?: string;
+  icon: LucideIcon;
+}
+
+const bottomNavLinks: BottomNavLinkItem[] = [
   {
     label: "Home",
     href: ROUTES.dashboard.home,
@@ -23,6 +35,7 @@ const bottomNavLinks = [
   },
   {
     label: "Alerts",
+    href: ROUTES.dashboard.notifications,
     icon: Bell,
   },
 ];

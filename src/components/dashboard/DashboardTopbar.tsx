@@ -12,6 +12,7 @@ import {
   Search,
   Settings,
   X,
+  type LucideIcon,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useRef, useState } from "react";
@@ -27,10 +28,18 @@ import { dashboardProfileOption } from "@/api/profile/profile.options";
 import { getInitials } from "@/utils/avatar";
 import { getImageUrl } from "@/utils/profile";
 import type { PublishProfileResponse } from "@/api/profile/profile.type";
+import { unreadCountQueryOptions } from "@/api/notifications/notifications.options";
+import { useNotificationsSocket } from "@/hooks/useNotificationsSocket";
 import { useProfileBuilderPublishState } from "./profile-builder/profile-builder-publish-state";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
-const navLinks = [
+interface NavLinkItem {
+  label: string;
+  href?: string;
+  icon: LucideIcon;
+}
+
+const navLinks: NavLinkItem[] = [
   {
     label: "Home",
     href: ROUTES.dashboard.home,
@@ -48,6 +57,7 @@ const navLinks = [
   },
   {
     label: "Notifications",
+    href: ROUTES.dashboard.notifications,
     icon: Bell,
   },
 ];
@@ -56,6 +66,8 @@ export default function DashboardTopbar() {
   const pathname = usePathname();
   const { data: user } = useQuery(userQueryOptions);
   const { data: profile } = useQuery(dashboardProfileOption());
+  const { data: unreadCount = 0 } = useQuery(unreadCountQueryOptions());
+  useNotificationsSocket();
   const queryClient = useQueryClient();
   const {
     hasUnpublishedChanges,
@@ -207,7 +219,14 @@ export default function DashboardTopbar() {
                   className={itemClassName}
                 >
                   <Icon aria-hidden="true" size={20} strokeWidth={2} />
-                  <span>{label}</span>
+                  <span className="flex items-center gap-1">
+                    <span>{label}</span>
+                    {label === "Notifications" && unreadCount > 0 && (
+                      <span className="flex h-4 min-w-4 items-center justify-center rounded-md bg-[#0f766e] px-1 text-[10px] leading-none font-bold text-white">
+                        {unreadCount > 99 ? "99+" : unreadCount}
+                      </span>
+                    )}
+                  </span>
                 </Link>
               );
             })}
