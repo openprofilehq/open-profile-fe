@@ -9,12 +9,14 @@ export const env = createEnv({
       .url()
       .optional()
       .default("https://api.staging.open-profile.hng14.com"),
+    NEXT_PUBLIC_SOCKET_URL: z.string().optional(),
     NEXT_PUBLIC_APP_BASE_URL: z.url().default("https://open-profile.hng14.com"),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_SOCKET_URL: process.env.NEXT_PUBLIC_SOCKET_URL,
     NEXT_PUBLIC_APP_BASE_URL: process.env.NEXT_PUBLIC_APP_BASE_URL,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
