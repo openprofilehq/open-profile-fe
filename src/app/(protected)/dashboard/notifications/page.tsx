@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCheck, BellOff } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import { isApiError } from "@/api/base";
 import {
   notificationsQueryOptions,
   unreadCountQueryOptions,
@@ -12,7 +13,6 @@ import {
   markAsUnreadMutationOption,
   markAllAsReadMutationOption,
 } from "@/api/notifications/notifications.options";
-import { NotificationItem } from "@/api/notifications/notifications.type";
 import { NotificationCard } from "@/components/notifications/NotificationCard";
 import {
   NotificationSidebar,
@@ -20,63 +20,6 @@ import {
 } from "@/components/notifications/NotificationSidebar";
 import { NotificationSkeleton } from "@/components/notifications/NotificationSkeleton";
 import { Button } from "@/components/ui/button";
-
-const MOCK_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: "mock-1",
-    userId: "user-1",
-    type: "SYSTEM_ANNOUNCEMENT",
-    title: "Don't forget to complete your profile to unlock more features.",
-    body: "",
-    readAt: null,
-    createdAt: new Date(Date.now() - 3600000).toISOString(),
-  },
-  {
-    id: "mock-2",
-    userId: "user-1",
-    type: "SYSTEM_ANNOUNCEMENT",
-    title: "Your password was changed successfully.",
-    body: "",
-    readAt: "2026-08-14T09:00:00.000Z",
-    createdAt: new Date(Date.now() - 7200000).toISOString(),
-  },
-  {
-    id: "mock-3",
-    userId: "user-1",
-    type: "PROFILE_VIEW_MILESTONE",
-    title: "Cody Searched for you Profile",
-    body: "",
-    readAt: null,
-    createdAt: new Date(Date.now() - 14400000).toISOString(),
-  },
-  {
-    id: "mock-4",
-    userId: "user-1",
-    type: "PROFILE_VIEW_MILESTONE",
-    title: "Anonymous Searched for your profile",
-    body: "",
-    readAt: "2026-08-14T08:00:00.000Z",
-    createdAt: new Date(Date.now() - 28800000).toISOString(),
-  },
-  {
-    id: "mock-5",
-    userId: "user-1",
-    type: "PROFILE_VIEW_MILESTONE",
-    title: "Your Appeared in 5 searches this week",
-    body: "",
-    readAt: "2026-08-13T12:00:00.000Z",
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: "mock-6",
-    userId: "user-1",
-    type: "SYSTEM_ANNOUNCEMENT",
-    title: "Welcome aboard! Your account is all set up and ready to go.",
-    body: "",
-    readAt: "2026-08-12T10:00:00.000Z",
-    createdAt: new Date(Date.now() - 172800000).toISOString(),
-  },
-];
 
 export default function NotificationsPage() {
   const queryClient = useQueryClient();
@@ -94,7 +37,10 @@ export default function NotificationsPage() {
       setReadStateMap((prev) => ({ ...prev, [id]: true }));
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
-    onError: () => toast.error("Failed to mark notification as read."),
+    onError: (err) =>
+      toast.error(
+        isApiError(err) ? err.message : "Failed to mark notification as read."
+      ),
   });
 
   const markUnreadMutation = useMutation({
@@ -103,19 +49,28 @@ export default function NotificationsPage() {
       setReadStateMap((prev) => ({ ...prev, [id]: false }));
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
-    onError: () => toast.error("Failed to mark notification as unread."),
+    onError: (err) =>
+      toast.error(
+        isApiError(err) ? err.message : "Failed to mark notification as unread."
+      ),
   });
 
   const markAllReadMutation = useMutation({
     ...markAllAsReadMutationOption,
     onSuccess: () => {
+      setReadStateMap({});
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       toast.success("All notifications marked as read.");
     },
-    onError: () => toast.error("Failed to mark all notifications as read."),
+    onError: (err) =>
+      toast.error(
+        isApiError(err)
+          ? err.message
+          : "Failed to mark all notifications as read."
+      ),
   });
 
-  const rawItems = data?.items?.length ? data.items : MOCK_NOTIFICATIONS;
+  const rawItems = data?.items ?? [];
 
   const items = useMemo(() => {
     return rawItems.map((item) => {
@@ -134,14 +89,16 @@ export default function NotificationsPage() {
     const searches = items.filter(
       (item) =>
         item.type === "PROFILE_VIEW_MILESTONE" ||
-        item.title.toLowerCase().includes("search")
+        (item.title && item.title.toLowerCase().includes("search")) ||
+        (item.body && item.body.toLowerCase().includes("viewed"))
     ).length;
     const read = items.filter((item) => !!item.readAt).length;
 
     return {
       all: items.length,
       searches,
-      unread: serverUnreadCount || unread,
+      unread:
+        typeof serverUnreadCount === "number" ? serverUnreadCount : unread,
       read,
     };
   }, [items, serverUnreadCount]);
@@ -152,7 +109,8 @@ export default function NotificationsPage() {
         return items.filter(
           (item) =>
             item.type === "PROFILE_VIEW_MILESTONE" ||
-            item.title.toLowerCase().includes("search")
+            (item.title && item.title.toLowerCase().includes("search")) ||
+            (item.body && item.body.toLowerCase().includes("viewed"))
         );
       case "unread":
         return items.filter((item) => !item.readAt);
@@ -165,27 +123,14 @@ export default function NotificationsPage() {
   }, [items, activeTab]);
 
   const handleMarkAsRead = (id: string) => {
-    if (id.startsWith("mock-")) {
-      setReadStateMap((prev) => ({ ...prev, [id]: true }));
-      return;
-    }
     markReadMutation.mutate(id);
   };
 
   const handleMarkAsUnread = (id: string) => {
-    if (id.startsWith("mock-")) {
-      setReadStateMap((prev) => ({ ...prev, [id]: false }));
-      return;
-    }
     markUnreadMutation.mutate(id);
   };
 
   const handleMarkAllAsRead = () => {
-    const updatedMap: Record<string, boolean> = {};
-    items.forEach((item) => {
-      updatedMap[item.id] = true;
-    });
-    setReadStateMap(updatedMap);
     markAllReadMutation.mutate();
   };
 
@@ -216,18 +161,18 @@ export default function NotificationsPage() {
           )}
         </div>
 
-        <div className="flex flex-col gap-6 md:flex-row md:items-start">
+        <div className="flex flex-col gap-6 md:flex-row md:items-stretch">
           <NotificationSidebar
             activeTab={activeTab}
             onTabChange={setActiveTab}
             counts={counts}
           />
 
-          <div className="flex-1 space-y-4">
+          <div className="flex-1 space-y-4 md:flex md:flex-col md:justify-stretch">
             {isLoading ? (
               <NotificationSkeleton />
             ) : filteredItems.length === 0 ? (
-              <div className="bg-card border-tertiary-b flex flex-col items-center justify-center rounded-2xl border p-12 text-center shadow-xs">
+              <div className="bg-card border-tertiary-b flex flex-1 flex-col items-center justify-center rounded-2xl border p-8 text-center shadow-xs md:h-full">
                 <div className="bg-hover-bg text-tertiary-text mb-3 flex h-12 w-12 items-center justify-center rounded-full">
                   <BellOff size={22} />
                 </div>

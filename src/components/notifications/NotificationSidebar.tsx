@@ -60,7 +60,7 @@ export function NotificationSidebar({
       </div>
 
       {/* Desktop Left Sidebar Card */}
-      <div className="bg-card border-tertiary-b hidden w-60 shrink-0 space-y-1.5 self-start rounded-2xl border p-4 shadow-xs md:block">
+      <div className="bg-card border-tertiary-b hidden w-60 shrink-0 space-y-1.5 rounded-2xl border p-4 shadow-xs md:flex md:flex-col">
         {tabs.map((tab) => {
           const count = counts[tab.id];
           const isActive = activeTab === tab.id;
