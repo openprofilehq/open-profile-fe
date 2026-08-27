@@ -11,9 +11,6 @@ function getSocketBaseUrl(): string {
   if (env.NEXT_PUBLIC_SOCKET_URL) {
     return env.NEXT_PUBLIC_SOCKET_URL;
   }
-  if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
-    return "http://localhost:3000";
-  }
   return (
     env.NEXT_PUBLIC_API_URL || "https://api.staging.open-profile.hng14.com"
   );
@@ -29,12 +26,16 @@ export function useNotificationsSocket(enabled = true) {
     const baseUrl = getSocketBaseUrl();
     const socketUrl = `${baseUrl.replace(/\/$/, "")}/notifications`;
 
+    const isStagingHost = baseUrl.includes("open-profile.hng14.com");
+
     const socketInstance = io(socketUrl, {
       withCredentials: true,
       autoConnect: true,
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
+      transports: isStagingHost ? ["polling"] : ["polling", "websocket"],
+      upgrade: !isStagingHost,
     });
 
     socketInstance.on("connect", () => {
@@ -61,10 +62,7 @@ export function useNotificationsSocket(enabled = true) {
 
     socketInstance.on("connect_error", (error) => {
       if (process.env.NODE_ENV === "development") {
-        console.error(
-          "[useNotificationsSocket] Connection error:",
-          error.message
-        );
+        console.warn("[useNotificationsSocket] Socket status:", error.message);
       }
     });
 
