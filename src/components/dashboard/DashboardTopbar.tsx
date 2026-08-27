@@ -29,7 +29,6 @@ import { getInitials } from "@/utils/avatar";
 import { getImageUrl } from "@/utils/profile";
 import type { PublishProfileResponse } from "@/api/profile/profile.type";
 import { unreadCountQueryOptions } from "@/api/notifications/notifications.options";
-import { useNotificationsSocket } from "@/hooks/useNotificationsSocket";
 import { useProfileBuilderPublishState } from "./profile-builder/profile-builder-publish-state";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
@@ -67,7 +66,6 @@ export default function DashboardTopbar() {
   const { data: user } = useQuery(userQueryOptions);
   const { data: profile } = useQuery(dashboardProfileOption());
   const { data: unreadCount = 0 } = useQuery(unreadCountQueryOptions());
-  useNotificationsSocket();
   const queryClient = useQueryClient();
   const {
     hasUnpublishedChanges,

@@ -76,6 +76,10 @@ api.interceptors.response.use(
         { withCredentials: true }
       );
 
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("auth:refreshed"));
+      }
+
       // Retry the original request
       const result = await api(originalRequest);
       processQueue(null);
