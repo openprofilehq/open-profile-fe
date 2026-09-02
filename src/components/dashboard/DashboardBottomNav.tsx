@@ -2,10 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, ChartNoAxesCombined, House, PanelsTopLeft } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  Bell,
+  ChartNoAxesCombined,
+  House,
+  PanelsTopLeft,
+  type LucideIcon,
+} from "lucide-react";
 import { ROUTES } from "@/constants/routes";
+import { unreadCountQueryOptions } from "@/api/notifications/notifications.options";
 
-const bottomNavLinks = [
+interface BottomNavLinkItem {
+  label: string;
+  href?: string;
+  icon: LucideIcon;
+}
+
+const bottomNavLinks: BottomNavLinkItem[] = [
   {
     label: "Home",
     href: ROUTES.dashboard.home,
@@ -23,12 +37,14 @@ const bottomNavLinks = [
   },
   {
     label: "Alerts",
+    href: ROUTES.dashboard.notifications,
     icon: Bell,
   },
 ];
 
 export default function DashboardBottomNav() {
   const pathname = usePathname();
+  const { data: unreadCount = 0 } = useQuery(unreadCountQueryOptions());
 
   return (
     <nav
@@ -72,7 +88,14 @@ export default function DashboardBottomNav() {
             aria-current={isActive ? "page" : undefined}
             className={itemClassName}
           >
-            <Icon aria-hidden="true" size={20} strokeWidth={2} />
+            <span className="relative flex items-center justify-center">
+              <Icon aria-hidden="true" size={20} strokeWidth={2} />
+              {label === "Alerts" && unreadCount > 0 && (
+                <span className="absolute -top-1.5 -right-2 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-[#0f766e] px-1 text-[9px] leading-none font-bold text-white">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
+            </span>
             <span>{label}</span>
           </Link>
         );
