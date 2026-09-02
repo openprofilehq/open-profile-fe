@@ -14,6 +14,7 @@ on:
           - staging
           - production
 
+          
   push:
     branches:
       - feat/ci-cd-pipeline
