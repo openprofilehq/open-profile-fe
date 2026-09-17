@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -18,6 +18,7 @@ import {
   userQueryOptions,
 } from "@/api/auth/auth.options";
 import { isApiError } from "@/api/base";
+import { PENDING_INVITE_STORAGE_KEY } from "@/api/invites/invites.service";
 import { Checkbox } from "../ui/checkbox";
 import { ROUTES } from "@/constants/routes";
 
@@ -41,9 +42,28 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
 
   const isSignup = mode === "signup";
 
+  useEffect(() => {
+    const inviteToken = searchParams.get("invite");
+    if (!inviteToken) return;
+    try {
+      sessionStorage.setItem(PENDING_INVITE_STORAGE_KEY, inviteToken);
+    } catch {
+      return;
+    }
+  }, [searchParams]);
+
   const loginMutation = useMutation({
     ...loginOption,
-    onSuccess: async (data) => {
+    onSuccess: async (data, variables) => {
+      if (data?.requiresVerification) {
+        toast.success(
+          data.message ?? "A verification code has been sent to your email."
+        );
+        router.replace(
+          `/verify-email?email=${encodeURIComponent(variables.email)}`
+        );
+        return;
+      }
       await queryClient.resetQueries({ queryKey: userQueryOptions.queryKey });
       const onboardingComplete = data?.user?.onboardingComplete;
       const destination = onboardingComplete ? "/dashboard" : "/create-profile";
@@ -64,8 +84,10 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
 
   const signupMutation = useMutation({
     ...signupOption,
-    onSuccess: () => {
-      router.replace(`/verify-email?email=${encodeURIComponent(email)}`);
+    onSuccess: (_data, variables) => {
+      router.replace(
+        `/verify-email?email=${encodeURIComponent(variables.email)}`
+      );
     },
     onError: (err) => {
       const isNetworkError =
@@ -126,13 +148,15 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
       return;
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
+
     if (isSignup) {
       signupMutation.mutate({
-        email,
+        email: normalizedEmail,
         password,
       });
     } else {
-      loginMutation.mutate({ email, password });
+      loginMutation.mutate({ email: normalizedEmail, password });
     }
   }
 

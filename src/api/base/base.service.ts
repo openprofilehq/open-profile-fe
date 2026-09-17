@@ -46,9 +46,7 @@ api.interceptors.response.use(
       _retry?: boolean;
     };
 
-    const isAuthEndpoint =
-      originalRequest.url?.includes("/auth/") &&
-      !originalRequest.url?.match(/\/auth\/me(?:$|\?|\/)/);
+    const isAuthEndpoint = originalRequest.url?.includes("/auth/");
 
     if (
       error.response?.status !== 401 ||
@@ -96,6 +94,8 @@ function getApiErrorMessage(message?: unknown): string {
     if (typeof first === "string") return first;
     if (first && typeof first === "object" && "message" in first)
       return String(first.message);
+    if (first && typeof first === "object" && "error" in first)
+      return String(first.error);
   }
   if (message && typeof message === "object" && "message" in message) {
     return String((message as Record<string, unknown>).message);

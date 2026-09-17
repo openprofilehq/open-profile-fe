@@ -674,6 +674,11 @@ export function sectionsToContent(
   const linksSection = sections.find((s) => s.type === "links");
   const projectsSection = sections.find((s) => s.type === "projects");
   const ctaSection = sections.find((s) => s.type === "cta");
+  const workExperienceSection = sections.find(
+    (s) => s.type === "workExperience"
+  );
+  const educationSection = sections.find((s) => s.type === "education");
+  const skillsSection = sections.find((s) => s.type === "skills");
 
   const sectionStyleFields = (s: Section) => ({
     ...(s.textColor && { textColor: s.textColor }),
@@ -685,6 +690,15 @@ export function sectionsToContent(
     ...(s.gap != null && { gap: s.gap }),
     ...(s.padding != null && { padding: s.padding }),
   });
+
+  const itemSectionMeta = (s: Section | undefined) =>
+    s
+      ? {
+          visible: s.visible,
+          sectionTitle: `${s.title ?? ""}///${s.subtitle ?? ""}`,
+          ...sectionStyleFields(s),
+        }
+      : undefined;
 
   return {
     sectionOrder,
@@ -704,6 +718,10 @@ export function sectionsToContent(
             label: l.title || "",
             url: l.url ? encodeUrlForBackend(l.url, l.iconId) : "",
             visible: true,
+            iconId: l.iconId ?? null,
+            iconLabel: l.iconLabel ?? null,
+            iconSrc: l.iconSrc ?? null,
+            imageSrc: l.imageSrc ?? null,
           })) as unknown as LinkItem[],
           ...sectionStyleFields(linksSection),
         }
@@ -763,5 +781,8 @@ export function sectionsToContent(
           iconLabel: ctaSection.iconLabel ?? null,
         }
       : undefined,
+    workExperience: itemSectionMeta(workExperienceSection),
+    education: itemSectionMeta(educationSection),
+    skills: itemSectionMeta(skillsSection),
   };
 }
