@@ -1,5 +1,7 @@
 import { callApi } from "@/api/base";
 
+export const PENDING_INVITE_STORAGE_KEY = "pendingInviteToken";
+
 export type SendInviteRequest = {
   recipientEmail: string;
 };
@@ -15,5 +17,13 @@ export function sendInviteApi(data: SendInviteRequest) {
     url: "/invites",
     method: "POST",
     data,
+  });
+}
+
+export function claimInviteApi(token: string) {
+  return callApi<void>({
+    url: `/invites/${encodeURIComponent(token)}/claim`,
+    method: "POST",
+    silent: true,
   });
 }
