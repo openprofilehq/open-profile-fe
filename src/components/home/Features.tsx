@@ -7,7 +7,6 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUserOption } from "@/api/auth/auth.options";
 import { ROUTES } from "@/constants/routes";
-import { useAuthCookie } from "@/hooks/useAuthCookie";
 
 const features = [
   {
@@ -80,10 +79,8 @@ function FeatureCard({
 }
 
 export function Features() {
-  const hasAuthCookie = useAuthCookie();
   const { data: user } = useQuery({
     ...getCurrentUserOption(),
-    enabled: hasAuthCookie,
     throwOnError: false,
   });
 
