@@ -5,6 +5,8 @@ export type LoginRequest = {
 
 export type LoginResponse = {
   status?: string;
+  requiresVerification?: boolean;
+  message?: string;
   user?: {
     id?: string;
     email?: string;

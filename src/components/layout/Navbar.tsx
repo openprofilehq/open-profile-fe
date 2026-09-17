@@ -8,13 +8,11 @@ import { X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUserOption } from "@/api/auth/auth.options";
 import { Navlinks, ROUTES } from "@/constants/routes";
-import { useAuthCookie } from "@/hooks/useAuthCookie";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const hasAuthCookie = useAuthCookie();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -24,7 +22,6 @@ export function Navbar() {
 
   const { data: user } = useQuery({
     ...getCurrentUserOption(),
-    enabled: hasAuthCookie,
     throwOnError: false,
   });
 
