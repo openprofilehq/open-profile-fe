@@ -11,6 +11,7 @@ import ProfessionalDashboardView from "@/components/dashboard/templates/Professi
 import PortfolioDashboardView from "@/components/dashboard/templates/PortfolioDashboardView";
 import DefaultDashboardView from "@/components/dashboard/templates/DefaultDashboardView";
 import TemplateAppearanceProvider from "@/components/dashboard/templates/TemplateAppearanceProvider";
+import ProfileViewTracker from "@/components/profile/ProfileViewTracker";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +31,10 @@ export default async function UserProfilePage({ params }: Props) {
     { cache: "no-store" }
   );
 
-  if (!res.ok) notFound();
+  if (res.status === 404) notFound();
+  if (!res.ok) {
+    throw new Error(`Failed to load profile (status ${res.status})`);
+  }
 
   const json = await res.json();
   const profile: ProfileResponse = json.data ?? json;
@@ -172,6 +176,7 @@ export default async function UserProfilePage({ params }: Props) {
         </Link>
       </div>
       <div className="flex-1">{renderTemplateView()}</div>
+      <ProfileViewTracker username={profile.username} />
     </TemplateAppearanceProvider>
   );
 }

@@ -166,6 +166,7 @@ export default function BioSidebar({
                 onUpdateSection(section.id, { bio: e.target.value })
               }
               rows={5}
+              maxLength={300}
               placeholder="Write a short bio..."
               className={`profile-builder-scrollbar border-tertiary-b focus:border-brand-b bg-background w-full resize-none rounded-[10px] border px-4 py-3 text-sm transition-colors outline-none ${
                 bio.length > 300

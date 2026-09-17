@@ -256,19 +256,19 @@ export type ProfileContentSectionProjects = {
 export type ProfileContentSectionWorkExperience = {
   visible: boolean;
   sectionTitle: string;
-  items: ExperienceItem[];
+  items?: ExperienceItem[];
 };
 
 export type ProfileContentSectionEducation = {
   visible: boolean;
   sectionTitle: string;
-  items: EducationItem[];
+  items?: EducationItem[];
 };
 
 export type ProfileContentSectionSkills = {
   visible: boolean;
   sectionTitle: string;
-  items: SkillItem[];
+  items?: SkillItem[];
 };
 
 export type ProfileContentSectionCta = {

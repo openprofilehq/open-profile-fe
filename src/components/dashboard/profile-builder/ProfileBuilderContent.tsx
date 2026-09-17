@@ -108,6 +108,7 @@ const createSection = (type: string, customTitle?: string): Section | null => {
         ? "/profilebuilder_home/icons/chat.svg"
         : undefined,
     iconLabel: resolvedType === "cta" ? "Chat" : undefined,
+    ctaType: resolvedType === "cta" ? "link" : undefined,
   };
 };
 
@@ -1464,7 +1465,9 @@ export default function ProfileBuilderContent() {
         return;
       }
 
-      const updated = sections.filter((item) => item.id !== sectionToDelete);
+      const updated = sections.map((item) =>
+        item.id === sectionToDelete ? { ...item, visible: false } : item
+      );
 
       setSections(updated);
 

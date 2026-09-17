@@ -5,14 +5,11 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUserOption } from "@/api/auth/auth.options";
 import { ROUTES } from "@/constants/routes";
-import { useAuthCookie } from "@/hooks/useAuthCookie";
 import { Button } from "@/components/ui/button";
 
 export function HomeAuthCTA() {
-  const hasAuthCookie = useAuthCookie();
   const { data: user, isPending } = useQuery({
     ...getCurrentUserOption(),
-    enabled: hasAuthCookie,
     throwOnError: false,
   });
   const [mounted, setMounted] = useState(false);
@@ -22,7 +19,7 @@ export function HomeAuthCTA() {
     setMounted(true);
   }, []);
 
-  if (!mounted || (hasAuthCookie && isPending)) {
+  if (!mounted || isPending) {
     return (
       <div className="mt-8 flex w-full max-w-[512px] flex-col items-center gap-3 sm:flex-row lg:mt-10">
         <div className="bg-secondary-bg/50 h-12.5 w-full animate-pulse rounded-[8px] sm:w-[150px]" />

@@ -132,25 +132,26 @@ export default function LeftSidebar({
   };
 
   const isLinksDisabled = sections.some(
-    (section) => section.type === SECTION_TYPE.LINKS
+    (section) => section.type === SECTION_TYPE.LINKS && section.visible
   );
   const isBioDisabled = sections.some(
-    (section) => section.type === SECTION_TYPE.BIO
+    (section) => section.type === SECTION_TYPE.BIO && section.visible
   );
   const isProjectsDisabled = sections.some(
-    (section) => section.type === SECTION_TYPE.PROJECTS
+    (section) => section.type === SECTION_TYPE.PROJECTS && section.visible
   );
   const isCtaDisabled = sections.some(
-    (section) => section.type === SECTION_TYPE.CTA
+    (section) => section.type === SECTION_TYPE.CTA && section.visible
   );
   const isWorkExperienceDisabled = sections.some(
-    (section) => section.type === SECTION_TYPE.WORK_EXPERIENCE
+    (section) =>
+      section.type === SECTION_TYPE.WORK_EXPERIENCE && section.visible
   );
   const isEducationDisabled = sections.some(
-    (section) => section.type === SECTION_TYPE.EDUCATION
+    (section) => section.type === SECTION_TYPE.EDUCATION && section.visible
   );
   const isSkillsDisabled = sections.some(
-    (section) => section.type === SECTION_TYPE.SKILLS
+    (section) => section.type === SECTION_TYPE.SKILLS && section.visible
   );
   const isDisabled = isLinksDisabled;
 
