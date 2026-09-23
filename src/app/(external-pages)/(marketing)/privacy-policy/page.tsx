@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description:
+    "How OpenProfile collects, uses and protects your personal data.",
+};
+
 import { CTA } from "@/components/home/CTA";
 import PrivacyContent from "@/components/home/PrivacyContent";
 import PrivacyHero from "@/components/home/PrivacyHero";

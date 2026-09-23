@@ -42,6 +42,7 @@ export type DashboardProfileResponse = {
   templateType: TemplateType | null;
   themeSettings: unknown | null;
   isPublished: boolean;
+  isPublic?: boolean;
   hasUnpublishedChanges: boolean;
   ctaLabel: string | null;
   ctaUrl: string | null;

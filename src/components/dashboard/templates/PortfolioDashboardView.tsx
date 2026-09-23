@@ -34,6 +34,7 @@ type Props = {
   isLoadingContent?: boolean;
   appearance?: ProfileAppearanceSettings | null;
   isPreview?: boolean;
+  isPublicView?: boolean;
 };
 
 const DEFAULT_LINKS = [
@@ -86,6 +87,7 @@ export default function PortfolioDashboardView({
   isLoadingContent,
   appearance,
   isPreview,
+  isPublicView,
 }: Props) {
   if (isLoadingProfile || isLoadingContent) {
     return (
@@ -245,7 +247,7 @@ export default function PortfolioDashboardView({
                       />
                     ))}
                   </div>
-                ) : (
+                ) : isPublicView ? null : (
                   <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
                     No links added yet.
                   </p>
@@ -405,7 +407,7 @@ export default function PortfolioDashboardView({
                         );
                       })}
                     </div>
-                  ) : (
+                  ) : isPublicView ? null : (
                     <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
                       No projects added yet.
                     </p>

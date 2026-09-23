@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Join the waitlist",
+  description: "Be first to know when OpenProfile opens up.",
+};
+
 import { WaitlistHero } from "@/components/waitlist/WaitlistHero";
 import { WaitlistFAQ } from "@/components/waitlist/WaitlistFAQ";
 import { WaitlistCTA } from "@/components/waitlist/WaitlistCTA";

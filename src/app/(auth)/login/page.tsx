@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Log in",
+  description: "Log in to your OpenProfile account.",
+  robots: { index: false, follow: false },
+};
+
 import { AuthForm } from "@/components/auth/AuthForm";
 import { env } from "@/env/client";
 

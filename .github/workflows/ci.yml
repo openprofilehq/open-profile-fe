@@ -37,3 +37,6 @@ jobs:
         run: pnpm build
         env:
           NODE_ENV: production
+          NEXT_PUBLIC_APP_URL: https://openprofile.bio
+          NEXT_PUBLIC_API_URL: https://api.openprofile.bio
+          API_BASE_URL: https://api.openprofile.bio

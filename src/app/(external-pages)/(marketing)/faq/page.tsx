@@ -22,7 +22,7 @@ export default function FaqPage() {
     {
       question: "How do I share my profile",
       answer:
-        "You can share your profile by copying your unique username link (e.g., openprofile.com/username) and adding it to your social media bios, email signature, resume, or portfolio.",
+        "You can share your profile by copying your unique username link (e.g., openprofile.bio/username) and adding it to your social media bios, email signature, resume, or portfolio.",
     },
     {
       question: "What types of information can I add to my profile?",
