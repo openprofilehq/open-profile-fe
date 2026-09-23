@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogIn, Menu, X } from "lucide-react";
+import { LayoutDashboard, LogIn, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ROUTES } from "@/constants/routes";
@@ -88,6 +88,14 @@ export default function AdminNavbar() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <Link
+            href={ROUTES.dashboard.home}
+            className="text-secondary-text hover:text-primary-text hidden items-center gap-1.5 text-sm font-medium transition-colors md:flex"
+          >
+            <LayoutDashboard size={15} aria-hidden="true" />
+            My dashboard
+          </Link>
+
           <button
             onClick={() => logoutMutation.mutate()}
             disabled={logoutMutation.isPending}
@@ -145,6 +153,15 @@ export default function AdminNavbar() {
             </nav>
 
             <div className="px-4 pt-2 pb-4">
+              <Link
+                href={ROUTES.dashboard.home}
+                onClick={() => setMenuOpen(false)}
+                className="border-tertiary-b text-primary-text hover:text-link-hover-text mb-3 flex w-full items-center justify-center gap-1.5 rounded-lg border py-3 text-sm font-medium transition-colors"
+              >
+                <LayoutDashboard size={15} aria-hidden="true" />
+                My dashboard
+              </Link>
+
               <button
                 onClick={() => logoutMutation.mutate()}
                 disabled={logoutMutation.isPending}
