@@ -15,6 +15,7 @@ export interface SavedLink {
   title: string;
   label?: string;
   url: string;
+  sourceUrl?: string;
   iconId: string | null;
   iconLabel: string | null;
   iconSrc: string | null;
@@ -26,6 +27,7 @@ export interface ProjectItem {
   title: string;
   description: string;
   url?: string;
+  sourceUrl?: string;
   buttonText?: string;
   imageSrc?: string | null;
   highlighted?: boolean;
@@ -90,6 +92,7 @@ export interface Section {
   iconSrc?: string | null;
   buttonText?: string;
   url?: string;
+  sourceUrl?: string;
   ctaType?: "link" | "email" | "phone" | "whatsapp";
 }
 

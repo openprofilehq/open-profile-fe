@@ -21,6 +21,7 @@ import { isApiError } from "@/api/base";
 import { PENDING_INVITE_STORAGE_KEY } from "@/api/invites/invites.service";
 import { Checkbox } from "../ui/checkbox";
 import { ROUTES } from "@/constants/routes";
+import { isSafeReturnTo } from "@/lib/utils";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -67,7 +68,7 @@ export function AuthForm({ mode, googleAuthUrl }: Props) {
       await queryClient.resetQueries({ queryKey: userQueryOptions.queryKey });
       const onboardingComplete = data?.user?.onboardingComplete;
       const destination = onboardingComplete ? "/dashboard" : "/create-profile";
-      router.replace(returnTo?.startsWith("/") ? returnTo : destination);
+      router.replace(isSafeReturnTo(returnTo) ? returnTo : destination);
     },
     onError: (err) => {
       const isNetworkError =

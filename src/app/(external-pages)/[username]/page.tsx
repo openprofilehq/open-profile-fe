@@ -1,3 +1,5 @@
+import { cache } from "react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -12,6 +14,8 @@ import PortfolioDashboardView from "@/components/dashboard/templates/PortfolioDa
 import DefaultDashboardView from "@/components/dashboard/templates/DefaultDashboardView";
 import TemplateAppearanceProvider from "@/components/dashboard/templates/TemplateAppearanceProvider";
 import ProfileViewTracker from "@/components/profile/ProfileViewTracker";
+import LinkClickTracker from "@/components/profile/LinkClickTracker";
+import { getImageUrl } from "@/utils/profile";
 
 export const dynamic = "force-dynamic";
 
@@ -23,21 +27,61 @@ type LegacyContent = {
   themeSettings?: unknown;
 };
 
-export default async function UserProfilePage({ params }: Props) {
-  const { username } = await params;
-
+const loadProfile = cache(async (username: string) => {
   const res = await fetch(
     `${serverEnv.API_BASE_URL}/api/v1/profiles/${encodeURIComponent(username)}`,
     { cache: "no-store" }
   );
 
-  if (res.status === 404) notFound();
+  if (res.status === 404) return null;
   if (!res.ok) {
     throw new Error(`Failed to load profile (status ${res.status})`);
   }
 
   const json = await res.json();
-  const profile: ProfileResponse = json.data ?? json;
+  return (json.data ?? json) as ProfileResponse;
+});
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { username } = await params;
+  const profile = await loadProfile(username);
+
+  if (!profile) {
+    return { title: "Profile not found" };
+  }
+
+  const name = profile.fullName || profile.username;
+  const title = `${name} (@${profile.username})`;
+  const description =
+    profile.bio || `${name} on OpenProfile — one link for everything.`;
+  const image = getImageUrl(profile.photoUrl);
+  const url = `/${profile.username}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "profile",
+      title,
+      description,
+      url,
+      images: image ? [image] : undefined,
+    },
+    twitter: {
+      card: image ? "summary_large_image" : "summary",
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
+  };
+}
+
+export default async function UserProfilePage({ params }: Props) {
+  const { username } = await params;
+  const profile = await loadProfile(username);
+
+  if (!profile) notFound();
 
   const content = profile.content;
 
@@ -129,6 +173,7 @@ export default async function UserProfilePage({ params }: Props) {
             profile={dashboardProfile}
             content={profileContent}
             appearance={themeSettings as unknown as ProfileAppearanceSettings}
+            isPublicView
           />
         );
       case "professional":
@@ -137,6 +182,7 @@ export default async function UserProfilePage({ params }: Props) {
             profile={dashboardProfile}
             content={profileContent}
             appearance={themeSettings as unknown as ProfileAppearanceSettings}
+            isPublicView
           />
         );
       case "portfolio":
@@ -145,6 +191,7 @@ export default async function UserProfilePage({ params }: Props) {
             profile={dashboardProfile}
             content={profileContent}
             appearance={themeSettings as unknown as ProfileAppearanceSettings}
+            isPublicView
           />
         );
       default:
@@ -153,6 +200,7 @@ export default async function UserProfilePage({ params }: Props) {
             profile={dashboardProfile}
             content={profileContent}
             appearance={themeSettings as unknown as ProfileAppearanceSettings}
+            isPublicView
           />
         );
     }
@@ -177,6 +225,7 @@ export default async function UserProfilePage({ params }: Props) {
       </div>
       <div className="flex-1">{renderTemplateView()}</div>
       <ProfileViewTracker username={profile.username} />
+      <LinkClickTracker username={profile.username} />
     </TemplateAppearanceProvider>
   );
 }

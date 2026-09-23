@@ -2,82 +2,106 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { dashboardProfileOption } from "@/api/profile/profile.options";
+import {
+  billingInfoQueryOptions,
+  updateVisibilityOption,
+  userSettingsQueryOptions,
+} from "@/api/users/users.options";
+import { isApiError } from "@/api/base";
 import { ROUTES } from "@/constants/routes";
+import { getProfileUrl } from "@/utils/profile";
+import ChangePasswordDialog from "./ChangePasswordDialog";
+import UpdateEmailDialog from "./UpdateEmailDialog";
 
-const accountSettings = [
-  {
-    title: "Personal Information",
-    description:
-      "Edit your photo, name, username, bio, and contact information.",
-    action: "Edit profile",
-    href: ROUTES.comingSoon,
-  },
-  {
-    title: "Email Address",
-    description: "Manage the email connected to your account.",
-    action: "Update email",
-    href: ROUTES.comingSoon,
-  },
-  {
-    title: "Password & Security",
-    description: "Change your password and keep your account secure.",
-    action: "Update password",
-    href: ROUTES.comingSoon,
-  },
-];
-
-const profilePreferences = [
-  {
-    title: "Profile Preview Settings",
-    description: "Adjust how your profile appears before publishing.",
-    action: "Preview profile",
-    href: ROUTES.comingSoon,
-  },
-  {
-    title: "Personal Customization",
-    description: "Customize your profile appearance, theme, and layout.",
-    action: "Customize profile",
-    href: ROUTES.comingSoon,
-  },
-];
-
-const subscription: {
-  planName: string;
-  price: number;
-  currency: string;
-  interval: string;
-  nextBillingDate?: string | null;
-} | null = null;
+const ACTION_CLASS =
+  "inline-flex h-10 items-center justify-center rounded-[8px] border border-[#EDEDED] px-4 font-semibold text-[#050505] disabled:cursor-not-allowed disabled:opacity-50";
 
 export default function SettingsContent() {
-  const [isProfileVisible, setIsProfileVisible] = useState(false);
+  const [passwordOpen, setPasswordOpen] = useState(false);
+  const [emailOpen, setEmailOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const dashboardProfile = useQuery(dashboardProfileOption());
+  const settings = useQuery(userSettingsQueryOptions);
+  const billing = useQuery(billingInfoQueryOptions);
+
   const profile = dashboardProfile.data;
+  const isGoogleAccount = settings.data?.authProvider === "google";
+  const profileVisibility = profile?.isPublic ?? false;
 
-  const profileVisibility = isProfileVisible || Boolean(profile?.isPublished);
+  const visibilityMutation = useMutation({
+    ...updateVisibilityOption,
+    onSuccess: (data) => {
+      toast.success(
+        data.isPublic
+          ? "Your profile is now public."
+          : "Your profile is now private."
+      );
+      queryClient.invalidateQueries({
+        queryKey: dashboardProfileOption().queryKey,
+      });
+    },
+    onError: (err) =>
+      toast.error(
+        isApiError(err) ? err.message : "Could not update profile visibility."
+      ),
+  });
 
-  const planName = subscription?.planName ?? "Free";
-
-  const planPriceLabel = subscription
-    ? `${subscription.currency}${subscription.price.toFixed(2)} / ${
-        subscription.interval
-      }`
-    : "N/A";
-
-  function handleVisibilityToggle() {
-    setIsProfileVisible(!profileVisibility);
-  }
-
-  const billingDateLabel = subscription?.nextBillingDate
-    ? new Date(subscription.nextBillingDate).toLocaleDateString("en-US", {
+  const planName = billing.data?.plan ?? "Free";
+  const billingDateLabel = billing.data?.nextBillingDate
+    ? new Date(billing.data.nextBillingDate).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
       })
     : "Not available";
+
+  const accountSettings = [
+    {
+      title: "Personal Information",
+      description:
+        "Edit your photo, name, username, bio, and contact information.",
+      action: "Edit profile",
+      href: ROUTES.dashboard.profileBuilder,
+    },
+    {
+      title: "Email Address",
+      description: isGoogleAccount
+        ? "Your email is managed by Google and cannot be changed here."
+        : "Manage the email connected to your account.",
+      action: "Update email",
+      onClick: () => setEmailOpen(true),
+      disabled: isGoogleAccount,
+    },
+    {
+      title: "Password & Security",
+      description: isGoogleAccount
+        ? "You sign in with Google, so there is no password to change."
+        : "Change your password and keep your account secure.",
+      action: "Update password",
+      onClick: () => setPasswordOpen(true),
+      disabled: isGoogleAccount,
+    },
+  ];
+
+  const profilePreferences = [
+    {
+      title: "Profile Preview Settings",
+      description: "See your profile exactly as visitors do.",
+      action: "Preview profile",
+      href: profile?.username ? getProfileUrl(profile.username) : undefined,
+      external: true,
+    },
+    {
+      title: "Personal Customization",
+      description: "Customize your profile appearance, theme, and layout.",
+      action: "Customize profile",
+      href: ROUTES.dashboard.profileBuilder,
+    },
+  ];
 
   return (
     <div className="mx-auto w-full max-w-[1030px]">
@@ -94,6 +118,12 @@ export default function SettingsContent() {
             <h2 className="text-xl font-bold text-[#050505]">
               Account Settings
             </h2>
+
+            {settings.data?.email && (
+              <p className="mt-1 text-sm text-[#747474]">
+                Signed in as {settings.data.email}
+              </p>
+            )}
 
             <div className="mt-5 flex flex-col">
               {accountSettings.map((item, index) => (
@@ -112,12 +142,20 @@ export default function SettingsContent() {
                     </p>
                   </div>
 
-                  <Link
-                    href={item.href}
-                    className="inline-flex h-10 items-center justify-center rounded-[8px] border border-[#EDEDED] px-4 font-semibold text-[#050505]"
-                  >
-                    {item.action}
-                  </Link>
+                  {item.href ? (
+                    <Link href={item.href} className={ACTION_CLASS}>
+                      {item.action}
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={item.onClick}
+                      disabled={item.disabled}
+                      className={ACTION_CLASS}
+                    >
+                      {item.action}
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -147,8 +185,11 @@ export default function SettingsContent() {
                       ? "Make profile private"
                       : "Make profile public"
                   }
-                  onClick={handleVisibilityToggle}
-                  className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
+                  disabled={visibilityMutation.isPending}
+                  onClick={() =>
+                    visibilityMutation.mutate({ isPublic: !profileVisibility })
+                  }
+                  className={`relative h-7 w-12 shrink-0 rounded-full transition-colors disabled:opacity-60 ${
                     profileVisibility ? "bg-[#087583]" : "bg-[#E5EAF0]"
                   }`}
                 >
@@ -176,12 +217,20 @@ export default function SettingsContent() {
                     </p>
                   </div>
 
-                  <Link
-                    href={item.href}
-                    className="inline-flex h-10 items-center justify-center rounded-[8px] border border-[#EDEDED] px-4 font-semibold text-[#050505]"
-                  >
-                    {item.action}
-                  </Link>
+                  {item.href ? (
+                    <Link
+                      href={item.href}
+                      target={item.external ? "_blank" : undefined}
+                      rel={item.external ? "noopener noreferrer" : undefined}
+                      className={ACTION_CLASS}
+                    >
+                      {item.action}
+                    </Link>
+                  ) : (
+                    <button type="button" disabled className={ACTION_CLASS}>
+                      {item.action}
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -206,7 +255,9 @@ export default function SettingsContent() {
                 </span>
               </div>
 
-              <p className="mt-3 font-bold text-[#050505]">{planPriceLabel}</p>
+              <p className="mt-3 font-bold text-[#050505]">
+                {planName === "Free" ? "No charge" : "See your plan"}
+              </p>
               <p className="mt-2 text-xs text-[#747474]">
                 Next billing date: {billingDateLabel}
               </p>
@@ -221,6 +272,16 @@ export default function SettingsContent() {
           </section>
         </aside>
       </div>
+
+      <ChangePasswordDialog
+        open={passwordOpen}
+        onOpenChange={setPasswordOpen}
+      />
+      <UpdateEmailDialog
+        open={emailOpen}
+        onOpenChange={setEmailOpen}
+        currentEmail={settings.data?.email}
+      />
     </div>
   );
 }

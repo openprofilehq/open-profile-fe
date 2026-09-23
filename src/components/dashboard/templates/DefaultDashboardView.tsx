@@ -33,6 +33,7 @@ type Props = {
   isLoadingContent?: boolean;
   appearance?: ProfileAppearanceSettings | null;
   isPreview?: boolean;
+  isPublicView?: boolean;
 };
 
 export default function DefaultDashboardView({
@@ -42,6 +43,7 @@ export default function DefaultDashboardView({
   isLoadingContent,
   appearance,
   isPreview,
+  isPublicView,
 }: Props) {
   if (isLoadingProfile || isLoadingContent) {
     return (
@@ -142,7 +144,9 @@ export default function DefaultDashboardView({
                         @{profile?.username ?? "micaela"}
                       </p>
                       <p className="text-secondary-text mt-2 text-[15px] leading-relaxed break-words whitespace-pre-wrap">
-                        {section.bio || profile?.bio || "No bio added yet."}
+                        {section.bio ||
+                          profile?.bio ||
+                          (isPublicView ? "" : "No bio added yet.")}
                       </p>
                     </div>
                   </section>
@@ -151,6 +155,8 @@ export default function DefaultDashboardView({
             }
 
             if (section.type === "links") {
+              if (isPublicView && !section.links?.length) return null;
+
               return (
                 <div
                   key={section.id}
@@ -187,6 +193,7 @@ export default function DefaultDashboardView({
                             <a
                               key={item.id ?? index}
                               href={sanitizeUrl(item.url || "")}
+                              data-op-link={item.sourceUrl}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="border-border bg-background hover:border-brand-hover-bg/30 flex items-center justify-between rounded-2xl border p-4 no-underline shadow-sm transition-all hover:shadow-md"
@@ -236,7 +243,7 @@ export default function DefaultDashboardView({
                           );
                         })}
                       </div>
-                    ) : (
+                    ) : isPublicView ? null : (
                       <span className="text-secondary-text mt-4 flex items-center justify-between text-sm">
                         No links added yet
                       </span>
@@ -253,6 +260,8 @@ export default function DefaultDashboardView({
               const remainingProjects = projectsToRender.filter(
                 (p: { id?: string | number }) => p.id !== highlightedProject?.id
               );
+
+              if (isPublicView && !projectsToRender.length) return null;
 
               return (
                 <div key={section.id} className="flex flex-col gap-6">
@@ -369,6 +378,7 @@ export default function DefaultDashboardView({
                             <a
                               key={project.id || index}
                               href={sanitizeUrl(project.url || "")}
+                              data-op-link={project.sourceUrl}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="block h-full no-underline"
@@ -385,7 +395,7 @@ export default function DefaultDashboardView({
                           );
                         })}
                       </div>
-                    ) : (
+                    ) : isPublicView ? null : (
                       <span className="text-secondary-text mt-4 flex items-center justify-between text-sm">
                         Add your projects
                       </span>
@@ -448,13 +458,14 @@ export default function DefaultDashboardView({
                                   ? `https://wa.me/${(section.url || "").replace(/\D/g, "")}`
                                   : sanitizeUrl(section.url || "#")
                           }
+                          data-op-link={section.sourceUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg mt-8 inline-flex h-12 items-center rounded-xl px-8 text-[15px] font-bold text-white transition-colors"
                         >
                           {section.buttonText || "Visit"}
                         </a>
-                      ) : (
+                      ) : isPublicView ? null : (
                         <span className="text-brand-hover-bg mt-8 flex cursor-pointer items-center gap-1 text-sm font-semibold hover:underline">
                           Add your CTA <ChevronRight size={14} />
                         </span>
