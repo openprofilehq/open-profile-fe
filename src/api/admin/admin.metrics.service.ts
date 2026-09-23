@@ -1,5 +1,7 @@
 import { callApi } from "@/api/base";
 
+type AdminEnvelope<T> = { success: boolean; data: T };
+
 export type MetricsRange = "this_week" | "last_thirty_days";
 
 export type MetricDelta = {
@@ -23,11 +25,13 @@ export type MetricsSummaryData = {
 };
 
 export async function getMetricsSummary(range: MetricsRange = "this_week") {
-  return callApi<MetricsSummaryData>({
+  const envelope = await callApi<AdminEnvelope<MetricsSummaryData>>({
     url: "/admin/metrics/summary",
     method: "GET",
     params: { range },
   });
+
+  return envelope.data;
 }
 
 export type SearchActivityData = {
@@ -36,11 +40,13 @@ export type SearchActivityData = {
 };
 
 export async function getSearchActivity(range: MetricsRange = "this_week") {
-  return callApi<SearchActivityData>({
+  const envelope = await callApi<AdminEnvelope<SearchActivityData>>({
     url: "/admin/metrics/search-activity",
     method: "GET",
     params: { range },
   });
+
+  return envelope.data;
 }
 
 export type RecentActivityData = {
@@ -51,10 +57,12 @@ export type RecentActivityData = {
 };
 
 export async function getRecentActivity() {
-  return callApi<RecentActivityData>({
+  const envelope = await callApi<AdminEnvelope<RecentActivityData>>({
     url: "/admin/metrics/recent-activity",
     method: "GET",
   });
+
+  return envelope.data;
 }
 
 export type PlatformHealthData = {
@@ -63,9 +71,11 @@ export type PlatformHealthData = {
 };
 
 export async function getPlatformHealth(range: MetricsRange = "this_week") {
-  return callApi<PlatformHealthData>({
+  const envelope = await callApi<AdminEnvelope<PlatformHealthData>>({
     url: "/admin/metrics/platform-health",
     method: "GET",
     params: { range },
   });
+
+  return envelope.data;
 }
