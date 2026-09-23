@@ -23,13 +23,20 @@ interface TemplateLinkCardProps {
   id?: string | number;
   title: string;
   url: string;
+  trackUrl?: string;
 }
 
-export function TemplateLinkCard({ id, title, url }: TemplateLinkCardProps) {
+export function TemplateLinkCard({
+  id,
+  title,
+  url,
+  trackUrl,
+}: TemplateLinkCardProps) {
   return (
     <a
       key={id}
       href={url}
+      data-op-link={trackUrl}
       target="_blank"
       rel="noopener noreferrer"
       className="group border-border bg-background hover:border-brand-hover-bg/30 flex items-center justify-between rounded-[12px] border p-4 shadow-sm transition-all hover:shadow-md"
@@ -50,7 +57,12 @@ export function TemplateLinkCard({ id, title, url }: TemplateLinkCardProps) {
   );
 }
 
-export function CreatorLinkCard({ id, title, url }: TemplateLinkCardProps) {
+export function CreatorLinkCard({
+  id,
+  title,
+  url,
+  trackUrl,
+}: TemplateLinkCardProps) {
   const displayUrl = (() => {
     try {
       const parsed = new URL(url.startsWith("http") ? url : `https://${url}`);
@@ -78,6 +90,7 @@ export function CreatorLinkCard({ id, title, url }: TemplateLinkCardProps) {
     <a
       key={id}
       href={url}
+      data-op-link={trackUrl}
       target="_blank"
       rel="noopener noreferrer"
       className="group border-border bg-background hover:border-brand-hover-bg/30 flex w-full items-center justify-between rounded-[20px] border p-4 shadow-sm transition-all hover:shadow-md"

@@ -224,6 +224,7 @@ export default function CreatorDashboardView({
                   <a
                     key={i}
                     href={sanitizeUrl(link.url || "")}
+                    data-op-link={link.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-secondary-text hover:text-primary-text transition-colors"
@@ -241,6 +242,7 @@ export default function CreatorDashboardView({
             <div className="relative mt-4">
               <a
                 href={ctaHref}
+                data-op-link={ctaSection.sourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-10 items-center justify-center gap-2 rounded-md px-6 text-sm font-semibold text-white shadow-sm transition-all"
@@ -430,6 +432,7 @@ export default function CreatorDashboardView({
                             {hasUrl ? (
                               <a
                                 href={sanitizeUrl(project.url || "")}
+                                data-op-link={project.sourceUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="block h-full no-underline"
@@ -481,6 +484,7 @@ export default function CreatorDashboardView({
                         id={link.id}
                         title={link.title || link.label || ""}
                         url={link.url ? sanitizeUrl(link.url) : "#"}
+                        trackUrl={link.sourceUrl}
                       />
                     ))}
                   </div>

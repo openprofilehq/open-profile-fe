@@ -279,6 +279,7 @@ export function contentToSections(
               ),
               title: l.label || l.title || "",
               url: decodeUrlForFrontend(l.url as string),
+              sourceUrl: (l.url as string) || "",
             })
           ) as unknown as SavedLink[];
         })(),
@@ -345,6 +346,7 @@ export function contentToSections(
                 url: decodeUrlForFrontend(
                   (p.repoUrl as string) || (p.url as string)
                 ),
+                sourceUrl: ((p.repoUrl as string) || (p.url as string)) ?? "",
               };
             }
           ) as unknown as ProjectItem[];
@@ -580,6 +582,7 @@ export function contentToSections(
       layout: content?.cta?.layout ?? "1",
       buttonText: content?.cta?.label ?? "",
       url: decodeUrlForFrontend(content?.cta?.value),
+      sourceUrl: content?.cta?.value ?? "",
       ctaType:
         (content?.cta?.type as "link" | "email" | "phone" | "whatsapp") ??
         "link",

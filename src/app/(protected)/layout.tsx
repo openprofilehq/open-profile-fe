@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Image from "next/image";
+import { useNotificationsSocket } from "@/hooks/useNotificationsSocket";
 
 function readPendingInviteToken() {
   try {
@@ -41,6 +42,11 @@ export default function ProtectedLayout({
   const { data: user, isLoading, isError } = useQuery(getCurrentUserOption());
   const router = useRouter();
   const pathname = usePathname();
+
+  // Maintain one persistent notification socket for authenticated sessions
+  useNotificationsSocket({
+    enabled: !isLoading && !isError && !!user && !!user.onboardingComplete,
+  });
 
   useEffect(() => {
     if (!user) return;

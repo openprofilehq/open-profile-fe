@@ -14,6 +14,7 @@ import PortfolioDashboardView from "@/components/dashboard/templates/PortfolioDa
 import DefaultDashboardView from "@/components/dashboard/templates/DefaultDashboardView";
 import TemplateAppearanceProvider from "@/components/dashboard/templates/TemplateAppearanceProvider";
 import ProfileViewTracker from "@/components/profile/ProfileViewTracker";
+import LinkClickTracker from "@/components/profile/LinkClickTracker";
 import { getImageUrl } from "@/utils/profile";
 
 export const dynamic = "force-dynamic";
@@ -224,6 +225,7 @@ export default async function UserProfilePage({ params }: Props) {
       </div>
       <div className="flex-1">{renderTemplateView()}</div>
       <ProfileViewTracker username={profile.username} />
+      <LinkClickTracker username={profile.username} />
     </TemplateAppearanceProvider>
   );
 }
