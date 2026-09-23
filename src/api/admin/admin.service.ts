@@ -92,13 +92,120 @@ export type UpdateUserFlagsPayload = {
   featureFlags: Partial<UserFeatureFlags>;
 };
 
+export const USER_SEARCH_MIN_LENGTH = 2;
+
+type ApiUserStatus =
+  | "active"
+  | "suspended"
+  | "deactivated"
+  | "flagged_for_review"
+  | "blocked";
+
+type ApiUserSummary = {
+  id: string;
+  fullName: string | null;
+  username: string | null;
+  email: string;
+  status: ApiUserStatus;
+  role: UserRole | null;
+  isPublished: boolean;
+  isActive: boolean;
+  photoUrl: string | null;
+  createdAt: string;
+};
+
+type ApiUserDetail = ApiUserSummary & {
+  profileCompletion: number;
+  views: number;
+  clicks: number;
+  searchConversion: number;
+};
+
+type AdminEnvelope<T> = { success: boolean; data: T };
+
+type ApiUserSearchData = {
+  results: ApiUserSummary[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+};
+
+const STATUS_FROM_API: Record<ApiUserStatus, UserStatus> = {
+  active: "active",
+  suspended: "suspended",
+  deactivated: "inactive",
+  flagged_for_review: "flagged",
+  blocked: "blocked",
+};
+
+const ACTION_TO_API: Record<UserActionType, string> = {
+  suspend: "suspend",
+  reactivate: "reactivate",
+  deactivate: "deactivate",
+  flag: "flag_for_review",
+  block: "block",
+};
+
+const EMPTY_FEATURE_FLAGS: UserFeatureFlags = {
+  advancedAnalytics: false,
+  premiumTemplates: false,
+  customDomain: false,
+  inviteLoopBeta: false,
+};
+
+function toInitials(fullName: string | null, username: string | null) {
+  const source = (fullName || username || "").trim();
+  if (!source) return "?";
+  const parts = source.split(/\s+/).filter(Boolean);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function toLookupUser(user: ApiUserSummary | ApiUserDetail): LookupUser {
+  const detail = user as Partial<ApiUserDetail>;
+  return {
+    id: user.id,
+    fullName: user.fullName ?? "",
+    username: user.username ?? "",
+    initials: toInitials(user.fullName, user.username),
+    status: STATUS_FROM_API[user.status] ?? "active",
+    completion: detail.profileCompletion ?? 0,
+    views: detail.views ?? 0,
+    clicks: detail.clicks ?? 0,
+    conversion: detail.searchConversion ?? 0,
+    lastActiveAt: "",
+    memberSince: user.createdAt,
+    featureFlags: EMPTY_FEATURE_FLAGS,
+  };
+}
+
 export async function searchUsers(query: string, signal?: AbortSignal) {
-  return callApi<UserLookupResponse>({
-    url: "/admin/users/search",
+  const envelope = await callApi<AdminEnvelope<ApiUserSearchData>>({
+    url: "/admin/users",
     method: "GET",
     params: { q: query },
     signal,
   });
+
+  const data = envelope?.data;
+  return {
+    users: (data?.results ?? []).map(toLookupUser),
+    total: data?.total ?? 0,
+  } satisfies UserLookupResponse;
+}
+
+export async function getLookupUserDetail(
+  userId: string,
+  signal?: AbortSignal
+) {
+  const envelope = await callApi<AdminEnvelope<ApiUserDetail>>({
+    url: `/admin/users/${userId}`,
+    method: "GET",
+    signal,
+  });
+
+  return toLookupUser(envelope.data);
 }
 
 export async function performUserAction(
@@ -106,9 +213,9 @@ export async function performUserAction(
   action: UserActionType
 ) {
   return callApi<{ success: boolean }>({
-    url: `/admin/users/${userId}/action`,
-    method: "POST",
-    data: { action },
+    url: `/admin/users/${userId}/status`,
+    method: "PATCH",
+    data: { action: ACTION_TO_API[action] },
   });
 }
 

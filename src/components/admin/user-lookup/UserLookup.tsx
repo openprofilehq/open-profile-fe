@@ -5,7 +5,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { userSearchQueryOptions } from "@/api/admin/admin.lookup.options";
+import {
+  userSearchQueryOptions,
+  userDetailQueryOptions,
+} from "@/api/admin/admin.lookup.options";
 import {
   performUserAction,
   type LookupUser,
@@ -77,6 +80,11 @@ export default function UserLookup() {
   const { data, isFetching, isSuccess } = useQuery(
     userSearchQueryOptions(committedQuery)
   );
+
+  const { data: selectedUserDetail } = useQuery(
+    userDetailQueryOptions(selectedUser?.id)
+  );
+  const activeUser = selectedUserDetail ?? selectedUser;
 
   const users = data?.users ?? [];
   const hasQuery = committedQuery.trim().length > 0;
@@ -203,10 +211,10 @@ export default function UserLookup() {
             ))}
           </ul>
 
-          {selectedUser && (
+          {activeUser && (
             <div className="lg:sticky lg:top-6 lg:self-start">
               <UserManagePanel
-                user={selectedUser}
+                user={activeUser}
                 onClose={() => setSelectedUser(null)}
                 onRequestAction={(action) => setPendingAction(action)}
                 actionPending={actionMutation.isPending}
@@ -216,10 +224,10 @@ export default function UserLookup() {
         </div>
       )}
 
-      {pendingAction && selectedUser && (
+      {pendingAction && activeUser && (
         <ActionModal
           action={pendingAction}
-          user={selectedUser}
+          user={activeUser}
           onConfirm={handleConfirmAction}
           onCancel={() => setPendingAction(null)}
           isPending={actionMutation.isPending}
