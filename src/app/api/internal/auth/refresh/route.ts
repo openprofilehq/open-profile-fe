@@ -16,10 +16,7 @@ export async function POST() {
       );
     }
 
-    const apiUrl =
-      env.API_BASE_URL || "https://api.staging.open-profile.hng14.com";
-
-    const res = await fetch(`${apiUrl}/api/v1/auth/refresh-token`, {
+    const res = await fetch(`${env.API_BASE_URL}/api/v1/auth/refresh-token`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

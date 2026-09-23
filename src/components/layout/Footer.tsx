@@ -40,17 +40,17 @@ export default function Footer() {
               <h4 className="text-sm font-semibold text-white">Products</h4>
               <ul className="space-y-4">
                 <li>
-                  <Link href="/coming-soon" className={FOOTER_LINK_CLASS}>
+                  <Link href="/how-it-works" className={FOOTER_LINK_CLASS}>
                     How it works
                   </Link>
                 </li>
                 <li>
-                  <Link href="/coming-soon" className={FOOTER_LINK_CLASS}>
+                  <Link href="/#features" className={FOOTER_LINK_CLASS}>
                     Features
                   </Link>
                 </li>
                 <li>
-                  <Link href="#pricing" className={FOOTER_LINK_CLASS}>
+                  <Link href="/#pricing" className={FOOTER_LINK_CLASS}>
                     Pricing
                   </Link>
                 </li>

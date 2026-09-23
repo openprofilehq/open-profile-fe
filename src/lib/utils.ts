@@ -10,3 +10,8 @@ export function maskEmail(email: string) {
 
   return `${name.slice(0, 2)}******@${domain}`;
 }
+
+export function isSafeReturnTo(value: string | null): value is string {
+  if (!value || !value.startsWith("/")) return false;
+  return value[1] !== "/" && value[1] !== "\\";
+}

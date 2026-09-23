@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Search profiles",
+  description: "Find people on OpenProfile by name or username.",
+};
+
 import Link from "next/link";
 import { Search, AlertCircle } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";

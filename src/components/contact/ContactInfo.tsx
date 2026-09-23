@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail } from "lucide-react";
 
 const XIcon = () => (
   <svg
@@ -45,30 +45,12 @@ export function ContactInfo() {
               <p className="text-primary-text text-[13px] font-medium">
                 Email Address
               </p>
-              <p className="text-secondary-text text-[13px]">
-                openprofile@gmail.com
-              </p>
-            </div>
-          </li>
-          <li className="flex items-start gap-3">
-            <Phone size={18} className="text-link-hover-text mt-0.5 shrink-0" />
-            <div>
-              <p className="text-primary-text text-[13px] font-medium">
-                Phone number
-              </p>
-              <p className="text-secondary-text text-[13px]">+1 234 567 8900</p>
-            </div>
-          </li>
-          <li className="flex items-start gap-3">
-            <MapPin
-              size={18}
-              className="text-link-hover-text mt-0.5 shrink-0"
-            />
-            <div>
-              <p className="text-primary-text text-[13px] font-medium">
-                Our Office Address
-              </p>
-              <p className="text-secondary-text text-[13px]">New York, USA</p>
+              <a
+                href="mailto:support@openprofile.bio"
+                className="text-secondary-text hover:text-brand text-[13px] transition-colors"
+              >
+                support@openprofile.bio
+              </a>
             </div>
           </li>
         </ul>
