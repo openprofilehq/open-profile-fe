@@ -25,6 +25,8 @@ export const api = axios.create({
 
 // ─── Silent token refresh ─────────────────────────────────────────────────────
 
+const REFRESH_RETRY_DELAY_MS = 400;
+
 let isRefreshing = false;
 type QueueEntry = { resolve: () => void; reject: (err: unknown) => void };
 let failedQueue: QueueEntry[] = [];
@@ -46,13 +48,24 @@ api.interceptors.response.use(
       _retry?: boolean;
     };
 
+    if (error.response?.status !== 401 || originalRequest._retry) {
+      return Promise.reject(error);
+    }
+
+    const errorCode = (error.response?.data as { error?: string } | undefined)
+      ?.error;
+
+    if (errorCode === "REFRESH_IN_PROGRESS") {
+      originalRequest._retry = true;
+      await new Promise((resolve) =>
+        setTimeout(resolve, REFRESH_RETRY_DELAY_MS)
+      );
+      return api(originalRequest);
+    }
+
     const isAuthEndpoint = originalRequest.url?.includes("/auth/");
 
-    if (
-      error.response?.status !== 401 ||
-      originalRequest._retry ||
-      isAuthEndpoint
-    ) {
+    if (isAuthEndpoint) {
       return Promise.reject(error);
     }
 

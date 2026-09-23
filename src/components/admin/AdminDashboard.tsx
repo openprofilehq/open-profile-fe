@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Flag } from "lucide-react";
+import { Ban, Flag } from "lucide-react";
 import { GoArrowUpRight } from "react-icons/go";
 import { TbUserPlus, TbUserCheck } from "react-icons/tb";
 import {
@@ -28,14 +28,33 @@ import type {
 } from "@/api/admin/admin.metrics.service";
 import { Skeleton } from "@/components/ui/skeleton";
 
+const RANGE_TABS: Array<{ value: MetricsRange; label: string }> = [
+  { value: "this_week", label: "This Week" },
+  { value: "last_thirty_days", label: "Last 30 Days" },
+  { value: "all_time", label: "All Time" },
+];
+
+const COMPARISON_LABEL: Record<MetricsRange, string | null> = {
+  this_week: "vs last week",
+  last_thirty_days: "vs previous 30 days",
+  all_time: null,
+};
+
+const PERCENT_KEYS = new Set(["profileCompletionRate", "inviteConversionRate"]);
+
 function formatValue(value: number, key: string): string {
-  if (key === "profileCompletionRate") return `${value.toFixed(1)}%`;
+  if (PERCENT_KEYS.has(key)) return `${value.toFixed(1)}%`;
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(2)}M`;
   if (value >= 1_000) return value.toLocaleString();
   return String(value);
 }
 
-function formatDelta(change: number): string {
+function toConversionRate(claimed: number, sent: number): number {
+  return sent > 0 ? (claimed / sent) * 100 : 0;
+}
+
+function formatDelta(change: number | null | undefined): string {
+  if (change == null || !Number.isFinite(change)) return "—";
   return `${change >= 0 ? "+" : ""}${change.toFixed(1)}%`;
 }
 
@@ -48,6 +67,7 @@ type MetricCardProps = {
   value: string;
   delta: string;
   positive: boolean;
+  comparison: string | null;
   loading?: boolean;
 };
 
@@ -56,6 +76,7 @@ function MetricCard({
   value,
   delta,
   positive,
+  comparison,
   loading,
 }: MetricCardProps) {
   if (loading) {
@@ -72,32 +93,34 @@ function MetricCard({
     <div className="bg-card border-tertiary-b rounded-xl border p-5">
       <p className="text-secondary-text text-sm">{label}</p>
       <p className="text-primary-text mt-2 text-3xl font-semibold">{value}</p>
-      <div className="mt-2 flex items-center gap-1.5">
-        <span
-          className={cn(
-            "flex items-center justify-center rounded-full p-1",
-            positive ? "bg-delta-positive-bg" : "bg-delta-negative-bg"
-          )}
-        >
-          <GoArrowUpRight
-            size={12}
+      {comparison && (
+        <div className="mt-2 flex items-center gap-1.5">
+          <span
             className={cn(
-              positive ? "text-brand-dark-bg" : "text-delta-negative-text",
-              !positive && "rotate-90"
+              "flex items-center justify-center rounded-full p-1",
+              positive ? "bg-delta-positive-bg" : "bg-delta-negative-bg"
             )}
-            aria-hidden="true"
-          />
-        </span>
-        <span
-          className={cn(
-            "text-xs font-medium",
-            positive ? "text-brand-dark-bg" : "text-delta-negative-text"
-          )}
-        >
-          {delta}
-        </span>
-        <span className="text-tertiary-text text-xs">vs last week</span>
-      </div>
+          >
+            <GoArrowUpRight
+              size={12}
+              className={cn(
+                positive ? "text-brand-dark-bg" : "text-delta-negative-text",
+                !positive && "rotate-90"
+              )}
+              aria-hidden="true"
+            />
+          </span>
+          <span
+            className={cn(
+              "text-xs font-medium",
+              positive ? "text-brand-dark-bg" : "text-delta-negative-text"
+            )}
+          >
+            {delta}
+          </span>
+          <span className="text-tertiary-text text-xs">{comparison}</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -147,36 +170,70 @@ export default function AdminDashboard() {
     platformHealthOptions(activeTab)
   );
 
+  const comparison = COMPARISON_LABEL[activeTab];
+
+  const inviteConversion: MetricDelta | undefined = summary
+    ? (() => {
+        const current = toConversionRate(
+          summary.invitesClaimed.current,
+          summary.invitesSent.current
+        );
+        const previous = toConversionRate(
+          summary.invitesClaimed.previous,
+          summary.invitesSent.previous
+        );
+        return {
+          current,
+          previous,
+          change:
+            activeTab === "all_time"
+              ? null
+              : Math.round((current - previous) * 100) / 100,
+        };
+      })()
+    : undefined;
+
   const metricCards: Array<{
     label: string;
-    key: keyof NonNullable<typeof summary>;
+    key: string;
     delta: MetricDelta | undefined;
+    loading: boolean;
   }> = [
-    { label: "Total Users", key: "totalUsers", delta: summary?.totalUsers },
+    {
+      label: "Total Users",
+      key: "totalUsers",
+      delta: summary?.totalUsers,
+      loading: summaryLoading,
+    },
     {
       label: "Published Profiles",
       key: "publishedProfiles",
       delta: summary?.publishedProfiles,
+      loading: summaryLoading,
     },
     {
       label: "Profile Completion Rate",
       key: "profileCompletionRate",
       delta: summary?.profileCompletionRate,
+      loading: summaryLoading,
     },
     {
       label: "Weekly Active Profiles",
       key: "weeklyActiveProfiles",
       delta: summary?.weeklyActiveProfiles,
+      loading: summaryLoading,
     },
     {
       label: "Total Searches",
-      key: "invitesSent",
-      delta: summary?.invitesSent,
+      key: "totalSearches",
+      delta: searchData?.totalSearches,
+      loading: searchLoading,
     },
     {
       label: "Invite Conversion Rate",
-      key: "invitesClaimed",
-      delta: summary?.invitesClaimed,
+      key: "inviteConversionRate",
+      delta: inviteConversion,
+      loading: summaryLoading,
     },
   ];
 
@@ -204,13 +261,13 @@ export default function AdminDashboard() {
     {
       icon: Flag,
       label: "Flagged for review",
-      value: recentData?.invitesSentToday,
+      value: recentData?.flaggedForReview,
       danger: false,
     },
     {
-      icon: TbUserPlus,
+      icon: Ban,
       label: "Active suspensions",
-      value: recentData?.invitesClaimedToday,
+      value: recentData?.activeSuspensions,
       danger: true,
     },
   ];
@@ -230,7 +287,7 @@ export default function AdminDashboard() {
       </div>
 
       <div className="bg-secondary-bg border-tertiary-b flex w-full gap-1 rounded-lg border p-1">
-        {(["this_week", "last_thirty_days"] as MetricsRange[]).map((tab) => (
+        {RANGE_TABS.map(({ value: tab, label: tabLabel }) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -241,7 +298,7 @@ export default function AdminDashboard() {
                 : "text-secondary-text hover:text-primary-text"
             )}
           >
-            {tab === "this_week" ? "This Week" : "Last 30 Days"}
+            {tabLabel}
           </button>
         ))}
       </div>
@@ -251,14 +308,15 @@ export default function AdminDashboard() {
           Key metrics
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {metricCards.map(({ label, key, delta }) => (
+          {metricCards.map(({ label, key, delta, loading }) => (
             <MetricCard
               key={label}
               label={label}
-              value={delta ? formatValue(delta.current, key as string) : "—"}
+              value={delta ? formatValue(delta.current, key) : "—"}
               delta={delta ? formatDelta(delta.change) : "—"}
               positive={(delta?.change ?? 0) >= 0}
-              loading={summaryLoading}
+              comparison={comparison}
+              loading={loading}
             />
           ))}
         </div>
@@ -279,33 +337,35 @@ export default function AdminDashboard() {
                     ? formatValue(totalSearches.current, "totalSearches")
                     : "—"}
                 </p>
-                <div className="flex items-center justify-end gap-1.5">
-                  <span className="bg-delta-positive-bg flex items-center justify-center rounded-full p-1">
-                    <GoArrowUpRight
-                      size={12}
+                {comparison && (
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span className="bg-delta-positive-bg flex items-center justify-center rounded-full p-1">
+                      <GoArrowUpRight
+                        size={12}
+                        className={cn(
+                          searchDeltaPositive
+                            ? "text-brand-dark-bg"
+                            : "text-delta-negative-text",
+                          !searchDeltaPositive && "rotate-90"
+                        )}
+                        aria-hidden="true"
+                      />
+                    </span>
+                    <span
                       className={cn(
+                        "text-xs font-medium",
                         searchDeltaPositive
                           ? "text-brand-dark-bg"
-                          : "text-delta-negative-text",
-                        !searchDeltaPositive && "rotate-90"
+                          : "text-delta-negative-text"
                       )}
-                      aria-hidden="true"
-                    />
-                  </span>
-                  <span
-                    className={cn(
-                      "text-xs font-medium",
-                      searchDeltaPositive
-                        ? "text-brand-dark-bg"
-                        : "text-delta-negative-text"
-                    )}
-                  >
-                    {totalSearches ? formatDelta(totalSearches.change) : "—"}
-                  </span>
-                  <span className="text-tertiary-text text-xs">
-                    vs last week
-                  </span>
-                </div>
+                    >
+                      {totalSearches ? formatDelta(totalSearches.change) : "—"}
+                    </span>
+                    <span className="text-tertiary-text text-xs">
+                      {comparison}
+                    </span>
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -464,18 +524,22 @@ export default function AdminDashboard() {
                           )
                         : "—"}
                     </span>
-                    <span className="bg-delta-positive-bg flex items-center justify-center rounded-full p-1">
-                      <GoArrowUpRight
-                        size={12}
-                        className="text-brand-dark-bg"
-                        aria-hidden="true"
-                      />
-                    </span>
-                    <span className="text-brand-dark-bg text-xs font-medium">
-                      {completionRate
-                        ? formatDelta(completionRate.change)
-                        : "—"}
-                    </span>
+                    {comparison && (
+                      <>
+                        <span className="bg-delta-positive-bg flex items-center justify-center rounded-full p-1">
+                          <GoArrowUpRight
+                            size={12}
+                            className="text-brand-dark-bg"
+                            aria-hidden="true"
+                          />
+                        </span>
+                        <span className="text-brand-dark-bg text-xs font-medium">
+                          {completionRate
+                            ? formatDelta(completionRate.change)
+                            : "—"}
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="w-28 shrink-0">
