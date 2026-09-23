@@ -24,6 +24,7 @@ import { getFontClass } from "./TemplateAppearanceProvider";
 import {
   isProfileTextSectionType,
   ProfileTextSectionBlock,
+  hasProfileTextContent,
 } from "../profile-builder/ProfileTextSections";
 
 type Props = {
@@ -432,6 +433,7 @@ export default function ProfessionalDashboardView({
           }
 
           if (section.type === "cta") {
+            if (isPublicView && !section.sourceUrl) return null;
             return (
               <section
                 key={section.id}
@@ -488,6 +490,7 @@ export default function ProfessionalDashboardView({
           }
 
           if (isProfileTextSectionType(section.type)) {
+            if (isPublicView && !hasProfileTextContent(section)) return null;
             return (
               <section
                 key={section.id}

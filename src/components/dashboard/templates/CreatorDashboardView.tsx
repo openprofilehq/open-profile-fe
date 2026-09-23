@@ -27,6 +27,7 @@ import { getFontClass } from "./TemplateAppearanceProvider";
 import {
   isProfileTextSectionType,
   ProfileTextSectionBlock,
+  hasProfileTextContent,
 } from "../profile-builder/ProfileTextSections";
 
 type Props = {
@@ -516,6 +517,7 @@ export default function CreatorDashboardView({
             isProfileTextSectionType(section.type) &&
             currentActiveTab === "about"
           ) {
+            if (isPublicView && !hasProfileTextContent(section)) return null;
             return (
               <div
                 key={section.id}
