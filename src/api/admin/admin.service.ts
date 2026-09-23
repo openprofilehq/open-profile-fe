@@ -35,16 +35,27 @@ export async function getAdminUsers({
   search,
   signal,
 }: AdminUsersParams = {}) {
-  return callApi<AdminUsersResponse>({
+  const envelope = await callApi<{
+    success: boolean;
+    data: { results: AdminUser[]; total: number; page: number; limit: number };
+  }>({
     url: "/admin/users",
     method: "GET",
     params: {
       page,
       limit,
-      ...(search ? { search } : {}),
+      ...(search ? { q: search } : {}),
     },
     signal,
   });
+
+  const data = envelope?.data;
+  return {
+    users: data?.results ?? [],
+    total: data?.total ?? 0,
+    page: data?.page ?? page,
+    limit: data?.limit ?? limit,
+  } satisfies AdminUsersResponse;
 }
 
 export type UserStatus =

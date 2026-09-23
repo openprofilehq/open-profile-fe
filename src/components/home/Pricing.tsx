@@ -2,6 +2,7 @@
 
 import { Check } from "lucide-react";
 import { motion, Variants } from "motion/react";
+import Link from "next/link";
 import { useState } from "react";
 import { Button } from "../ui/button";
 
@@ -13,6 +14,8 @@ interface PricingPlan {
   buttonText: string;
   highlighted?: boolean;
   featureTitle?: string;
+  href?: string;
+  note?: string;
 }
 
 const plans: PricingPlan[] = [
@@ -21,50 +24,34 @@ const plans: PricingPlan[] = [
     priceMonth: "0",
     priceYear: "0",
     features: [
-      "Public profile (basic)",
-      "Username URL",
-      "Add links",
-      "Limited template",
-      "Email verification",
-      "Search visibility",
+      "Your page at openprofile.bio/yourname",
+      "Links, projects and a call to action",
+      "Default profile template",
+      "Discoverable in search",
     ],
-    buttonText: "Get Started with free",
+    buttonText: "Get Started with Free",
+    href: "/signup",
   },
   {
     name: "Pro",
-    priceMonth: "8",
-    priceYear: "80",
-    featureTitle: "Includes everything in free +",
+    priceMonth: "5",
+    priceYear: "50",
+    featureTitle: "Everything in Free, plus",
     features: [
-      "Verification badge",
-      "Unlimited links",
-      "Custom themes (colors, fonts)",
-      "Priority in search results",
-      "Analytics (profile views, clicks)",
-      "Username URL",
+      "Every profile template",
+      "Profile and link analytics",
+      "Notifications",
+      "Advanced profile sections",
     ],
-    buttonText: "Get Started with Pro",
+    buttonText: "Coming Soon",
+    note: "Not available yet. Everything we have shipped so far is free.",
     highlighted: true,
-  },
-  {
-    name: "Elite",
-    priceMonth: "20",
-    priceYear: "200",
-    featureTitle: "Includes everything in Pro +",
-    features: [
-      "Custom domain (yourname.com)",
-      "Advanced analytics",
-      "Featured placement in search",
-      "Invite growth tools",
-      "Early access features",
-      "Priority support",
-    ],
-    buttonText: "Get Started with elite",
   },
 ];
 
 export function Pricing() {
   const [isYear, setIsYear] = useState(false);
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -94,13 +81,13 @@ export function Pricing() {
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={containerVariants}
-        className="mx-auto flex w-full max-w-[1100px] flex-col items-center px-4 sm:px-6 lg:px-0"
+        className="mx-auto flex w-full max-w-[820px] flex-col items-center px-4 sm:px-6 lg:px-0"
       >
         <motion.h2
           variants={itemVariants}
           className="text-primary-text mb-10 text-center text-[28px] font-semibold md:text-[40px]"
         >
-          Choose the plan that fits your needs.
+          Start free. Upgrade when there is more.
         </motion.h2>
 
         <motion.div
@@ -131,11 +118,11 @@ export function Pricing() {
 
         <motion.div
           variants={containerVariants}
-          className="grid w-full grid-cols-1 gap-6 md:grid-cols-3"
+          className="grid w-full grid-cols-1 gap-6 md:grid-cols-2"
         >
-          {plans.map((plan, index) => (
+          {plans.map((plan) => (
             <motion.div
-              key={index}
+              key={plan.name}
               variants={itemVariants}
               className={`flex h-full flex-col rounded-[16px] border p-4 xl:p-8 ${
                 plan.highlighted
@@ -154,43 +141,24 @@ export function Pricing() {
                   {plan.name}
                 </p>
                 <div
-                  className={`flex items-baseline gap-1 border-b ${
+                  className={`flex items-baseline gap-1 border-b pb-4 ${
                     plan.highlighted
                       ? "border-white/20"
                       : "border-primary-foreground-b"
                   }`}
                 >
-                  {isYear ? (
-                    <span>
-                      <span className="text-[36px] font-bold">
-                        ${plan.priceYear}
-                      </span>
-                      <span
-                        className={`text-base ${
-                          plan.highlighted
-                            ? "text-white/80"
-                            : "text-tertiary-foreground-text"
-                        }`}
-                      >
-                        /year
-                      </span>
-                    </span>
-                  ) : (
-                    <span>
-                      <span className="text-[36px] font-bold">
-                        ${plan.priceMonth}
-                      </span>
-                      <span
-                        className={`text-base ${
-                          plan.highlighted
-                            ? "text-white/80"
-                            : "text-tertiary-foreground-text"
-                        }`}
-                      >
-                        /month
-                      </span>
-                    </span>
-                  )}
+                  <span className="text-[36px] font-bold">
+                    ${isYear ? plan.priceYear : plan.priceMonth}
+                  </span>
+                  <span
+                    className={`text-base ${
+                      plan.highlighted
+                        ? "text-white/80"
+                        : "text-tertiary-foreground-text"
+                    }`}
+                  >
+                    {isYear ? "/year" : "/month"}
+                  </span>
                 </div>
               </div>
 
@@ -203,9 +171,9 @@ export function Pricing() {
                   {plan.featureTitle || "Includes:"}
                 </p>
                 <ul className="mb-10 space-y-4">
-                  {plan.features.map((feature, fIndex) => (
+                  {plan.features.map((feature) => (
                     <li
-                      key={fIndex}
+                      key={feature}
                       className="flex items-start gap-3 text-[14px]"
                     >
                       <Check
@@ -229,16 +197,33 @@ export function Pricing() {
                 </ul>
               </div>
 
-              <button
-                disabled
-                className={`flex h-auto w-full items-center justify-center rounded-[8px] py-4 text-[14px] font-bold transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50 ${
-                  plan.highlighted
-                    ? "text-link-hover-text border border-transparent bg-white"
-                    : "text-link-hover-text border-brand border bg-white"
-                }`}
-              >
-                {plan.buttonText}
-              </button>
+              {plan.href ? (
+                <Link
+                  href={plan.href}
+                  className="text-link-hover-text border-brand flex h-auto w-full items-center justify-center rounded-[8px] border bg-white py-4 text-[14px] font-bold transition-all duration-300 hover:opacity-90"
+                >
+                  {plan.buttonText}
+                </Link>
+              ) : (
+                <button
+                  disabled
+                  className="text-link-hover-text flex h-auto w-full cursor-not-allowed items-center justify-center rounded-[8px] border border-transparent bg-white py-4 text-[14px] font-bold opacity-60"
+                >
+                  {plan.buttonText}
+                </button>
+              )}
+
+              {plan.note && (
+                <p
+                  className={`mt-3 text-center text-[12px] ${
+                    plan.highlighted
+                      ? "text-white/70"
+                      : "text-tertiary-foreground-text"
+                  }`}
+                >
+                  {plan.note}
+                </p>
+              )}
             </motion.div>
           ))}
         </motion.div>

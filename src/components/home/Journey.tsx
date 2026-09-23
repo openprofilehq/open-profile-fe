@@ -23,7 +23,7 @@ export const steps: Step[] = [
     title: "Create Your Profile",
     titleColor: "teal",
     description:
-      "Sign up in seconds with email, Google, or LinkedIn. Craft your bio, and link your work.",
+      "Sign up in seconds with email or Google. Add your bio, your links and your projects.",
     icon: "/journey/User.svg",
     mobileGhostClassName: "top-[-12px] right-[24px]",
     mobileIconBoxSize: 45,
@@ -32,10 +32,10 @@ export const steps: Step[] = [
   {
     id: "verify-identity",
     ghostIcon: "/journey/step02.svg",
-    title: "Verify Your Identity",
+    title: "Verify Your Email",
     titleColor: "dark",
     description:
-      "Verify your email and connect social accounts. Build credibility with verification badges.",
+      "Confirm your email with a one-time code, then add the links that show your work.",
     icon: "/journey/check.svg",
     mobileGhostClassName: "top-[-18px] right-[4px]",
     mobileIconBoxSize: 75,
