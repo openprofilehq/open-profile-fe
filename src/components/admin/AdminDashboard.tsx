@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Send } from "lucide-react";
+import { Ban, Flag } from "lucide-react";
 import { GoArrowUpRight } from "react-icons/go";
 import { TbUserPlus, TbUserCheck } from "react-icons/tb";
 import {
@@ -259,16 +259,16 @@ export default function AdminDashboard() {
       danger: false,
     },
     {
-      icon: Send,
-      label: "Invites sent today",
-      value: recentData?.invitesSentToday,
+      icon: Flag,
+      label: "Flagged for review",
+      value: recentData?.flaggedForReview,
       danger: false,
     },
     {
-      icon: TbUserCheck,
-      label: "Invites claimed today",
-      value: recentData?.invitesClaimedToday,
-      danger: false,
+      icon: Ban,
+      label: "Active suspensions",
+      value: recentData?.activeSuspensions,
+      danger: true,
     },
   ];
 
