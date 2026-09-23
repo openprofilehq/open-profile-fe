@@ -1,3 +1,10 @@
+export type UserRole = "admin" | "user";
+
+export const USER_ROLES: Record<UserRole, UserRole> = {
+  admin: "admin",
+  user: "user",
+};
+
 export type LoginRequest = {
   email: string;
   password: string;
@@ -34,7 +41,7 @@ export type User = {
   bio: string | null;
   photoUrl: string | null;
   isPublished: boolean;
-  role: string | null;
+  role: UserRole | null;
   authProvider: string;
   isVerified: boolean;
   onboardingComplete: boolean;

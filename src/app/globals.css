@@ -73,6 +73,7 @@
   --color-notice-bold-text: var(--notice-bold-text);
   --color-negative-text: var(--negative-text);
   --color-negative-bold-text: var(--negative-bold-text);
+  --color-delta-negative-text: var(--delta-negative-text);
   --color-positive-text: var(--positive-text);
   --color-positive-bold-text: var(--positive-bold-text);
   --color-input-text: var(--input-text);
@@ -82,6 +83,10 @@
   --color-span-text-100: var(--span-text-100);
 
   /* bg colors */
+  --color-white-bg: var(--white-bg);
+  --color-delta-positive-bg: var(--delta-positive-bg);
+  --color-delta-negative-bg: var(--delta-negative-bg);
+  --color-activity-danger-bg: var(--activity-danger-bg);
   --color-primary-bg: var(--primary-bg);
   --color-primary-foreground-bg: var(--primary-foreground-bg);
   --color-secondary-bg: var(--secondary-bg);
@@ -107,6 +112,15 @@
   --color-negative-subtle-bg: var(--negative-subtle-bg);
   --color-negative-hover-bg: var(--negative-hover-bg);
   --color-positive-bg: var(--positive-bg);
+  --color-status-active-text: var(--status-active-text);
+  --color-status-active-bg: var(--status-active-bg);
+  --color-status-negative-text: var(--status-negative-text);
+  --color-status-negative-bg: var(--status-negative-bg);
+  --color-status-neutral-text: var(--status-neutral-text);
+  --color-status-neutral-bg: var(--status-neutral-bg);
+  --color-card-selected-bg: var(--card-selected-bg);
+  --color-card-selected-border: var(--card-selected-border);
+  --color-admin-page-bg: var(--admin-page-bg);
   --color-positive-subtle-bg: var(--positive-subtle-bg);
   --color-positive-hover-bg: var(--positive-hover-bg);
   --color-button-bg: var(--button-bg);
@@ -307,8 +321,13 @@
   --button-text: #171717;
   --span-text: #fefefe;
   --span-text-100: #e6e6e6;
+  --delta-negative-text: #a72e2e;
 
   /* bg */
+  --white-bg: #ffffff;
+  --delta-positive-bg: #f8f8fc;
+  --delta-negative-bg: #fbebea;
+  --activity-danger-bg: #fff6ef;
   --primary-bg: #fafafa;
   --primary-foreground-bg: #f2fdfe;
   --secondary-bg: #f6f6f6;
@@ -335,6 +354,15 @@
   --negative-subtle-bg: #ffeded;
   --negative-hover-bg: #ff9494;
   --positive-bg: #31e47f;
+  --status-active-text: #1fc16b;
+  --status-active-bg: #e3f7ec;
+  --status-negative-text: #fb3748;
+  --status-negative-bg: #ffebec;
+  --status-neutral-text: #7b7b7b;
+  --status-neutral-bg: #f5f5f5;
+  --card-selected-bg: #f8f8fc;
+  --card-selected-border: #a2a2a2;
+  --admin-page-bg: #fefefe;
   --positive-subtle-bg: #eafcf2;
   --positive-hover-bg: #83efb2;
   --button-bg-waitlist: #262626;
