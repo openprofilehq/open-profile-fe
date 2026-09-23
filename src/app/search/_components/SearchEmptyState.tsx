@@ -1,15 +1,29 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { Search, Loader2, BadgeCheck } from "lucide-react";
 import { toast } from "sonner";
 import { sendInviteApi } from "@/api/invites/invites.service";
+import { getCurrentUserOption } from "@/api/auth/auth.options";
 
 interface SearchEmptyStateProps {
   query: string;
 }
 
 export default function SearchEmptyState({ query }: SearchEmptyStateProps) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { data: user, isPending: isSessionPending } = useQuery({
+    ...getCurrentUserOption(),
+    throwOnError: false,
+  });
+
+  const queryString = searchParams.toString();
+  const returnTo = queryString ? `${pathname}?${queryString}` : pathname;
+
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [touched, setTouched] = useState(false);
@@ -24,7 +38,7 @@ export default function SearchEmptyState({ query }: SearchEmptyStateProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!isValidEmail || isSubmitting) return;
+    if (!isValidEmail || isSubmitting || !user) return;
 
     setIsSubmitting(true);
     try {
@@ -89,6 +103,31 @@ export default function SearchEmptyState({ query }: SearchEmptyStateProps) {
             Invite another person &rarr;
           </button>
         </div>
+      ) : !isSessionPending && !user ? (
+        <div className="border-secondary-b/60 bg-card flex flex-col items-center rounded-[12px] border px-6 py-8 text-center shadow-[0_2px_8px_rgba(0,0,0,0.02)] md:px-8 md:py-10">
+          <h2 className="text-primary-text text-[20px] font-bold md:text-[22px]">
+            Invite them to join Open.Profile
+          </h2>
+          <p className="text-secondary-text mt-2 mb-6 max-w-[520px] text-[14px] leading-relaxed md:text-[15px]">
+            Create your own Open.Profile to send invites. We&apos;ll let you
+            know when they join.
+          </p>
+          <Link
+            href={`/signup?returnTo=${encodeURIComponent(returnTo)}`}
+            className="bg-brand-hover-bg inline-flex h-[48px] items-center justify-center rounded-[8px] px-6 text-[15px] font-medium text-white transition-all hover:opacity-90"
+          >
+            Sign up to invite
+          </Link>
+          <p className="text-disabled-text mt-4 text-[12px] md:text-[13px]">
+            Already have an account?{" "}
+            <Link
+              href={`/login?returnTo=${encodeURIComponent(returnTo)}`}
+              className="text-link-hover-text hover:underline"
+            >
+              Log in
+            </Link>
+          </p>
+        </div>
       ) : (
         <div className="border-secondary-b/60 bg-card flex flex-col items-center rounded-[12px] border px-6 py-8 text-center shadow-[0_2px_8px_rgba(0,0,0,0.02)] md:px-8 md:py-10">
           <h2 className="text-primary-text text-[20px] font-bold md:text-[22px]">
@@ -137,10 +176,10 @@ export default function SearchEmptyState({ query }: SearchEmptyStateProps) {
 
             <button
               type="submit"
-              disabled={!isValidEmail || isSubmitting}
+              disabled={!isValidEmail || isSubmitting || isSessionPending}
               aria-busy={isSubmitting}
               className={`h-[48px] shrink-0 rounded-[8px] px-6 text-[15px] font-medium whitespace-nowrap transition-all ${
-                isValidEmail && !isSubmitting
+                isValidEmail && !isSubmitting && !isSessionPending
                   ? "bg-brand-hover-bg cursor-pointer text-white hover:opacity-90"
                   : "bg-disabled-bg text-disabled-text border-secondary-b/40 cursor-not-allowed border"
               }`}
