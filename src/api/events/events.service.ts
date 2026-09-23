@@ -7,8 +7,12 @@ export type RecordProfileViewRequest = {
   referrer?: string;
 };
 
+export type RecordProfileViewResponse = {
+  recorded: boolean;
+};
+
 export function recordProfileView(data: RecordProfileViewRequest) {
-  return callApi<{ recorded: boolean }>({
+  return callApi<RecordProfileViewResponse>({
     url: "/events/profile-view",
     method: "POST",
     data,
@@ -21,8 +25,12 @@ export type RecordLinkClickRequest = {
   linkUrl: string;
 };
 
+export type RecordLinkClickResponse = {
+  recorded: boolean;
+};
+
 export function recordLinkClick(data: RecordLinkClickRequest) {
-  return callApi<{ recorded: boolean }>({
+  return callApi<RecordLinkClickResponse>({
     url: "/events/link-click",
     method: "POST",
     data,

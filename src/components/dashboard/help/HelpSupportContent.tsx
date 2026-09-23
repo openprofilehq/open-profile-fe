@@ -85,17 +85,17 @@ const guides = [
 const quickActions = [
   {
     title: "Contact Support",
-    href: "mailto:support@openprofile.bio",
+    href: "mailto:openprofilehq@gmail.com",
     icon: Mail,
   },
   {
     title: "Report a Bug",
-    href: "mailto:support@openprofile.bio?subject=Bug%20Report",
+    href: "mailto:openprofilehq@gmail.com?subject=Bug%20Report",
     icon: Bug,
   },
   {
     title: "Send Feedback",
-    href: "mailto:support@openprofile.bio?subject=Feedback",
+    href: "mailto:openprofilehq@gmail.com?subject=Feedback",
     icon: Send,
   },
 ];

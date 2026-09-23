@@ -123,8 +123,8 @@ const sectionContent: SectionContentProp = {
     content:
       "For questions or legal inquiries regarding these Terms, contact: Open Profile Legal Team",
     details: [
-      "Email: privacy@openprofile.bio",
-      "Support: support@openprofile.bio",
+      "Email: openprofilehq@gmail.com",
+      "Support: openprofilehq@gmail.com",
     ],
   },
 };

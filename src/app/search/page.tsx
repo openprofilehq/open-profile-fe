@@ -36,6 +36,7 @@ export default async function SearchPage(props: PageProps) {
 
   let results: SearchResult[] = [];
   let total = 0;
+  let searchId = "";
   let isError = false;
   let errorMessage = "";
 
@@ -48,6 +49,7 @@ export default async function SearchPage(props: PageProps) {
       });
       results = data.results || [];
       total = data.total || 0;
+      searchId = data.searchId || "";
     } catch (e: unknown) {
       isError = true;
       errorMessage = e instanceof Error ? e.message : "Failed to fetch results";
@@ -182,7 +184,15 @@ export default async function SearchPage(props: PageProps) {
                   );
 
                   return slug ? (
-                    <Link href={`/${slug}`} key={key} className={cardClassName}>
+                    <Link
+                      href={
+                        searchId
+                          ? `/${slug}?referrerSearchId=${encodeURIComponent(searchId)}`
+                          : `/${slug}`
+                      }
+                      key={key}
+                      className={cardClassName}
+                    >
                       {content}
                     </Link>
                   ) : (
