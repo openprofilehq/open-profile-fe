@@ -105,6 +105,7 @@ export function Hero() {
   const isSearchPending = isFetching || query !== debouncedQuery;
   const previewResults = searchResults.slice(0, 2);
   const totalResults = searchData?.total || 0;
+  const searchId = searchData?.searchId || "";
   const remainingCount = Math.max(0, totalResults - 2);
 
   return (
@@ -190,7 +191,11 @@ export function Hero() {
                       {previewResults.map((result) => (
                         <Link
                           key={result.id || result.username}
-                          href={`/${result.username}`}
+                          href={
+                            searchId
+                              ? `/${result.username}?referrerSearchId=${encodeURIComponent(searchId)}`
+                              : `/${result.username}`
+                          }
                           onClick={() => setInputFocused(false)}
                           className="border-border/50 hover:bg-hover-bg flex items-center gap-3 border-b p-3 transition-colors last:border-0"
                         >

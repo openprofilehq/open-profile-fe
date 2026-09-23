@@ -18,6 +18,7 @@ export type SearchResult = {
 export type SearchResponse = {
   results: SearchResult[];
   total: number;
+  searchId?: string;
 };
 
 export function searchProfiles({
