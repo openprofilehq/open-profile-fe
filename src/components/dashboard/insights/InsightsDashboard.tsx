@@ -104,8 +104,13 @@ export default function InsightsDashboard() {
 
   // Normalize all analytics responses into a single trusted shape
   const analytics: NormalizedAnalyticsDashboard = useMemo(() => {
-    const { viewsData, totalViews, changePercentage, keyInsight } =
-      normalizeProfileViews(profileViews.data);
+    const {
+      viewsData,
+      totalViews,
+      uniqueViewers,
+      changePercentage,
+      keyInsight,
+    } = normalizeProfileViews(profileViews.data);
     const { links, totalClicks } = normalizeLinkClicks(linkClicks.data);
     const searchConversionRate = normalizeSearchConversions(
       searchConversions.data
@@ -117,6 +122,7 @@ export default function InsightsDashboard() {
     return {
       viewsData,
       totalViews,
+      uniqueViewers,
       changePercentage,
       links,
       totalClicks,
@@ -235,6 +241,7 @@ export default function InsightsDashboard() {
             <div className="lg:col-span-1">
               <InsightsOverviewCard
                 totalViews={analytics.totalViews}
+                uniqueViewers={analytics.uniqueViewers}
                 changePercentage={analytics.changePercentage}
               />
             </div>
@@ -248,7 +255,7 @@ export default function InsightsDashboard() {
           </div>
 
           {/* Row 2: Performance & Link Performance */}
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+          <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-3">
             <div className="lg:col-span-1">
               <PerformanceCard
                 searchConversionRate={analytics.searchConversionRate}

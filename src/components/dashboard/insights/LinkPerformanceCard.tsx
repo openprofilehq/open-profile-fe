@@ -14,7 +14,7 @@ export default function LinkPerformanceCard({
   const maxClicks = Math.max(...links.map((l) => l.clicks), 1);
 
   return (
-    <div className="border-tertiary-b/70 bg-card flex h-full flex-col justify-between rounded-2xl border p-5 sm:p-6">
+    <div className="border-tertiary-b/70 bg-card flex h-fit flex-col rounded-2xl border p-5 sm:p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <p className="text-secondary-text text-sm font-medium">
@@ -30,7 +30,7 @@ export default function LinkPerformanceCard({
 
       {/* Content */}
       {!hasLinks ? (
-        <div className="my-auto flex flex-col items-center justify-center py-8 text-center">
+        <div className="flex flex-col items-center justify-center py-8 text-center">
           <div className="bg-secondary-bg text-tertiary-text mb-2.5 flex h-10 w-10 items-center justify-center rounded-full">
             <Link2 size={18} />
           </div>
@@ -58,7 +58,7 @@ export default function LinkPerformanceCard({
                 {/* Link Title */}
                 <span
                   title={item.title}
-                  className="text-primary-text w-28 truncate font-medium sm:w-36"
+                  className="text-primary-text max-w-[160px] min-w-0 truncate font-medium sm:max-w-[240px]"
                 >
                   {item.title}
                 </span>
