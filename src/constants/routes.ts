@@ -1,4 +1,9 @@
 export const ROUTES = {
+  admin: {
+    home: "/open-profile/admin",
+    userLookup: "/open-profile/admin/user-lookup",
+    featureFlags: "/open-profile/admin/feature-flags",
+  },
   dashboard: {
     home: "/dashboard",
     profileBuilder: "/dashboard/profile-builder",

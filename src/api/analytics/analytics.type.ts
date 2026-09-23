@@ -63,6 +63,8 @@ export interface LinkClickItem {
   label?: string;
   name?: string;
   url?: string;
+  linkUrl?: string;
+  link_url?: string;
   clicks?: number;
   total_clicks?: number;
   ctr?: number;
@@ -74,12 +76,17 @@ export interface LinkClickItem {
 export interface LinkClicksResponse {
   totalClicks?: number;
   total_clicks?: number;
+  rangeTotal?: number;
+  range_total?: number;
   links?: LinkClickItem[];
   items?: LinkClickItem[];
   data?:
     | LinkClickItem[]
     | {
         total_clicks?: number;
+        totalClicks?: number;
+        range_total?: number;
+        rangeTotal?: number;
         links?: LinkClickItem[];
       };
 }
