@@ -75,6 +75,7 @@ export type ProjectItem = {
   title?: string;
   description?: string;
   url?: string;
+  sourceUrl?: string;
   buttonText?: string;
   imageSrc?: string;
   highlighted?: boolean;

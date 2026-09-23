@@ -193,6 +193,7 @@ export default function DefaultDashboardView({
                             <a
                               key={item.id ?? index}
                               href={sanitizeUrl(item.url || "")}
+                              data-op-link={item.sourceUrl}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="border-border bg-background hover:border-brand-hover-bg/30 flex items-center justify-between rounded-2xl border p-4 no-underline shadow-sm transition-all hover:shadow-md"
@@ -377,6 +378,7 @@ export default function DefaultDashboardView({
                             <a
                               key={project.id || index}
                               href={sanitizeUrl(project.url || "")}
+                              data-op-link={project.sourceUrl}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="block h-full no-underline"
@@ -456,6 +458,7 @@ export default function DefaultDashboardView({
                                   ? `https://wa.me/${(section.url || "").replace(/\D/g, "")}`
                                   : sanitizeUrl(section.url || "#")
                           }
+                          data-op-link={section.sourceUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg mt-8 inline-flex h-12 items-center rounded-xl px-8 text-[15px] font-bold text-white transition-colors"

@@ -244,6 +244,7 @@ export default function PortfolioDashboardView({
                         id={link.id}
                         title={link.title || link.label || ""}
                         url={sanitizeUrl(link.url || "")}
+                        trackUrl={link.sourceUrl}
                       />
                     ))}
                   </div>
@@ -394,6 +395,7 @@ export default function PortfolioDashboardView({
                             {project.url ? (
                               <a
                                 href={sanitizeUrl(project.url)}
+                                data-op-link={project.sourceUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="block h-full no-underline"
@@ -461,6 +463,7 @@ export default function PortfolioDashboardView({
                             ? `https://wa.me/${(section.url || "").replace(/\D/g, "")}`
                             : sanitizeUrl(section.url || "#")
                     }
+                    data-op-link={section.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"

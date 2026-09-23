@@ -227,6 +227,7 @@ export default function ProfessionalDashboardView({
                       <a
                         key={link.id ?? idx}
                         href={sanitizeUrl(link.url || "")}
+                        data-op-link={link.sourceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="group border-border hover:bg-hover-bg/30 flex items-center justify-between border-b py-4 transition-colors"
@@ -406,6 +407,7 @@ export default function ProfessionalDashboardView({
                             {hasUrl ? (
                               <a
                                 href={sanitizeUrl(project.url || "")}
+                                data-op-link={project.sourceUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="block h-full no-underline"
@@ -473,6 +475,7 @@ export default function ProfessionalDashboardView({
                             ? `https://wa.me/${(section.url || "").replace(/\D/g, "")}`
                             : sanitizeUrl(section.url || "#")
                     }
+                    data-op-link={section.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="op-brand-fill bg-brand-hover-bg hover:bg-button-brand-bg inline-flex h-12 items-center justify-center rounded-xl px-8 text-[15px] font-bold text-white shadow-sm transition-all"
