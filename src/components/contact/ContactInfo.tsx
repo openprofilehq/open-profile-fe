@@ -46,10 +46,10 @@ export function ContactInfo() {
                 Email Address
               </p>
               <a
-                href="mailto:support@openprofile.bio"
+                href="mailto:openprofilehq@gmail.com"
                 className="text-secondary-text hover:text-brand text-[13px] transition-colors"
               >
-                support@openprofile.bio
+                openprofilehq@gmail.com
               </a>
             </div>
           </li>
