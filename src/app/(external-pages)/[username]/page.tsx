@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const profile = await loadProfile(username);
 
   if (!profile) {
-    return { title: "Profile not found" };
+    return { title: "Profile not found", robots: { index: false } };
   }
 
   const name = profile.fullName || profile.username;
