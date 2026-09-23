@@ -1,15 +1,17 @@
 import { env } from "@/env/client";
 import type { CSSProperties } from "react";
 
-const APP_BASE_URL = env.NEXT_PUBLIC_APP_BASE_URL;
+const APP_BASE_URL = env.NEXT_PUBLIC_APP_URL;
+
+function getAppOrigin() {
+  return typeof window !== "undefined"
+    ? window.location.origin
+    : APP_BASE_URL.replace(/\/$/, "");
+}
 
 export function getProfileUrl(username?: string) {
   if (!username) return "";
-  const baseUrl =
-    typeof window !== "undefined"
-      ? window.location.origin
-      : APP_BASE_URL.replace(/\/$/, "");
-  return `${baseUrl}/${username}`;
+  return `${getAppOrigin()}/${username}`;
 }
 
 export function getDisplayUrl(url: string) {
@@ -17,7 +19,7 @@ export function getDisplayUrl(url: string) {
 }
 
 export function getBaseDisplayUrl() {
-  return getDisplayUrl(APP_BASE_URL);
+  return getDisplayUrl(getAppOrigin());
 }
 
 export function getDisplayProfileUrl(username?: string) {

@@ -1,4 +1,4 @@
-import { callApi } from "@/api/base";
+import { callApiServer } from "@/api/base/base.server";
 
 export type ContactRequest = {
   name: string;
@@ -8,7 +8,7 @@ export type ContactRequest = {
 };
 
 export async function contactApi(data: ContactRequest) {
-  return callApi({
+  return callApiServer({
     url: "/contact",
     method: "POST",
     data,

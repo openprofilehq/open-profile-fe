@@ -33,6 +33,7 @@ type Props = {
   isLoadingContent?: boolean;
   appearance?: ProfileAppearanceSettings | null;
   isPreview?: boolean;
+  isPublicView?: boolean;
 };
 
 const DEFAULT_LINKS = [
@@ -75,6 +76,7 @@ export default function ProfessionalDashboardView({
   isLoadingContent,
   appearance,
   isPreview,
+  isPublicView,
 }: Props) {
   if (isLoadingProfile || isLoadingContent) {
     return (
@@ -255,7 +257,7 @@ export default function ProfessionalDashboardView({
                         </div>
                       </a>
                     ))
-                  ) : (
+                  ) : isPublicView ? null : (
                     <p className="text-tertiary-text border-border mt-4 rounded-xl border border-dashed py-4 text-center text-sm">
                       No links added yet.
                     </p>
@@ -416,7 +418,7 @@ export default function ProfessionalDashboardView({
                           </div>
                         );
                       })
-                    ) : (
+                    ) : isPublicView ? null : (
                       <p className="text-tertiary-text border-border rounded-xl border border-dashed py-4 text-center text-sm">
                         No projects added yet.
                       </p>

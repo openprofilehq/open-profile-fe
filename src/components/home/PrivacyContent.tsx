@@ -145,7 +145,7 @@ export const tableOfContent: TableOfContentItem[] = [
   {
     heading: "10. Changes To This Privacy Policy And Contact Information",
     content:
-      "We may update this Privacy Policy periodically to reflect changes in our practices, technologies, or legal obligations. Continued use of the Service after updates constitutes acceptance of the revised Privacy Policy. For questions, requests, or privacy-related concerns, contact: Open Profile Privacy Team. Email: privacy@openprofile.com. Support: support@openprofile.com",
+      "We may update this Privacy Policy periodically to reflect changes in our practices, technologies, or legal obligations. Continued use of the Service after updates constitutes acceptance of the revised Privacy Policy. For questions, requests, or privacy-related concerns, contact: Open Profile Privacy Team. Email: privacy@openprofile.bio. Support: support@openprofile.bio",
   },
 ];
 

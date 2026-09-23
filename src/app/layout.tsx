@@ -36,6 +36,20 @@ export const metadata: Metadata = {
   },
   description:
     "OpenProfile — build a verified profile that tells the world exactly who you are.",
+  openGraph: {
+    type: "website",
+    siteName: env.NEXT_PUBLIC_APP_NAME,
+    url: "/",
+    title: env.NEXT_PUBLIC_APP_NAME,
+    description:
+      "OpenProfile — build a verified profile that tells the world exactly who you are.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: env.NEXT_PUBLIC_APP_NAME,
+    description:
+      "OpenProfile — build a verified profile that tells the world exactly who you are.",
+  },
 };
 
 export default function RootLayout({

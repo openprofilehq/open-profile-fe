@@ -7,7 +7,6 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUserOption } from "@/api/auth/auth.options";
 import { ROUTES } from "@/constants/routes";
-import { useAuthCookie } from "@/hooks/useAuthCookie";
 
 const features = [
   {
@@ -80,15 +79,14 @@ function FeatureCard({
 }
 
 export function Features() {
-  const hasAuthCookie = useAuthCookie();
   const { data: user } = useQuery({
     ...getCurrentUserOption(),
-    enabled: hasAuthCookie,
     throwOnError: false,
   });
 
   return (
     <section
+      id="features"
       className="bg-brand-dark-bg relative w-full overflow-hidden py-16 md:py-24"
       aria-labelledby="features-heading"
     >
