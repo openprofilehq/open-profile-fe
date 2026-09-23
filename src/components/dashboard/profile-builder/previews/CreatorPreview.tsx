@@ -160,7 +160,7 @@ export default function CreatorPreview({
               {resolvedName}
             </h1>
             <p className="text-secondary-text mt-1 text-[15px]">
-              openprofile.app/{profile?.username || "micaela"}
+              openprofile.bio/{profile?.username || "micaela"}
             </p>
           </div>
 
