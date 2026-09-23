@@ -54,6 +54,8 @@ export type RecentActivityData = {
   profilesPublishedToday: number;
   invitesSentToday: number;
   invitesClaimedToday: number;
+  flaggedForReview: number;
+  activeSuspensions: number;
 };
 
 export async function getRecentActivity() {
