@@ -36,6 +36,7 @@ type Props = {
   isLoadingContent?: boolean;
   appearance?: ProfileAppearanceSettings | null;
   isPreview?: boolean;
+  isPublicView?: boolean;
 };
 
 const DEFAULT_LINKS = [
@@ -83,6 +84,7 @@ export default function CreatorDashboardView({
   isLoadingContent,
   appearance,
   isPreview,
+  isPublicView,
 }: Props) {
   const [activeTab, setActiveTab] = useState<"projects" | "links" | "about">(
     "projects"
@@ -441,7 +443,7 @@ export default function CreatorDashboardView({
                         );
                       })}
                     </div>
-                  ) : (
+                  ) : isPublicView ? null : (
                     <p className="text-tertiary-text border-border rounded-xl border border-dashed py-8 text-center text-sm">
                       No projects added yet.
                     </p>
@@ -482,7 +484,7 @@ export default function CreatorDashboardView({
                       />
                     ))}
                   </div>
-                ) : (
+                ) : isPublicView ? null : (
                   <p className="text-tertiary-text border-border rounded-xl border border-dashed py-8 text-center text-sm">
                     No links added yet.
                   </p>

@@ -172,6 +172,7 @@ export default async function UserProfilePage({ params }: Props) {
             profile={dashboardProfile}
             content={profileContent}
             appearance={themeSettings as unknown as ProfileAppearanceSettings}
+            isPublicView
           />
         );
       case "professional":
@@ -180,6 +181,7 @@ export default async function UserProfilePage({ params }: Props) {
             profile={dashboardProfile}
             content={profileContent}
             appearance={themeSettings as unknown as ProfileAppearanceSettings}
+            isPublicView
           />
         );
       case "portfolio":
@@ -188,6 +190,7 @@ export default async function UserProfilePage({ params }: Props) {
             profile={dashboardProfile}
             content={profileContent}
             appearance={themeSettings as unknown as ProfileAppearanceSettings}
+            isPublicView
           />
         );
       default:
@@ -196,6 +199,7 @@ export default async function UserProfilePage({ params }: Props) {
             profile={dashboardProfile}
             content={profileContent}
             appearance={themeSettings as unknown as ProfileAppearanceSettings}
+            isPublicView
           />
         );
     }
