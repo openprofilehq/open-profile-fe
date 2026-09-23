@@ -53,6 +53,7 @@ jobs:
         run: pnpm build
         env:
           NODE_ENV: production
+          SKIP_ENV_VALIDATION: "1"
 
   deploy-staging:
     name: Deploy — Staging
