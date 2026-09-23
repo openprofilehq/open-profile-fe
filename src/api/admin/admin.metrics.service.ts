@@ -2,12 +2,12 @@ import { callApi } from "@/api/base";
 
 type AdminEnvelope<T> = { success: boolean; data: T };
 
-export type MetricsRange = "this_week" | "last_thirty_days";
+export type MetricsRange = "this_week" | "last_thirty_days" | "all_time";
 
 export type MetricDelta = {
   current: number;
   previous: number;
-  change: number;
+  change: number | null;
 };
 
 export type TimeseriesPoint = {
