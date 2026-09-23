@@ -11,6 +11,7 @@ import {
   PanelsTopLeft,
   Search,
   Settings,
+  ShieldCheck,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -19,6 +20,7 @@ import { useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
+import { USER_ROLES } from "@/api/auth/auth.type";
 import { userQueryOptions, logoutOption } from "@/api/auth/auth.options";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { toast } from "sonner";
@@ -294,6 +296,16 @@ export default function DashboardTopbar() {
                       <p className="border-tertiary-b text-tertiary-text text-md truncate border-b px-4 py-2">
                         {displayName}
                       </p>
+                    )}
+                    {user?.role === USER_ROLES.admin && (
+                      <Link
+                        href={ROUTES.admin.home}
+                        onClick={() => setDropdownOpen(false)}
+                        className="text-primary-text hover:bg-hover-bg flex w-full cursor-pointer items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                      >
+                        <ShieldCheck size={15} aria-hidden="true" />
+                        Admin
+                      </Link>
                     )}
                     <Link
                       href={ROUTES.dashboard.settings.home}

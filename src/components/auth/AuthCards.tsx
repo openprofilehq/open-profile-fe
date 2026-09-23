@@ -29,8 +29,8 @@ export function LeftAuthCard() {
           Create Your Profile
         </p>
         <p className="mt-1 text-xs leading-relaxed text-gray-400">
-          Sign up in seconds with email, Google, or LinkedIn. Craft your bio,
-          and link your work.
+          Sign up in seconds with email or Google. Add your bio, your links and
+          your projects.
         </p>
       </div>
 
@@ -97,11 +97,11 @@ export function RightAuthCard() {
 
       <div className="text-center">
         <p className="text-sm font-semibold text-[#050505]">
-          Verify Your Identity
+          Verify Your Email
         </p>
         <p className="mt-1 text-xs leading-relaxed text-gray-400">
-          Verify your email and connect social accounts. Build credibility with
-          verification badges.
+          Confirm your email with a one-time code, then add the links that show
+          your work.
         </p>
       </div>
 
