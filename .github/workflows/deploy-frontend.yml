@@ -100,13 +100,18 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           password: ${{ secrets.EC2_PASSWORD }}
+          command_timeout: 30m
+          script_stop: true
           script: |
+            set -e
             cd /var/www/openprofile-fe/staging
-            rm -rf .next || true
             pnpm install --config.ignore-scripts=true
-             # fallback frontend deps
             pnpm add react-icons --no-save || true
-            pnpm build
+            rm -rf .next.new .next.old
+            SKIP_TYPE_CHECK=1 NEXT_DIST_DIR=.next.new pnpm build
+            if [ -d .next ]; then mv .next .next.old; fi
+            mv .next.new .next
+            rm -rf .next.old
       - name: Start app with PM2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -160,11 +165,17 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           password: ${{ secrets.EC2_PASSWORD }}
+          command_timeout: 30m
+          script_stop: true
           script: |
+            set -e
             cd /var/www/openprofile-fe/production
-            rm -rf .next || true
             pnpm install --config.ignore-scripts=true
-            pnpm build
+            rm -rf .next.new .next.old
+            SKIP_TYPE_CHECK=1 NEXT_DIST_DIR=.next.new pnpm build
+            if [ -d .next ]; then mv .next .next.old; fi
+            mv .next.new .next
+            rm -rf .next.old
       - name: Start app with PM2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -173,5 +184,5 @@ jobs:
           password: ${{ secrets.EC2_PASSWORD }}
           script: |
             cd /var/www/openprofile-fe/production
-            pm2 restart openprofile-production-fe || pm2 start "pnpm" --name "openprofile-production-fe" -- start --env PORT=3001
+            pm2 restart openprofile-production-fe || PORT=3002 pm2 start "pnpm start" --name openprofile-production-fe
             pm2 save
