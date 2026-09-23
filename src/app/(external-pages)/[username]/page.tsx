@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cookies } from "next/headers";
 import {
   type ProfileResponse,
   type ProfileAppearanceSettings,
@@ -16,7 +15,6 @@ import DefaultDashboardView from "@/components/dashboard/templates/DefaultDashbo
 import TemplateAppearanceProvider from "@/components/dashboard/templates/TemplateAppearanceProvider";
 import ProfileViewTracker from "@/components/profile/ProfileViewTracker";
 import LinkClickTracker from "@/components/profile/LinkClickTracker";
-import CookieRelay from "@/components/profile/CookieRelay";
 import { getImageUrl } from "@/utils/profile";
 
 export const dynamic = "force-dynamic";
@@ -30,20 +28,9 @@ type LegacyContent = {
 };
 
 const loadProfile = cache(async (username: string) => {
-  const store = await cookies();
-  const cookieHeader = store
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join("; ");
-
   const res = await fetch(
     `${serverEnv.API_BASE_URL}/api/v1/profiles/${encodeURIComponent(username)}`,
-    {
-      cache: "no-store",
-      headers: {
-        ...(cookieHeader ? { cookie: cookieHeader } : {}),
-      },
-    }
+    { cache: "no-store" }
   );
 
   if (res.status === 404) return null;
@@ -51,27 +38,18 @@ const loadProfile = cache(async (username: string) => {
     throw new Error(`Failed to load profile (status ${res.status})`);
   }
 
-  const setCookies =
-    typeof res.headers.getSetCookie === "function"
-      ? res.headers.getSetCookie()
-      : res.headers.get("set-cookie")
-        ? [res.headers.get("set-cookie")!]
-        : [];
-
   const json = await res.json();
-  const profile = (json.data ?? json) as ProfileResponse;
-  return { profile, setCookies };
+  return (json.data ?? json) as ProfileResponse;
 });
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
-  const result = await loadProfile(username);
+  const profile = await loadProfile(username);
 
-  if (!result) {
+  if (!profile) {
     return { title: "Profile not found" };
   }
 
-  const { profile } = result;
   const name = profile.fullName || profile.username;
   const title = `${name} (@${profile.username})`;
   const description =
@@ -101,11 +79,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function UserProfilePage({ params }: Props) {
   const { username } = await params;
-  const result = await loadProfile(username);
+  const profile = await loadProfile(username);
 
-  if (!result) notFound();
+  if (!profile) notFound();
 
-  const { profile, setCookies } = result;
   const content = profile.content;
 
   type PublicProfileAppearance = {
@@ -249,7 +226,6 @@ export default async function UserProfilePage({ params }: Props) {
       <div className="flex-1">{renderTemplateView()}</div>
       <ProfileViewTracker username={profile.username} />
       <LinkClickTracker username={profile.username} />
-      <CookieRelay setCookies={setCookies} />
     </TemplateAppearanceProvider>
   );
 }
