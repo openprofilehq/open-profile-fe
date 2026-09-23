@@ -86,6 +86,7 @@ export function Features() {
 
   return (
     <section
+      id="features"
       className="bg-brand-dark-bg relative w-full overflow-hidden py-16 md:py-24"
       aria-labelledby="features-heading"
     >

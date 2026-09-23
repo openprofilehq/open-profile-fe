@@ -61,7 +61,7 @@ const guides = [
     description:
       "A comprehensive overview of the modular architecture and data-driven profiles.",
     icon: FileText,
-    href: ROUTES.dashboard.help.howOpenProfileWorks,
+    href: "/how-it-works",
     action: "Read the guide",
   },
   {
@@ -69,7 +69,7 @@ const guides = [
     description:
       "Step-by-step instructions for beginners to create a high-impact digital presence.",
     icon: Palette,
-    href: ROUTES.dashboard.help.settingUpYourProfile,
+    href: ROUTES.dashboard.profileBuilder,
     action: "Start setup",
   },
   {
@@ -77,7 +77,7 @@ const guides = [
     description:
       "Advanced SEO and networking tips to ensure your profile reaches the right audience.",
     icon: Search,
-    href: ROUTES.dashboard.help.profileDiscoverability,
+    href: ROUTES.public.faq,
     action: "Learn more",
   },
 ];
@@ -85,17 +85,17 @@ const guides = [
 const quickActions = [
   {
     title: "Contact Support",
-    href: "mailto:support@openprofile.com",
+    href: "mailto:support@openprofile.bio",
     icon: Mail,
   },
   {
     title: "Report a Bug",
-    href: "mailto:support@openprofile.com?subject=Bug%20Report",
+    href: "mailto:support@openprofile.bio?subject=Bug%20Report",
     icon: Bug,
   },
   {
     title: "Send Feedback",
-    href: "mailto:support@openprofile.com?subject=Feedback",
+    href: "mailto:support@openprofile.bio?subject=Feedback",
     icon: Send,
   },
 ];
@@ -144,9 +144,8 @@ export default function HelpSupportContent() {
                 const Icon = item.icon;
 
                 return (
-                  <Link
+                  <div
                     key={item.slug}
-                    href={`${ROUTES.dashboard.help.home}#${item.slug}`}
                     className="min-h-[150px] rounded-[8px] border border-[#EDEDED] bg-white p-6 text-[#050505]"
                   >
                     <Icon size={18} />
@@ -154,7 +153,7 @@ export default function HelpSupportContent() {
                     <p className="mt-2 text-sm text-[#454545]">
                       {item.description}
                     </p>
-                  </Link>
+                  </div>
                 );
               })}
             </div>
