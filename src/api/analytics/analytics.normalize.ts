@@ -24,6 +24,7 @@ export interface NormalizedLinkClick {
 export interface NormalizedAnalyticsDashboard {
   viewsData: NormalizedDailyView[];
   totalViews: number;
+  uniqueViewers?: number;
   changePercentage: number;
   links: NormalizedLinkClick[];
   totalClicks: number;
@@ -37,11 +38,17 @@ export function normalizeProfileViews(
 ): {
   viewsData: NormalizedDailyView[];
   totalViews: number;
+  uniqueViewers: number;
   changePercentage: number;
   keyInsight?: string;
 } {
   if (!raw) {
-    return { viewsData: [], totalViews: 0, changePercentage: 0 };
+    return {
+      viewsData: [],
+      totalViews: 0,
+      uniqueViewers: 0,
+      changePercentage: 0,
+    };
   }
 
   let items: DailyViewData[] = [];
@@ -86,14 +93,14 @@ export function normalizeProfileViews(
   }));
 
   let totalViews = 0;
-  if (typeof rawObj.totalViews === "number") {
-    totalViews = rawObj.totalViews;
-  } else if (typeof rawObj.total_views === "number") {
-    totalViews = rawObj.total_views;
-  } else if (typeof rawObj.range_total === "number") {
+  if (typeof rawObj.range_total === "number") {
     totalViews = rawObj.range_total;
   } else if (typeof rawObj.rangeTotal === "number") {
     totalViews = rawObj.rangeTotal;
+  } else if (typeof rawObj.totalViews === "number") {
+    totalViews = rawObj.totalViews;
+  } else if (typeof rawObj.total_views === "number") {
+    totalViews = rawObj.total_views;
   } else if (typeof rawObj.total === "number") {
     totalViews = rawObj.total;
   } else if (rawDataObj) {
@@ -112,6 +119,17 @@ export function normalizeProfileViews(
     }
   } else {
     totalViews = viewsData.reduce((sum, d) => sum + d.views, 0);
+  }
+
+  let uniqueViewers = 0;
+  if (typeof rawObj.unique_viewers === "number") {
+    uniqueViewers = rawObj.unique_viewers;
+  } else if (typeof rawObj.uniqueViewers === "number") {
+    uniqueViewers = rawObj.uniqueViewers;
+  } else if (rawDataObj && typeof rawDataObj.unique_viewers === "number") {
+    uniqueViewers = rawDataObj.unique_viewers as number;
+  } else if (rawDataObj && typeof rawDataObj.uniqueViewers === "number") {
+    uniqueViewers = rawDataObj.uniqueViewers as number;
   }
 
   let changePercentage = 0;
@@ -140,6 +158,7 @@ export function normalizeProfileViews(
   return {
     viewsData,
     totalViews,
+    uniqueViewers,
     changePercentage,
     keyInsight,
   };
@@ -167,11 +186,26 @@ export function normalizeLinkClicks(
   }
 
   const rawObj = raw as LinkClicksResponse;
+  const rawDataObj =
+    rawObj.data && !Array.isArray(rawObj.data)
+      ? (rawObj.data as Record<string, unknown>)
+      : null;
+
   let totalClicks = 0;
-  if (typeof rawObj.totalClicks === "number") {
+  if (typeof rawObj.range_total === "number") {
+    totalClicks = rawObj.range_total;
+  } else if (typeof rawObj.rangeTotal === "number") {
+    totalClicks = rawObj.rangeTotal;
+  } else if (typeof rawObj.totalClicks === "number") {
     totalClicks = rawObj.totalClicks;
   } else if (typeof rawObj.total_clicks === "number") {
     totalClicks = rawObj.total_clicks;
+  } else if (rawDataObj && typeof rawDataObj.range_total === "number") {
+    totalClicks = rawDataObj.range_total as number;
+  } else if (rawDataObj && typeof rawDataObj.rangeTotal === "number") {
+    totalClicks = rawDataObj.rangeTotal as number;
+  } else if (rawDataObj && typeof rawDataObj.total_clicks === "number") {
+    totalClicks = rawDataObj.total_clicks as number;
   } else {
     totalClicks = items.reduce(
       (sum, l) => sum + (l.clicks ?? l.total_clicks ?? 0),
@@ -181,8 +215,9 @@ export function normalizeLinkClicks(
 
   const links: NormalizedLinkClick[] = items.map((item, idx) => {
     const clicks = item.clicks ?? item.total_clicks ?? 0;
+    const url = item.url ?? item.linkUrl ?? item.link_url;
     const title =
-      item.title || item.label || item.name || item.url || `Link ${idx + 1}`;
+      item.title || item.label || item.name || url || `Link ${idx + 1}`;
 
     let ctr = 0;
     if (item.ctr != null) {
@@ -202,9 +237,9 @@ export function normalizeLinkClicks(
     }
 
     return {
-      id: item.id ?? item.linkId ?? item.link_id ?? idx,
+      id: item.id ?? item.linkId ?? item.link_id ?? url ?? idx,
       title,
-      url: item.url,
+      url,
       clicks,
       ctr,
     };
