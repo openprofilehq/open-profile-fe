@@ -3,10 +3,13 @@
 import { Check } from "lucide-react";
 import { motion, Variants } from "motion/react";
 import Link from "next/link";
+import { useState } from "react";
+import { Button } from "../ui/button";
 
 interface PricingPlan {
   name: string;
-  price: string;
+  priceMonth: string;
+  priceYear: string;
   features: string[];
   buttonText: string;
   highlighted?: boolean;
@@ -18,7 +21,8 @@ interface PricingPlan {
 const plans: PricingPlan[] = [
   {
     name: "Free",
-    price: "0",
+    priceMonth: "0",
+    priceYear: "0",
     features: [
       "Your page at openprofile.bio/yourname",
       "Links, projects and a call to action",
@@ -30,7 +34,8 @@ const plans: PricingPlan[] = [
   },
   {
     name: "Pro",
-    price: "5",
+    priceMonth: "5",
+    priceYear: "50",
     featureTitle: "Everything in Free, plus",
     features: [
       "Every profile template",
@@ -45,6 +50,8 @@ const plans: PricingPlan[] = [
 ];
 
 export function Pricing() {
+  const [isYear, setIsYear] = useState(false);
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -84,6 +91,32 @@ export function Pricing() {
         </motion.h2>
 
         <motion.div
+          variants={itemVariants}
+          className="border-primary-foreground-b bg-background mb-10 inline-flex items-center rounded-2xl border text-center transition-all duration-300"
+        >
+          <Button
+            variant={null}
+            size="lg"
+            onClick={() => setIsYear(false)}
+            className={`w-28 cursor-pointer rounded-2xl px-4 py-3 font-semibold ${
+              !isYear ? "bg-brand text-white" : "text-tertiary-foreground-text"
+            }`}
+          >
+            Month
+          </Button>
+          <Button
+            variant={null}
+            size="lg"
+            onClick={() => setIsYear(true)}
+            className={`w-28 cursor-pointer rounded-2xl px-4 py-3 font-semibold ${
+              isYear ? "bg-brand text-white" : "text-tertiary-foreground-text"
+            }`}
+          >
+            Year
+          </Button>
+        </motion.div>
+
+        <motion.div
           variants={containerVariants}
           className="grid w-full grid-cols-1 gap-6 md:grid-cols-2"
         >
@@ -114,7 +147,9 @@ export function Pricing() {
                       : "border-primary-foreground-b"
                   }`}
                 >
-                  <span className="text-[36px] font-bold">${plan.price}</span>
+                  <span className="text-[36px] font-bold">
+                    ${isYear ? plan.priceYear : plan.priceMonth}
+                  </span>
                   <span
                     className={`text-base ${
                       plan.highlighted
@@ -122,7 +157,7 @@ export function Pricing() {
                         : "text-tertiary-foreground-text"
                     }`}
                   >
-                    /month
+                    {isYear ? "/year" : "/month"}
                   </span>
                 </div>
               </div>
