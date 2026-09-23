@@ -11,6 +11,14 @@ import { getFontClass } from "../templates/TemplateAppearanceProvider";
 export const isProfileTextSectionType = (type: string) =>
   type === "workExperience" || type === "education" || type === "skills";
 
+export const hasProfileTextContent = (section: Section) => {
+  if (section.type === "workExperience")
+    return (section.experiences ?? []).length > 0;
+  if (section.type === "education") return (section.education ?? []).length > 0;
+  if (section.type === "skills") return (section.skills ?? []).length > 0;
+  return true;
+};
+
 const dateRange = ({
   startMonth,
   startYear,

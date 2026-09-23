@@ -24,6 +24,7 @@ import TemplateAppearanceProvider, {
 import {
   isProfileTextSectionType,
   ProfileTextSectionBlock,
+  hasProfileTextContent,
 } from "../profile-builder/ProfileTextSections";
 
 type Props = {
@@ -406,6 +407,7 @@ export default function DefaultDashboardView({
             }
 
             if (section.type === "cta") {
+              if (isPublicView && !section.sourceUrl) return null;
               return (
                 <div
                   key={section.id}
@@ -477,6 +479,7 @@ export default function DefaultDashboardView({
             }
 
             if (isProfileTextSectionType(section.type)) {
+              if (isPublicView && !hasProfileTextContent(section)) return null;
               return (
                 <div
                   key={section.id}
