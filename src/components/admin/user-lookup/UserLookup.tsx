@@ -65,6 +65,21 @@ function SearchingState({ query }: { query: string }) {
   );
 }
 
+function SearchError({ error }: { error?: unknown }) {
+  return (
+    <div className="border-tertiary-b flex flex-col items-center justify-center rounded-[8px] border px-4 py-14 text-center">
+      <p className="text-negative-text mb-1 text-sm font-semibold">
+        Search Request Failed
+      </p>
+      <p className="text-tertiary-text text-sm">
+        {error instanceof Error
+          ? error.message
+          : "Could not fetch user data. Please ensure you are logged in as an admin."}
+      </p>
+    </div>
+  );
+}
+
 export default function UserLookup() {
   const queryClient = useQueryClient();
 
@@ -77,7 +92,7 @@ export default function UserLookup() {
     null
   );
 
-  const { data, isFetching, isSuccess } = useQuery(
+  const { data, isFetching, isSuccess, isError, error } = useQuery(
     userSearchQueryOptions(committedQuery)
   );
 
@@ -183,7 +198,10 @@ export default function UserLookup() {
 
       {!hasQuery && <EmptyState />}
       {hasQuery && isFetching && <SearchingState query={committedQuery} />}
-      {noResults && !isFetching && <NoResults query={committedQuery} />}
+      {hasQuery && isError && !isFetching && <SearchError error={error} />}
+      {noResults && !isFetching && !isError && (
+        <NoResults query={committedQuery} />
+      )}
 
       {hasResults && !isFetching && (
         <div
