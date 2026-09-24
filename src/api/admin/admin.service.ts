@@ -35,10 +35,8 @@ export async function getAdminUsers({
   search,
   signal,
 }: AdminUsersParams = {}) {
-  const envelope = await callApi<{
-    success: boolean;
-    data: { results: AdminUser[]; total: number; page: number; limit: number };
-  }>({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw = await callApi<any>({
     url: "/admin/users",
     method: "GET",
     params: {
@@ -49,9 +47,9 @@ export async function getAdminUsers({
     signal,
   });
 
-  const data = envelope?.data;
+  const data = raw?.results ? raw : (raw?.data ?? raw);
   return {
-    users: data?.results ?? [],
+    users: (data?.results ?? []) as unknown as AdminUser[],
     total: data?.total ?? 0,
     page: data?.page ?? page,
     limit: data?.limit ?? limit,
@@ -125,16 +123,14 @@ type ApiUserSummary = {
   createdAt: string;
 };
 
-type ApiUserDetail = ApiUserSummary & {
+export type ApiUserDetail = ApiUserSummary & {
   profileCompletion: number;
   views: number;
   clicks: number;
   searchConversion: number;
 };
 
-type AdminEnvelope<T> = { success: boolean; data: T };
-
-type ApiUserSearchData = {
+export type ApiUserSearchData = {
   results: ApiUserSummary[];
   total: number;
   page: number;
@@ -173,36 +169,105 @@ function toInitials(fullName: string | null, username: string | null) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-function toLookupUser(user: ApiUserSummary | ApiUserDetail): LookupUser {
-  const detail = user as Partial<ApiUserDetail>;
+function toLookupUser(user: any): LookupUser {
+  if (!user) return {} as LookupUser;
+  const fullName = user.fullName ?? user.name ?? user.display_name ?? "";
+  const username = user.username ?? user.user_name ?? user.handle ?? "";
+  const email = user.email ?? "";
+  const displayName = fullName || username || email || "User";
+  const displayUsername = username || (email ? email.split("@")[0] : "user");
+  const status =
+    STATUS_FROM_API[user.status as ApiUserStatus] ?? user.status ?? "active";
+
   return {
-    id: user.id,
-    fullName: user.fullName ?? "",
-    username: user.username ?? "",
-    initials: toInitials(user.fullName, user.username),
-    status: STATUS_FROM_API[user.status] ?? "active",
-    completion: detail.profileCompletion ?? 0,
-    views: detail.views ?? 0,
-    clicks: detail.clicks ?? 0,
-    conversion: detail.searchConversion ?? 0,
-    lastActiveAt: "",
-    memberSince: user.createdAt,
-    featureFlags: EMPTY_FEATURE_FLAGS,
+    id: user.id ?? user._id ?? String(Math.random()),
+    fullName: displayName,
+    username: displayUsername,
+    initials: toInitials(fullName, username || email),
+    status: (["active", "suspended", "inactive", "flagged", "blocked"].includes(
+      status
+    )
+      ? status
+      : "active") as UserStatus,
+    completion: Math.round(user.profileCompletion ?? user.completion ?? 0),
+    views: user.views ?? 0,
+    clicks: user.clicks ?? 0,
+    conversion: user.searchConversion ?? user.conversion ?? 0,
+    lastActiveAt: user.lastActiveAt ?? "",
+    memberSince: user.createdAt ?? user.memberSince ?? "",
+    featureFlags: user.featureFlags ?? EMPTY_FEATURE_FLAGS,
   };
 }
 
 export async function searchUsers(query: string, signal?: AbortSignal) {
-  const envelope = await callApi<AdminEnvelope<ApiUserSearchData>>({
-    url: "/admin/users",
-    method: "GET",
-    params: { q: query },
-    signal,
-  });
+  const trimmed = query.trim();
+  if (trimmed.length < USER_SEARCH_MIN_LENGTH) {
+    return { users: [], total: 0 };
+  }
 
-  const data = envelope?.data;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let raw: any = null;
+  try {
+    raw = await callApi<any>({
+      url: "/admin/users",
+      method: "GET",
+      params: { q: trimmed },
+      signal,
+    });
+  } catch {
+    // proceed to fallback
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let list: any[] = [];
+  if (Array.isArray(raw)) {
+    list = raw;
+  } else if (Array.isArray(raw?.results)) {
+    list = raw.results;
+  } else if (Array.isArray(raw?.users)) {
+    list = raw.users;
+  } else if (Array.isArray(raw?.items)) {
+    list = raw.items;
+  } else if (Array.isArray(raw?.data)) {
+    list = raw.data;
+  } else if (Array.isArray(raw?.data?.results)) {
+    list = raw.data.results;
+  } else if (Array.isArray(raw?.data?.users)) {
+    list = raw.data.users;
+  } else if (Array.isArray(raw?.data?.items)) {
+    list = raw.data.items;
+  }
+
+  // Fallback to public search endpoint /search if admin endpoint returns 0 results
+  if (list.length === 0) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const fallbackRaw = await callApi<any>({
+        url: "/search",
+        method: "GET",
+        params: { q: trimmed },
+        signal,
+      });
+
+      const fallbackData = fallbackRaw?.data ?? fallbackRaw;
+      const fallbackList =
+        fallbackData?.results ??
+        fallbackData?.users ??
+        (Array.isArray(fallbackData) ? fallbackData : []);
+
+      if (Array.isArray(fallbackList) && fallbackList.length > 0) {
+        list = fallbackList;
+      }
+    } catch {
+      // ignore fallback failure
+    }
+  }
+
+  const total = raw?.total ?? raw?.data?.total ?? list.length;
+
   return {
-    users: (data?.results ?? []).map(toLookupUser),
-    total: data?.total ?? 0,
+    users: list.map(toLookupUser),
+    total,
   } satisfies UserLookupResponse;
 }
 
@@ -210,13 +275,15 @@ export async function getLookupUserDetail(
   userId: string,
   signal?: AbortSignal
 ) {
-  const envelope = await callApi<AdminEnvelope<ApiUserDetail>>({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw = await callApi<any>({
     url: `/admin/users/${userId}`,
     method: "GET",
     signal,
   });
 
-  return toLookupUser(envelope.data);
+  const user = raw?.id ? raw : (raw?.data ?? raw);
+  return toLookupUser(user);
 }
 
 export async function performUserAction(
