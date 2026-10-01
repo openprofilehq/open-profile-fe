@@ -104,6 +104,23 @@ api.interceptors.response.use(
   }
 );
 
+const NETWORK_ERROR_MESSAGE =
+  "Couldn't reach the server. Check your connection and try again.";
+const TOO_LARGE_MESSAGE =
+  "That upload is too large. Images must be 5 MB or smaller.";
+
+function describeRequestError(e: AxiosError<{ message?: unknown }>): string {
+  if (!e.response) return NETWORK_ERROR_MESSAGE;
+  const serverMessage = e.response.data?.message;
+  if (e.response.status === 413) {
+    return typeof serverMessage === "string" &&
+      serverMessage.toLowerCase().includes("mb")
+      ? serverMessage
+      : TOO_LARGE_MESSAGE;
+  }
+  return getApiErrorMessage(serverMessage);
+}
+
 function getApiErrorMessage(message?: unknown): string {
   if (typeof message === "string") return message;
   if (Array.isArray(message) && message.length > 0) {
@@ -181,7 +198,7 @@ export async function callApi<TResData>({
         }
       }
       throw new ApiError(
-        e.response ? getApiErrorMessage(e.response.data?.message) : e.message,
+        describeRequestError(e),
         e.response?.data?.message,
         e.response?.status
       );

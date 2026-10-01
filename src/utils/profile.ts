@@ -28,6 +28,7 @@ export function getDisplayProfileUrl(username?: string) {
 
 export function getImageUrl(path?: string | null) {
   if (!path) return "";
+  if (path.startsWith("data:") || path.startsWith("blob:")) return path;
   if (path.startsWith("/profile-preview/")) return path;
   if (path.startsWith("/profilebuilder_home/")) return path;
   if (path.startsWith("/profilebuilder_cta/")) return path;
