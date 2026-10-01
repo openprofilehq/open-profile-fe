@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { validateFullName } from "@/utils/nameValidation";
+import {
+  IMAGE_ACCEPT,
+  IMAGE_HELPER_TEXT,
+  validateImageFile,
+} from "@/utils/image-upload";
 
-const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
-const MAX_IMAGE_SIZE_MB = 5;
-const IMAGE_UPLOAD_HELPER_TEXT =
-  "Image files only: JPG, PNG, WebP, GIF, or SVG. Max size: 5MB.";
+const IMAGE_UPLOAD_HELPER_TEXT = IMAGE_HELPER_TEXT;
 
 type CreateProfileInfoProps = {
   bio: string;
@@ -109,15 +111,7 @@ export default function CreateProfileInfo({
   }
 
   function getPhotoValidationError(file: File) {
-    if (!file.type.startsWith("image/")) {
-      return "Unsupported file type. Please upload an image file.";
-    }
-
-    if (file.size > MAX_IMAGE_SIZE_BYTES) {
-      return `Image is too large. Please upload an image that is ${MAX_IMAGE_SIZE_MB}MB or smaller.`;
-    }
-
-    return "";
+    return validateImageFile(file);
   }
 
   function handleFile(e: ChangeEvent<HTMLInputElement>) {
@@ -198,7 +192,7 @@ export default function CreateProfileInfo({
           <input
             ref={inputRef}
             type="file"
-            accept="image/*"
+            accept={IMAGE_ACCEPT}
             className="hidden"
             onChange={handleFile}
           />

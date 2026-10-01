@@ -14,6 +14,10 @@ import type {
   SkillItem,
 } from "./types";
 import { encodeUrlForBackend, decodeUrlForFrontend } from "@/utils/profile";
+import { isLocalImageUrl } from "@/utils/image-upload";
+
+const persistableImage = (value?: string | null) =>
+  value && !isLocalImageUrl(value) ? value : null;
 import {
   educationResponseToItem,
   skillResponseToItem,
@@ -723,8 +727,8 @@ export function sectionsToContent(
             visible: true,
             iconId: l.iconId ?? null,
             iconLabel: l.iconLabel ?? null,
-            iconSrc: l.iconSrc ?? null,
-            imageSrc: l.imageSrc ?? null,
+            iconSrc: persistableImage(l.iconSrc),
+            imageSrc: persistableImage(l.imageSrc),
           })) as unknown as LinkItem[],
           ...sectionStyleFields(linksSection),
         }
@@ -749,7 +753,7 @@ export function sectionsToContent(
               description: p.description || "",
               visible: true,
             };
-            if (p.imageSrc) {
+            if (p.imageSrc && !isLocalImageUrl(p.imageSrc)) {
               mappedProject.imageSrc = p.imageSrc;
             }
             if (p.buttonText) {
@@ -780,7 +784,7 @@ export function sectionsToContent(
           subtitle: ctaSection.subtitle ?? "",
           layout: ctaSection.layout ?? "1",
           iconId: ctaSection.iconId ?? null,
-          iconSrc: ctaSection.iconSrc ?? null,
+          iconSrc: persistableImage(ctaSection.iconSrc),
           iconLabel: ctaSection.iconLabel ?? null,
         }
       : undefined,
