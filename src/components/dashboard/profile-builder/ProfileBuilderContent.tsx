@@ -888,10 +888,18 @@ export default function ProfileBuilderContent() {
       },
     });
 
+  const draftSaveFailedRef = useRef(false);
+  const [draftSaveFailed, setDraftSaveFailed] = useState(false);
+  const markDraftSaveFailed = useCallback((failed: boolean) => {
+    draftSaveFailedRef.current = failed;
+    setDraftSaveFailed(failed);
+  }, []);
+
   const persistDraftBeforeMeta = useCallback(
     async (payload: UpsertDraftRequest, updatedAt: string | null) => {
       try {
         const response = await upsertDraft(payload, updatedAt);
+        markDraftSaveFailed(false);
         const nextUpdatedAt = response?.data?.updatedAt;
 
         if (nextUpdatedAt) {
@@ -916,10 +924,12 @@ export default function ProfileBuilderContent() {
           queryClient.invalidateQueries({
             queryKey: profileContentOption().queryKey,
           });
+          markDraftSaveFailed(false);
           return true;
         }
 
         console.error("[draft] Save FAILED! Full error object:", error);
+        markDraftSaveFailed(true);
 
         if (isDraftConflictError(error)) {
           toast.error(
@@ -941,7 +951,7 @@ export default function ProfileBuilderContent() {
         return false;
       }
     },
-    [queryClient]
+    [queryClient, markDraftSaveFailed]
   );
 
   const enqueueProfileMetaSave = useCallback(
@@ -1087,7 +1097,7 @@ export default function ProfileBuilderContent() {
     );
 
     if (!draftSaved) {
-      return;
+      return false;
     }
 
     const nextProfileMeta: ProfileMetaSnapshot = {
@@ -1121,11 +1131,14 @@ export default function ProfileBuilderContent() {
         next: nextProfileMeta,
       });
     }
+
+    return true;
   }, [template]);
 
   const flushPendingBuilderSaves = useCallback(async () => {
     const shouldFlushAppearance = Boolean(appearanceTimerRef.current);
-    const shouldFlushDraft = Boolean(saveTimerRef.current);
+    const shouldFlushDraft =
+      Boolean(saveTimerRef.current) || draftSaveFailedRef.current;
 
     if (appearanceTimerRef.current) {
       clearTimeout(appearanceTimerRef.current);
@@ -1142,7 +1155,12 @@ export default function ProfileBuilderContent() {
     }
 
     if (shouldFlushDraft) {
-      await flushDraftAndProfileMetaSave();
+      const saved = await flushDraftAndProfileMetaSave();
+      if (!saved) {
+        throw new Error(
+          "Your latest changes couldn't be saved, so nothing was published. Fix the problem above and try again."
+        );
+      }
     }
 
     await profileMetaSaveQueueRef.current;
@@ -1558,6 +1576,24 @@ export default function ProfileBuilderContent() {
 
   return (
     <>
+      {draftSaveFailed && (
+        <div
+          role="alert"
+          className="border-negative-text bg-negative-subtle-bg text-negative-text fixed inset-x-0 bottom-20 z-50 mx-auto flex w-fit max-w-[calc(100%-2rem)] items-center gap-3 rounded-lg border px-4 py-2 text-sm shadow-lg lg:bottom-6"
+        >
+          <span>
+            Your latest changes aren&apos;t saved. Don&apos;t publish or leave
+            this page yet.
+          </span>
+          <button
+            type="button"
+            onClick={() => void flushDraftAndProfileMetaSave()}
+            className="shrink-0 font-semibold underline"
+          >
+            Retry
+          </button>
+        </div>
+      )}
       {/* ── Mobile layout ── */}
       <div className="flex flex-1 flex-col overflow-hidden lg:hidden">
         {/* Mobile top bar */}

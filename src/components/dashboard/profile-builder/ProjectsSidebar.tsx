@@ -7,6 +7,13 @@ import { ChevronLeft, GripVertical, Trash2, Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ProjectItem, Section } from "./types";
 import { uploadImage } from "@/api/uploads/uploads.service";
+import { isApiError } from "@/api/base";
+import { toast } from "sonner";
+import {
+  IMAGE_ACCEPT,
+  isLocalImageUrl,
+  validateImageFile,
+} from "@/utils/image-upload";
 import { isValidUrl } from "./builder.utils";
 import {
   createId,
@@ -182,24 +189,33 @@ export default function ProjectsSidebar({
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
+    event.target.value = "";
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        setItemImage(reader.result);
-      }
-    };
-    reader.readAsDataURL(file);
-    event.target.value = "";
+    const validationError = validateImageFile(file);
+    if (validationError) {
+      setImageError(validationError);
+      return;
+    }
+
+    const previousImage = itemImage;
+    const previewUrl = URL.createObjectURL(file);
+    setImageError("");
+    setItemImage(previewUrl);
 
     try {
       setUploading(true);
       const { url } = await uploadImage(file, "projects");
       setItemImage(url);
     } catch (err) {
-      console.error("Failed to upload project image:", err);
+      setItemImage(previousImage);
+      const message = isApiError(err)
+        ? err.message
+        : "Image upload failed. Please try again.";
+      setImageError(message);
+      toast.error(message);
     } finally {
+      URL.revokeObjectURL(previewUrl);
       setUploading(false);
     }
   };
@@ -240,7 +256,10 @@ export default function ProjectsSidebar({
       setUrlError("");
     }
 
-    if (!itemImage) {
+    if (uploading) {
+      setImageError("Wait for the image to finish uploading.");
+      hasError = true;
+    } else if (!itemImage || isLocalImageUrl(itemImage)) {
       setImageError("Image is required.");
       hasError = true;
     } else {
@@ -503,7 +522,7 @@ export default function ProjectsSidebar({
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept={IMAGE_ACCEPT}
                 onChange={handleFileChange}
                 className="hidden"
               />

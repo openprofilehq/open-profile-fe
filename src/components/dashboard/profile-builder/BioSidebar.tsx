@@ -1,6 +1,8 @@
 "use client";
 
 import { ChevronLeft, Trash2, Upload } from "lucide-react";
+import { IMAGE_ACCEPT, validateImageFile } from "@/utils/image-upload";
+import { isApiError } from "@/api/base";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
@@ -73,17 +75,18 @@ export default function BioSidebar({
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) return;
     event.target.value = "";
+    if (!file) return;
+
+    const validationError = validateImageFile(file);
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
 
     const prevUploadedImage = uploadedImage;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") setUploadedImage(reader.result);
-    };
-    reader.readAsDataURL(file);
+    const previewUrl = URL.createObjectURL(file);
+    setUploadedImage(previewUrl);
 
     try {
       setUploading(true);
@@ -91,11 +94,14 @@ export default function BioSidebar({
       setUploadedImage(url);
       onUpdateSection(section.id, { photoUrl: url } as never);
       await onSaveProfilePhoto?.(url);
-    } catch {
+    } catch (err) {
       setUploadedImage(prevUploadedImage);
       onUpdateSection(section.id, { photoUrl: prevUploadedImage } as never);
-      toast.error("Failed to upload profile photo.");
+      toast.error(
+        isApiError(err) ? err.message : "Failed to upload profile photo."
+      );
     } finally {
+      URL.revokeObjectURL(previewUrl);
       setUploading(false);
     }
   };
@@ -265,7 +271,7 @@ export default function BioSidebar({
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept={IMAGE_ACCEPT}
               onChange={handleFileChange}
               className="hidden"
               aria-hidden
